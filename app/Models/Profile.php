@@ -167,4 +167,28 @@ class Profile extends Model
         return (is_array($key) && !empty(array_intersect($key, self::teacherKeys())))
             || (!is_array($key) && in_array($key, self::teacherKeys()));
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    public function userSchools()
+    {
+        return $this->belongsToMany(User::class, 'profile_user_school')
+            ->withPivot('school_id', 'active', 'entry_date', 'end_date', 'extra')
+            ->withTimestamps();
+    }
+
+    public function schools()
+    {
+        return $this->belongsToMany(School::class, 'profile_user_school')
+            ->withPivot('user_id', 'active', 'entry_date', 'end_date', 'extra')
+            ->withTimestamps();
+    }
 }

@@ -41,4 +41,28 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+
+    public function profiles()
+    {
+        return $this->belongsToMany(Profile::class);
+    }
+
+    public function profileSchools()
+    {
+        return $this->belongsToMany(Profile::class, 'profile_user_school')
+            ->withPivot('school_id', 'active', 'entry_date', 'end_date', 'extra')
+            ->withTimestamps();
+    }
+
+    public function schools()
+    {
+        return $this->belongsToMany(School::class, 'profile_user_school')
+            ->withPivot('profile_id', 'active', 'entry_date', 'end_date', 'extra')
+            ->withTimestamps();
+    }
 }

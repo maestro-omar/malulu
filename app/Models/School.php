@@ -39,4 +39,18 @@ class School extends Model
     {
         return $this->belongsToMany(SchoolLevel::class);
     }
+
+    public function userProfiles()
+    {
+        return $this->belongsToMany(User::class, 'profile_user_school')
+            ->withPivot('profile_id', 'active', 'entry_date', 'end_date', 'extra')
+            ->withTimestamps();
+    }
+
+    public function profiles()
+    {
+        return $this->belongsToMany(Profile::class, 'profile_user_school')
+            ->withPivot('user_id', 'active', 'entry_date', 'end_date', 'extra')
+            ->withTimestamps();
+    }
 }
