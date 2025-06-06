@@ -57,5 +57,7 @@ Route::prefix('sistema')->group(function () {
 
         Route::post('salir', [AuthenticatedSessionController::class, 'destroy'])
                     ->name('logout');
+        Route::get('salir', [AuthenticatedSessionController::class, 'destroy'])
+                    ->name('logout.get');
     });
 });

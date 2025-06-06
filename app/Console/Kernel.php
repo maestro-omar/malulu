@@ -24,4 +24,13 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+
+    /**
+     * The commands that should be registered.
+     *
+     * @var array
+     */
+    protected $commands = [
+        Commands\AssignAdminRole::class,
+    ];
 }

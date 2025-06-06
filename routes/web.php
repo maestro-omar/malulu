@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,6 +35,22 @@ Route::prefix('sistema')->group(function () {
         Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/perfil', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/perfil', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        // Test route to check permissions
+        Route::get('/test-permissions', function () {
+            $user = auth()->user();
+            return [
+                'user' => $user->name,
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->getAllPermissions()->pluck('name'),
+                'can_view_users' => $user->can('view users'),
+            ];
+        });
+
+        // User Management Routes
+        Route::middleware('permission:view users')->group(function () {
+            Route::resource('users', UserController::class);
+        });
     });
 });
 

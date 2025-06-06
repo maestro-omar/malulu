@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -8,6 +9,12 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+const page = usePage();
+
+onMounted(() => {
+    console.log('Auth User:', page.props.auth.user);
+    console.log('Menu Items:', page.props.menu.items);
+});
 </script>
 
 <template>
@@ -29,9 +36,11 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Inicio
-                                </NavLink>
+                                <template v-for="item in $page.props.menu.items" :key="item.route">
+                                    <NavLink :href="route(item.route)" :active="route().current(item.route)">
+                                        {{ item.name }}
+                                    </NavLink>
+                                </template>
                             </div>
                         </div>
 
@@ -65,7 +74,7 @@ const showingNavigationDropdown = ref(false);
 
                                     <template #content>
                                         <DropdownLink :href="route('profile.edit')"> Perfil </DropdownLink>
-                                        <DropdownLink :href="route('logout')" method="post" as="button">
+                                        <DropdownLink :href="route('logout.get')" as="button">
                                             Salir
                                         </DropdownLink>
                                     </template>
@@ -112,9 +121,11 @@ const showingNavigationDropdown = ref(false);
                     class="sm:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                            Inicio
-                        </ResponsiveNavLink>
+                        <template v-for="item in $page.props.menu.items" :key="item.route">
+                            <ResponsiveNavLink :href="route(item.route)" :active="route().current(item.route)">
+                                {{ item.name }}
+                            </ResponsiveNavLink>
+                        </template>
                     </div>
 
                     <!-- Responsive Settings Options -->
@@ -128,7 +139,7 @@ const showingNavigationDropdown = ref(false);
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')"> Perfil </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('logout')" method="post" as="button">
+                            <ResponsiveNavLink :href="route('logout.get')" as="button">
                                 Salir
                             </ResponsiveNavLink>
                         </div>

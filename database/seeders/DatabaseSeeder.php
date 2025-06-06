@@ -24,28 +24,25 @@ class DatabaseSeeder extends Seeder
 
         // \App\Models\User::factory(10)->create();
 
-        $this->call(CountrySeeder::class);
-        $this->call(ProvinceSeeder::class);
-        $this->call(DistrictSeeder::class);
+        $this->call([
+            RoleSeeder::class,
+            CountrySeeder::class,
+            ProvinceSeeder::class,
+            DistrictSeeder::class,
+            LocalitySeeder::class,
+            SchoolLevelSeeder::class,
+            SchoolSeeder::class,
+            ProfileSeeder::class,
+            AcademicYearSeeder::class,
+            FileTypeSeeder::class,
+        ]);
 
-        // Then run LocalitySeeder which depends on Districts
-        $this->call(LocalitySeeder::class);
+        $this->call([
+            PermissionSeeder::class,
+        ]);
 
-        // Then run SchoolLevelSeeder which is needed for Schools
-        $this->call(SchoolLevelSeeder::class);
-
-        // Then run SchoolSeeder which depends on Localities and SchoolLevels
-        $this->call(SchoolSeeder::class);
-
-        $this->call(ProfileSeeder::class);
         // Get admin profile by key and attach it
         $adminProfile = Profile::where('key', Profile::ADMIN)->first();
         $admin->profiles()->attach($adminProfile->id);
-
-        $this->call([
-            AcademicYearSeeder::class,
-            FileTypeSeeder::class,
-            FileSubtypeSeeder::class,
-        ]);
     }
 }
