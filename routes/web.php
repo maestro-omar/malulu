@@ -49,6 +49,9 @@ Route::prefix('sistema')->group(function () {
 
         // User Management Routes
         Route::middleware('permission:view users')->group(function () {
+            Route::get('users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
+            Route::post('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
+            Route::delete('users/{id}/force-delete', [UserController::class, 'forceDelete'])->name('users.force-delete');
             Route::resource('users', UserController::class);
         });
     });

@@ -11,44 +11,32 @@ const props = defineProps({
     }
 });
 
-const deleteUser = (id) => {
-    if (confirm('¿Está seguro de eliminar este usuario?')) {
-        router.delete(route('users.destroy', id));
+const restoreUser = (id) => {
+    if (confirm('¿Está seguro de restaurar este usuario?')) {
+        router.post(route('users.restore', id));
     }
 };
 
-const isAdmin = (user) => {
-    return user.roles.some(role => role.name === 'admin');
-};
-
-const isCurrentUserAdmin = () => {
-    return isAdmin($page.props.auth.user);
+const forceDeleteUser = (id) => {
+    if (confirm('¿Está seguro de eliminar permanentemente este usuario? Esta acción no se puede deshacer.')) {
+        router.delete(route('users.force-delete', id));
+    }
 };
 </script>
 
 <template>
-    <Head title="Usuarios" />
+    <Head title="Usuarios Eliminados" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Usuarios</h2>
-                <div class="flex space-x-4">
-                    <Link
-                        v-if="$page.props.auth.user.can['create users']"
-                        :href="route('users.create')"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                    >
-                        Nuevo Usuario
-                    </Link>
-                    <Link
-                        v-if="$page.props.auth.user.can['delete users']"
-                        :href="route('users.trashed')"
-                        class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-                    >
-                        Usuarios Eliminados
-                    </Link>
-                </div>
+                <h2 class="font-semibold text-xl text-red-600 leading-tight">Usuarios Eliminados</h2>
+                <Link
+                    :href="route('users.index')"
+                    class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                >
+                    Volver a Usuarios
+                </Link>
             </div>
         </template>
 
@@ -65,27 +53,31 @@ const isCurrentUserAdmin = () => {
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                            <thead class="bg-red-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
                                         Nombre
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
                                         Email
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
                                         Roles
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
+                                        Eliminado
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
                                         Acciones
                                     </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-for="user in users.data" 
+                                <tr v-for="(user, index) in users.data" 
                                     :key="user.id"
                                     :class="{
-                                        'bg-indigo-50': user.id === $page.props.auth.user.id
+                                        'bg-red-50': index % 2 === 0,
+                                        'bg-white': index % 2 === 1
                                     }"
                                 >
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -101,23 +93,25 @@ const isCurrentUserAdmin = () => {
                                             {{ user.roles.map(role => role.name).join(', ') }}
                                         </div>
                                     </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-red-600">
+                                            {{ new Date(user.deleted_at).toLocaleDateString() }}
+                                        </div>
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <Link
-                                            v-if="$page.props.auth.user.can['edit users'] && 
-                                                  (!isAdmin(user) || (isAdmin(user) && user.id === $page.props.auth.user.id))"
-                                            :href="route('users.edit', user.id)"
+                                        <button
+                                            v-if="$page.props.auth.user.can['delete users']"
+                                            @click="restoreUser(user.id)"
                                             class="text-indigo-600 hover:text-indigo-900 mr-4"
                                         >
-                                            Editar
-                                        </Link>
+                                            Restaurar
+                                        </button>
                                         <button
-                                            v-if="$page.props.auth.user.can['delete users'] && 
-                                                  !isAdmin(user) && 
-                                                  user.id !== $page.props.auth.user.id"
-                                            @click="deleteUser(user.id)"
+                                            v-if="$page.props.auth.user.can['delete users']"
+                                            @click="forceDeleteUser(user.id)"
                                             class="text-red-600 hover:text-red-900"
                                         >
-                                            Eliminar
+                                            Eliminar Permanentemente
                                         </button>
                                     </td>
                                 </tr>
@@ -138,7 +132,7 @@ const isCurrentUserAdmin = () => {
                                         v-html="link.label"
                                         class="px-3 py-1 rounded-md"
                                         :class="{
-                                            'bg-indigo-600 text-white': link.active,
+                                            'bg-red-600 text-white': link.active,
                                             'bg-gray-100 text-gray-700 hover:bg-gray-200': !link.active
                                         }"
                                     />

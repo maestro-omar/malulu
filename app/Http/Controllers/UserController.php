@@ -12,10 +12,10 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:view users')->only('index');
+        $this->middleware('permission:view users')->only(['index', 'trashed']);
         $this->middleware('permission:create users')->only(['create', 'store']);
         $this->middleware('permission:edit users')->only(['edit', 'update']);
-        $this->middleware('permission:delete users')->only('destroy');
+        $this->middleware('permission:delete users')->only(['destroy', 'restore', 'forceDelete']);
     }
 
     /**
@@ -25,6 +25,16 @@ class UserController extends Controller
     {
         return Inertia::render('Users/Index', [
             'users' => User::with('roles')->paginate(10),
+        ]);
+    }
+
+    /**
+     * Display a listing of the trashed users.
+     */
+    public function trashed(): Response
+    {
+        return Inertia::render('Users/Trashed', [
+            'users' => User::onlyTrashed()->with('roles')->paginate(10),
         ]);
     }
 
@@ -105,9 +115,52 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        // Prevent deletion of admin users
+        if ($user->hasRole('admin')) {
+            return redirect()->route('users.index')
+                ->with('error', 'No se puede eliminar un usuario administrador.');
+        }
+
+        // Prevent self-deletion
+        if ($user->id === auth()->id()) {
+            return redirect()->route('users.index')
+                ->with('error', 'No puede eliminar su propia cuenta desde esta sección.');
+        }
+
         $user->delete();
 
         return redirect()->route('users.index')
             ->with('success', 'Usuario eliminado exitosamente.');
+    }
+
+    /**
+     * Restore the specified user from trash.
+     */
+    public function restore($id)
+    {
+        $user = User::onlyTrashed()->findOrFail($id);
+        $user->restore();
+
+        return redirect()->route('users.trashed')
+            ->with('success', 'Usuario restaurado exitosamente.');
+    }
+
+    /**
+     * Permanently delete the specified user.
+     */
+    public function forceDelete($id)
+    {
+        $user = User::onlyTrashed()->findOrFail($id);
+        
+        // Prevent permanent deletion of admin users
+        if ($user->hasRole('admin')) {
+            return redirect()->route('users.trashed')
+                ->with('error', 'No se puede eliminar permanentemente un usuario administrador.');
+        }
+
+        $user->forceDelete();
+
+        return redirect()->route('users.trashed')
+            ->with('success', 'Usuario eliminado permanentemente.');
     }
 } 
