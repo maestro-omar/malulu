@@ -25,7 +25,9 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
         $this->call([
+            PermissionSeeder::class,
             RoleSeeder::class,
+            UserSeeder::class,
             CountrySeeder::class,
             ProvinceSeeder::class,
             DistrictSeeder::class,
@@ -35,10 +37,6 @@ class DatabaseSeeder extends Seeder
             ProfileSeeder::class,
             AcademicYearSeeder::class,
             FileTypeSeeder::class,
-        ]);
-
-        $this->call([
-            PermissionSeeder::class,
         ]);
 
         // Get admin profile by key and attach it

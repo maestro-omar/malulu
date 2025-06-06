@@ -82,10 +82,12 @@ const isCurrentUserAdmin = () => {
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-for="user in users.data" 
+                                <tr v-for="(user, index) in users.data"
                                     :key="user.id"
                                     :class="{
-                                        'bg-indigo-50': user.id === $page.props.auth.user.id
+                                        'bg-indigo-50': user.id === $page.props.auth.user.id,
+                                        'bg-gray-50': user.id !== $page.props.auth.user.id && index % 2 === 0,
+                                        'bg-white': user.id !== $page.props.auth.user.id && index % 2 === 1
                                     }"
                                 >
                                     <td class="px-6 py-4 whitespace-nowrap">
