@@ -70,55 +70,21 @@
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Niveles Escolares</label>
                     <div class="flex flex-wrap gap-2 mt-1">
-                      <span 
+                      <SchoolLevelBadge 
                         v-for="level in school.school_levels" 
-                        :key="level.id" 
-                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                        :class="{
-                          'bg-rose-100 text-rose-800': level.key === 'kinder',
-                          'bg-amber-100 text-amber-800': level.key === 'primary',
-                          'bg-violet-100 text-violet-800': level.key === 'secondary'
-                        }"
-                      >
-                        {{ level.name }}
-                      </span>
+                        :key="level.id"
+                        :level="level"
+                      />
                     </div>
                   </div>
                   <div v-if="school.extra.management_type">
                     <label class="block text-sm font-medium text-gray-700">Tipo de Gestión</label>
-                    <span 
-                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                      :class="{
-                        'bg-green-100 text-green-800': school.extra.management_type === 'Estatal',
-                        'bg-blue-100 text-blue-800': school.extra.management_type === 'Privada',
-                        'bg-purple-100 text-purple-800': school.extra.management_type === 'Generativa',
-                        'bg-yellow-100 text-yellow-800': school.extra.management_type === 'Autogestionada'
-                      }"
-                    >
-                      {{ school.extra.management_type }}
-                    </span>
+                    <ManagementTypeBadge :type="school.extra.management_type" />
                   </div>
                   <div v-if="school.extra.shift">
                     <label class="block text-sm font-medium text-gray-700">Turno</label>
                     <div class="flex flex-wrap gap-2">
-                      <span 
-                        v-if="school.extra.shift.includes('Mañana')"
-                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800"
-                      >
-                        Mañana
-                      </span>
-                      <span 
-                        v-if="school.extra.shift.includes('Tarde')"
-                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                      >
-                        Tarde
-                      </span>
-                      <span 
-                        v-if="school.extra.shift.includes('Noche')"
-                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
-                      >
-                        Noche
-                      </span>
+                      <ShiftBadge :shift="school.extra.shift" />
                     </div>
                   </div>
                   <div v-if="school.extra.social && school.extra.social.length">
@@ -175,6 +141,9 @@
 import { Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { router } from '@inertiajs/vue3';
+import SchoolLevelBadge from '@/Components/SchoolLevelBadge.vue';
+import ShiftBadge from '@/Components/ShiftBadge.vue';
+import ManagementTypeBadge from '@/Components/ManagementTypeBadge.vue';
 
 const props = defineProps({
   school: Object

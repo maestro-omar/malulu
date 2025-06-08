@@ -77,10 +77,12 @@
                       {{ school.locality?.name }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <div v-for="level in school.schoolLevels" :key="level.id" class="inline-block mr-2">
-                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
-                          {{ level.name }}
-                        </span>
+                      <div class="flex flex-wrap gap-1">
+                        <SchoolLevelBadge 
+                          v-for="level in school.school_levels" 
+                          :key="level.id"
+                          :level="level"
+                        />
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -127,6 +129,7 @@ import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import SearchableDropdown from '@/Components/SearchableDropdown.vue';
+import SchoolLevelBadge from '@/Components/SchoolLevelBadge.vue';
 
 const props = defineProps({
   schools: Object,
