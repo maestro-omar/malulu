@@ -60,6 +60,22 @@
               </div>
 
               <div>
+                <InputLabel for="management_type" value="Tipo de Gestión" />
+                <select
+                  id="management_type"
+                  v-model="form.management_type_id"
+                  class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                  required
+                >
+                  <option value="">Seleccionar tipo de gestión</option>
+                  <option v-for="type in managementTypes" :key="type.id" :value="type.id">
+                    {{ type.name }}
+                  </option>
+                </select>
+                <InputError :message="form.errors.management_type_id" class="mt-2" />
+              </div>
+
+              <div>
                 <InputLabel value="Niveles" />
                 <div class="mt-2 space-y-2">
                   <div v-for="level in schoolLevels" :key="level.id" class="flex items-center">
@@ -74,6 +90,23 @@
                   </div>
                 </div>
                 <InputError :message="form.errors.school_levels" class="mt-2" />
+              </div>
+
+              <div>
+                <InputLabel value="Turnos" />
+                <div class="mt-2 space-y-2">
+                  <div v-for="shift in shifts" :key="shift.id" class="flex items-center">
+                    <Checkbox
+                      :id="'shift-' + shift.id"
+                      :value="shift.id"
+                      v-model:checked="form.shifts"
+                    />
+                    <label :for="'shift-' + shift.id" class="ml-2 text-sm text-gray-600">
+                      {{ shift.name }}
+                    </label>
+                  </div>
+                </div>
+                <InputError :message="form.errors.shifts" class="mt-2" />
               </div>
 
               <div class="flex items-center justify-end mt-4">
@@ -107,7 +140,9 @@ import SearchableDropdown from '@/Components/SearchableDropdown.vue';
 
 const props = defineProps({
   localities: Array,
-  schoolLevels: Array
+  schoolLevels: Array,
+  managementTypes: Array,
+  shifts: Array
 });
 
 const form = useForm({
@@ -115,7 +150,15 @@ const form = useForm({
   short: '',
   cue: '',
   locality_id: '',
-  school_levels: []
+  management_type_id: '',
+  school_levels: [],
+  shifts: [],
+  address: '',
+  zip_code: '',
+  phone: '',
+  email: '',
+  coordinates: '',
+  social: []
 });
 
 const submit = () => {

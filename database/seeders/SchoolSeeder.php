@@ -5,17 +5,23 @@ namespace Database\Seeders;
 use App\Models\School;
 use App\Models\SchoolLevel;
 use App\Models\Locality;
+use App\Models\SchoolManagementType;
+use App\Models\SchoolShift;
 use Illuminate\Database\Seeder;
 
 class SchoolSeeder extends Seeder
 {
     private array $schoolLevels;
     private array $localities;
+    private array $managementTypes;
+    private array $shifts;
 
     public function run(): void
     {
         $this->initSchoolLevels();
         $this->initLocalities();
+        $this->initManagementTypes();
+        $this->initShifts();
 
         $schools = [
             [
@@ -29,11 +35,11 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => null,
                 'cue' => 'GLOBAL',
-                'extra' => json_encode([
-                    'management_type' => 'System',
-                    'shift' => 'System',
-                ]),
-                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY]
+                'management_type_id' => $this->managementTypes['state'],
+                'social' => null,
+                'extra' => null,
+                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
+                'shifts' => ['morning']
             ],
             [
                 'key' => '740058000',
@@ -46,23 +52,22 @@ class SchoolSeeder extends Seeder
                 'email' => '',
                 'coordinates' => '-33.2972111111111,-66.3128472222222',
                 'cue' => '740058000',
-                'extra' => json_encode([
-                    'management_type' => 'Estatal',
-                    'shift' => 'Mañana/Tarde',
-                    'social' => [
-                        [
-                            'type' => 'facebook',
-                            'label' => 'Facebook (nivel primario)',
-                            'link' => 'https://www.facebook.com/profile.php?id=100063535634735'
-                        ],
-                        [
-                            'type' => 'instagram',
-                            'label' => 'Instagram (nivel secundario):',
-                            'link' => 'https://www.instagram.com/luciolucerosecundaria/?hl=es'
-                        ]
+                'management_type_id' => $this->managementTypes['state'],
+                'social' => json_encode([
+                    [
+                        'type' => 'facebook',
+                        'label' => 'Facebook (nivel primario)',
+                        'link' => 'https://www.facebook.com/profile.php?id=100063535634735'
+                    ],
+                    [
+                        'type' => 'instagram',
+                        'label' => 'Instagram (nivel secundario):',
+                        'link' => 'https://www.instagram.com/luciolucerosecundaria/?hl=es'
                     ]
                 ]),
-                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY]
+                'extra' => null,
+                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
+                'shifts' => ['morning', 'afternoon']
             ],
             [
                 'key' => '740058100',
@@ -75,11 +80,11 @@ class SchoolSeeder extends Seeder
                 'email' => '',
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058100',
-                'extra' => json_encode([
-                    'management_type' => 'Estatal',
-                    'shift' => 'Mañana/Tarde',
-                ]),
-                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY]
+                'management_type_id' => $this->managementTypes['state'],
+                'social' => null,
+                'extra' => null,
+                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
+                'shifts' => ['morning', 'afternoon']
             ],
             [
                 'key' => '740058050',
@@ -92,11 +97,11 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058050',
-                'extra' => json_encode([
-                    'management_type' => 'Estatal',
-                    'shift' => 'Mañana',
-                ]),
-                'levels' => [SchoolLevel::KINDER]
+                'management_type_id' => $this->managementTypes['state'],
+                'social' => null,
+                'extra' => null,
+                'levels' => [SchoolLevel::KINDER],
+                'shifts' => ['morning']
             ],
             [
                 'key' => '740058500',
@@ -109,11 +114,11 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058500',
-                'extra' => json_encode([
-                    'management_type' => 'Estatal',
-                    'shift' => 'Mañana',
-                ]),
-                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY]
+                'management_type_id' => $this->managementTypes['state'],
+                'social' => null,
+                'extra' => null,
+                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
+                'shifts' => ['morning']
             ],
             [
                 'key' => '740058040',
@@ -126,11 +131,11 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058040',
-                'extra' => json_encode([
-                    'management_type' => 'Estatal',
-                    'shift' => 'Mañana',
-                ]),
-                'levels' => [SchoolLevel::KINDER]
+                'management_type_id' => $this->managementTypes['state'],
+                'social' => null,
+                'extra' => null,
+                'levels' => [SchoolLevel::KINDER],
+                'shifts' => ['morning']
             ],
             [
                 'key' => '740058600',
@@ -143,11 +148,11 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058600',
-                'extra' => json_encode([
-                    'management_type' => 'Estatal',
-                    'shift' => 'Mañana/Tarde',
-                ]),
-                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY]
+                'management_type_id' => $this->managementTypes['state'],
+                'social' => null,
+                'extra' => null,
+                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
+                'shifts' => ['morning', 'afternoon']
             ],
             [
                 'key' => '740058700',
@@ -160,17 +165,18 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058700',
-                'extra' => json_encode([
-                    'management_type' => 'Estatal',
-                    'shift' => 'Mañana/Tarde',
-                ]),
-                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY]
+                'management_type_id' => $this->managementTypes['state'],
+                'social' => null,
+                'extra' => null,
+                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
+                'shifts' => ['morning', 'afternoon']
             ],
         ];
 
         foreach ($schools as $school) {
             $levels = $school['levels'];
-            unset($school['levels']); // Remove levels from the school data before creating
+            $shifts = $school['shifts'] ?? [];
+            unset($school['levels'], $school['shifts']); // Remove levels and shifts from the school data before creating
 
             $newSchool = School::create($school);
 
@@ -178,8 +184,15 @@ class SchoolSeeder extends Seeder
             $levelIds = array_map(function ($level) {
                 return $this->schoolLevels[$level];
             }, $levels);
-
             $newSchool->schoolLevels()->attach($levelIds);
+
+            // Attach the predefined shifts if any
+            if (!empty($shifts)) {
+                $shiftIds = array_map(function ($shift) {
+                    return $this->shifts[$shift];
+                }, $shifts);
+                $newSchool->shifts()->attach($shiftIds);
+            }
         }
     }
 
@@ -191,5 +204,15 @@ class SchoolSeeder extends Seeder
     private function initLocalities()
     {
         $this->localities = Locality::all()->pluck('id', 'name')->toArray();
+    }
+
+    private function initManagementTypes()
+    {
+        $this->managementTypes = SchoolManagementType::all()->pluck('id', 'key')->toArray();
+    }
+
+    private function initShifts()
+    {
+        $this->shifts = SchoolShift::all()->pluck('id', 'key')->toArray();
     }
 }

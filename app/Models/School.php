@@ -12,6 +12,8 @@ class School extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'schools';
+
     /**
      * Profile key constants
      */
@@ -25,18 +27,21 @@ class School extends Model
         'key',
         'name',
         'short',
+        'cue',
         'locality_id',
+        'management_type_id',
         'address',
         'zip_code',
         'phone',
         'email',
         'coordinates',
-        'cue',
-        'extra',
+        'social',
+        'extra'
     ];
 
     protected $casts = [
-        'extra' => 'array',
+        'social' => 'array',
+        'extra' => 'array'
     ];
 
     /**
@@ -44,9 +49,28 @@ class School extends Model
      */
     public function schoolLevels(): BelongsToMany
     {
-        return $this->belongsToMany(SchoolLevel::class);
+        return $this->belongsToMany(SchoolLevel::class, 'school_level');
     }
 
+    /**
+     * The shifts that belong to the school.
+     */
+    public function shifts(): BelongsToMany
+    {
+        return $this->belongsToMany(SchoolShift::class, 'school_shift');
+    }
+
+    /**
+     * Get the management type that owns the school.
+     */
+    public function managementType(): BelongsTo
+    {
+        return $this->belongsTo(SchoolManagementType::class);
+    }
+
+    /**
+     * Get the locality that owns the school.
+     */
     public function locality(): BelongsTo
     {
         return $this->belongsTo(Locality::class);

@@ -38,6 +38,8 @@ class DatabaseSeeder extends Seeder
             
             //initial data
             SchoolLevelSeeder::class,
+            SchoolShiftSeeder::class,
+            SchoolManagementTypeSeeder::class,
             SchoolSeeder::class,
             RoleAndPermissionSeeder::class,
             AcademicYearSeeder::class,

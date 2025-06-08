@@ -6,18 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
-        Schema::create('school_school_level', function (Blueprint $table) {
+        Schema::create('school_shift', function (Blueprint $table) {
             $table->id();
             $table->foreignId('school_id')->constrained()->onDelete('cascade');
-            $table->foreignId('school_level_id')->constrained()->onDelete('cascade');
+            $table->foreignId('school_shift_id')->constrained()->onDelete('cascade');
             $table->timestamps();
+
+            $table->unique(['school_id', 'school_shift_id']);
         });
     }
 
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('school_school_level');
+        Schema::dropIfExists('school_shift');
     }
 };

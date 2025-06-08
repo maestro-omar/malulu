@@ -43,7 +43,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
   modelValue: {
-    type: [Object, null],
+    type: [Object, Number, null],
     default: null
   },
   options: {
@@ -53,6 +53,10 @@ const props = defineProps({
   placeholder: {
     type: String,
     default: 'Search...'
+  },
+  initialValue: {
+    type: [Object, Number, null],
+    default: null
   }
 });
 
@@ -60,6 +64,17 @@ const emit = defineEmits(['update:modelValue']);
 
 const search = ref('');
 const showOptions = ref(false);
+
+// Initialize search with initial value
+onMounted(() => {
+  if (props.initialValue) {
+    const value = typeof props.initialValue === 'object' ? props.initialValue : props.options.find(opt => opt.id === props.initialValue);
+    if (value) {
+      search.value = value.name;
+      emit('update:modelValue', value);
+    }
+  }
+});
 
 const filteredOptions = computed(() => {
   if (!search.value) return props.options;
@@ -86,9 +101,23 @@ const clearSearch = () => {
 // Update search when modelValue changes
 watch(() => props.modelValue, (newValue) => {
   if (newValue) {
-    search.value = newValue.name;
+    const value = typeof newValue === 'object' ? newValue : props.options.find(opt => opt.id === newValue);
+    if (value) {
+      search.value = value.name;
+    }
   } else {
     search.value = '';
+  }
+}, { immediate: true });
+
+// Also watch initialValue for changes
+watch(() => props.initialValue, (newValue) => {
+  if (newValue) {
+    const value = typeof newValue === 'object' ? newValue : props.options.find(opt => opt.id === newValue);
+    if (value) {
+      search.value = value.name;
+      emit('update:modelValue', value);
+    }
   }
 }, { immediate: true });
 

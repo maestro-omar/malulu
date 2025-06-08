@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('coordinates')->nullable();
             $table->string('cue')->nullable();
+            $table->foreignId('management_type_id')->nullable()->constrained('school_management_types');
+            $table->json('social')->nullable();
             $table->json('extra')->nullable();
             $table->timestamps();
             $table->softDeletes();
