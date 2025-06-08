@@ -69,4 +69,10 @@ class User extends Authenticatable
             ->withPivot('profile_id', 'active', 'entry_date', 'end_date', 'extra')
             ->withTimestamps();
     }
+
+    public function allRolesAcrossTeams()
+    {
+        return $this->belongsToMany(\Spatie\Permission\Models\Role::class, 'model_has_roles', 'model_id', 'role_id')
+            ->where('model_type', self::class);
+    }
 }

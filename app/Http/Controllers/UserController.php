@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -23,9 +25,53 @@ class UserController extends Controller
      */
     public function index(): Response
     {
-        return Inertia::render('Users/Index', [
-            'users' => User::with('roles')->paginate(10),
+        $users = User::with('allRolesAcrossTeams')->paginate(10);
+
+        // Transform the data to include roles in the expected format
+        $transformedUsers = json_decode(json_encode($users), true);
+        $transformedUsers['data'] = collect($transformedUsers['data'])->map(function ($user) {
+            $user['roles'] = collect($user['all_roles_across_teams'])->map(function ($role) {
+                return [
+                    'id' => $role['id'],
+                    'name' => $role['name'],
+                    'short' => $this->getRoleShortName($role['name']),
+                    'key' => $role['key'],
+                    'team_id' => $role['team_id']
+                ];
+            })->toArray();
+            unset($user['all_roles_across_teams']);
+            return $user;
+        })->toArray();
+
+        // Debug information
+        Log::info('Users with roles:', [
+            'users' => collect($transformedUsers['data'])->map(function ($user) {
+                return [
+                    'id' => $user['id'],
+                    'name' => $user['name'],
+                    'email' => $user['email'],
+                    'roles' => $user['roles']
+                ];
+            })->toArray()
         ]);
+
+        return Inertia::render('Users/Index', [
+            'users' => $transformedUsers,
+        ]);
+    }
+
+    private function getRoleShortName($roleName)
+    {
+        $shortNames = [
+            'Administrador' => 'Admin',
+            'Director' => 'Dir',
+            'Regente' => 'Reg',
+            'Secretario' => 'Sec',
+            'Maestra/o de Grado' => 'Grado',
+            'Responsable' => 'Resp'
+        ];
+
+        return $shortNames[$roleName] ?? $roleName;
     }
 
     /**
