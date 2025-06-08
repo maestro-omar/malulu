@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('cue')->nullable();
             $table->json('extra')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

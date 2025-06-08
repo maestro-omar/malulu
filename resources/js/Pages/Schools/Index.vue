@@ -1,9 +1,9 @@
 <template>
-  <Head title="Schools" />
+  <Head title="Escuelas" />
 
   <AuthenticatedLayout>
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Schools</h2>
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Escuelas</h2>
     </template>
 
     <div class="py-12">
@@ -11,41 +11,73 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           <div class="p-6 text-gray-900">
             <div class="flex justify-between items-center mb-6">
-              <h3 class="text-lg font-semibold">School List</h3>
+              <h3 class="text-lg font-semibold">Lista de Escuelas</h3>
               <Link
-                v-if="can('create schools')"
+                v-if="$page.props.auth.user.can['create schools']"
                 :href="route('schools.create')"
                 class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
-                Add School
+                Agregar Escuela
               </Link>
+            </div>
+
+            <!-- Filters -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <!-- Search Input -->
+              <div class="relative">
+                <input
+                  type="text"
+                  v-model="search"
+                  @input="handleSearch"
+                  placeholder="Buscar escuelas..."
+                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <div v-if="search" class="absolute right-3 top-2.5">
+                  <button
+                    @click="clearSearch"
+                    class="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Locality Filter -->
+              <SearchableDropdown
+                v-model="selectedLocality"
+                :options="localities"
+                placeholder="Filtrar por localidad..."
+                @update:modelValue="handleLocalityChange"
+              />
             </div>
 
             <div class="overflow-x-auto">
               <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                   <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Locality</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Levels</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CUE</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Localidad</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Niveles</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="school in schools.data" :key="school.id">
+                  <tr v-for="school in schools.data.filter(s => s.name !== 'GLOBAL')" :key="school.id">
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm font-medium text-gray-900">{{ school.name }}</div>
                       <div class="text-sm text-gray-500">{{ school.short }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {{ school.key }}
+                      {{ school.cue }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {{ school.locality?.name }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <div v-for="level in school.school_levels" :key="level.id" class="inline-block mr-2">
+                      <div v-for="level in school.schoolLevels" :key="level.id" class="inline-block mr-2">
                         <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
                           {{ level.name }}
                         </span>
@@ -53,27 +85,27 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <Link
-                        v-if="can('view schools')"
+                        v-if="$page.props.auth.user.can['view schools']"
                         :href="route('schools.show', school.id)"
                         class="text-blue-600 hover:text-blue-900 mr-3"
                       >
-                        View
+                        Ver
                       </Link>
                       <Link
-                        v-if="can('edit schools')"
+                        v-if="$page.props.auth.user.can['edit schools']"
                         :href="route('schools.edit', school.id)"
                         class="text-indigo-600 hover:text-indigo-900 mr-3"
                       >
-                        Edit
+                        Editar
                       </Link>
                       <Link
-                        v-if="can('delete schools')"
+                        v-if="$page.props.auth.user.can['delete schools']"
                         :href="route('schools.destroy', school.id)"
                         method="delete"
                         as="button"
                         class="text-red-600 hover:text-red-900"
                       >
-                        Delete
+                        Eliminar
                       </Link>
                     </td>
                   </tr>
@@ -90,13 +122,61 @@
 </template>
 
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
-import { usePage } from '@inertiajs/vue3';
+import SearchableDropdown from '@/Components/SearchableDropdown.vue';
 
-const { can } = usePage().props.auth;
 const props = defineProps({
-  schools: Object
+  schools: Object,
+  filters: Object,
+  localities: Array
+});
+
+const search = ref(props.filters?.search || '');
+const selectedLocality = ref(props.localities?.find(l => l.id === props.filters?.locality_id) || null);
+let searchTimeout = null;
+
+const handleSearch = () => {
+  if (searchTimeout) {
+    clearTimeout(searchTimeout);
+  }
+  
+  searchTimeout = setTimeout(() => {
+    router.get(
+      route('schools.index'),
+      { 
+        search: search.value,
+        locality_id: selectedLocality.value?.id
+      },
+      { preserveState: true, preserveScroll: true }
+    );
+  }, 300);
+};
+
+const handleLocalityChange = () => {
+  console.log('Selected locality:', selectedLocality.value);
+  router.get(
+    route('schools.index'),
+    { 
+      search: search.value,
+      locality_id: selectedLocality.value?.id || null
+    },
+    { preserveState: true, preserveScroll: true }
+  );
+};
+
+const clearSearch = () => {
+  search.value = '';
+  router.get(
+    route('schools.index'),
+    { locality_id: selectedLocality.value?.id },
+    { preserveState: true, preserveScroll: true }
+  );
+};
+
+watch(search, (value) => {
+  handleSearch();
 });
 </script> 

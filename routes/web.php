@@ -50,16 +50,33 @@ Route::prefix('sistema')->group(function () {
 
         // User Management Routes
         Route::middleware('permission:view users')->group(function () {
-            Route::get('users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
-            Route::post('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
-            Route::delete('users/{id}/force-delete', [UserController::class, 'forceDelete'])->name('users.force-delete');
-            Route::resource('users', UserController::class);
+            Route::get('usuarios/eliminados', [UserController::class, 'trashed'])->name('users.trashed');
+            Route::post('usuarios/{id}/restaurar', [UserController::class, 'restore'])->name('users.restore');
+            Route::delete('usuarios/{id}/eliminar-permanentemente', [UserController::class, 'forceDelete'])->name('users.force-delete');
+            Route::get('usuarios', [UserController::class, 'index'])->name('users.index');
+            Route::get('usuarios/crear', [UserController::class, 'create'])->name('users.create');
+            Route::get('usuarios/{user}', [UserController::class, 'show'])->name('users.show');
+            Route::get('usuarios/{user}/editar', [UserController::class, 'edit'])->name('users.edit');
+            Route::delete('usuarios/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+            Route::resource('usuarios', UserController::class)->except(['index', 'show', 'create', 'edit', 'destroy']);
         });
 
         // Schools Routes
         Route::middleware('permission:view schools')->group(function () {
-            Route::resource('schools', SchoolController::class);
+            Route::get('escuelas', [SchoolController::class, 'index'])->name('schools.index');
+            Route::get('escuelas/crear', [SchoolController::class, 'create'])->name('schools.create');
+            Route::get('escuelas/{school}', [SchoolController::class, 'show'])->name('schools.show');
+            Route::get('escuelas/{school}/editar', [SchoolController::class, 'edit'])->name('schools.edit');
+            Route::delete('escuelas/{school}', [SchoolController::class, 'destroy'])->name('schools.destroy');
+            Route::resource('escuelas', SchoolController::class)->except(['index', 'show', 'create', 'edit', 'destroy']);
         });
+
+        // School routes
+        Route::get('/escuelas/crear', [SchoolController::class, 'create'])->name('schools.create');
+        Route::post('/escuelas', [SchoolController::class, 'store'])->name('schools.store');
+        Route::get('/escuelas/{school}/editar', [SchoolController::class, 'edit'])->name('schools.edit');
+        Route::put('/escuelas/{school}', [SchoolController::class, 'update'])->name('schools.update');
+        Route::delete('/escuelas/{school}', [SchoolController::class, 'destroy'])->name('schools.destroy');
     });
 });
 

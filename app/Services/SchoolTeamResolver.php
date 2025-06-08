@@ -22,10 +22,10 @@ class SchoolTeamResolver implements PermissionsTeamResolver
                 ->where('name', 'Administrador')
                 ->value('id');
 
-            Log::info('SchoolTeamResolver: Checking admin role', [
-                'user_id' => $user->id,
-                'admin_role_id' => $adminRoleId
-            ]);
+            // Log::info('SchoolTeamResolver: Checking admin role', [
+            //     'user_id' => $user->id,
+            //     'admin_role_id' => $adminRoleId
+            // ]);
 
             if ($adminRoleId) {
                 // Check if user has admin role
@@ -35,20 +35,20 @@ class SchoolTeamResolver implements PermissionsTeamResolver
                     ->where('role_id', $adminRoleId)
                     ->exists();
 
-                Log::info('SchoolTeamResolver: Admin check result', [
-                    'is_admin' => $isAdmin,
-                    'user_id' => $user->id,
-                    'role_id' => $adminRoleId
-                ]);
+                // Log::info('SchoolTeamResolver: Admin check result', [
+                //     'is_admin' => $isAdmin,
+                //     'user_id' => $user->id,
+                //     'role_id' => $adminRoleId
+                // ]);
 
                 if ($isAdmin) {
                     $globalSchool = School::where('key', 'GLOBAL')->first();
                     $teamId = $globalSchool ? $globalSchool->id : null;
-                    Log::info('SchoolTeamResolver: Admin user, returning team_id', [
-                        'team_id' => $teamId,
-                        'user' => $user->email,
-                        'global_school' => $globalSchool ? $globalSchool->toArray() : null
-                    ]);
+                    // Log::info('SchoolTeamResolver: Admin user, returning team_id', [
+                    //     'team_id' => $teamId,
+                    //     'user' => $user->email,
+                    //     'global_school' => $globalSchool ? $globalSchool->toArray() : null
+                    // ]);
                     return $teamId;
                 }
             }
@@ -56,11 +56,11 @@ class SchoolTeamResolver implements PermissionsTeamResolver
 
         // For other users, return the current school ID from session
         $teamId = session('current_school_id');
-        Log::info('SchoolTeamResolver: Non-admin user, returning team_id', [
-            'team_id' => $teamId,
-            'user' => $user->email,
-            'user_id' => $user->id
-        ]);
+        // Log::info('SchoolTeamResolver: Non-admin user, returning team_id', [
+        //     'team_id' => $teamId,
+        //     'user' => $user->email,
+        //     'user_id' => $user->id
+        // ]);
         return $teamId;
     }
 

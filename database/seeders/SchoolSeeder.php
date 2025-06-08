@@ -20,7 +20,7 @@ class SchoolSeeder extends Seeder
         $schools = [
             [
                 'key' => 'GLOBAL',
-                'name' => 'Global School',
+                'name' => 'GLOBAL',
                 'short' => 'GLOBAL',
                 'locality_id' => $this->localities['San Luis'],
                 'address' => 'System',
@@ -85,9 +85,9 @@ class SchoolSeeder extends Seeder
                 'key' => '740058050',
                 'name' => 'ESCUELA DE NIVEL INICIAL N°6 CRECER JUGANDO',
                 'short' => 'ENI N°6',
-                'locality_id' => $this->localities['San Luis'],
+                'locality_id' => $this->localities['Villa Mercedes'],
                 'address' => 'PASEO DEL BOSQUE S/N',
-                'zip_code' => 'D5700',
+                'zip_code' => 'D5730',
                 'phone' => null,
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
@@ -102,9 +102,9 @@ class SchoolSeeder extends Seeder
                 'key' => '740058500',
                 'name' => 'CENTRO EDUCATIVO N°5 SENADOR ALFREDO BERTIN',
                 'short' => 'CE N°5',
-                'locality_id' => $this->localities['San Luis'],
+                'locality_id' => $this->localities['Merlo'],
                 'address' => 'PASEO DEL BOSQUE S/N',
-                'zip_code' => 'D5700',
+                'zip_code' => 'D5881',
                 'phone' => null,
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
@@ -136,9 +136,9 @@ class SchoolSeeder extends Seeder
                 'key' => '740058600',
                 'name' => 'ESCUELA PUBLICA DIGITAL BILING NELSON MANDELA',
                 'short' => 'EPD NELSON MANDELA',
-                'locality_id' => $this->localities['San Luis'],
+                'locality_id' => $this->localities['La Punta'],
                 'address' => 'PASEO DEL BOSQUE S/N',
-                'zip_code' => 'D5700',
+                'zip_code' => 'D5717',
                 'phone' => null,
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
@@ -153,9 +153,9 @@ class SchoolSeeder extends Seeder
                 'key' => '740058700',
                 'name' => 'CENTRO EDUCATIVO N°27 GOBERNADOR SANTIAGO BESSO',
                 'short' => 'CE N°27',
-                'locality_id' => $this->localities['San Luis'],
+                'locality_id' => $this->localities['Juana Koslay'],
                 'address' => 'PASEO DEL BOSQUE S/N',
-                'zip_code' => 'D5700',
+                'zip_code' => 'D5703',
                 'phone' => null,
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
@@ -166,7 +166,6 @@ class SchoolSeeder extends Seeder
                 ]),
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY]
             ],
-            // Add more schools here...
         ];
 
         foreach ($schools as $school) {

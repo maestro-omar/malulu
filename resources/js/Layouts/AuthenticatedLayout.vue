@@ -13,9 +13,8 @@ const page = usePage();
 
 onMounted(() => {
     console.log('Auth User:', page.props.auth.user);
-    console.log('Menu Items:', page.props.menu.items);
     console.log('Debug Info:', page.props.debug);
-    console.log('Can View Schools:', page.props.auth.user?.can['view schools']);
+    // console.log('Menu Items:', page.props.menu.items);
 });
 </script>
 
