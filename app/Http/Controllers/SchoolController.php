@@ -32,15 +32,11 @@ class SchoolController extends Controller
                 });
             })
             ->when($request->input('locality_id'), function ($query, $localityId) {
-                Log::info('Filtering by locality_id: ' . $localityId);
                 $query->where('locality_id', $localityId);
             })
             ->where('name', '!=', 'GLOBAL');
 
         $schools = $query->orderBy('name')->paginate(10);
-
-        Log::info('SQL Query: ' . $query->toSql());
-        Log::info('Query Bindings: ' . json_encode($query->getBindings()));
 
         return Inertia::render('Schools/Index', [
             'schools' => $schools,
@@ -93,8 +89,6 @@ class SchoolController extends Controller
                 'social' => 'nullable|array'
             ]);
 
-            Log::info('Store validation passed:', $validated);
-
             // Create the school first
             $school = School::create($validated);
 
@@ -110,10 +104,6 @@ class SchoolController extends Controller
             return redirect()->route('schools.index')
                 ->with('success', 'School created successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Store validation failed:', [
-                'errors' => $e->errors(),
-                'request_data' => $request->all()
-            ]);
             throw $e;
         }
     }
@@ -141,14 +131,6 @@ class SchoolController extends Controller
 
         // Ensure school is loaded
         $school = School::findOrFail($school->id);
-
-        // Debug the incoming request
-        Log::info('Update request data:', $request->all());
-        Log::info('Current school:', [
-            'id' => $school->id,
-            'name' => $school->name,
-            'cue' => $school->cue
-        ]);
 
         try {
             $validated = $request->validate([
@@ -186,9 +168,6 @@ class SchoolController extends Controller
                 'social' => 'nullable|array'
             ]);
 
-            Log::info('Validation passed:', $validated);
-
-            // Update the school first
             $school->update($validated);
 
             // Then sync the relationships
@@ -205,12 +184,6 @@ class SchoolController extends Controller
             return redirect()->route('schools.index')
                 ->with('success', 'School updated successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation failed:', [
-                'errors' => $e->errors(),
-                'request_data' => $request->all(),
-                'school_id' => $school->id,
-                'school_cue' => $school->cue
-            ]);
             throw $e;
         }
     }

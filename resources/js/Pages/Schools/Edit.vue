@@ -239,12 +239,6 @@ const extraData = computed(() => {
   return props.school.extra || {};
 });
 
-// Debug the received data
-console.log('School data:', props.school);
-console.log('Extra data:', extraData.value);
-console.log('Management type:', extraData.value.management_type);
-console.log('Shift data:', extraData.value.shift);
-
 // Find the current locality object
 const currentLocality = computed(() => {
   return props.localities.find(l => l.id === props.school.locality_id) || null;
@@ -274,21 +268,12 @@ watch(() => form.locality_id, (newValue) => {
   }
 }, { immediate: true });
 
-// Debug locality data
-console.log('Current Locality:', currentLocality.value);
-console.log('Form Locality:', form.locality_id);
-console.log('Available Localities:', props.localities);
-
 const submit = () => {
   // Ensure locality_id is a number before submitting
   const formData = { ...form };
   if (formData.locality_id && typeof formData.locality_id === 'object') {
     formData.locality_id = formData.locality_id.id;
   }
-
-  console.log('Submitting form with CUE:', form.cue, 'Type:', typeof form.cue);
-  console.log('Original school CUE:', props.school.cue, 'Type:', typeof props.school.cue);
-  console.log('Locality before submit:', formData.locality_id);
   
   form.put(route('schools.update', props.school.id));
 };
