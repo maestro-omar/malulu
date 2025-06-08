@@ -5,7 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\Profile;
+use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -25,22 +25,26 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
         $this->call([
-            PermissionSeeder::class,
-            RoleSeeder::class,
-            UserSeeder::class,
+            //locations
             CountrySeeder::class,
             ProvinceSeeder::class,
             DistrictSeeder::class,
             LocalitySeeder::class,
+
+            //static catalogs
+            FileTypeSeeder::class,
+            FileSubtypeSeeder::class,
+            
+            //initial data
             SchoolLevelSeeder::class,
             SchoolSeeder::class,
-            ProfileSeeder::class,
+            RoleAndPermissionSeeder::class,
             AcademicYearSeeder::class,
-            FileTypeSeeder::class,
+            FakeUsersSeeder::class,
         ]);
 
-        // Get admin profile by key and attach it
-        $adminProfile = Profile::where('key', Profile::ADMIN)->first();
-        $admin->profiles()->attach($adminProfile->id);
+        // Get admin role and assign it to the admin user
+        $adminRole = Role::where('guard_name', 'admin')->first();
+        $admin->assignRole($adminRole);
     }
 }

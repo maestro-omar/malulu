@@ -19,6 +19,23 @@ class SchoolSeeder extends Seeder
 
         $schools = [
             [
+                'key' => 'GLOBAL',
+                'name' => 'Global School',
+                'short' => 'GLOBAL',
+                'locality_id' => $this->localities['San Luis'],
+                'address' => 'System',
+                'zip_code' => '0000',
+                'phone' => null,
+                'email' => null,
+                'coordinates' => null,
+                'cue' => 'GLOBAL',
+                'extra' => json_encode([
+                    'management_type' => 'System',
+                    'shift' => 'System',
+                ]),
+                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY]
+            ],
+            [
                 'key' => '740058000',
                 'name' => 'CENTRO EDUCATIVO N° 8 MAESTRAS LUCIO LUCERO',
                 'short' => 'CE N° 8',
