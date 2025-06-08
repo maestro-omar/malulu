@@ -6,6 +6,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\School;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -16,7 +17,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create initial admin user with explicit password
-        $admin = User::factory()->create([
+        User::factory()->create([
             'name' => 'Omar ADMIN',
             'email' => 'omarmatijas@gmail.com',
             'password' => Hash::make('123123123'), // Set your desired password
@@ -42,9 +43,5 @@ class DatabaseSeeder extends Seeder
             AcademicYearSeeder::class,
             FakeUsersSeeder::class,
         ]);
-
-        // Get admin role and assign it to the admin user
-        $adminRole = Role::where('guard_name', 'admin')->first();
-        $admin->assignRole($adminRole);
     }
 }
