@@ -108,6 +108,9 @@ const isCurrentUserAdmin = () => {
                                         Email
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Escuelas
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Roles
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -131,6 +134,15 @@ const isCurrentUserAdmin = () => {
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-500">{{ user.email }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-500">
+                                            <span v-for="(school, index) in user.schools" :key="school.id" class="inline-block mr-2">
+                                                <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
+                                                    {{ school.name }}
+                                                </span>
+                                            </span>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-500">

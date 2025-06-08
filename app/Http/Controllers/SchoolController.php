@@ -117,4 +117,18 @@ class SchoolController extends Controller
         return redirect()->route('schools.index')
             ->with('success', 'School deleted successfully.');
     }
+
+    public function show(School $school)
+    {
+        $school->load(['locality', 'schoolLevels']);
+        
+        // Ensure extra is properly decoded if it's a string
+        if (is_string($school->extra)) {
+            $school->extra = json_decode($school->extra, true);
+        }
+
+        return Inertia::render('Schools/Show', [
+            'school' => $school
+        ]);
+    }
 } 

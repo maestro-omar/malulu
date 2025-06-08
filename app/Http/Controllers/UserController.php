@@ -30,6 +30,16 @@ class UserController extends Controller
         // Transform the data to include roles in the expected format
         $transformedUsers = json_decode(json_encode($users), true);
         $transformedUsers['data'] = collect($transformedUsers['data'])->map(function ($user) {
+            // Get unique school IDs from roles
+            $schoolIds = collect($user['all_roles_across_teams'])
+                ->pluck('team_id')
+                ->unique()
+                ->values()
+                ->toArray();
+
+            // Get schools for these IDs
+            $schools = \App\Models\School::whereIn('id', $schoolIds)->get();
+
             $user['roles'] = collect($user['all_roles_across_teams'])->map(function ($role) {
                 return [
                     'id' => $role['id'],
@@ -40,17 +50,28 @@ class UserController extends Controller
                 ];
             })->toArray();
             unset($user['all_roles_across_teams']);
+
+            // Add schools to user data
+            $user['schools'] = $schools->map(function ($school) {
+                return [
+                    'id' => $school->id,
+                    'name' => $school->name,
+                    'short' => $school->short
+                ];
+            })->toArray();
+
             return $user;
         })->toArray();
 
         // Debug information
-        Log::info('Users with roles:', [
+        Log::info('Users with roles and schools:', [
             'users' => collect($transformedUsers['data'])->map(function ($user) {
                 return [
                     'id' => $user['id'],
                     'name' => $user['name'],
                     'email' => $user['email'],
-                    'roles' => $user['roles']
+                    'roles' => $user['roles'],
+                    'schools' => $user['schools']
                 ];
             })->toArray()
         ]);

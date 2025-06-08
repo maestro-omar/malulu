@@ -46,30 +46,6 @@ class User extends Authenticatable
         'deleted_at' => 'datetime',
     ];
 
-    public function profile()
-    {
-        return $this->hasOne(Profile::class);
-    }
-
-    public function profiles()
-    {
-        return $this->belongsToMany(Profile::class);
-    }
-
-    public function profileSchools()
-    {
-        return $this->belongsToMany(Profile::class, 'profile_user_school')
-            ->withPivot('school_id', 'active', 'entry_date', 'end_date', 'extra')
-            ->withTimestamps();
-    }
-
-    public function schools()
-    {
-        return $this->belongsToMany(School::class, 'profile_user_school')
-            ->withPivot('profile_id', 'active', 'entry_date', 'end_date', 'extra')
-            ->withTimestamps();
-    }
-
     public function allRolesAcrossTeams()
     {
         return $this->belongsToMany(\Spatie\Permission\Models\Role::class, 'model_has_roles', 'model_id', 'role_id')
