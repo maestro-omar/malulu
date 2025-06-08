@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class School extends Model
 {
@@ -32,10 +34,14 @@ class School extends Model
         'extra',
     ];
 
+    protected $casts = [
+        'extra' => 'array',
+    ];
+
     /**
      * The school levels that belong to the school.
      */
-    public function schoolLevels()
+    public function schoolLevels(): BelongsToMany
     {
         return $this->belongsToMany(SchoolLevel::class);
     }
@@ -52,5 +58,10 @@ class School extends Model
         return $this->belongsToMany(Profile::class, 'profile_user_school')
             ->withPivot('user_id', 'active', 'entry_date', 'end_date', 'extra')
             ->withTimestamps();
+    }
+
+    public function locality(): BelongsTo
+    {
+        return $this->belongsTo(Locality::class);
     }
 }

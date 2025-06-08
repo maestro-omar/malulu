@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -33,16 +34,17 @@ class HandleInertiaRequests extends Middleware
         $user = $request->user();
         $menuItems = $this->getMenuItems($user);
 
-        // Debug information
-        Log::info('User:', [
-            'id' => $user?->id,
-            'name' => $user?->name,
-            'email' => $user?->email,
-            'roles' => $user?->getRoleNames(),
-            'permissions' => $user?->getAllPermissions()->pluck('name'),
+        // More detailed debug information
+        Log::info('Debug Menu Items:', [
+            'user_id' => $user?->id,
+            'user_name' => $user?->name,
+            'user_email' => $user?->email,
+            'user_roles' => $user?->getRoleNames()->toArray(),
+            'user_permissions' => $user?->getAllPermissions()->pluck('name')->toArray(),
+            'can_view_schools' => $user?->can('view schools'),
+            'menu_items' => $menuItems,
+            'guard' => Auth::getDefaultDriver(),
         ]);
-
-        Log::info('Menu Items:', $menuItems);
 
         return [
             ...parent::share($request),
@@ -56,11 +58,21 @@ class HandleInertiaRequests extends Middleware
                         'create users' => $user->can('create users'),
                         'edit users' => $user->can('edit users'),
                         'delete users' => $user->can('delete users'),
+                        'view schools' => $user->can('view schools'),
+                        'create schools' => $user->can('create schools'),
+                        'edit schools' => $user->can('edit schools'),
+                        'delete schools' => $user->can('delete schools'),
                     ],
                 ] : null,
             ],
             'menu' => [
                 'items' => $menuItems,
+            ],
+            'debug' => [
+                'can_view_schools' => $user?->can('view schools'),
+                'user_roles' => $user?->getRoleNames()->toArray(),
+                'user_permissions' => $user?->getAllPermissions()->pluck('name')->toArray(),
+                'guard' => Auth::getDefaultDriver(),
             ],
         ];
     }
@@ -88,6 +100,22 @@ class HandleInertiaRequests extends Middleware
                 'name' => 'Usuarios',
                 'route' => 'users.index',
                 'icon' => 'users',
+            ];
+        }
+
+        // Debug schools permission
+        Log::info('Checking schools permission:', [
+            'user_id' => $user->id,
+            'can_view_schools' => $user->can('view schools'),
+            'roles' => $user->getRoleNames()->toArray(),
+            'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
+        ]);
+
+        if ($user->can('view schools')) {
+            $items[] = [
+                'name' => 'Escuelas',
+                'route' => 'schools.index',
+                'icon' => 'academic-cap',
             ];
         }
 

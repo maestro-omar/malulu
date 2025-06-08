@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SchoolController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -53,6 +54,11 @@ Route::prefix('sistema')->group(function () {
             Route::post('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
             Route::delete('users/{id}/force-delete', [UserController::class, 'forceDelete'])->name('users.force-delete');
             Route::resource('users', UserController::class);
+        });
+
+        // Schools Routes
+        Route::middleware('permission:view schools')->group(function () {
+            Route::resource('schools', SchoolController::class);
         });
     });
 });

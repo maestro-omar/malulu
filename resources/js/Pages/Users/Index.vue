@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Pagination from '@/Components/Pagination.vue';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -132,19 +133,7 @@ const isCurrentUserAdmin = () => {
                                 <div class="text-sm text-gray-700">
                                     Mostrando {{ users.from }} a {{ users.to }} de {{ users.total }} resultados
                                 </div>
-                                <div class="flex space-x-2">
-                                    <Link
-                                        v-for="link in users.links"
-                                        :key="link.label"
-                                        :href="link.url"
-                                        v-html="link.label"
-                                        class="px-3 py-1 rounded-md"
-                                        :class="{
-                                            'bg-indigo-600 text-white': link.active,
-                                            'bg-gray-100 text-gray-700 hover:bg-gray-200': !link.active
-                                        }"
-                                    />
-                                </div>
+                                <Pagination :links="users.links" />
                             </div>
                         </div>
                     </div>
