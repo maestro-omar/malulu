@@ -2,6 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref } from 'vue';
+import Pagination from '@/Components/Pagination.vue';
 
 const props = defineProps({
     users: Object,
@@ -52,57 +53,93 @@ const forceDeleteUser = (id) => {
 
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-red-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
-                                        Nombre
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
-                                        Email
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
-                                        Roles
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
-                                        Eliminado
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
-                                        Acciones
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-for="(user, index) in users.data" 
-                                    :key="user.id"
-                                    :class="{
-                                        'bg-red-50': index % 2 === 0,
-                                        'bg-white': index % 2 === 1
-                                    }"
-                                >
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{ user.name }}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-500">{{ user.email }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-500">
-                                            {{ user.roles.map(role => role.name).join(', ') }}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-red-600">
-                                            {{ new Date(user.deleted_at).toLocaleDateString() }}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <!-- Desktop Table View -->
+                        <div class="hidden md:block">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
+                                            Nombre
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
+                                            Email
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
+                                            Roles
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
+                                            Eliminado
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">
+                                            Acciones
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr v-for="(user, index) in users.data" 
+                                        :key="user.id"
+                                        :class="{
+                                            'bg-red-50': index % 2 === 0,
+                                            'bg-white': index % 2 === 1
+                                        }">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ user.name }}
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">{{ user.email }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">
+                                                {{ user.roles.map(role => role.name).join(', ') }}
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-red-600">
+                                                {{ new Date(user.deleted_at).toLocaleDateString() }}
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button
+                                                v-if="$page.props.auth.user.can['delete users']"
+                                                @click="restoreUser(user.id)"
+                                                class="text-indigo-600 hover:text-indigo-900 mr-4"
+                                            >
+                                                Restaurar
+                                            </button>
+                                            <button
+                                                v-if="$page.props.auth.user.can['delete users']"
+                                                @click="forceDeleteUser(user.id)"
+                                                class="text-red-600 hover:text-red-900"
+                                            >
+                                                Eliminar Permanentemente
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Mobile Card View -->
+                        <div class="md:hidden space-y-4">
+                            <div v-for="(user, index) in users.data"
+                                :key="user.id"
+                                :class="{
+                                    'bg-red-50': index % 2 === 0,
+                                    'bg-white': index % 2 === 1
+                                }"
+                                class="rounded-lg shadow p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900">{{ user.name }}</h3>
+                                        <p class="text-sm text-gray-500">{{ user.email }}</p>
+                                    </div>
+                                    <div class="flex space-x-2">
                                         <button
                                             v-if="$page.props.auth.user.can['delete users']"
                                             @click="restoreUser(user.id)"
-                                            class="text-indigo-600 hover:text-indigo-900 mr-4"
+                                            class="text-indigo-600 hover:text-indigo-900"
                                         >
                                             Restaurar
                                         </button>
@@ -111,12 +148,24 @@ const forceDeleteUser = (id) => {
                                             @click="forceDeleteUser(user.id)"
                                             class="text-red-600 hover:text-red-900"
                                         >
-                                            Eliminar Permanentemente
+                                            Eliminar
                                         </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <div class="text-xs font-medium text-gray-500 mb-1">Roles:</div>
+                                    <div class="text-sm text-gray-500">
+                                        {{ user.roles.map(role => role.name).join(', ') }}
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <div class="text-xs font-medium text-gray-500 mb-1">Eliminado:</div>
+                                    <div class="text-sm text-red-600">
+                                        {{ new Date(user.deleted_at).toLocaleDateString() }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Pagination -->
                         <div class="mt-4">
@@ -124,19 +173,7 @@ const forceDeleteUser = (id) => {
                                 <div class="text-sm text-gray-700">
                                     Mostrando {{ users.from }} a {{ users.to }} de {{ users.total }} resultados
                                 </div>
-                                <div class="flex space-x-2">
-                                    <Link
-                                        v-for="link in users.links"
-                                        :key="link.label"
-                                        :href="link.url"
-                                        v-html="link.label"
-                                        class="px-3 py-1 rounded-md"
-                                        :class="{
-                                            'bg-red-600 text-white': link.active,
-                                            'bg-gray-100 text-gray-700 hover:bg-gray-200': !link.active
-                                        }"
-                                    />
-                                </div>
+                                <Pagination :links="users.links" />
                             </div>
                         </div>
                     </div>

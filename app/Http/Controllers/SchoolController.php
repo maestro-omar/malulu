@@ -213,4 +213,34 @@ class SchoolController extends Controller
             'school' => $school
         ]);
     }
+
+    public function trashed()
+    {
+        $schools = School::onlyTrashed()
+            ->with(['locality', 'schoolLevels', 'managementType', 'shifts'])
+            ->orderBy('name')
+            ->paginate(10);
+
+        return Inertia::render('Schools/Trashed', [
+            'schools' => $schools
+        ]);
+    }
+
+    public function restore($id)
+    {
+        $school = School::onlyTrashed()->findOrFail($id);
+        $school->restore();
+
+        return redirect()->route('schools.trashed')
+            ->with('success', 'School restored successfully.');
+    }
+
+    public function forceDelete($id)
+    {
+        $school = School::onlyTrashed()->findOrFail($id);
+        $school->forceDelete();
+
+        return redirect()->route('schools.trashed')
+            ->with('success', 'School permanently deleted.');
+    }
 } 

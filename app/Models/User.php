@@ -49,6 +49,7 @@ class User extends Authenticatable
     public function allRolesAcrossTeams()
     {
         return $this->belongsToMany(\Spatie\Permission\Models\Role::class, 'model_has_roles', 'model_id', 'role_id')
-            ->where('model_type', self::class);
+            ->where('model_type', self::class)
+            ->withPivot('team_id');
     }
 }

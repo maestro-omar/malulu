@@ -12,13 +12,22 @@
           <div class="p-6 text-gray-900">
             <div class="flex justify-between items-center mb-6">
               <h3 class="text-lg font-semibold">Lista de Escuelas</h3>
-              <Link
-                v-if="$page.props.auth.user.can['create schools']"
-                :href="route('schools.create')"
-                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Agregar Escuela
-              </Link>
+              <div class="flex space-x-4">
+                <Link
+                  v-if="$page.props.auth.user.can['create schools']"
+                  :href="route('schools.create')"
+                  class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Agregar Escuela
+                </Link>
+                <Link
+                  v-if="$page.props.auth.user.can['delete schools']"
+                  :href="route('schools.trashed')"
+                  class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                >
+                  Escuelas Eliminadas
+                </Link>
+              </div>
             </div>
 
             <!-- Filters -->
@@ -54,49 +63,100 @@
             </div>
 
             <div class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CUE</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Localidad</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Niveles</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="school in schools.data.filter(s => s.name !== 'GLOBAL')" :key="school.id">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm font-medium text-gray-900">{{ school.name }}</div>
-                      <div class="text-sm text-gray-500">{{ school.short }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {{ school.cue }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {{ school.locality?.name }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <div class="flex flex-wrap gap-1">
-                        <SchoolLevelBadge 
-                          v-for="level in school.school_levels" 
-                          :key="level.id"
-                          :level="level"
-                        />
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <!-- Desktop Table View -->
+              <div class="hidden md:block">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CUE</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Localidad</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Niveles</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <tr v-for="(school, index) in schools.data.filter(s => s.name !== 'GLOBAL')" 
+                        :key="school.id"
+                        :class="{
+                          'bg-gray-50': index % 2 === 0,
+                          'bg-white': index % 2 === 1
+                        }">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{{ school.name }}</div>
+                        <div class="text-sm text-gray-500">{{ school.short }}</div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ school.cue }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ school.locality?.name }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div class="flex flex-wrap gap-1">
+                          <SchoolLevelBadge 
+                            v-for="level in school.school_levels" 
+                            :key="level.id"
+                            :level="level"
+                          />
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <Link
+                          v-if="$page.props.auth.user.can['view schools']"
+                          :href="route('schools.show', school.id)"
+                          class="text-blue-600 hover:text-blue-900 mr-3"
+                        >
+                          Ver
+                        </Link>
+                        <Link
+                          v-if="$page.props.auth.user.can['edit schools']"
+                          :href="route('schools.edit', school.id)"
+                          class="text-indigo-600 hover:text-indigo-900 mr-3"
+                        >
+                          Editar
+                        </Link>
+                        <Link
+                          v-if="$page.props.auth.user.can['delete schools']"
+                          :href="route('schools.destroy', school.id)"
+                          method="delete"
+                          as="button"
+                          class="text-red-600 hover:text-red-900"
+                        >
+                          Eliminar
+                        </Link>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Mobile Card View -->
+              <div class="md:hidden space-y-4">
+                <div v-for="(school, index) in schools.data.filter(s => s.name !== 'GLOBAL')"
+                     :key="school.id"
+                     :class="{
+                       'bg-gray-50': index % 2 === 0,
+                       'bg-white': index % 2 === 1
+                     }"
+                     class="rounded-lg shadow p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 class="text-sm font-medium text-gray-900">{{ school.name }}</h3>
+                      <p class="text-sm text-gray-500">{{ school.short }}</p>
+                    </div>
+                    <div class="flex space-x-2">
                       <Link
                         v-if="$page.props.auth.user.can['view schools']"
                         :href="route('schools.show', school.id)"
-                        class="text-blue-600 hover:text-blue-900 mr-3"
+                        class="text-blue-600 hover:text-blue-900"
                       >
                         Ver
                       </Link>
                       <Link
                         v-if="$page.props.auth.user.can['edit schools']"
                         :href="route('schools.edit', school.id)"
-                        class="text-indigo-600 hover:text-indigo-900 mr-3"
+                        class="text-indigo-600 hover:text-indigo-900"
                       >
                         Editar
                       </Link>
@@ -109,10 +169,28 @@
                       >
                         Eliminar
                       </Link>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <div class="text-xs font-medium text-gray-500 mb-1">CUE:</div>
+                    <div class="text-sm text-gray-500">{{ school.cue }}</div>
+                  </div>
+                  <div class="mt-2">
+                    <div class="text-xs font-medium text-gray-500 mb-1">Localidad:</div>
+                    <div class="text-sm text-gray-500">{{ school.locality?.name }}</div>
+                  </div>
+                  <div class="mt-2">
+                    <div class="text-xs font-medium text-gray-500 mb-1">Niveles:</div>
+                    <div class="flex flex-wrap gap-2">
+                      <SchoolLevelBadge 
+                        v-for="level in school.school_levels" 
+                        :key="level.id"
+                        :level="level"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <Pagination :links="schools.links" class="mt-6" />

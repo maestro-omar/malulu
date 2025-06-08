@@ -32,13 +32,25 @@ class UserController extends Controller
         $transformedUsers['data'] = collect($transformedUsers['data'])->map(function ($user) {
             // Get unique school IDs from roles
             $schoolIds = collect($user['all_roles_across_teams'])
-                ->pluck('team_id')
+                ->pluck('pivot.team_id')
+                ->filter()  // Remove null values
                 ->unique()
                 ->values()
                 ->toArray();
 
+            // Debug log for school IDs
+            Log::info('School IDs for user ' . $user['id'] . ':', [
+                'school_ids' => $schoolIds,
+                'roles' => $user['all_roles_across_teams']
+            ]);
+
             // Get schools for these IDs
             $schools = \App\Models\School::whereIn('id', $schoolIds)->get();
+
+            // Debug log for found schools
+            Log::info('Found schools for user ' . $user['id'] . ':', [
+                'schools' => $schools->toArray()
+            ]);
 
             $user['roles'] = collect($user['all_roles_across_teams'])->map(function ($role) {
                 return [
@@ -229,5 +241,47 @@ class UserController extends Controller
 
         return redirect()->route('users.trashed')
             ->with('success', 'Usuario eliminado permanentemente.');
+    }
+
+    public function show(User $user): Response
+    {
+        $user->load(['allRolesAcrossTeams']);
+
+        // Transform the data to include roles and schools
+        $transformedUser = $user->toArray();
+        
+        // Get unique school IDs from roles
+        $schoolIds = collect($user->allRolesAcrossTeams)
+            ->pluck('pivot.team_id')
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        // Get schools for these IDs
+        $schools = \App\Models\School::whereIn('id', $schoolIds)->get();
+
+        $transformedUser['roles'] = collect($user->allRolesAcrossTeams)->map(function ($role) {
+            return [
+                'id' => $role->id,
+                'name' => $role->name,
+                'short' => $this->getRoleShortName($role->name),
+                'key' => $role->key,
+                'team_id' => $role->pivot->team_id
+            ];
+        })->toArray();
+
+        // Add schools to user data
+        $transformedUser['schools'] = $schools->map(function ($school) {
+            return [
+                'id' => $school->id,
+                'name' => $school->name,
+                'short' => $school->short
+            ];
+        })->toArray();
+
+        return Inertia::render('Users/Show', [
+            'user' => $transformedUser
+        ]);
     }
 } 

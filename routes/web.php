@@ -63,6 +63,9 @@ Route::prefix('sistema')->group(function () {
 
         // Schools Routes
         Route::middleware('permission:view schools')->group(function () {
+            Route::get('escuelas/eliminadas', [SchoolController::class, 'trashed'])->name('schools.trashed');
+            Route::post('escuelas/{school}/restaurar', [SchoolController::class, 'restore'])->name('schools.restore');
+            Route::delete('escuelas/{school}/eliminar-permanentemente', [SchoolController::class, 'forceDelete'])->name('schools.force-delete');
             Route::get('escuelas', [SchoolController::class, 'index'])->name('schools.index');
             Route::get('escuelas/crear', [SchoolController::class, 'create'])->name('schools.create');
             Route::post('escuelas', [SchoolController::class, 'store'])->name('schools.store');
