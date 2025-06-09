@@ -15,6 +15,7 @@ return new class extends Migration
             $table->date('end_date');
             $table->date('winter_break_start');
             $table->date('winter_break_end');
+            $table->json('extra')->nullable();
             $table->boolean('active')->default(true);
             $table->timestamps();
         });

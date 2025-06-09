@@ -1,0 +1,74 @@
+<template>
+  <Head title="Ciclos lectivos" />
+
+  <AuthenticatedLayout>
+    <template #header>
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Ciclos Lectivos</h2>
+    </template>
+
+    <div class="py-12">
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+          <div class="p-6 text-gray-900">
+            <div class="flex justify-end mb-6">
+              <Link :href="route('academic-years.create')"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                Agregar Nuevo Ciclo Lectivo
+              </Link>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Año</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de
+                      Inicio</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de
+                      Fin
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Vacaciones de
+                      Invierno</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="year in academicYears" :key="year.id">
+                    <td class="px-6 py-4 whitespace-nowrap">{{ year.year }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(year.start_date) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(year.end_date) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      {{ formatDate(year.winter_break_start) }} - {{ formatDate(year.winter_break_end) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <Link :href="route('academic-years.edit', year.id)"
+                        class="text-indigo-600 hover:text-indigo-900 mr-4">
+                        Editar
+                      </Link>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </AuthenticatedLayout>
+</template>
+
+<script setup>
+import { Link } from '@inertiajs/vue3'
+import { formatDate } from '../../utils/date'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import { Head } from '@inertiajs/vue3'
+
+defineProps({
+  academicYears: {
+    type: Array,
+    required: true
+  }
+})
+</script>

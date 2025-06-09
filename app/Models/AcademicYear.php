@@ -3,12 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AcademicYear extends Model
 {
-    use SoftDeletes;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -20,6 +17,7 @@ class AcademicYear extends Model
         'end_date',
         'winter_break_start',
         'winter_break_end',
+        'extra',
         'active'
     ];
 
@@ -35,9 +33,9 @@ class AcademicYear extends Model
         'winter_break_start' => 'datetime',
         'winter_break_end' => 'datetime',
         'active' => 'boolean',
+        'extra' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'deleted_at' => 'datetime'
     ];
 
     /**

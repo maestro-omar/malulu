@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\AcademicYearController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -80,6 +81,20 @@ Route::prefix('sistema')->group(function () {
             Route::get('escuelas/{school}/editar', [SchoolController::class, 'edit'])->name('schools.edit');
             Route::put('escuelas/{school}', [SchoolController::class, 'update'])->name('schools.update');
             Route::delete('escuelas/{school}', [SchoolController::class, 'destroy'])->name('schools.destroy');
+        });
+
+        // Academic Years Routes
+        Route::middleware('permission:superadmin')->group(function () {
+            Route::get('ciclo-escolar/eliminadas', [AcademicYearController::class, 'trashed'])->name('academic-years.trashed');
+            Route::post('ciclo-escolar/{academicYear}/restaurar', [AcademicYearController::class, 'restore'])->name('academic-years.restore');
+            Route::delete('ciclo-escolar/{academicYear}/eliminar-permanentemente', [AcademicYearController::class, 'forceDelete'])->name('academic-years.force-delete');
+            Route::get('ciclo-escolar', [AcademicYearController::class, 'index'])->name('academic-years.index');
+            Route::get('ciclo-escolar/crear', [AcademicYearController::class, 'create'])->name('academic-years.create');
+            Route::post('ciclo-escolar', [AcademicYearController::class, 'store'])->name('academic-years.store');
+            Route::get('ciclo-escolar/{academicYear}', [AcademicYearController::class, 'show'])->name('academic-years.show');
+            Route::get('ciclo-escolar/{academicYear}/editar', [AcademicYearController::class, 'edit'])->name('academic-years.edit');
+            Route::put('ciclo-escolar/{academicYear}', [AcademicYearController::class, 'update'])->name('academic-years.update');
+            Route::delete('ciclo-escolar/{academicYear}', [AcademicYearController::class, 'destroy'])->name('academic-years.destroy');
         });
     });
 });

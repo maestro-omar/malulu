@@ -35,16 +35,16 @@ class HandleInertiaRequests extends Middleware
         $menuItems = $this->getMenuItems($user);
 
         // More detailed debug information
-        Log::info('Debug Menu Items:', [
-            'user_id' => $user?->id,
-            'user_name' => $user?->name,
-            'user_email' => $user?->email,
-            'user_roles' => $user?->getRoleNames()->toArray(),
-            'user_permissions' => $user?->getAllPermissions()->pluck('name')->toArray(),
-            'can_view_schools' => $user?->can('view schools'),
-            'menu_items' => $menuItems,
-            'guard' => Auth::getDefaultDriver(),
-        ]);
+        // Log::info('Debug Menu Items:', [
+        //     'user_id' => $user?->id,
+        //     'user_name' => $user?->name,
+        //     'user_email' => $user?->email,
+        //     'user_roles' => $user?->getRoleNames()->toArray(),
+        //     'user_permissions' => $user?->getAllPermissions()->pluck('name')->toArray(),
+        //     'can_view_schools' => $user?->can('view schools'),
+        //     'menu_items' => $menuItems,
+        //     'guard' => Auth::getDefaultDriver(),
+        // ]);
 
         return [
             ...parent::share($request),
@@ -103,19 +103,19 @@ class HandleInertiaRequests extends Middleware
             ];
         }
 
-        // Debug schools permission
-        Log::info('Checking schools permission:', [
-            'user_id' => $user->id,
-            'can_view_schools' => $user->can('view schools'),
-            'roles' => $user->getRoleNames()->toArray(),
-            'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
-        ]);
-
         if ($user->can('view schools')) {
             $items[] = [
                 'name' => 'Escuelas',
                 'route' => 'schools.index',
                 'icon' => 'academic-cap',
+            ];
+        }
+
+        if ($user->can('superadmin')) {
+            $items[] = [
+                'name' => 'Ciclos escolares',
+                'route' => 'academic-years.index',
+                'icon' => 'calendar',
             ];
         }
 
