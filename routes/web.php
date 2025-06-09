@@ -28,6 +28,13 @@ Route::get('/', function () {
 });
 
 Route::prefix('sistema')->group(function () {
+    Route::get('/', function () {
+        if (auth()->check()) {
+            return redirect()->route('dashboard');
+        }
+        return redirect()->route('login');
+    });
+
     Route::get('/inicio', function () {
         return Inertia::render('Dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
