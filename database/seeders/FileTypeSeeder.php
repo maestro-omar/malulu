@@ -17,7 +17,7 @@ class FileTypeSeeder extends Seeder
         [
             'key' => 'institutional',
             'name' => 'Institucional',
-            'relate_with' => null,
+            'relate_with' => 'school',
             'active' => true
         ],
         [

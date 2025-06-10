@@ -39,6 +39,38 @@ class AcademicYear extends Model
     ];
 
     /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            $model->validateDates();
+        });
+    }
+
+    /**
+     * Validate that dates are in the correct order
+     *
+     * @throws \InvalidArgumentException
+     */
+    protected function validateDates(): void
+    {
+        if ($this->start_date >= $this->winter_break_start) {
+            throw new \InvalidArgumentException('El inicio de las vacaciones de invierno debe ser posterior al inicio del año académico');
+        }
+
+        if ($this->winter_break_start >= $this->winter_break_end) {
+            throw new \InvalidArgumentException('El fin de las vacaciones de invierno debe ser posterior al inicio de las vacaciones');
+        }
+
+        if ($this->winter_break_end >= $this->end_date) {
+            throw new \InvalidArgumentException('El fin del año académico debe ser posterior al fin de las vacaciones de invierno');
+        }
+    }
+
+    /**
      * Get the courses for this academic year
      */
     public function courses()

@@ -12,7 +12,6 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           <div class="p-6 text-gray-900">
             <div class="flex justify-between items-center mb-6">
-              <h3 class="text-lg font-semibold">Lista de Escuelas</h3>
               <div class="flex space-x-4">
                 <Link v-if="$page.props.auth.user.can['create schools']" :href="route('schools.create')"
                   class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">

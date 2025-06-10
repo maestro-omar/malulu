@@ -13,7 +13,7 @@ class FileSubtype extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'type_id',
+        'file_type_id',
         'key',
         'name',
         'description',
@@ -29,7 +29,7 @@ class FileSubtype extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'type_id' => 'integer',
+        'file_type_id' => 'integer',
         'new_overwrites' => 'boolean',
         'hidden_for_familiy' => 'boolean',
         'upload_by_familiy' => 'boolean',
@@ -41,7 +41,7 @@ class FileSubtype extends Model
      */
     public function fileType(): BelongsTo
     {
-        return $this->belongsTo(FileType::class, 'type_id');
+        return $this->belongsTo(FileType::class, 'file_type_id');
     }
 
     /**

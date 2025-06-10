@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\AcademicYearController;
+use App\Http\Controllers\FileTypeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -96,6 +97,15 @@ Route::prefix('sistema')->group(function () {
             Route::put('ciclo-escolar/{academicYear}', [AcademicYearController::class, 'update'])->name('academic-years.update');
             Route::delete('ciclo-escolar/{academicYear}', [AcademicYearController::class, 'destroy'])->name('academic-years.destroy');
         });
+
+        // File Types Routes
+        Route::middleware('permission:superadmin')->group(function () {
+            Route::get('/tipos-archivo', [FileTypeController::class, 'index'])
+                ->name('file-types.index');
+        });
+
+        Route::resource('file-types', FileTypeController::class)
+            ->middleware('can:superadmin');
     });
 });
 

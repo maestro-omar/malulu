@@ -117,6 +117,13 @@ class HandleInertiaRequests extends Middleware
                 'route' => 'academic-years.index',
                 'icon' => 'calendar',
             ];
+
+            // Add File Types menu item for superadmin
+            $items[] = [
+                'name' => 'Tipos de Archivo',
+                'route' => 'file-types.index',
+                'icon' => 'document', // or any other icon you prefer
+            ];
         }
 
         return $items;

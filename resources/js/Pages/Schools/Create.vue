@@ -1,9 +1,10 @@
 <template>
-  <Head title="Crear Escuela" />
-
   <AuthenticatedLayout>
+    <Head title="Crear Escuela" />
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Crear Escuela</h2>
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        Crear Escuela
+      </h2>
     </template>
 
     <div class="py-12">
@@ -68,23 +69,37 @@
                   required
                 >
                   <option value="">Seleccionar tipo de gestión</option>
-                  <option v-for="type in managementTypes" :key="type.id" :value="type.id">
+                  <option
+                    v-for="type in managementTypes"
+                    :key="type.id"
+                    :value="type.id"
+                  >
                     {{ type.name }}
                   </option>
                 </select>
-                <InputError :message="form.errors.management_type_id" class="mt-2" />
+                <InputError
+                  :message="form.errors.management_type_id"
+                  class="mt-2"
+                />
               </div>
 
               <div>
                 <InputLabel value="Niveles" />
                 <div class="mt-2 space-y-2">
-                  <div v-for="level in schoolLevels" :key="level.id" class="flex items-center">
+                  <div
+                    v-for="level in schoolLevels"
+                    :key="level.id"
+                    class="flex items-center"
+                  >
                     <Checkbox
                       :id="'level-' + level.id"
                       :value="level.id"
                       v-model:checked="form.school_levels"
                     />
-                    <label :for="'level-' + level.id" class="ml-2 text-sm text-gray-600">
+                    <label
+                      :for="'level-' + level.id"
+                      class="ml-2 text-sm text-gray-600"
+                    >
                       {{ level.name }}
                     </label>
                   </div>
@@ -95,13 +110,20 @@
               <div>
                 <InputLabel value="Turnos" />
                 <div class="mt-2 space-y-2">
-                  <div v-for="shift in shifts" :key="shift.id" class="flex items-center">
+                  <div
+                    v-for="shift in shifts"
+                    :key="shift.id"
+                    class="flex items-center"
+                  >
                     <Checkbox
                       :id="'shift-' + shift.id"
                       :value="shift.id"
                       v-model:checked="form.shifts"
                     />
-                    <label :for="'shift-' + shift.id" class="ml-2 text-sm text-gray-600">
+                    <label
+                      :for="'shift-' + shift.id"
+                      class="ml-2 text-sm text-gray-600"
+                    >
                       {{ shift.name }}
                     </label>
                   </div>
@@ -109,16 +131,11 @@
                 <InputError :message="form.errors.shifts" class="mt-2" />
               </div>
 
-              <div class="flex items-center justify-end mt-4">
-                <Link
-                  :href="route('schools.index')"
-                  class="mr-4 text-gray-600 hover:text-gray-900"
-                >
-                  Cancelar
-                </Link>
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+              <div class="flex items-center justify-between">
+                <PrimaryButton :disabled="form.processing">
                   Crear Escuela
                 </PrimaryButton>
+                <CancelLink :href="route('schools.index')" />
               </div>
             </form>
           </div>
@@ -129,39 +146,40 @@
 </template>
 
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import Checkbox from '@/Components/Checkbox.vue';
-import SearchableDropdown from '@/Components/SearchableDropdown.vue';
+import { Head, Link, useForm } from "@inertiajs/vue3";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import InputError from "@/Components/InputError.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import TextInput from "@/Components/TextInput.vue";
+import Checkbox from "@/Components/Checkbox.vue";
+import SearchableDropdown from "@/Components/SearchableDropdown.vue";
+import CancelLink from "@/Components/CancelLink.vue";
 
 const props = defineProps({
   localities: Array,
   schoolLevels: Array,
   managementTypes: Array,
-  shifts: Array
+  shifts: Array,
 });
 
 const form = useForm({
-  name: '',
-  short: '',
-  cue: '',
-  locality_id: '',
-  management_type_id: '',
+  name: "",
+  short: "",
+  cue: "",
+  locality_id: "",
+  management_type_id: "",
   school_levels: [],
   shifts: [],
-  address: '',
-  zip_code: '',
-  phone: '',
-  email: '',
-  coordinates: '',
-  social: []
+  address: "",
+  zip_code: "",
+  phone: "",
+  email: "",
+  coordinates: "",
+  social: [],
 });
 
 const submit = () => {
-  form.post(route('schools.store'));
+  form.post(route("schools.store"));
 };
-</script> 
+</script>

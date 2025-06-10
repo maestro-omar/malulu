@@ -29,7 +29,7 @@ class RoleAndPermissionSeeder extends Seeder
         $permissions = [
             // Superadmin permission
             'superadmin',
-            
+
             // User permissions
             'view users',
             'create users',
@@ -39,13 +39,13 @@ class RoleAndPermissionSeeder extends Seeder
             'edit own profile',
             'view other profiles',
             'edit other profiles',
-            
+
             // Role permissions
             'view roles',
             'create roles',
             'edit roles',
             'delete roles',
-            
+
             // School permissions
             'view schools',
             'create schools',
@@ -53,7 +53,7 @@ class RoleAndPermissionSeeder extends Seeder
             'delete schools',
             'view assigned schools',
             'edit assigned schools',
-            
+
             // Academic permissions
             'view academic',
             'create academic',
@@ -61,7 +61,7 @@ class RoleAndPermissionSeeder extends Seeder
             'delete academic',
             'view assigned academic',
             'edit assigned academic',
-            
+
             // Student specific permissions
             'view students',
             'create students',
@@ -71,7 +71,7 @@ class RoleAndPermissionSeeder extends Seeder
             'edit own student data',
             'view children data',
             'edit children data',
-            
+
             // Guardian specific permissions
             'view guardians',
             'create guardians',
@@ -79,7 +79,7 @@ class RoleAndPermissionSeeder extends Seeder
             'delete guardians',
             'view own guardian data',
             'edit own guardian data',
-            
+
             // Teacher specific permissions
             'view teachers',
             'create teachers',
@@ -87,7 +87,7 @@ class RoleAndPermissionSeeder extends Seeder
             'delete teachers',
             'view own teacher data',
             'edit own teacher data',
-            
+
             // Cooperative specific permissions
             'view cooperative',
             'create cooperative',
@@ -95,7 +95,7 @@ class RoleAndPermissionSeeder extends Seeder
             'delete cooperative',
             'view own cooperative data',
             'edit own cooperative data',
-            
+
             // Library specific permissions
             'view library',
             'create library',
@@ -103,7 +103,7 @@ class RoleAndPermissionSeeder extends Seeder
             'delete library',
             'view own library data',
             'edit own library data',
-            
+
             // Historical data permissions
             'view historical data',
             'create historical data',
@@ -510,14 +510,14 @@ class RoleAndPermissionSeeder extends Seeder
                 'description' => $roleData['description'],
                 'short' => $roleData['short']
             ]);
-            
+
             // Get permissions by name and guard
             $rolePermissions = Permission::whereIn('name', $roleData['permissions'])
                 ->where('guard_name', 'web')
                 ->get();
             $role->syncPermissions($rolePermissions);
-            
-            if ($roleKey === 'admin') {
+
+            if ($roleKey === 'superadmin') {
                 $adminRole = $role;
             }
         }
@@ -528,4 +528,4 @@ class RoleAndPermissionSeeder extends Seeder
             $user->assignRole($adminRole);
         }
     }
-} 
+}

@@ -15,7 +15,7 @@ class FileSubtypeSeeder extends Seeder
     {
         foreach ($this->getData() as $data) {
             $fileType = FileType::where('key', $data['file_type'])->first();
-            $data['type_id'] = $fileType->id;
+            $data['file_type_id'] = $fileType->id;
             unset($data['file_type']);
 
             FileSubtype::create($data);

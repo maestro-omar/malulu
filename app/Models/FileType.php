@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Role;
 
 class FileType extends Model
 {
@@ -13,6 +14,13 @@ class FileType extends Model
     const TEACHER = 'teacher';
     const STUDENT = 'student';
     const USER = 'user';
+
+    // Add these new constants for relate_with options
+    const RELATE_WITH_SCHOOL = 'school';
+    const RELATE_WITH_COURSE = 'course';
+    const RELATE_WITH_TEACHER = 'teacher';
+    const RELATE_WITH_STUDENT = 'student';
+    const RELATE_WITH_USER = 'user';
 
     /**
      * The attributes that are mass assignable.
@@ -72,15 +80,15 @@ class FileType extends Model
         $r = [self::USER];
 
         if (!empty(array_intersect(
-            Profile::teacherKeys(),
+            Role::teacherKeys(),
             $profilesKeys
         ))) {
             $r[] = self::TEACHER;
         }
 
         if (!empty(array_intersect([
-            Profile::STUDENT,
-            Profile::FORMER_STUDENT,
+            Role::STUDENT,
+            Role::FORMER_STUDENT,
         ], $profilesKeys))) {
             $r[] = self::STUDENT;
         }
@@ -92,6 +100,27 @@ class FileType extends Model
      * Get the subtypes for this file type
      */
     public function subtypes(): HasMany
+    {
+        return $this->hasMany(FileSubtype::class);
+    }
+
+    /**
+     * Get available options for relate_with field
+     *
+     * @return array
+     */
+    public static function relateWithOptions(): array
+    {
+        return [
+            self::RELATE_WITH_SCHOOL => 'Escuela',
+            self::RELATE_WITH_COURSE => 'Grupo',
+            self::RELATE_WITH_TEACHER => 'Docente',
+            self::RELATE_WITH_STUDENT => 'Alumna/o',
+            self::RELATE_WITH_USER => 'Usuario',
+        ];
+    }
+
+    public function fileSubtypes()
     {
         return $this->hasMany(FileSubtype::class);
     }

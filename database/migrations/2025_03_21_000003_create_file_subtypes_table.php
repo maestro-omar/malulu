@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('file_subtypes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('type_id')->unsigned()->constrained('file_types')->onDelete('cascade');
+            $table->foreignId('file_type_id')->unsigned()->constrained('file_types')->onDelete('cascade');
             $table->string('key', 31)->unique();
             $table->string('name', 63);
             $table->text('description')->nullable();
