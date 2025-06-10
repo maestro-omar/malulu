@@ -12,11 +12,18 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('sistema')->group(function () {
-    Route::middleware('guest')->group(function () {
-        Route::get('registro', [RegisteredUserController::class, 'create'])
-                    ->name('register');
+    Route::get('/', function () {
+        if (auth()->check()) {
+            return redirect()->route('dashboard');
+        }
+        return redirect()->route('login');
+    });
 
-        Route::post('registro', [RegisteredUserController::class, 'store']);
+    Route::middleware('guest')->group(function () {
+        // Route::get('registro', [RegisteredUserController::class, 'create'])
+        //             ->name('register');
+
+        // Route::post('registro', [RegisteredUserController::class, 'store']);
 
         Route::get('acceso', [AuthenticatedSessionController::class, 'create'])
                     ->name('login');

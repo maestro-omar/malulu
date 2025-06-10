@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\System;
 
 use App\Models\FileType;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Services\FileTypeService;
 
-class FileTypeController extends Controller
+class FileTypeController extends SystemBaseController
 {
     protected $fileTypeService;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\System;
 
 use App\Models\School;
 use App\Models\SchoolLevel;
@@ -13,13 +13,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class SchoolController extends Controller
+class SchoolController extends SystemBaseController
 {
     protected $schoolService;
 
     public function __construct(SchoolService $schoolService)
     {
         $this->schoolService = $schoolService;
+        $this->middleware('permission:superadmin');
     }
 
     public function index(Request $request)

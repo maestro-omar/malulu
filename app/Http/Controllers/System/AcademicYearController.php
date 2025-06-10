@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\System;
 
 use App\Models\AcademicYear;
 use App\Services\AcademicYearService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class AcademicYearController extends Controller
+class AcademicYearController extends SystemBaseController
 {
     protected $academicYearService;
 
     public function __construct(AcademicYearService $academicYearService)
     {
         $this->academicYearService = $academicYearService;
+        $this->middleware('permission:superadmin');
     }
 
     public function index()

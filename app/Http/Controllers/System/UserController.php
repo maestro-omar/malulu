@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\System;
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,17 +11,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\UserService;
 
-class UserController extends Controller
+class UserController extends SystemBaseController
 {
     protected $userService;
 
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
-        $this->middleware('permission:view users')->only(['index', 'trashed']);
-        $this->middleware('permission:create users')->only(['create', 'store']);
-        $this->middleware('permission:edit users')->only(['edit', 'update']);
-        $this->middleware('permission:delete users')->only(['destroy', 'restore', 'forceDelete']);
+        $this->middleware('permission:superadmin');
     }
 
     /**

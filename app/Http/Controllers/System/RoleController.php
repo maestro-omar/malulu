@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\System;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -9,17 +9,14 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Services\RoleService;
 
-class RoleController extends Controller
+class RoleController extends SystemBaseController
 {
     protected $roleService;
 
     public function __construct(RoleService $roleService)
     {
         $this->roleService = $roleService;
-        $this->middleware('permission:view roles')->only('index');
-        $this->middleware('permission:create roles')->only(['create', 'store']);
-        $this->middleware('permission:edit roles')->only(['edit', 'update']);
-        $this->middleware('permission:delete roles')->only('destroy');
+        $this->middleware('permission:superadmin');
     }
 
     /**
