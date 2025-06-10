@@ -30,4 +30,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('academic-years/trashed', [\App\Http\Controllers\Api\AcademicYearController::class, 'trashed']);
     Route::post('academic-years/{id}/restore', [\App\Http\Controllers\Api\AcademicYearController::class, 'restore']);
     Route::delete('academic-years/{id}/force-delete', [\App\Http\Controllers\Api\AcademicYearController::class, 'forceDelete']);
+
+    // Users API Routes
+    Route::apiResource('users', \App\Http\Controllers\Api\UserController::class);
+    Route::get('users/trashed', [\App\Http\Controllers\Api\UserController::class, 'trashed']);
+    Route::post('users/{id}/restore', [\App\Http\Controllers\Api\UserController::class, 'restore']);
+    Route::delete('users/{id}/force-delete', [\App\Http\Controllers\Api\UserController::class, 'forceDelete']);
+
+    // Roles API Routes
+    Route::apiResource('roles', \App\Http\Controllers\Api\RoleController::class);
+
+    // File Types API Routes
+    Route::apiResource('file-types', \App\Http\Controllers\Api\FileTypeController::class);
 });

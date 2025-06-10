@@ -9,11 +9,15 @@ use Inertia\Response;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\UserService;
 
 class UserController extends Controller
 {
-    public function __construct()
+    protected $userService;
+
+    public function __construct(UserService $userService)
     {
+        $this->userService = $userService;
         $this->middleware('permission:view users')->only(['index', 'trashed']);
         $this->middleware('permission:create users')->only(['create', 'store']);
         $this->middleware('permission:edit users')->only(['edit', 'update']);
@@ -25,71 +29,8 @@ class UserController extends Controller
      */
     public function index(): Response
     {
-        $users = User::with('allRolesAcrossTeams')->paginate(10);
-
-        // Transform the data to include roles in the expected format
-        $transformedUsers = json_decode(json_encode($users), true);
-        $transformedUsers['data'] = collect($transformedUsers['data'])->map(function ($user) {
-            // Get unique school IDs from roles
-            $schoolIds = collect($user['all_roles_across_teams'])
-                ->pluck('pivot.team_id')
-                ->filter()  // Remove null values
-                ->unique()
-                ->values()
-                ->toArray();
-
-            // Debug log for school IDs
-            Log::info('School IDs for user ' . $user['id'] . ':', [
-                'school_ids' => $schoolIds,
-                'roles' => $user['all_roles_across_teams']
-            ]);
-
-            // Get schools for these IDs
-            $schools = \App\Models\School::whereIn('id', $schoolIds)->get();
-
-            // Debug log for found schools
-            Log::info('Found schools for user ' . $user['id'] . ':', [
-                'schools' => $schools->toArray()
-            ]);
-
-            $user['roles'] = collect($user['all_roles_across_teams'])->map(function ($role) {
-                return [
-                    'id' => $role['id'],
-                    'name' => $role['name'],
-                    'short' => $this->getRoleShortName($role['name']),
-                    'key' => $role['key'],
-                    'team_id' => $role['team_id']
-                ];
-            })->toArray();
-            unset($user['all_roles_across_teams']);
-
-            // Add schools to user data
-            $user['schools'] = $schools->map(function ($school) {
-                return [
-                    'id' => $school->id,
-                    'name' => $school->name,
-                    'short' => $school->short
-                ];
-            })->toArray();
-
-            return $user;
-        })->toArray();
-
-        // Debug information
-        Log::info('Users with roles and schools:', [
-            'users' => collect($transformedUsers['data'])->map(function ($user) {
-                return [
-                    'id' => $user['id'],
-                    'name' => $user['name'],
-                    'email' => $user['email'],
-                    'roles' => $user['roles'],
-                    'schools' => $user['schools']
-                ];
-            })->toArray()
-        ]);
-
         return Inertia::render('Users/Index', [
-            'users' => $transformedUsers,
+            'users' => $this->userService->getUsers(request()),
         ]);
     }
 
@@ -113,7 +54,7 @@ class UserController extends Controller
     public function trashed(): Response
     {
         return Inertia::render('Users/Trashed', [
-            'users' => User::onlyTrashed()->with('roles')->paginate(10),
+            'users' => $this->userService->getTrashedUsers(),
         ]);
     }
 
@@ -132,25 +73,15 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'nullable|string|exists:roles,name',
-        ]);
-
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-        ]);
-
-        if (!empty($validated['role'])) {
-            $user->assignRole($validated['role']);
+        try {
+            $this->userService->createUser($request->all());
+            return redirect()->route('users.index')
+                ->with('success', 'Usuario creado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()])
+                ->withInput();
         }
-
-        return redirect()->route('users.index')
-            ->with('success', 'Usuario creado exitosamente.');
     }
 
     /**
@@ -230,7 +161,7 @@ class UserController extends Controller
     public function forceDelete($id)
     {
         $user = User::onlyTrashed()->findOrFail($id);
-        
+
         // Prevent permanent deletion of admin users
         if ($user->hasRole('admin')) {
             return redirect()->route('users.trashed')
@@ -249,7 +180,7 @@ class UserController extends Controller
 
         // Transform the data to include roles and schools
         $transformedUser = $user->toArray();
-        
+
         // Get unique school IDs from roles
         $schoolIds = collect($user->allRolesAcrossTeams)
             ->pluck('pivot.team_id')
@@ -284,4 +215,4 @@ class UserController extends Controller
             'user' => $transformedUser
         ]);
     }
-} 
+}
