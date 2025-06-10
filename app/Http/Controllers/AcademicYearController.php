@@ -3,14 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\AcademicYear;
+use App\Services\AcademicYearService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class AcademicYearController extends Controller
 {
+    protected $academicYearService;
+
+    public function __construct(AcademicYearService $academicYearService)
+    {
+        $this->academicYearService = $academicYearService;
+    }
+
     public function index()
     {
-        $academicYears = AcademicYear::orderBy('year', 'desc')->get();
+        $academicYears = $this->academicYearService->getAcademicYears();
         return Inertia::render('AcademicYears/Index', [
             'academicYears' => $academicYears
         ]);
@@ -23,18 +31,15 @@ class AcademicYearController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'year' => 'required|integer|unique:academic_years,year',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-            'winter_break_start' => 'required|date|after_or_equal:start_date|before:end_date',
-            'winter_break_end' => 'required|date|after:winter_break_start|before:end_date',
-        ]);
-
-        AcademicYear::create($validated);
-
-        return redirect()->route('academic-years.index')
-            ->with('success', 'Año académico creado exitosamente.');
+        try {
+            $this->academicYearService->createAcademicYear($request->all());
+            return redirect()->route('academic-years.index')
+                ->with('success', 'Año académico creado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors($e->errors() ?? ['error' => $e->getMessage()])
+                ->withInput();
+        }
     }
 
     public function edit(AcademicYear $academicYear)
@@ -46,16 +51,58 @@ class AcademicYearController extends Controller
 
     public function update(Request $request, AcademicYear $academicYear)
     {
-        $validated = $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-            'winter_break_start' => 'required|date|after_or_equal:start_date|before:end_date',
-            'winter_break_end' => 'required|date|after:winter_break_start|before:end_date',
-        ]);
-
-        $academicYear->update($validated);
-
-        return redirect()->route('academic-years.index')
-            ->with('success', 'Año académico actualizado exitosamente.');
+        try {
+            $this->academicYearService->updateAcademicYear($academicYear, $request->all());
+            return redirect()->route('academic-years.index')
+                ->with('success', 'Año académico actualizado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors($e->errors() ?? ['error' => $e->getMessage()])
+                ->withInput();
+        }
     }
-} 
+
+    public function destroy(AcademicYear $academicYear)
+    {
+        try {
+            $this->academicYearService->deleteAcademicYear($academicYear);
+            return redirect()->route('academic-years.index')
+                ->with('success', 'Año académico eliminado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function trashed()
+    {
+        $academicYears = $this->academicYearService->getTrashedAcademicYears();
+        return Inertia::render('AcademicYears/Trashed', [
+            'academicYears' => $academicYears
+        ]);
+    }
+
+    public function restore($id)
+    {
+        try {
+            $this->academicYearService->restoreAcademicYear($id);
+            return redirect()->route('academic-years.trashed')
+                ->with('success', 'Año académico restaurado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        try {
+            $this->academicYearService->forceDeleteAcademicYear($id);
+            return redirect()->route('academic-years.trashed')
+                ->with('success', 'Año académico eliminado permanentemente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+}

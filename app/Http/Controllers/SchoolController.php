@@ -6,6 +6,7 @@ use App\Models\School;
 use App\Models\SchoolLevel;
 use App\Models\SchoolManagementType;
 use App\Models\SchoolShift;
+use App\Services\SchoolService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
@@ -14,29 +15,16 @@ use Illuminate\Validation\Rule;
 
 class SchoolController extends Controller
 {
+    protected $schoolService;
+
+    public function __construct(SchoolService $schoolService)
+    {
+        $this->schoolService = $schoolService;
+    }
+
     public function index(Request $request)
     {
-        $query = School::query()
-            ->with(['locality', 'schoolLevels', 'managementType', 'shifts'])
-            ->when($request->input('search'), function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('name', 'like', "%{$search}%")
-                        ->orWhere('short', 'like', "%{$search}%")
-                        ->orWhere('key', 'like', "%{$search}%")
-                        ->orWhereHas('locality', function ($query) use ($search) {
-                            $query->where('name', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('schoolLevels', function ($query) use ($search) {
-                            $query->where('name', 'like', "%{$search}%");
-                        });
-                });
-            })
-            ->when($request->input('locality_id'), function ($query, $localityId) {
-                $query->where('locality_id', $localityId);
-            })
-            ->where('name', '!=', 'GLOBAL');
-
-        $schools = $query->orderBy('name')->paginate(10);
+        $schools = $this->schoolService->getSchools($request);
 
         return Inertia::render('Schools/Index', [
             'schools' => $schools,
@@ -58,53 +46,14 @@ class SchoolController extends Controller
     public function store(Request $request)
     {
         try {
-            $validated = $request->validate([
-                'name' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    Rule::unique('schools', 'name')
-                ],
-                'short' => 'required|string|max:50',
-                'cue' => [
-                    'required',
-                    'string',
-                    'max:50',
-                    Rule::unique('schools', 'cue')
-                ],
-                'locality_id' => [
-                    'required',
-                    Rule::exists('localities', 'id')
-                ],
-                'management_type_id' => 'required|exists:school_management_types,id',
-                'school_levels' => 'required|array',
-                'school_levels.*' => 'exists:school_levels,id',
-                'shifts' => 'nullable|array',
-                'shifts.*' => 'exists:school_shifts,id',
-                'address' => 'nullable|string|max:255',
-                'zip_code' => 'nullable|string|max:20',
-                'phone' => 'nullable|string|max:50',
-                'email' => 'nullable|email|max:255',
-                'coordinates' => 'nullable|string|max:100',
-                'social' => 'nullable|array'
-            ]);
-
-            // Create the school first
-            $school = School::create($validated);
-
-            // Then sync the relationships
-            if ($request->has('school_levels')) {
-                $school->schoolLevels()->sync($request->school_levels);
-            }
-            
-            if ($request->has('shifts')) {
-                $school->shifts()->sync($request->shifts);
-            }
+            $school = $this->schoolService->createSchool($request->all());
 
             return redirect()->route('schools.index')
                 ->with('success', 'School created successfully.');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            throw $e;
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors($e->errors() ?? ['error' => $e->getMessage()])
+                ->withInput();
         }
     }
 
@@ -125,86 +74,41 @@ class SchoolController extends Controller
 
     public function update(Request $request, School $school)
     {
-        if ($school->name === 'GLOBAL') {
-            abort(403, 'Cannot update GLOBAL school.');
-        }
-
-        // Ensure school is loaded
-        $school = School::findOrFail($school->id);
-
         try {
-            $validated = $request->validate([
-                'name' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    Rule::unique('schools', 'name')->where(function ($query) use ($school) {
-                        return $query->where('id', '!=', $school->id);
-                    })
-                ],
-                'short' => 'required|string|max:50',
-                'cue' => [
-                    'required',
-                    'string',
-                    'max:50',
-                    Rule::unique('schools', 'cue')->where(function ($query) use ($school) {
-                        return $query->where('id', '!=', $school->id);
-                    })
-                ],
-                'locality_id' => [
-                    'required',
-                    Rule::exists('localities', 'id')
-                ],
-                'management_type_id' => 'required|exists:school_management_types,id',
-                'school_levels' => 'required|array',
-                'school_levels.*' => 'exists:school_levels,id',
-                'shifts' => 'nullable|array',
-                'shifts.*' => 'exists:school_shifts,id',
-                'address' => 'nullable|string|max:255',
-                'zip_code' => 'nullable|string|max:20',
-                'phone' => 'nullable|string|max:50',
-                'email' => 'nullable|email|max:255',
-                'coordinates' => 'nullable|string|max:100',
-                'social' => 'nullable|array'
+            // Let's add some debugging to verify the school is being passed correctly
+            \Log::info('Controller updating school', [
+                'school_id' => $school->id,
+                'school_name' => $school->name
             ]);
 
-            $school->update($validated);
-
-            // Then sync the relationships
-            if ($request->has('school_levels')) {
-                $school->schoolLevels()->sync($request->school_levels);
-            }
-            
-            if ($request->has('shifts')) {
-                $school->shifts()->sync($request->shifts);
-            } else {
-                $school->shifts()->detach();
-            }
+            $this->schoolService->updateSchool($school, $request->all());
 
             return redirect()->route('schools.index')
                 ->with('success', 'School updated successfully.');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            throw $e;
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors($e->errors() ?? ['error' => $e->getMessage()])
+                ->withInput();
         }
     }
 
     public function destroy(School $school)
     {
-        if ($school->name === 'GLOBAL') {
-            abort(403, 'Cannot delete GLOBAL school.');
+        try {
+            $this->schoolService->deleteSchool($school);
+
+            return redirect()->route('schools.index')
+                ->with('success', 'School deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()]);
         }
-
-        $school->delete();
-
-        return redirect()->route('schools.index')
-            ->with('success', 'School deleted successfully.');
     }
 
     public function show(School $school)
     {
         $school->load(['locality', 'schoolLevels', 'managementType', 'shifts']);
-        
-        // Ensure extra is properly decoded if it's a string
+
         if (is_string($school->extra)) {
             $school->extra = json_decode($school->extra, true);
         }
@@ -216,10 +120,7 @@ class SchoolController extends Controller
 
     public function trashed()
     {
-        $schools = School::onlyTrashed()
-            ->with(['locality', 'schoolLevels', 'managementType', 'shifts'])
-            ->orderBy('name')
-            ->paginate(10);
+        $schools = $this->schoolService->getTrashedSchools();
 
         return Inertia::render('Schools/Trashed', [
             'schools' => $schools
@@ -228,19 +129,27 @@ class SchoolController extends Controller
 
     public function restore($id)
     {
-        $school = School::onlyTrashed()->findOrFail($id);
-        $school->restore();
+        try {
+            $this->schoolService->restoreSchool($id);
 
-        return redirect()->route('schools.trashed')
-            ->with('success', 'School restored successfully.');
+            return redirect()->route('schools.trashed')
+                ->with('success', 'School restored successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
     public function forceDelete($id)
     {
-        $school = School::onlyTrashed()->findOrFail($id);
-        $school->forceDelete();
+        try {
+            $this->schoolService->forceDeleteSchool($id);
 
-        return redirect()->route('schools.trashed')
-            ->with('success', 'School permanently deleted.');
+            return redirect()->route('schools.trashed')
+                ->with('success', 'School permanently deleted.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()]);
+        }
     }
-} 
+}
