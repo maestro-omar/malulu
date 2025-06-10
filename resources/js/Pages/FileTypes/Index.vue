@@ -47,6 +47,7 @@
                                                 Editar
                                             </Link>
                                             <button
+                                                v-if="fileType.can_delete"
                                                 @click="deleteFileType(fileType.id)"
                                                 class="text-red-600 hover:text-red-900"
                                             >

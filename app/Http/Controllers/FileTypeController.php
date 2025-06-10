@@ -16,8 +16,19 @@ class FileTypeController extends Controller
 
     public function index()
     {
+        $fileTypes = FileType::all()->map(function ($fileType) {
+            return [
+                'id' => $fileType->id,
+                'key' => $fileType->key,
+                'name' => $fileType->name,
+                'relate_with' => $fileType->relate_with,
+                'active' => $fileType->active,
+                'can_delete' => !$fileType->fileSubtypes()->exists()
+            ];
+        });
+
         return Inertia::render('FileTypes/Index', [
-            'fileTypes' => FileType::all()
+            'fileTypes' => $fileTypes
         ]);
     }
 

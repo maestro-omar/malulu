@@ -517,7 +517,7 @@ class RoleAndPermissionSeeder extends Seeder
                 ->get();
             $role->syncPermissions($rolePermissions);
 
-            if ($roleKey === 'superadmin') {
+            if ($roleKey === 'admin') {
                 $adminRole = $role;
             }
         }
