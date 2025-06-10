@@ -33,6 +33,7 @@ class HandleInertiaRequests extends Middleware
     {
         $user = $request->user();
         $menuItems = $this->getMenuItems($user);
+        $userMenuItems = $this->getUserMenuItems($user);
 
         // More detailed debug information
         // Log::info('Debug Menu Items:', [
@@ -67,6 +68,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'menu' => [
                 'items' => $menuItems,
+                'userItems' => $userMenuItems,
             ],
             'debug' => [
                 'can_view_schools' => $user?->can('view schools'),
@@ -111,6 +113,21 @@ class HandleInertiaRequests extends Middleware
             ];
         }
 
+
+        return $items;
+    }
+
+    /**
+     * Get the user menu items (profile, logout, etc)
+     */
+    protected function getUserMenuItems($user): array
+    {
+        if (!$user) {
+            return [];
+        }
+
+        $items = [];
+
         if ($user->can('superadmin')) {
             $items[] = [
                 'name' => 'Ciclos escolares',
@@ -122,10 +139,27 @@ class HandleInertiaRequests extends Middleware
             $items[] = [
                 'name' => 'Tipos de Archivo',
                 'route' => 'file-types.index',
-                'icon' => 'document', // or any other icon you prefer
+                'icon' => 'document',
             ];
         }
 
+        // Add separator if we have any items before
+        if (!empty($items)) {
+            $items[] = [
+                'type' => 'separator'
+            ];
+        }
+
+        $items[] = [
+            'name' => 'Perfil',
+            'route' => 'profile.edit',
+            'icon' => 'user',
+        ];
+        $items[] = [
+            'name' => 'Salir',
+            'route' => 'logout.get',
+            'icon' => 'logout',
+        ];
         return $items;
     }
 }

@@ -74,10 +74,16 @@ onMounted(() => {
                                     </template>
 
                                     <template #content>
-                                        <DropdownLink :href="route('profile.edit')"> Perfil </DropdownLink>
-                                        <DropdownLink :href="route('logout.get')" as="button">
-                                            Salir
-                                        </DropdownLink>
+                                        <template v-for="item in $page.props.menu.userItems" :key="item.route || 'separator'">
+                                            <template v-if="item.type === 'separator'">
+                                                <div class="border-t border-gray-200 my-1"></div>
+                                            </template>
+                                            <template v-else>
+                                                <DropdownLink :href="route(item.route)" :as="item.route === 'logout.get' ? 'button' : 'a'">
+                                                    {{ item.name }}
+                                                </DropdownLink>
+                                            </template>
+                                        </template>
                                     </template>
                                 </Dropdown>
                             </div>
@@ -139,10 +145,20 @@ onMounted(() => {
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')" class="text-white hover:text-gray-200"> Perfil </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('logout.get')" as="button" class="text-white hover:text-gray-200">
-                                Salir
-                            </ResponsiveNavLink>
+                            <template v-for="item in $page.props.menu.userItems" :key="item.route || 'separator'">
+                                <template v-if="item.type === 'separator'">
+                                    <div class="border-t border-gray-200 my-1"></div>
+                                </template>
+                                <template v-else>
+                                    <ResponsiveNavLink
+                                        :href="route(item.route)"
+                                        :as="item.route === 'logout.get' ? 'button' : 'a'"
+                                        class="text-white hover:text-gray-200"
+                                    >
+                                        {{ item.name }}
+                                    </ResponsiveNavLink>
+                                </template>
+                            </template>
                         </div>
                     </div>
                 </div>
