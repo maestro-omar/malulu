@@ -49,11 +49,11 @@ class SchoolSeeder extends Seeder
                 'address' => 'RIOBAMBA 630',
                 'zip_code' => 'D5700',
                 'phone' => '2664426546',
-                'email' => '',
+                'email' => 'centroeducativo8@gmail.com',
                 'coordinates' => '-33.2972111111111,-66.3128472222222',
                 'cue' => '740058000',
                 'management_type_id' => $this->managementTypes['state'],
-                'social' => json_encode([
+                'social' => [
                     [
                         'type' => 'facebook',
                         'label' => 'Facebook (nivel primario)',
@@ -64,7 +64,7 @@ class SchoolSeeder extends Seeder
                         'label' => 'Instagram (nivel secundario):',
                         'link' => 'https://www.instagram.com/luciolucerosecundaria/?hl=es'
                     ]
-                ]),
+                ],
                 'extra' => null,
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
                 'shifts' => ['morning', 'afternoon']
