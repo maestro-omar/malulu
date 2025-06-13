@@ -3,24 +3,37 @@
 
   <AuthenticatedLayout>
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Detalles de la Escuela
-      </h2>
+      <div class="flex justify-between items-center">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+          Detalles de la Escuela
+        </h2>
+        <div class="flex space-x-4">
+          <Link
+            :href="route('schools.index')"
+            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Volver a Escuelas
+          </Link>
+          <Link
+            :href="route('schools.edit', school.id)"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Editar Escuela
+          </Link>
+          <button
+            @click="destroy"
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Eliminar Escuela
+          </button>
+        </div>
+      </div>
     </template>
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           <div class="p-6 text-gray-900">
-            <div class="mb-6">
-              <Link
-                :href="route('schools.index')"
-                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Volver a Escuelas
-              </Link>
-            </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h3 class="text-lg font-semibold mb-4">
@@ -94,25 +107,27 @@
               <div>
                 <h3 class="text-lg font-semibold mb-4">Ubicación y Contacto</h3>
                 <div class="space-y-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-400"
-                      >Localidad</label
-                    >
-                    <p class="mt-1 text-sm text-gray-900">
-                      {{ school.locality.name }}
-                    </p>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-400"
+                        >Localidad</label
+                      >
+                      <p class="mt-1 text-sm text-gray-900">
+                        {{ school.locality.name }}
+                      </p>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-400"
+                        >Dirección</label
+                      >
+                      <p class="mt-1 text-sm text-gray-900">
+                        {{ school.address }}
+                      </p>
+                    </div>
                   </div>
 
-                  <div>
-                    <label class="block text-sm font-medium text-gray-400"
-                      >Dirección</label
-                    >
-                    <p class="mt-1 text-sm text-gray-900">
-                      {{ school.address }}
-                    </p>
-                  </div>
-
-                  <div class="grid grid-cols-2 gap-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label class="block text-sm font-medium text-gray-400"
                         >Código Postal</label
@@ -150,7 +165,7 @@
                     </div>
                   </div>
 
-                  <div class="grid grid-cols-2 gap-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label class="block text-sm font-medium text-gray-400"
                         >Teléfono</label
@@ -203,21 +218,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div class="mt-6 flex space-x-4">
-              <Link
-                :href="route('schools.edit', school.id)"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Editar Escuela
-              </Link>
-              <button
-                @click="destroy"
-                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Eliminar Escuela
-              </button>
             </div>
           </div>
         </div>

@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
             'firstname' => 'Omar',
             'lastname' => 'Matijas',
             'email' => 'omarmatijas@gmail.com',
-            'id_number' => '12345678',
+            'id_number' => '30334915',
             'birthdate' => '1983-06-07',
             'phone' => '2665103445',
             'address' => 'Basilio Bustos 569',

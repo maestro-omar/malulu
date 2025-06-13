@@ -21,14 +21,26 @@ const props = defineProps({
                     Detalles del Usuario
                 </h2>
                 <div class="flex space-x-4">
-                    <Link :href="route('users.index')"
-                        class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
-                    Volver
+                    <Link
+                        :href="route('users.index')"
+                        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                        Volver a Usuarios
                     </Link>
-                    <Link v-if="$page.props.auth.user.can['edit users']" :href="route('users.edit', user.id)"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-                    Editar
+                    <Link
+                        v-if="$page.props.auth.user.can['edit users']"
+                        :href="route('users.edit', user.id)"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                        Editar Usuario
                     </Link>
+                    <button
+                        v-if="$page.props.auth.user.can['delete users']"
+                        @click="destroy"
+                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                        Eliminar Usuario
+                    </button>
                 </div>
             </div>
         </template>
@@ -40,35 +52,41 @@ const props = defineProps({
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Basic Information -->
                             <div class="space-y-4">
-                                <h3 class="text-lg font-medium text-gray-900">Información Básica</h3>
+                                <h3 class="text-lg font-semibold mb-4">Información Básica</h3>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-400">Nombre de usuario</label>
                                     <div class="mt-1 text-sm text-gray-900">{{ user.name }}</div>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Nombre</label>
-                                    <div class="mt-1 text-sm text-gray-900">{{ user.firstname || '-' }}</div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Apellido</label>
-                                    <div class="mt-1 text-sm text-gray-900">{{ user.lastname || '-' }}</div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">DNI</label>
-                                    <div class="mt-1 text-sm text-gray-900">{{ user.id_number || '-' }}</div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Fecha de Nacimiento</label>
-                                    <div class="mt-1 text-sm text-gray-900">
-                                        {{ user.birthdate ? new Date(user.birthdate).toLocaleDateString('es-AR', {
-                                        timeZone:
-                                        'UTC' }) : '-' }}
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">Nombre</label>
+                                        <div class="mt-1 text-sm text-gray-900">{{ user.firstname || '-' }}</div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">Apellido</label>
+                                        <div class="mt-1 text-sm text-gray-900">{{ user.lastname || '-' }}</div>
                                     </div>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Nacionalidad</label>
-                                    <div class="mt-1 text-sm text-gray-900">{{ user.nationality || '-' }}</div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">DNI</label>
+                                        <div class="mt-1 text-sm text-gray-900">{{ user.id_number || '-' }}</div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">Fecha de Nacimiento</label>
+                                        <div class="mt-1 text-sm text-gray-900">
+                                            {{ user.birthdate ? new Date(user.birthdate).toLocaleDateString('es-AR', {
+                                            timeZone: 'UTC' }) : '-' }}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">Nacionalidad</label>
+                                        <div class="mt-1 text-sm text-gray-900">{{ user.nationality || '-' }}</div>
+                                    </div>
                                 </div>
+
                                 <div>
                                     <label class="block text-sm font-medium text-gray-400">Escuelas y roles</label>
                                     <div class="mt-1 flex flex-wrap gap-2">
@@ -84,46 +102,56 @@ const props = defineProps({
 
                             <!-- Contact Information -->
                             <div class="space-y-4">
-                                <h3 class="text-lg font-medium text-gray-900">Información de Contacto</h3>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Email</label>
-                                    <EmailField :email="user.email" />
+                                <h3 class="text-lg font-semibold mb-4">Información de Contacto</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">Email</label>
+                                        <EmailField :email="user.email" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">Teléfono</label>
+                                        <PhoneField :phone="user.phone" />
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Teléfono</label>
-                                    <PhoneField :phone="user.phone" />
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">Dirección</label>
+                                        <div class="mt-1 text-sm text-gray-900">{{ user.address || '-' }}</div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">Localidad</label>
+                                        <div class="mt-1 text-sm text-gray-900">{{ user.locality || '-' }}</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Dirección</label>
-                                    <div class="mt-1 text-sm text-gray-900">{{ user.address || '-' }}</div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Localidad</label>
-                                    <div class="mt-1 text-sm text-gray-900">{{ user.locality || '-' }}</div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Provincia</label>
-                                    <div class="mt-1 text-sm text-gray-900">{{ user.province?.name || '-' }}</div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">País</label>
-                                    <div class="mt-1 text-sm text-gray-900">{{ user.country?.name || '-' }}</div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">Provincia</label>
+                                        <div class="mt-1 text-sm text-gray-900">{{ user.province?.name || '-' }}</div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">País</label>
+                                        <div class="mt-1 text-sm text-gray-900">{{ user.country?.name || '-' }}</div>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- System Information -->
                             <div class="space-y-4">
-                                <h3 class="text-lg font-medium text-gray-900">Información del Sistema</h3>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Fecha de Registro</label>
-                                    <div class="mt-1 text-sm text-gray-900">
-                                        {{ new Date(user.created_at).toLocaleDateString() }}
+                                <h3 class="text-lg font-semibold mb-4">Información del Sistema</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">Fecha de Registro</label>
+                                        <div class="mt-1 text-sm text-gray-900">
+                                            {{ new Date(user.created_at).toLocaleDateString() }}
+                                        </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Última Actualización</label>
-                                    <div class="mt-1 text-sm text-gray-900">
-                                        {{ new Date(user.updated_at).toLocaleDateString() }}
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400">Última Actualización</label>
+                                        <div class="mt-1 text-sm text-gray-900">
+                                            {{ new Date(user.updated_at).toLocaleDateString() }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
