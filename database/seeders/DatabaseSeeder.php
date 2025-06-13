@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\School;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Province;
+use App\Models\Country;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,33 +18,51 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create initial admin user with explicit password
-        User::factory()->create([
-            'name' => 'Omar ADMIN',
-            'email' => 'omarmatijas@gmail.com',
-            'password' => Hash::make('123123123'), // Set your desired password
-        ]);
-
-        // \App\Models\User::factory(10)->create();
-
         $this->call([
-            //locations
+            // Static catalogs
+            FileTypeSeeder::class,
+            FileSubtypeSeeder::class,
+
+            // Locations
             CountrySeeder::class,
             ProvinceSeeder::class,
             DistrictSeeder::class,
             LocalitySeeder::class,
 
-            //static catalogs
-            FileTypeSeeder::class,
-            FileSubtypeSeeder::class,
-            
-            //initial data
+            // School related
+            AcademicYearSeeder::class,
             SchoolLevelSeeder::class,
             SchoolShiftSeeder::class,
             SchoolManagementTypeSeeder::class,
             SchoolSeeder::class,
+        ]);
+
+        // Create initial admin user with explicit password
+        User::factory()->create([
+            'name' => 'Omar Matijas',
+            'firstname' => 'Omar',
+            'lastname' => 'Matijas',
+            'email' => 'omarmatijas@gmail.com',
+            'id_number' => '12345678',
+            'birthdate' => '1983-06-07',
+            'phone' => '2665103445',
+            'address' => 'Basilio Bustos 569',
+            'locality' => 'Juan Koslay',
+            'province_id' => Province::where('key', Province::DEFAULT)->first()->id,
+            'country_id' => Country::where('iso', Country::DEFAULT)->first()->id,
+            'nationality' => 'Argentina',
+            'password' => Hash::make('123123123'),
+        ]);
+
+        $this->call([
+            // Roles and permissions
             RoleAndPermissionSeeder::class,
-            AcademicYearSeeder::class,
+        ]);
+
+
+
+        $this->call([
+            // Users
             FakeUsersSeeder::class,
         ]);
     }

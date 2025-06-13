@@ -21,6 +21,16 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'firstname',
+        'lastname',
+        'id_number',
+        'birthdate',
+        'phone',
+        'address',
+        'locality',
+        'province_id',
+        'country_id',
+        'nationality',
         'email',
         'password',
     ];
@@ -44,7 +54,24 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'deleted_at' => 'datetime',
+        'birthdate' => 'date',
     ];
+
+    /**
+     * Get the province that owns the user.
+     */
+    public function province()
+    {
+        return $this->belongsTo(Province::class);
+    }
+
+    /**
+     * Get the country that owns the user.
+     */
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
 
     public function allRolesAcrossTeams()
     {

@@ -16,30 +16,6 @@ const props = defineProps({
 // Debug log when component receives props
 console.log('Users data received:', props.users);
 
-// Role color mapping
-const roleColors = {
-    'admin': 'bg-purple-100 text-purple-800',
-    'director': 'bg-blue-100 text-blue-800',
-    'regent': 'bg-green-100 text-green-800',
-    'secretary': 'bg-yellow-100 text-yellow-800',
-    'professor': 'bg-indigo-100 text-indigo-800',
-    'grade_teacher': 'bg-pink-100 text-pink-800',
-    'assistant_teacher': 'bg-orange-100 text-orange-800',
-    'curricular_teacher': 'bg-teal-100 text-teal-800',
-    'special_teacher': 'bg-cyan-100 text-cyan-800',
-    'class_assistant': 'bg-emerald-100 text-emerald-800',
-    'librarian': 'bg-violet-100 text-violet-800',
-    'guardian': 'bg-rose-100 text-rose-800',
-    'student': 'bg-sky-100 text-sky-800',
-    'cooperative': 'bg-amber-100 text-amber-800',
-    'former_student': 'bg-slate-100 text-slate-800'
-};
-
-// Get color class for a role
-const getRoleColor = (role) => {
-    return roleColors[role.key] || 'bg-gray-100 text-gray-800';
-};
-
 const deleteUser = (id) => {
     if (confirm('¿Está seguro de eliminar este usuario?')) {
         router.delete(route('users.destroy', id));
@@ -149,9 +125,13 @@ const isCurrentUserAdmin = () => {
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-500">
-                                                <span v-for="(role, index) in user.roles" :key="role.id" class="inline-block mr-2">
-                                                    <RoleBadge :role="role" />
-                                                </span>
+                                                <div class="flex flex-wrap gap-1">
+                                                    <RoleBadge
+                                                        v-for="role in user.roles"
+                                                        :key="role.id"
+                                                        :role="role"
+                                                    />
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -239,10 +219,12 @@ const isCurrentUserAdmin = () => {
                                 </div>
                                 <div class="mt-2">
                                     <div class="text-xs font-medium text-gray-500 mb-1">Roles:</div>
-                                    <div class="flex flex-wrap gap-2">
-                                        <RoleBadge v-for="role in user.roles" 
-                                                  :key="role.id" 
-                                                  :role="role" />
+                                    <div class="flex flex-wrap gap-1">
+                                        <RoleBadge
+                                            v-for="role in user.roles"
+                                            :key="role.id"
+                                            :role="role"
+                                        />
                                     </div>
                                 </div>
                             </div>

@@ -6,6 +6,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class UserService
 {
@@ -31,7 +34,7 @@ class UserService
                 return [
                     'id' => $role['id'],
                     'name' => $role['name'],
-                    'short' => $this->getRoleShortName($role['name']),
+                    'short' => $role['short'],
                     'key' => $role['key'],
                     'team_id' => $role['team_id']
                 ];
@@ -58,16 +61,78 @@ class UserService
         return User::onlyTrashed()->with('roles')->paginate(10);
     }
 
+    /**
+     * Validate user data
+     */
+    public function validateUserData(array $data, ?User $user = null)
+    {
+        $rules = [
+            'name' => ['required', 'string', 'max:255'],
+            'firstname' => ['nullable', 'string', 'max:255'],
+            'lastname' => ['nullable', 'string', 'max:255'],
+            'id_number' => ['nullable', 'string', 'max:50'],
+            'birthdate' => ['nullable', 'date'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'locality' => ['nullable', 'string', 'max:255'],
+            'province_id' => ['nullable', 'exists:provinces,id'],
+            'country_id' => ['nullable', 'exists:countries,id'],
+            'nationality' => ['nullable', 'string', 'max:100'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($user?->id)
+            ],
+            'password' => $user ? ['nullable', 'string', 'min:8', 'confirmed'] : ['required', 'string', 'min:8', 'confirmed'],
+            'role' => ['nullable', 'string', 'exists:roles,name'],
+        ];
+
+        $messages = [
+            'name.required' => 'El nombre es obligatorio',
+            'email.required' => 'El correo electrónico es obligatorio',
+            'email.email' => 'El correo electrónico debe ser válido',
+            'email.unique' => 'Este correo electrónico ya está registrado',
+            'password.required' => 'La contraseña es obligatoria',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres',
+            'password.confirmed' => 'La confirmación de la contraseña no coincide',
+            'province_id.exists' => 'La provincia seleccionada no existe',
+            'country_id.exists' => 'El país seleccionado no existe',
+            'role.exists' => 'El rol seleccionado no existe',
+        ];
+
+        $validator = Validator::make($data, $rules, $messages);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        return $validator->validated();
+    }
+
     public function createUser(array $data)
     {
+        $validatedData = $this->validateUserData($data);
+
         $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'name' => $validatedData['name'],
+            'firstname' => $validatedData['firstname'] ?? null,
+            'lastname' => $validatedData['lastname'] ?? null,
+            'id_number' => $validatedData['id_number'] ?? null,
+            'birthdate' => $validatedData['birthdate'] ?? null,
+            'phone' => $validatedData['phone'] ?? null,
+            'address' => $validatedData['address'] ?? null,
+            'locality' => $validatedData['locality'] ?? null,
+            'province_id' => $validatedData['province_id'] ?? null,
+            'country_id' => $validatedData['country_id'] ?? null,
+            'nationality' => $validatedData['nationality'] ?? null,
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
         ]);
 
-        if (!empty($data['role'])) {
-            $user->assignRole($data['role']);
+        if (!empty($validatedData['role'])) {
+            $user->assignRole($validatedData['role']);
         }
 
         return $user;
@@ -75,14 +140,26 @@ class UserService
 
     public function updateUser(User $user, array $data)
     {
+        $validatedData = $this->validateUserData($data, $user);
+
         $user->update([
-            'name' => $data['name'],
-            'email' => $data['email'],
+            'name' => $validatedData['name'],
+            'firstname' => $validatedData['firstname'] ?? $user->firstname,
+            'lastname' => $validatedData['lastname'] ?? $user->lastname,
+            'id_number' => $validatedData['id_number'] ?? $user->id_number,
+            'birthdate' => $validatedData['birthdate'] ?? $user->birthdate,
+            'phone' => $validatedData['phone'] ?? $user->phone,
+            'address' => $validatedData['address'] ?? $user->address,
+            'locality' => $validatedData['locality'] ?? $user->locality,
+            'province_id' => $validatedData['province_id'] ?? $user->province_id,
+            'country_id' => $validatedData['country_id'] ?? $user->country_id,
+            'nationality' => $validatedData['nationality'] ?? $user->nationality,
+            'email' => $validatedData['email'],
         ]);
 
-        if (!empty($data['password'])) {
+        if (!empty($validatedData['password'])) {
             $user->update([
-                'password' => Hash::make($data['password']),
+                'password' => Hash::make($validatedData['password']),
             ]);
         }
 
@@ -117,19 +194,5 @@ class UserService
         }
 
         return $user->forceDelete();
-    }
-
-    private function getRoleShortName($roleName)
-    {
-        $shortNames = [
-            'Administrador' => 'Admin',
-            'Director' => 'Dir',
-            'Regente' => 'Reg',
-            'Secretario' => 'Sec',
-            'Maestra/o de Grado' => 'Grado',
-            'Responsable' => 'Resp'
-        ];
-
-        return $shortNames[$roleName] ?? $roleName;
     }
 }

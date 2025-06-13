@@ -10,6 +10,10 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\UserService;
+use App\Http\Requests\UserRequest;
+use App\Models\Province;
+use App\Models\Country;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends SystemBaseController
 {
@@ -31,20 +35,6 @@ class UserController extends SystemBaseController
         ]);
     }
 
-    private function getRoleShortName($roleName)
-    {
-        $shortNames = [
-            'Administrador' => 'Admin',
-            'Director' => 'Dir',
-            'Regente' => 'Reg',
-            'Secretario' => 'Sec',
-            'Maestra/o de Grado' => 'Grado',
-            'Responsable' => 'Resp'
-        ];
-
-        return $shortNames[$roleName] ?? $roleName;
-    }
-
     /**
      * Display a listing of the trashed users.
      */
@@ -62,6 +52,8 @@ class UserController extends SystemBaseController
     {
         return Inertia::render('Users/Create', [
             'roles' => Role::all(),
+            'provinces' => Province::orderBy('order')->get(),
+            'countries' => Country::orderBy('order')->get(),
         ]);
     }
 
@@ -71,9 +63,12 @@ class UserController extends SystemBaseController
     public function store(Request $request)
     {
         try {
-            $this->userService->createUser($request->all());
-            return redirect()->route('users.index')
-                ->with('success', 'Usuario creado exitosamente.');
+            $user = $this->userService->createUser($request->all());
+            return redirect()->route('users.show', $user)->with('success', 'Usuario creado exitosamente.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withErrors(['error' => $e->getMessage()])
@@ -87,7 +82,10 @@ class UserController extends SystemBaseController
     public function edit(User $user): Response
     {
         return Inertia::render('Users/Edit', [
-            'user' => $user->load('roles'),
+            'user' => $user->load(['roles']),
+            'roles' => Role::all(),
+            'provinces' => Province::orderBy('order')->get(),
+            'countries' => Country::orderBy('order')->get(),
         ]);
     }
 
@@ -96,25 +94,18 @@ class UserController extends SystemBaseController
      */
     public function update(Request $request, User $user)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
-        ]);
-
-        $user->update([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-        ]);
-
-        if (!empty($validated['password'])) {
-            $user->update([
-                'password' => bcrypt($validated['password']),
-            ]);
+        try {
+            $this->userService->updateUser($user, $request->all());
+            return redirect()->route('users.show', $user)->with('success', 'Usuario actualizado exitosamente.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()])
+                ->withInput();
         }
-
-        return redirect()->route('users.index')
-            ->with('success', 'Usuario actualizado exitosamente.');
     }
 
     /**
@@ -193,7 +184,7 @@ class UserController extends SystemBaseController
             return [
                 'id' => $role->id,
                 'name' => $role->name,
-                'short' => $this->getRoleShortName($role->name),
+                'short' => $role->short,
                 'key' => $role->key,
                 'team_id' => $role->pivot->team_id
             ];

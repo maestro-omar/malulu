@@ -6,30 +6,6 @@ import RoleBadge from '@/Components/RoleBadge.vue';
 const props = defineProps({
     user: Object
 });
-
-// Role color mapping
-const roleColors = {
-    'admin': 'bg-purple-100 text-purple-800',
-    'director': 'bg-blue-100 text-blue-800',
-    'regent': 'bg-green-100 text-green-800',
-    'secretary': 'bg-yellow-100 text-yellow-800',
-    'professor': 'bg-indigo-100 text-indigo-800',
-    'grade_teacher': 'bg-pink-100 text-pink-800',
-    'assistant_teacher': 'bg-orange-100 text-orange-800',
-    'curricular_teacher': 'bg-teal-100 text-teal-800',
-    'special_teacher': 'bg-cyan-100 text-cyan-800',
-    'class_assistant': 'bg-emerald-100 text-emerald-800',
-    'librarian': 'bg-violet-100 text-violet-800',
-    'guardian': 'bg-rose-100 text-rose-800',
-    'student': 'bg-sky-100 text-sky-800',
-    'cooperative': 'bg-amber-100 text-amber-800',
-    'former_student': 'bg-slate-100 text-slate-800'
-};
-
-// Get color class for a role
-const getRoleColor = (role) => {
-    return roleColors[role.key] || 'bg-gray-100 text-gray-800';
-};
 </script>
 
 <template>
@@ -68,26 +44,68 @@ const getRoleColor = (role) => {
                             <div class="space-y-4">
                                 <h3 class="text-lg font-medium text-gray-900">Información Básica</h3>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Nombre</label>
+                                    <label class="block text-sm font-medium text-gray-700">Nombre de usuario</label>
                                     <div class="mt-1 text-sm text-gray-900">{{ user.name }}</div>
                                 </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Nombre</label>
+                                    <div class="mt-1 text-sm text-gray-900">{{ user.firstname || '-' }}</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Apellido</label>
+                                    <div class="mt-1 text-sm text-gray-900">{{ user.lastname || '-' }}</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">DNI</label>
+                                    <div class="mt-1 text-sm text-gray-900">{{ user.id_number || '-' }}</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
+                                    <div class="mt-1 text-sm text-gray-900">
+                                        {{ user.birthdate ? new Date(user.birthdate).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : '-' }}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Nacionalidad</label>
+                                    <div class="mt-1 text-sm text-gray-900">{{ user.nationality || '-' }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-medium text-gray-900">Información de Contacto</h3>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Email</label>
                                     <div class="mt-1 text-sm text-gray-900">{{ user.email }}</div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Fecha de Registro</label>
-                                    <div class="mt-1 text-sm text-gray-900">
-                                        {{ new Date(user.created_at).toLocaleDateString() }}
-                                    </div>
+                                    <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+                                    <div class="mt-1 text-sm text-gray-900">{{ user.phone || '-' }}</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Dirección</label>
+                                    <div class="mt-1 text-sm text-gray-900">{{ user.address || '-' }}</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Localidad</label>
+                                    <div class="mt-1 text-sm text-gray-900">{{ user.locality || '-' }}</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Provincia</label>
+                                    <div class="mt-1 text-sm text-gray-900">{{ user.province?.name || '-' }}</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">País</label>
+                                    <div class="mt-1 text-sm text-gray-900">{{ user.country?.name || '-' }}</div>
                                 </div>
                             </div>
 
                             <!-- Roles and Schools -->
                             <div class="space-y-4">
+                                <h3 class="text-lg font-medium text-gray-900">Roles y Escuelas</h3>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Roles</label>
-                                    <div class="mt-2 flex flex-wrap gap-2">
+                                    <div class="mt-1 flex flex-wrap gap-2">
                                         <RoleBadge
                                             v-for="role in user.roles"
                                             :key="role.id"
@@ -97,15 +115,31 @@ const getRoleColor = (role) => {
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Escuelas</label>
-                                    <div class="mt-2 flex flex-wrap gap-2">
+                                    <div class="mt-1 flex flex-wrap gap-2">
                                         <span
                                             v-for="school in user.schools"
                                             :key="school.id"
                                             class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800"
-                                            :title="school.name"
                                         >
-                                            {{ school.short }}
+                                            {{ school.name }}
                                         </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- System Information -->
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-medium text-gray-900">Información del Sistema</h3>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Fecha de Registro</label>
+                                    <div class="mt-1 text-sm text-gray-900">
+                                        {{ new Date(user.created_at).toLocaleDateString() }}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Última Actualización</label>
+                                    <div class="mt-1 text-sm text-gray-900">
+                                        {{ new Date(user.updated_at).toLocaleDateString() }}
                                     </div>
                                 </div>
                             </div>

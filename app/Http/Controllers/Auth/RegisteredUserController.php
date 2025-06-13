@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Province;
+use App\Models\Country;
 
 class RegisteredUserController extends Controller
 {
@@ -21,7 +23,10 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Auth/Register');
+        return Inertia::render('Auth/Register', [
+            'provinces' => Province::all(),
+            'countries' => Country::all(),
+        ]);
     }
 
     /**

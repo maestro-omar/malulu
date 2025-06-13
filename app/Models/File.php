@@ -19,6 +19,7 @@ class File extends Model
     protected $fillable = [
         'subtype_id',
         'user_id',
+        'replaced_by_id',
         'fileable_type',
         'fileable_id',
         'original_name',
@@ -39,6 +40,7 @@ class File extends Model
     protected $casts = [
         'subtype_id' => 'integer',
         'user_id' => 'integer',
+        'replaced_by_id' => 'integer',
         'size' => 'integer',
         'metadata' => 'array',
         'active' => 'boolean'
@@ -58,6 +60,22 @@ class File extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the file that replaced this file.
+     */
+    public function replacedBy(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'replaced_by_id');
+    }
+
+    /**
+     * Get the file that this file replaced.
+     */
+    public function replacedFile(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'replaced_by_id', 'id');
     }
 
     /**
@@ -99,5 +117,21 @@ class File extends Model
         }
 
         return round($bytes, 2) . ' ' . $units[$index];
+    }
+
+    /**
+     * Check if this file has been replaced by another file.
+     */
+    public function isReplaced(): bool
+    {
+        return !is_null($this->replaced_by_id);
+    }
+
+    /**
+     * Check if this file has replaced another file.
+     */
+    public function hasReplacedFile(): bool
+    {
+        return $this->replacedFile()->exists();
     }
 } 

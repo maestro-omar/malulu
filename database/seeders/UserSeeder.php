@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\School;
 use App\Models\Role;
+use App\Models\Province;
+use App\Models\Country;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Faker\Factory as Faker;
@@ -21,6 +23,14 @@ class FakeUsersSeeder extends Seeder
 
         if (!$school) {
             throw new \Exception('School with key 740058000 not found. Please run SchoolSeeder first.');
+        }
+
+        // Get default province (San Luis) and country (Argentina)
+        $province = Province::where('key', Province::DEFAULT)->first();
+        $country = Country::where('iso', Country::DEFAULT)->first();
+
+        if (!$province || !$country) {
+            throw new \Exception('Default province or country not found. Please run ProvinceSeeder and CountrySeeder first.');
         }
 
         // Create one user for each role type
@@ -46,6 +56,16 @@ class FakeUsersSeeder extends Seeder
                 ['email' => "{$roleKey}@example.com"],
                 [
                     'name' => $faker->name(),
+                    'firstname' => $faker->firstName(),
+                    'lastname' => $faker->lastName(),
+                    'id_number' => $faker->dni(),
+                    'birthdate' => $faker->dateTimeBetween('-60 years', '-18 years'),
+                    'phone' => $faker->phoneNumber(),
+                    'address' => $faker->streetAddress(),
+                    'locality' => $faker->city(),
+                    'province_id' => $province->id,
+                    'country_id' => $country->id,
+                    'nationality' => $faker->boolean(80) ? 'Argentina' : $faker->country(),
                     'password' => Hash::make('password'),
                 ]
             );
@@ -64,6 +84,16 @@ class FakeUsersSeeder extends Seeder
                 ['email' => "random{$i}@example.com"],
                 [
                     'name' => $faker->name(),
+                    'firstname' => $faker->firstName(),
+                    'lastname' => $faker->lastName(),
+                    'id_number' => $faker->dni(),
+                    'birthdate' => $faker->dateTimeBetween('-60 years', '-18 years'),
+                    'phone' => $faker->phoneNumber(),
+                    'address' => $faker->streetAddress(),
+                    'locality' => $faker->city(),
+                    'province_id' => $province->id,
+                    'country_id' => $country->id,
+                    'nationality' => $faker->boolean(80) ? 'Argentina' : $faker->country(),
                     'password' => Hash::make('password'),
                 ]
             );
