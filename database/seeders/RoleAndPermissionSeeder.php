@@ -474,9 +474,9 @@ class RoleAndPermissionSeeder extends Seeder
                 ],
             ],
             'cooperative' => [
-                'name' => 'Cooperativa',
+                'name' => 'Cooperadora',
                 'key' => 'cooperative',
-                'description' => 'Miembro de la cooperativa',
+                'description' => 'Miembro de la cooperadora',
                 'short' => 'Coop',
                 'permissions' => [
                     'view own profile',

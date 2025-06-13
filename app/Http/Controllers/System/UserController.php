@@ -13,6 +13,7 @@ use App\Services\UserService;
 use App\Http\Requests\UserRequest;
 use App\Models\Province;
 use App\Models\Country;
+use App\Models\School;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends SystemBaseController
@@ -202,5 +203,35 @@ class UserController extends SystemBaseController
         return Inertia::render('Users/Show', [
             'user' => $transformedUser
         ]);
+    }
+
+    /**
+     * Show the form for editing user roles.
+     */
+    public function editRoles(User $user): Response
+    {
+        return Inertia::render('Users/EditRoles', $this->userService->getUserRolesData($user));
+    }
+
+    /**
+     * Update the user's roles.
+     */
+    public function updateRoles(Request $request, User $user)
+    {
+        $request->validate([
+            'roles' => 'array',
+            'roles.*' => 'array',
+            'roles.*.*' => 'exists:roles,id',
+        ]);
+
+        try {
+            $this->userService->updateUserRoles($user, $request->roles);
+            return redirect()->route('users.show', $user)
+                ->with('success', 'Roles actualizados correctamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Error al actualizar los roles. Por favor, intente nuevamente.'])
+                ->withInput();
+        }
     }
 }

@@ -37,6 +37,8 @@ Route::prefix('sistema')->group(function () {
             Route::get('usuarios/{user}/editar', [UserController::class, 'edit'])->name('users.edit');
             Route::put('usuarios/{user}', [UserController::class, 'update'])->name('users.update');
             Route::delete('usuarios/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+            Route::get('usuarios/{user}/editar-roles', [UserController::class, 'editRoles'])->name('users.edit-roles');
+            Route::put('usuarios/{user}/roles', [UserController::class, 'updateRoles'])->name('users.update-roles');
             Route::resource('usuarios', UserController::class)->except(['index', 'show', 'create', 'edit', 'destroy']);
         });
 

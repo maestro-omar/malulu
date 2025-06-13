@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 
 class UserService
 {
@@ -194,5 +195,55 @@ class UserService
         }
 
         return $user->forceDelete();
+    }
+
+    /**
+     * Get user roles data for editing
+     */
+    public function getUserRolesData(User $user)
+    {
+        // Load the roles relationship with team_id
+        $user->load(['allRolesAcrossTeams']);
+
+        // Get current roles grouped by team_id
+        $currentRoles = $user->allRolesAcrossTeams->groupBy('pivot.team_id')
+            ->map(function ($roles) {
+                return $roles->pluck('id')->toArray();
+            })
+            ->toArray();
+
+        return [
+            'user' => $user,
+            'schools' => \App\Models\School::all(),
+            'availableRoles' => \Spatie\Permission\Models\Role::all(),
+            'currentRoles' => $currentRoles,
+        ];
+    }
+
+    /**
+     * Update user roles
+     */
+    public function updateUserRoles(User $user, array $roles)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Remove all existing roles
+            $user->roles()->detach();
+
+            // Add new roles
+            foreach ($roles as $schoolId => $roleIds) {
+                foreach ($roleIds as $roleId) {
+                    $user->roles()->attach($roleId, ['team_id' => $schoolId]);
+                }
+            }
+
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating user roles: ' . $e->getMessage());
+            throw $e;
+        }
     }
 }

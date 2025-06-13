@@ -47,7 +47,7 @@ class FakeUsersSeeder extends Seeder
             'librarian' => 'Bibliotecario/a',
             'guardian' => 'Responsable',
             'student' => 'Estudiante',
-            'cooperative' => 'Cooperativa',
+            'cooperative' => 'Cooperadora',
             'former_student' => 'Ex-Estudiante'
         ];
 

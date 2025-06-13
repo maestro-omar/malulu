@@ -34,6 +34,13 @@ const props = defineProps({
                     >
                         Editar Usuario
                     </Link>
+                    <Link
+                        v-if="$page.props.auth.user.can['edit users']"
+                        :href="route('users.edit-roles', user.id)"
+                        class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                        Editar Roles
+                    </Link>
                     <button
                         v-if="$page.props.auth.user.can['delete users']"
                         @click="destroy"
