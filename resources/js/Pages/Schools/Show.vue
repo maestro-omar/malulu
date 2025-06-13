@@ -50,6 +50,66 @@
                   <div class="grid grid-cols-2 gap-4">
                     <div>
                       <label class="block text-sm font-medium text-gray-400"
+                        >Logo</label
+                      >
+                      <div class="mt-1 relative group">
+                        <img 
+                          :src="school.logo || noImage" 
+                          class="h-12 w-12 object-contain" 
+                        />
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button 
+                            @click="openFileInput('logo')"
+                            class="bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75"
+                          >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                        </div>
+                        <input 
+                          type="file" 
+                          ref="logoInput"
+                          class="hidden" 
+                          accept="image/*"
+                          @change="handleLogoUpload"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-400"
+                        >Imagen Principal</label
+                      >
+                      <div class="mt-1 relative group">
+                        <img 
+                          :src="school.picture || noImage" 
+                          class="h-24 w-24 object-cover rounded" 
+                        />
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button 
+                            @click="openFileInput('picture')"
+                            class="bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75"
+                          >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                        </div>
+                        <input 
+                          type="file" 
+                          ref="pictureInput"
+                          class="hidden" 
+                          accept="image/*"
+                          @change="handlePictureUpload"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-400"
                         >Nombre Corto</label
                       >
                       <p class="mt-1 text-sm text-gray-900">
@@ -235,10 +295,65 @@ import ShiftBadge from "@/Components/ShiftBadge.vue";
 import ManagementTypeBadge from "@/Components/ManagementTypeBadge.vue";
 import PhoneField from "@/Components/PhoneField.vue";
 import EmailField from "@/Components/EmailField.vue";
+import { ref } from 'vue';
+import noImage from '@images/no-image.png'
 
 const props = defineProps({
   school: Object,
 });
+
+const logoInput = ref(null);
+const pictureInput = ref(null);
+
+const openFileInput = (type) => {
+  if (type === 'logo') {
+    logoInput.value.click();
+  } else {
+    pictureInput.value.click();
+  }
+};
+
+const handleLogoUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append('logo', file);
+    formData.append('_method', 'PUT');
+
+    router.post(route('schools.update', props.school.id), formData, {
+      preserveScroll: true,
+      onSuccess: () => {
+        // Reset the input
+        event.target.value = '';
+      },
+      onError: (errors) => {
+        console.error('Upload error:', errors);
+      },
+      forceFormData: true
+    });
+  }
+};
+
+const handlePictureUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append('picture', file);
+    formData.append('_method', 'PUT');
+
+    router.post(route('schools.update', props.school.id), formData, {
+      preserveScroll: true,
+      onSuccess: () => {
+        // Reset the input
+        event.target.value = '';
+      },
+      onError: (errors) => {
+        console.error('Upload error:', errors);
+      },
+      forceFormData: true
+    });
+  }
+};
 
 const destroy = () => {
   if (confirm("¿Está seguro que desea eliminar esta escuela?")) {

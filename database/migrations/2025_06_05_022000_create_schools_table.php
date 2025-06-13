@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('key')->unique();
             $table->string('name');
             $table->string('short')->nullable();
+            $table->string('logo')->nullable();
+            $table->string('picture')->nullable();
             $table->foreignId('locality_id')->constrained();
             $table->string('address')->nullable();
             $table->string('zip_code')->nullable();

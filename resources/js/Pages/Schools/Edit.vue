@@ -37,43 +37,48 @@
                       </div>
                     </div>
 
-                    <div>
-                      <InputLabel for="management_type" value="Tipo de Gestión" />
-                      <select id="management_type" v-model="form.management_type_id"
-                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                        required>
-                        <option value="">Seleccionar tipo de gestión</option>
-                        <option v-for="type in managementTypes" :key="type.id" :value="type.id">
-                          {{ type.name }}
-                        </option>
-                      </select>
-                      <InputError :message="form.errors.management_type_id" class="mt-2" />
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <InputLabel for="management_type" value="Tipo de Gestión" />
+                        <select id="management_type" v-model="form.management_type_id"
+                          class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                          required>
+                          <option value="">Seleccionar tipo de gestión</option>
+                          <option v-for="type in managementTypes" :key="type.id" :value="type.id">
+                            {{ type.name }}
+                          </option>
+                        </select>
+                        <InputError :message="form.errors.management_type_id" class="mt-2" />
+                      </div>
                     </div>
 
-                    <div>
-                      <InputLabel value="Niveles" />
-                      <div class="mt-2 flex flex-wrap gap-4">
-                        <div v-for="level in schoolLevels" :key="level.id" class="flex items-center">
-                          <Checkbox :id="'level-' + level.id" :value="level.id" v-model:checked="form.school_levels" />
-                          <label :for="'level-' + level.id" class="ml-2 text-sm text-gray-600">
-                            {{ level.name }}
-                          </label>
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <InputLabel value="Niveles" />
+                        <div class="mt-2 flex flex-wrap gap-4">
+                          <div v-for="level in schoolLevels" :key="level.id" class="flex items-center">
+                            <Checkbox :id="'level-' + level.id" :value="level.id"
+                              v-model:checked="form.school_levels" />
+                            <label :for="'level-' + level.id" class="ml-2 text-sm text-gray-600">
+                              {{ level.name }}
+                            </label>
+                          </div>
                         </div>
+                        <InputError :message="form.errors.school_levels" class="mt-2" />
                       </div>
-                      <InputError :message="form.errors.school_levels" class="mt-2" />
-                    </div>
 
-                    <div>
-                      <InputLabel value="Turnos" />
-                      <div class="mt-2 flex flex-wrap gap-4">
-                        <div v-for="shift in shifts" :key="shift.id" class="flex items-center">
-                          <Checkbox :id="'shift-' + shift.id" :value="shift.id" v-model:checked="form.shifts" />
-                          <label :for="'shift-' + shift.id" class="ml-2 text-sm text-gray-600">
-                            {{ shift.name }}
-                          </label>
+                      <div>
+                        <InputLabel value="Turnos" />
+                        <div class="mt-2 flex flex-wrap gap-4">
+                          <div v-for="shift in shifts" :key="shift.id" class="flex items-center">
+                            <Checkbox :id="'shift-' + shift.id" :value="shift.id" v-model:checked="form.shifts" />
+                            <label :for="'shift-' + shift.id" class="ml-2 text-sm text-gray-600">
+                              {{ shift.name }}
+                            </label>
+                          </div>
                         </div>
+                        <InputError :message="form.errors.shifts" class="mt-2" />
                       </div>
-                      <InputError :message="form.errors.shifts" class="mt-2" />
                     </div>
                   </div>
                 </div>
@@ -83,14 +88,8 @@
                   <div class="space-y-4">
                     <div>
                       <InputLabel for="locality" value="Localidad" />
-                      <SearchableDropdown
-                        id="locality"
-                        v-model="form.locality_id"
-                        :options="localities"
-                        :initial-value="currentLocality"
-                        placeholder="Buscar localidad..."
-                        required
-                      />
+                      <SearchableDropdown id="locality" v-model="form.locality_id" :options="localities"
+                        :initial-value="currentLocality" placeholder="Buscar localidad..." required />
                       <InputError :message="form.errors.locality_id" class="mt-2" />
                     </div>
 
@@ -138,10 +137,8 @@
                   <div v-for="(social, index) in form.social" :key="index" class="grid grid-cols-12 gap-4 items-end">
                     <div class="col-span-3">
                       <InputLabel :value="'Tipo'" />
-                      <select
-                        v-model="social.type"
-                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                      >
+                      <select v-model="social.type"
+                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                         <option value="facebook">Facebook</option>
                         <option value="instagram">Instagram</option>
                         <option value="twitter">Twitter</option>
@@ -152,43 +149,33 @@
                     </div>
                     <div class="col-span-3">
                       <InputLabel :value="'Etiqueta'" />
-                      <TextInput
-                        type="text"
-                        class="mt-1 block w-full"
-                        v-model="social.label"
-                        :placeholder="social.type === 'other' ? 'Nombre de la red' : ''"
-                      />
+                      <TextInput type="text" class="mt-1 block w-full" v-model="social.label"
+                        :placeholder="social.type === 'other' ? 'Nombre de la red' : ''" />
                     </div>
                     <div class="col-span-5">
                       <InputLabel :value="'Enlace'" />
-                      <TextInput
-                        type="url"
-                        class="mt-1 block w-full"
-                        v-model="social.link"
-                        placeholder="https://..."
-                      />
+                      <TextInput type="url" class="mt-1 block w-full" v-model="social.link" placeholder="https://..." />
                     </div>
                     <div class="col-span-1">
-                      <button
-                        type="button"
-                        @click="removeSocial(index)"
-                        class="inline-flex items-center justify-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                      >
+                      <button type="button" @click="removeSocial(index)"
+                        class="inline-flex items-center justify-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
                         </svg>
                       </button>
                     </div>
                   </div>
 
                   <div>
-                    <button
-                      type="button"
-                      @click="addSocial"
-                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                      <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                    <button type="button" @click="addSocial"
+                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                      <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                          clip-rule="evenodd" />
                       </svg>
                       Agregar Red Social
                     </button>
@@ -258,7 +245,9 @@ const form = useForm({
   phone: props.school.phone || '',
   email: props.school.email || '',
   coordinates: props.school.coordinates || '',
-  social: props.school.social || []
+  social: props.school.social || [],
+  logo: null,
+  picture: null
 });
 
 // Add a watch for locality changes
@@ -270,12 +259,29 @@ watch(() => form.locality_id, (newValue) => {
 
 const submit = () => {
   // Ensure locality_id is a number before submitting
-  const formData = { ...form };
-  if (formData.locality_id && typeof formData.locality_id === 'object') {
-    formData.locality_id = formData.locality_id.id;
+  if (form.locality_id && typeof form.locality_id === 'object') {
+    form.locality_id = form.locality_id.id;
   }
-  
-  form.put(route('schools.update', props.school.id));
+
+  // Ensure school_levels and shifts are arrays
+  if (!Array.isArray(form.school_levels)) {
+    form.school_levels = [];
+  }
+  if (!Array.isArray(form.shifts)) {
+    form.shifts = [];
+  }
+
+  // Ensure social is an array
+  if (!Array.isArray(form.social)) {
+    form.social = [];
+  }
+
+  form.put(route('schools.update', props.school.id), {
+    preserveScroll: true,
+    onError: (errors) => {
+      console.error('Validation errors:', errors);
+    }
+  });
 };
 
 // Social media methods

@@ -36,7 +36,9 @@ class School extends Model
         'email',
         'coordinates',
         'social',
-        'extra'
+        'extra',
+        'logo',
+        'picture'
     ];
 
     protected $casts = [

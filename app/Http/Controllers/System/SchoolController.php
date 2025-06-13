@@ -12,6 +12,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class SchoolController extends SystemBaseController
 {
@@ -38,9 +39,9 @@ class SchoolController extends SystemBaseController
     {
         return Inertia::render('Schools/Create', [
             'localities' => \App\Models\Locality::orderBy('order')->get(),
-            'schoolLevels' => SchoolLevel::orderBy('name')->get(),
-            'managementTypes' => SchoolManagementType::orderBy('name')->get(),
-            'shifts' => SchoolShift::orderBy('name')->get()
+            'schoolLevels' => SchoolLevel::orderBy('id')->get(),
+            'managementTypes' => SchoolManagementType::orderBy('id')->get(),
+            'shifts' => SchoolShift::orderBy('id')->get()
         ]);
     }
 
@@ -67,28 +68,26 @@ class SchoolController extends SystemBaseController
         return Inertia::render('Schools/Edit', [
             'school' => $school->load(['locality', 'schoolLevels', 'managementType', 'shifts']),
             'localities' => \App\Models\Locality::orderBy('order')->get(),
-            'schoolLevels' => SchoolLevel::orderBy('name')->get(),
-            'managementTypes' => SchoolManagementType::orderBy('name')->get(),
-            'shifts' => SchoolShift::orderBy('name')->get()
+            'schoolLevels' => SchoolLevel::orderBy('id')->get(),
+            'managementTypes' => SchoolManagementType::orderBy('id')->get(),
+            'shifts' => SchoolShift::orderBy('id')->get()
         ]);
     }
 
     public function update(Request $request, School $school)
     {
         try {
-            // Let's add some debugging to verify the school is being passed correctly
-            \Log::info('Controller updating school', [
-                'school_id' => $school->id,
-                'school_name' => $school->name
-            ]);
-
             $this->schoolService->updateSchool($school, $request->all());
 
             return redirect()->route('schools.index')
                 ->with('success', 'School updated successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
         } catch (\Exception $e) {
             return redirect()->back()
-                ->withErrors($e->errors() ?? ['error' => $e->getMessage()])
+                ->withErrors(['error' => $e->getMessage()])
                 ->withInput();
         }
     }

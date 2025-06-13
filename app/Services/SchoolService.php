@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -43,13 +45,6 @@ class SchoolService
      */
     public function validateSchoolData(array $data, ?School $school = null)
     {
-        // // Add debugging to verify the school parameter
-        // \Log::info('Validating school data', [
-        //     'has_school' => !is_null($school),
-        //     'school_id' => $school?->id,
-        //     'school_name' => $school?->name
-        // ]);
-
         $rules = [
             'name' => [
                 'required',
@@ -78,7 +73,9 @@ class SchoolService
             'phone' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',
             'coordinates' => 'nullable|string|max:100',
-            'social' => 'nullable|array'
+            'social' => 'nullable|array',
+            'logo' => 'nullable|image|max:1024', // max 1MB
+            'picture' => 'nullable|image|max:2048' // max 2MB
         ];
 
         $validator = Validator::make($data, $rules);
@@ -118,13 +115,6 @@ class SchoolService
         if ($school->name === 'GLOBAL') {
             throw new \Exception('Cannot update GLOBAL school.');
         }
-
-        // Let's add some debugging to verify the school is being passed correctly
-        \Log::info('Updating school', [
-            'school_id' => $school->id,
-            'school_name' => $school->name,
-            'data' => $data
-        ]);
 
         $validatedData = $this->validateSchoolData($data, $school);
 
