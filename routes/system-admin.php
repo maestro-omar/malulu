@@ -5,6 +5,7 @@ use App\Http\Controllers\System\UserController;
 use App\Http\Controllers\System\SchoolController;
 use App\Http\Controllers\System\AcademicYearController;
 use App\Http\Controllers\System\FileTypeController;
+use App\Http\Controllers\System\FileSubtypeController;
 use Illuminate\Support\Facades\Route;
 // use Inertia\Inertia;
 
@@ -73,6 +74,15 @@ Route::prefix('sistema')->group(function () {
         });
 
         Route::resource('file-types', FileTypeController::class)
+            ->middleware('can:superadmin');
+
+        // File Subtypes Routes
+        Route::middleware('permission:superadmin')->group(function () {
+            Route::get('/subtipos-archivo', [FileSubtypeController::class, 'index'])
+                ->name('file-subtypes.index');
+        });
+
+        Route::resource('file-subtypes', FileSubtypeController::class)
             ->middleware('can:superadmin');
     });
 });

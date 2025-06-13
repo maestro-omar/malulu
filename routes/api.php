@@ -42,4 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // File Types API Routes
     Route::apiResource('file-types', \App\Http\Controllers\Api\FileTypeController::class);
+
+    // File Subtypes API Routes
+    Route::apiResource('file-subtypes', \App\Http\Controllers\Api\FileSubtypeController::class);
 });

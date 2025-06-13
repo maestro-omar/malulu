@@ -141,6 +141,13 @@ class HandleInertiaRequests extends Middleware
                 'route' => 'file-types.index',
                 'icon' => 'document',
             ];
+
+            // Add File Subtypes menu item for superadmin
+            $items[] = [
+                'name' => 'Subtipos de Archivo',
+                'route' => 'file-subtypes.index',
+                'icon' => 'document-text',
+            ];
         }
 
         // Add separator if we have any items before
