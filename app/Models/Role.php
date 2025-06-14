@@ -28,11 +28,11 @@ class Role extends SpatieRole
     const REGENT = 'regent';
     const SECRETARY = 'secretary';
     const GRADE_TEACHER = 'grade_teacher';
-    const ASSISTANT_TEACHER = 'assistant_teacher';
+    const ASSISTANT_TEACHER = 'assistant_teacher'; //auxiliar docente, primaria/inicial
     const CURRICULAR_TEACHER = 'curricular_teacher';
     const SPECIAL_TEACHER = 'special_teacher';
     const PROFESSOR = 'professor';
-    const CLASS_ASSISTANT = 'class_assistant';
+    const CLASS_ASSISTANT = 'class_assistant'; //preceptor
     const LIBRARIAN = 'librarian';
     const GUARDIAN = 'guardian';
     const STUDENT = 'student';

@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             SchoolShiftSeeder::class,
             SchoolManagementTypeSeeder::class,
             SchoolSeeder::class,
+            ClassSubjectSeeder::class,
         ]);
 
         // Create initial admin user with explicit password
@@ -58,8 +59,6 @@ class DatabaseSeeder extends Seeder
             // Roles and permissions
             RoleAndPermissionSeeder::class,
         ]);
-
-
 
         $this->call([
             // Users
