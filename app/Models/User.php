@@ -80,4 +80,67 @@ class User extends Authenticatable
             ->where('model_type', self::class)
             ->withPivot('team_id');
     }
+
+    /**
+     * Get the role metadata for the user.
+     */
+    public function roleMetadata()
+    {
+        return $this->hasMany(UserRoleMetadata::class);
+    }
+
+    /**
+     * Get the role metadata for a specific role and school.
+     */
+    public function getRoleMetadata($roleId, $schoolId)
+    {
+        return $this->roleMetadata()
+            ->where('role_id', $roleId)
+            ->where('school_id', $schoolId)
+            ->first();
+    }
+
+    /**
+     * Get the role relationships for the user.
+     */
+    public function roleRelationships()
+    {
+        return $this->hasMany(RoleRelationship::class);
+    }
+
+    /**
+     * Get active role relationships for the user.
+     */
+    public function activeRoleRelationships()
+    {
+        return $this->roleRelationships()->active();
+    }
+
+    /**
+     * Get role relationships for a specific role.
+     */
+    public function roleRelationshipsForRole($roleId)
+    {
+        return $this->roleRelationships()->forRole($roleId);
+    }
+
+    /**
+     * Get role relationships for a specific school.
+     */
+    public function roleRelationshipsForSchool($schoolId)
+    {
+        return $this->roleRelationships()->forSchool($schoolId);
+    }
+
+    /**
+     * Get active role relationships for a specific role and school.
+     */
+    public function activeRoleRelationship($roleId, $schoolId)
+    {
+        return $this->roleRelationships()
+            ->forRole($roleId)
+            ->forSchool($schoolId)
+            ->active()
+            ->first();
+    }
 }
