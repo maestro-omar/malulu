@@ -38,7 +38,7 @@ class FileSubtypeController extends SystemBaseController
         try {
             $validated = $request->validate([
                 'file_type_id' => 'required|exists:file_types,id',
-                'key' => 'required|string|unique:file_subtypes',
+                'code' => 'required|string|unique:file_subtypes',
                 'name' => 'required|string',
                 'description' => 'nullable|string',
                 'new_overwrites' => 'boolean',
@@ -70,7 +70,7 @@ class FileSubtypeController extends SystemBaseController
         try {
             $validated = $request->validate([
                 'file_type_id' => 'required|exists:file_types,id',
-                'key' => 'required|string|unique:file_subtypes,key,' . $fileSubtype->id,
+                'code' => 'required|string|unique:file_subtypes,code,' . $fileSubtype->id,
                 'name' => 'required|string',
                 'description' => 'nullable|string',
                 'new_overwrites' => 'boolean',

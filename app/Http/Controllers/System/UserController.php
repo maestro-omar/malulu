@@ -188,7 +188,7 @@ class UserController extends SystemBaseController
                 'id' => $role->id,
                 'name' => $role->name,
                 'short' => $role->short,
-                'key' => $role->key,
+                'code' => $role->code,
                 'team_id' => $role->pivot->team_id
             ];
         })->toArray();

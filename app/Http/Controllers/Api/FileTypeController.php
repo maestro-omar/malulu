@@ -28,7 +28,7 @@ class FileTypeController extends Controller
     {
         try {
             $validated = $request->validate([
-                'key' => 'required|string|unique:file_types',
+                'code' => 'required|string|unique:file_types',
                 'name' => 'required|string',
                 'relate_with' => 'nullable|string',
                 'active' => 'boolean'
@@ -56,7 +56,7 @@ class FileTypeController extends Controller
     {
         try {
             $validated = $request->validate([
-                'key' => 'required|string|unique:file_types,key,' . $fileType->id,
+                'code' => 'required|string|unique:file_types,code,' . $fileType->id,
                 'name' => 'required|string',
                 'relate_with' => 'nullable|string',
                 'active' => 'boolean'

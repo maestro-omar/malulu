@@ -10,7 +10,7 @@ class SchoolLevel extends Model
     use HasFactory;
 
     /**
-     * SchoolLevel key constants
+     * SchoolLevel code constants
      */
     const KINDER = 'kinder';
     const PRIMARY = 'primary';

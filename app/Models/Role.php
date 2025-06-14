@@ -21,7 +21,7 @@ class Role extends SpatieRole
     ];
 
     /**
-     * Role key constants
+     * Role code constants
      */
     const ADMIN = 'admin';
     const DIRECTOR = 'director';
@@ -42,22 +42,22 @@ class Role extends SpatieRole
     /**
      * Get role pairs for select
      *
-     * @param array $roleKeys
+     * @param array $roleCodes
      * @return array
      */
-    public static function pairs(array $roleKeys): array
+    public static function pairs(array $roleCodes): array
     {
-        return self::whereIn('name', $roleKeys)
+        return self::whereIn('name', $roleCodes)
             ->pluck('name', 'name')
             ->toArray();
     }
 
     /**
-     * Get all role keys
+     * Get all role codes
      *
      * @return array
      */
-    public static function allKeys(): array
+    public static function allCodes(): array
     {
         return [
             self::ADMIN,
@@ -94,11 +94,11 @@ class Role extends SpatieRole
     }
 
     /**
-     * Get worker role keys
+     * Get worker role codes
      *
      * @return array
      */
-    public static function workersKeys(): array
+    public static function workersCodes(): array
     {
         return [
             self::DIRECTOR,
@@ -115,11 +115,11 @@ class Role extends SpatieRole
     }
 
     /**
-     * Get teacher role keys
+     * Get teacher role codes
      *
      * @return array
      */
-    public static function teacherKeys(): array
+    public static function teacherCodes(): array
     {
         return [
             self::PROFESSOR,
@@ -131,11 +131,11 @@ class Role extends SpatieRole
     }
 
     /**
-     * Get family role keys
+     * Get family role codes
      *
      * @return array
      */
-    public static function familyKeys(): array
+    public static function familyCodes(): array
     {
         return [
             self::STUDENT,
@@ -147,23 +147,23 @@ class Role extends SpatieRole
     /**
      * Check if role is a family member
      *
-     * @param string $key
+     * @param string $code
      * @return bool
      */
-    public static function isFamily(string $key): bool
+    public static function isFamily(string $code): bool
     {
-        return in_array($key, self::familyKeys());
+        return in_array($code, self::familyCodes());
     }
 
     /**
      * Check if role is a teacher
      *
-     * @param array|string $key
+     * @param array|string $code
      * @return bool
      */
-    public static function isTeacher(array|string $key): bool
+    public static function isTeacher(array|string $code): bool
     {
-        return (is_array($key) && !empty(array_intersect($key, self::teacherKeys())))
-            || (!is_array($key) && in_array($key, self::teacherKeys()));
+        return (is_array($code) && !empty(array_intersect($code, self::teacherCodes())))
+            || (!is_array($code) && in_array($code, self::teacherCodes()));
     }
 } 

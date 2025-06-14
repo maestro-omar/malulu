@@ -23,7 +23,7 @@ class SchoolService
                 $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
                         ->orWhere('short', 'like', "%{$search}%")
-                        ->orWhere('key', 'like', "%{$search}%")
+                        ->orwhere('code', 'like', "%{$search}%")
                         ->orWhereHas('locality', function ($query) use ($search) {
                             $query->where('name', 'like', "%{$search}%");
                         })

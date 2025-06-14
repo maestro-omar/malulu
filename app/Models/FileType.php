@@ -39,11 +39,11 @@ class FileType extends Model
     ];
 
     /**
-     * Get all file type keys
+     * Get all file type codes
      *
      * @return array
      */
-    public static function allKeys(): array
+    public static function allCodes(): array
     {
         return [
             self::PROVINCIAL,
@@ -56,11 +56,11 @@ class FileType extends Model
     }
 
     /**
-     * Get user-related file type keys
+     * Get user-related file type codes
      *
      * @return array
      */
-    public static function userRelatedKeys(): array
+    public static function userRelatedCodes(): array
     {
         return [
             self::TEACHER,
@@ -72,16 +72,16 @@ class FileType extends Model
     /**
      * Get file types for specific profiles
      *
-     * @param array $profilesKeys
+     * @param array $profilesCodes
      * @return array
      */
-    public static function getForProfiles(array $profilesKeys): array
+    public static function getForProfiles(array $profilesCodes): array
     {
         $r = [self::USER];
 
         if (!empty(array_intersect(
-            Role::teacherKeys(),
-            $profilesKeys
+            Role::teacherCodes(),
+            $profilesCodes
         ))) {
             $r[] = self::TEACHER;
         }
@@ -89,7 +89,7 @@ class FileType extends Model
         if (!empty(array_intersect([
             Role::STUDENT,
             Role::FORMER_STUDENT,
-        ], $profilesKeys))) {
+        ], $profilesCodes))) {
             $r[] = self::STUDENT;
         }
 

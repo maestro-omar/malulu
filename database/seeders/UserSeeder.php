@@ -19,14 +19,14 @@ class FakeUsersSeeder extends Seeder
     public function run(): void
     {
         $faker = Faker::create('es_ES'); // Using Spanish locale for more realistic names
-        $school = School::where('key', '740058000')->first();
+        $school = School::where('code', '740058000')->first();
 
         if (!$school) {
-            throw new \Exception('School with key 740058000 not found. Please run SchoolSeeder first.');
+            throw new \Exception('School with code 740058000 not found. Please run SchoolSeeder first.');
         }
 
         // Get default province (San Luis) and country (Argentina)
-        $province = Province::where('key', Province::DEFAULT)->first();
+        $province = Province::where('code', Province::DEFAULT)->first();
         $country = Country::where('iso', Country::DEFAULT)->first();
 
         if (!$province || !$country) {
@@ -51,9 +51,9 @@ class FakeUsersSeeder extends Seeder
             'former_student' => 'Ex-Estudiante'
         ];
 
-        foreach ($roles as $roleKey => $roleName) {
+        foreach ($roles as $roleCode => $roleName) {
             $user = User::firstOrCreate(
-                ['email' => "{$roleKey}@example.com"],
+                ['email' => "{$roleCode}@example.com"],
                 [
                     'name' => $faker->name(),
                     'firstname' => $faker->firstName(),
@@ -71,7 +71,7 @@ class FakeUsersSeeder extends Seeder
             );
 
             // Get the role by guard_name
-            $role = Role::where('guard_name', $roleKey)->first();
+            $role = Role::where('guard_name', $roleCode)->first();
             if ($role) {
                 // Assign role with team_id (school)
                 $user->assignRole($role, $school->id);
@@ -99,8 +99,8 @@ class FakeUsersSeeder extends Seeder
             );
 
             // Randomly assign a role from the list
-            $randomRoleKey = array_rand($roles);
-            $role = Role::where('guard_name', $randomRoleKey)->first();
+            $randomRoleCode = array_rand($roles);
+            $role = Role::where('guard_name', $randomRoleCode)->first();
             if ($role) {
                 $user->assignRole($role, $school->id);
             }

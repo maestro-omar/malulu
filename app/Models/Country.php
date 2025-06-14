@@ -10,7 +10,7 @@ class Country extends Model
     use HasFactory;
 
     /**
-     * Country key constants
+     * Country code constants
      */
     const DEFAULT = 'ar';
 

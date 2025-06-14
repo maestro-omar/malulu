@@ -15,7 +15,7 @@ class School extends Model
     protected $table = 'schools';
 
     /**
-     * Profile key constants
+     * Profile code constants
      */
 
     /**

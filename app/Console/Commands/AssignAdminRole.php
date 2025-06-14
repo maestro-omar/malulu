@@ -22,14 +22,14 @@ class AssignAdminRole extends Command
             return 1;
         }
 
-        $adminRole = Role::where('key', Role::ADMIN)->first();
+        $adminRole = Role::where('code', Role::ADMIN)->first();
         if (!$adminRole) {
             $this->error('Admin role not found! Please run RoleAndPermissionSeeder first.');
             return 1;
         }
 
         // Get global school
-        $globalSchool = School::where('key', 'GLOBAL')->first();
+        $globalSchool = School::where('code', 'GLOBAL')->first();
         if (!$globalSchool) {
             $this->error('Global school not found! Please run SchoolSeeder first.');
             return 1;
