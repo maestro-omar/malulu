@@ -3,7 +3,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import RoleBadge from '@/Components/RoleBadge.vue';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import noImage from '@images/no-image-person.png';
 
 const props = defineProps({
@@ -29,6 +29,12 @@ const isAdmin = (user) => {
 
 const isCurrentUserAdmin = () => {
     return isAdmin($page.props.auth.user);
+};
+
+const getUniqueRoles = (roles) => {
+    return roles.filter((role, index, self) =>
+        index === self.findIndex((r) => r.id === role.id)
+    );
 };
 </script>
 
@@ -136,7 +142,7 @@ const isCurrentUserAdmin = () => {
                                             <div class="text-sm text-gray-500">
                                                 <div class="flex flex-wrap gap-1">
                                                     <RoleBadge
-                                                        v-for="role in user.roles"
+                                                        v-for="role in getUniqueRoles(user.roles)"
                                                         :key="role.id"
                                                         :role="role"
                                                     />
@@ -235,7 +241,7 @@ const isCurrentUserAdmin = () => {
                                     <div class="text-xs font-medium text-gray-500 mb-1">Roles:</div>
                                     <div class="flex flex-wrap gap-1">
                                         <RoleBadge
-                                            v-for="role in user.roles"
+                                            v-for="role in getUniqueRoles(user.roles)"
                                             :key="role.id"
                                             :role="role"
                                         />

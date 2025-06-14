@@ -11,14 +11,38 @@ use Faker\Factory as Faker;
 use Spatie\Permission\PermissionRegistrar;
 use App\Models\Province;
 use App\Models\Country;
+use App\Models\ClassSubject;
+use App\Models\Course;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class FakeUsersSeeder extends Seeder
 {
+    private $mathSubject;
+    private $course;
+
+    public function __construct()
+    {
+        // Get required IDs
+        $this->mathSubject = ClassSubject::where('short_name', 'MAT')->first();
+        $this->course = Course::first();
+    }
+
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
+        if (!$this->mathSubject) {
+            $this->command->error('Mathematics subject not found. Please run ClassSubjectSeeder first.');
+            return;
+        }
+
+        if (!$this->course) {
+            $this->command->error('No courses found. Please run CourseSeeder first.');
+            return;
+        }
+
         $faker = Faker::create('es_ES'); // Using Spanish locale for more realistic names
 
         // Create users for default school (740058000)
@@ -246,6 +270,77 @@ class FakeUsersSeeder extends Seeder
                 $role = Role::where('code', $roleCode)->first();
                 if ($role) {
                     $user->assignRole($role);
+
+                    // Create role relationship
+                    $roleRelationship = [
+                        'user_id' => $user->id,
+                        'role_id' => $role->id,
+                        'school_id' => $school->id,
+                        'start_date' => Carbon::now()->subYears($faker->numberBetween(1, 5)),
+                        'end_date' => null,
+                        'end_reason_id' => null,
+                        'notes' => "Auto-generated {$roleCode} relationship",
+                        'created_by' => 1,
+                        'updated_by' => 1,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ];
+
+                    $roleRelationshipId = DB::table('role_relationships')->insertGetId($roleRelationship);
+
+                    // Create specific relationship based on role type
+                    switch ($roleCode) {
+                        case 'grade_teacher':
+                        case 'assistant_teacher':
+                        case 'curricular_teacher':
+                        case 'special_teacher':
+                        case 'professor':
+                            DB::table('teacher_relationships')->insert([
+                                'role_relationship_id' => $roleRelationshipId,
+                                'class_subject_id' => $this->mathSubject->id,
+                                'job_status' => $faker->randomElement(['titular', 'interim', 'substitute']),
+                                'job_status_date' => Carbon::now()->subYears($faker->numberBetween(1, 5)),
+                                'decree_number' => 'DEC-' . date('Y') . '-' . str_pad($faker->numberBetween(1, 999), 3, '0', STR_PAD_LEFT),
+                                'degree_title' => $faker->randomElement([
+                                    'Master in Mathematics',
+                                    'Bachelor in Education',
+                                    'Master in Education',
+                                    'PhD in Education'
+                                ]),
+                                'created_at' => Carbon::now(),
+                                'updated_at' => Carbon::now(),
+                            ]);
+                            break;
+
+                        case 'student':
+                            DB::table('student_relationships')->insert([
+                                'role_relationship_id' => $roleRelationshipId,
+                                'current_course_id' => $this->course->id,
+                                'created_at' => Carbon::now(),
+                                'updated_at' => Carbon::now(),
+                            ]);
+                            break;
+
+                        case 'guardian':
+                            // Find a random student to link this guardian to
+                            $student = User::whereHas('roles', function ($query) {
+                                $query->where('code', 'student');
+                            })->inRandomOrder()->first();
+
+                            if ($student) {
+                                DB::table('guardian_relationships')->insert([
+                                    'role_relationship_id' => $roleRelationshipId,
+                                    'student_id' => $student->id,
+                                    'relationship_type' => $faker->randomElement(['father', 'mother', 'grandfather', 'grandmother', 'uncle', 'aunt']),
+                                    'is_emergency_contact' => $faker->boolean(70),
+                                    'is_restricted' => $faker->boolean(10),
+                                    'emergency_contact_priority' => $faker->numberBetween(1, 3),
+                                    'created_at' => Carbon::now(),
+                                    'updated_at' => Carbon::now(),
+                                ]);
+                            }
+                            break;
+                    }
                 }
             }
         }

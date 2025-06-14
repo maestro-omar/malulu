@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             SchoolManagementTypeSeeder::class,
             SchoolSeeder::class,
             ClassSubjectSeeder::class,
+            CourseSeeder::class,
         ]);
 
         // Create initial admin user with explicit password
@@ -62,7 +63,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             // Users
-            FakeUsersSeeder::class,
+            FakeUsersSeeder::class
         ]);
     }
 }

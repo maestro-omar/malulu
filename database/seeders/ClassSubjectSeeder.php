@@ -154,17 +154,27 @@ class ClassSubjectSeeder extends Seeder
             ],
         ];
 
+        $any = false;
         foreach ($schoolLevels as $level) {
-            if (isset($subjectsByLevel[$level->name])) {
-                foreach ($subjectsByLevel[$level->name] as $subject) {
+            if (isset($subjectsByLevel[$level->code])) {
+                foreach ($subjectsByLevel[$level->code] as $subject) {
                     ClassSubject::create([
                         'name' => $subject['name'],
                         'short_name' => $subject['short_name'],
                         'school_level_id' => $level->id,
                         'is_curricular' => $subject['is_curricular'],
                     ]);
+                    $any = true;
                 }
+            } else {
+                $this->command->error('No subjects for level!' . $level->name);
+                dd($level);
             }
+        }
+
+        if (!$any) {
+            $this->command->error('No subject created! why?');
+            return;
         }
     }
 }
