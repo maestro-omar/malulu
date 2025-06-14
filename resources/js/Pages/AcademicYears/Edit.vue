@@ -9,9 +9,9 @@
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div class="p-6 text-gray-900">
-            <form @submit.prevent="submit">
+        <form @submit.prevent="submit">
+          <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 text-gray-900">
               <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="year">
                   Año
@@ -72,29 +72,21 @@
                   </div>
                 </div>
               </div>
-
-              <div class="flex items-center justify-between">
-                <button type="submit"
-                  class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  :disabled="form.processing">
-                  Guardar Cambios
-                </button>
-                <Link :href="route('academic-years.index')" class="text-gray-600 hover:text-gray-800">
-                  Cancelar
-                </Link>
-              </div>
-            </form>
+            </div>
           </div>
-        </div>
+
+          <ActionButtons button-label="Guardar Cambios" :cancel-href="route('academic-years.index')"
+            :disabled="form.processing" class="mt-4" />
+        </form>
       </div>
     </div>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import { Link, useForm } from '@inertiajs/vue3'
+import { useForm, Head } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
-import { Head } from '@inertiajs/vue3'
+import ActionButtons from '@/Components/ActionButtons.vue'
 
 const props = defineProps({
   academicYear: {

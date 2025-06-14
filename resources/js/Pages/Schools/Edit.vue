@@ -9,9 +9,9 @@
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div class="p-6 text-gray-900">
-            <form @submit.prevent="submit" class="space-y-6">
+        <form @submit.prevent="submit" class="space-y-6">
+          <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 text-gray-900">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h3 class="text-lg font-semibold mb-4">Información de la Escuela</h3>
@@ -182,16 +182,11 @@
                   </div>
                 </div>
               </div>
-
-              <div class="flex items-center justify-between mt-4">
-                <PrimaryButton :disabled="form.processing">
-                  Actualizar Escuela
-                </PrimaryButton>
-                <CancelLink :href="route('schools.show', school.id)" />
-              </div>
-            </form>
+            </div>
           </div>
-        </div>
+          <ActionButtons button-label="Actualizar Escuela" :cancel-href="route('schools.show', school.id)"
+            :disabled="form.processing" class="mt-4" />
+        </form>
       </div>
     </div>
   </AuthenticatedLayout>
@@ -202,11 +197,10 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import SearchableDropdown from '@/Components/SearchableDropdown.vue';
-import CancelLink from '@/Components/CancelLink.vue';
+import ActionButtons from '@/Components/ActionButtons.vue';
 import { ref, computed, onMounted, watch } from 'vue';
 
 const props = defineProps({

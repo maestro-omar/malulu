@@ -3,9 +3,8 @@ import { Head, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import CancelLink from '@/Components/CancelLink.vue';
+import ActionButtons from '@/Components/ActionButtons.vue';
 
 const props = defineProps({
     user: Object,
@@ -41,7 +40,7 @@ const submit = () => {
 
 <template>
 
-    <Head :title="`Editar Usuario: ${user.name}`" />
+    <Head :title="`Editar Usuario: ${props.user.name}`" />
 
     <AuthenticatedLayout>
         <template #header>
@@ -169,15 +168,14 @@ const submit = () => {
                                     <InputError class="mt-2" :message="form.errors.country_id" />
                                 </div>
                             </div>
-
-                            <div class="flex items-center justify-between">
-                                <PrimaryButton :disabled="form.processing">
-                                    Guardar Cambios
-                                </PrimaryButton>
-                                <CancelLink :href="route('users.show', user.id)" />
-                            </div>
                         </div>
                     </div>
+
+                    <ActionButtons 
+                        button-label="Guardar Cambios"
+                        :cancel-href="route('users.show', props.user.id)"
+                        :disabled="form.processing"
+                    />
                 </form>
             </div>
         </div>

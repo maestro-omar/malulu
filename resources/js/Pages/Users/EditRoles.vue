@@ -129,21 +129,11 @@
                                     </div>
                                 </div>
 
-                                <div class="flex items-center justify-end space-x-4">
-                                    <Link
-                                        :href="route('users.show', user.id)"
-                                        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                                    >
-                                        Cancelar
-                                    </Link>
-                                    <button
-                                        type="submit"
-                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                        :disabled="form.processing"
-                                    >
-                                        Guardar Cambios
-                                    </button>
-                                </div>
+                                <ActionButtons 
+                                    button-label="Guardar Cambios"
+                                    :cancel-href="route('users.show', user.id)"
+                                    :disabled="form.processing"
+                                />
                             </div>
                         </form>
                     </div>
@@ -158,6 +148,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import RoleBadge from '@/Components/RoleBadge.vue';
 import { ref, computed } from 'vue';
+import ActionButtons from '@/Components/ActionButtons.vue';
 
 const props = defineProps({
     user: Object,

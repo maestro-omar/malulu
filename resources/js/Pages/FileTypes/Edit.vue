@@ -58,12 +58,11 @@
                                 </label>
                             </div>
 
-                            <div class="flex items-center justify-between">
-                                <PrimaryButton :disabled="form.processing">
-                                    Guardar
-                                </PrimaryButton>
-                                <CancelLink :href="route('file-types.index')" />
-                            </div>
+                            <ActionButtons 
+                                button-label="Guardar"
+                                :cancel-href="route('file-types.index')"
+                                :disabled="form.processing"
+                            />
                         </form>
                     </div>
                 </div>
@@ -78,9 +77,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Checkbox from '@/Components/Checkbox.vue';
-import CancelLink from '@/Components/CancelLink.vue';
+import ActionButtons from '@/Components/ActionButtons.vue';
 
 const props = defineProps({
     fileType: Object
