@@ -24,7 +24,7 @@ class School extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'key',
+        'code',
         'name',
         'short',
         'cue',

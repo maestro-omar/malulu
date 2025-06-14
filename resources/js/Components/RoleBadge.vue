@@ -27,7 +27,7 @@ const roleColors = {
 
 // Get color class for a role
 const getRoleColor = (role) => {
-    return roleColors[role.key] || 'bg-gray-100 text-gray-800';
+    return roleColors[role.code] || 'bg-gray-100 text-gray-800';
 };
 </script>
 

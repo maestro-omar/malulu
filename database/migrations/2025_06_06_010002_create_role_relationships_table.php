@@ -56,7 +56,7 @@ return new class extends Migration
             $table->string('job_status'); // Employment status (titular, interino, suplente)
             $table->date('job_status_date')->nullable(); // Employment status date
             $table->string('decree_number')->nullable(); // Decree number and year that assings to this job 
-            $table->foreignId('decree_file_id')->nullable()->constrained()->onDelete('cascade'); // Link to the file
+            $table->foreignId('decree_file_id')->nullable()->constrained('files')->onDelete('cascade'); // Link to the file
             $table->json('schedule')->nullable();
             $table->string('degree_title'); // Academic degree title
             $table->timestamps();
@@ -67,23 +67,20 @@ return new class extends Migration
         Schema::create('guardian_relationships', function (Blueprint $table) {
             $table->id();
             $table->foreignId('role_relationship_id')->constrained()->onDelete('cascade'); // Link to the main role relationship
-            $table->foreignId('student_id')->constrained()->onDelete('cascade'); // Relation tu user table
-            $table->string('relationship_type'); // Type of relationship (padre, madre, tutor, otro)
-            $table->boolean('is_legal')->default(true); // Legal guardian status (legal, no_legal)
+            $table->foreignId('student_id')->constrained('users')->onDelete('cascade');
+            $table->string('relationship_type'); // Father, mother, legal guardian, etc.
+            $table->boolean('is_emergency_contact')->default(false);
             $table->boolean('is_restricted')->default(false); // If there is any legal restriction
             $table->tinyInteger('emergency_contact_priority')->default(1)->unsigned(); // Priority level (1-10)
             $table->timestamps();
             $table->softDeletes();
-
-            // Add constraint for emergency_contact_priority
-            $table->check('emergency_contact_priority >= 1 AND emergency_contact_priority <= 10');
         });
 
         // Student relationships
         Schema::create('student_relationships', function (Blueprint $table) {
             $table->id();
             $table->foreignId('role_relationship_id')->constrained()->onDelete('cascade'); // Link to the main role relationship
-            $table->foreignId('current_course_id')->nullable()->constrained()->onDelete('cascade'); // Link to the current course
+            $table->foreignId('current_course_id')->nullable()->constrained('courses')->onDelete('cascade'); // Link to the current course
             $table->timestamps();
             $table->softDeletes();
         });

@@ -10,9 +10,9 @@ class SchoolShiftSeeder extends Seeder
     public function run(): void
     {
         $shifts = [
-            ['name' => 'Mañana', 'key' => 'morning'],
-            ['name' => 'Tarde', 'key' => 'afternoon'],
-            ['name' => 'Noche', 'key' => 'night'],
+            ['name' => 'Mañana', 'code' => 'morning'],
+            ['name' => 'Tarde', 'code' => 'afternoon'],
+            ['name' => 'Noche', 'code' => 'night'],
         ];
 
         foreach ($shifts as $shift) {

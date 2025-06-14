@@ -11,7 +11,7 @@ class FileTypeService
         return FileType::all()->map(function ($fileType) {
             return [
                 'id' => $fileType->id,
-                'key' => $fileType->key,
+                'code' => $fileType->code,
                 'name' => $fileType->name,
                 'relate_with' => $fileType->relate_with,
                 'active' => $fileType->active,

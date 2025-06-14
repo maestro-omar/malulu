@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class SchoolShift extends Model
 {
-    protected $fillable = ['name', 'key'];
+    protected $fillable = ['name', 'code'];
 
     public function schools(): BelongsToMany
     {

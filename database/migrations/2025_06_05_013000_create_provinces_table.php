@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('provinces', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique();
+            $table->string('code')->unique();
             $table->string('name');
             $table->integer('order')->default(0);
             $table->timestamps();

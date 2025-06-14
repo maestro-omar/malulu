@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('school_levels', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique();  // Unique key for each level (kinder, primary, secondary)
+            $table->string('code')->unique();  // Unique code for each level (kinder, primary, secondary)
             $table->string('name');           // Display name (Inicial, Primaria, Secundaria)
             $table->timestamps();
         });

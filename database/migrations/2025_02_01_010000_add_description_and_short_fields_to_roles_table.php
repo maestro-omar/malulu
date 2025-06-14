@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('roles', function (Blueprint $table) {
-            $table->string('key')->unique()->after('name');
-            $table->text('description')->nullable()->after('key');
+            $table->string('code')->unique()->after('name');
+            $table->text('description')->nullable()->after('code');
             $table->string('short')->nullable()->after('description');
         });
     }
@@ -18,7 +18,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('roles', function (Blueprint $table) {
-            $table->dropColumn(['key', 'description', 'short']);
+            $table->dropColumn(['code', 'description', 'short']);
         });
     }
 }; 

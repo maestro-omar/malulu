@@ -13,15 +13,16 @@
                     <div class="p-6 text-gray-900">
                         <form @submit.prevent="submit">
                             <div class="mb-4">
-                                <InputLabel for="key" value="Clave" />
+                                <InputLabel for="code" value="Clave" />
                                 <TextInput
-                                    id="key"
-                                    v-model="form.key"
+                                    id="code"
+                                    v-model="form.code"
                                     type="text"
                                     class="mt-1 block w-full"
                                     required
+                                    autofocus
                                 />
-                                <InputError :message="form.errors.key" class="mt-2" />
+                                <InputError :message="form.errors.code" class="mt-2" />
                             </div>
 
                             <div class="mb-4">
@@ -93,7 +94,7 @@ const relateWithOptions = {
 };
 
 const form = useForm({
-    key: props.fileType.key,
+    code: props.fileType.code,
     name: props.fileType.name,
     relate_with: props.fileType.relate_with,
     active: props.fileType.active

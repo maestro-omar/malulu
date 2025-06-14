@@ -49,7 +49,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '2665103445',
             'address' => 'Basilio Bustos 569',
             'locality' => 'Juan Koslay',
-            'province_id' => Province::where('key', Province::DEFAULT)->first()->id,
+            'province_id' => Province::where('code', Province::DEFAULT)->first()->id,
             'country_id' => Country::where('iso', Country::DEFAULT)->first()->id,
             'nationality' => 'Argentina',
             'password' => Hash::make('123123123'),

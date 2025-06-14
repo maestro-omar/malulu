@@ -31,7 +31,7 @@
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     <tr v-for="fileType in fileTypes" :key="fileType.id">
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ fileType.key }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ fileType.code }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ fileType.name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ fileType.relate_with }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">

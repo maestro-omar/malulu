@@ -22,13 +22,13 @@ class FakeUsersSeeder extends Seeder
         $faker = Faker::create('es_ES'); // Using Spanish locale for more realistic names
 
         // Create users for default school (740058000)
-        $defaultSchool = School::where('key', '740058000')->first();
+        $defaultSchool = School::where('code', '740058000')->first();
         if (!$defaultSchool) {
-            throw new \Exception('School with key 740058000 not found. Please run SchoolSeeder first.');
+            throw new \Exception('School with code 740058000 not found. Please run SchoolSeeder first.');
         }
 
         // Get default province (San Luis) and country (Argentina)
-        $province = Province::where('key', Province::DEFAULT)->first();
+        $province = Province::where('code', Province::DEFAULT)->first();
         $country = Country::where('iso', Country::DEFAULT)->first();
 
         if (!$province || !$country) {
@@ -58,7 +58,7 @@ class FakeUsersSeeder extends Seeder
         );
 
         // Assign admin role
-        $adminRole = Role::where('key', 'admin')->first();
+        $adminRole = Role::where('code', 'admin')->first();
         if ($adminRole) {
             $admin->assignRole($adminRole);
         }
@@ -83,16 +83,16 @@ class FakeUsersSeeder extends Seeder
 
         // Make cooperative members also guardians
         $cooperativeUsers = User::whereHas('roles', function ($query) {
-            $query->where('key', 'cooperative');
+            $query->where('code', 'cooperative');
         })->get();
-        $guardianRole = Role::where('key', 'guardian')->first();
+        $guardianRole = Role::where('code', 'guardian')->first();
         foreach ($cooperativeUsers as $user) {
             $user->assignRole($guardianRole);
         }
 
         // Make 3 grade teachers also guardians
         $gradeTeachers = User::whereHas('roles', function ($query) {
-            $query->where('key', 'grade_teacher');
+            $query->where('code', 'grade_teacher');
         })->take(3)->get();
         foreach ($gradeTeachers as $user) {
             $user->assignRole($guardianRole);
@@ -100,12 +100,12 @@ class FakeUsersSeeder extends Seeder
 
         // Make one teacher from default school also be a guardian in another school
         $teacherFromDefaultSchool = User::whereHas('roles', function ($query) {
-            $query->where('key', 'grade_teacher');
+            $query->where('code', 'grade_teacher');
         })->first();
 
         if ($teacherFromDefaultSchool) {
             // Get a random school that's not the default school
-            $otherSchool = School::where('key', '!=', '740058000')->inRandomOrder()->first();
+            $otherSchool = School::where('code', '!=', '740058000')->inRandomOrder()->first();
             if ($otherSchool) {
                 // Set the team ID for the other school
                 app(PermissionRegistrar::class)->setPermissionsTeamId($otherSchool->id);
@@ -115,7 +115,7 @@ class FakeUsersSeeder extends Seeder
         }
 
         // Create users for other schools
-        $otherSchools = School::where('key', '!=', '740058000')->get();
+        $otherSchools = School::where('code', '!=', '740058000')->get();
         $availableRoles = [
             'regent',
             'secretary',
@@ -196,7 +196,7 @@ class FakeUsersSeeder extends Seeder
             'Colón'
         ];
 
-        foreach ($roleCounts as $roleKey => $count) {
+        foreach ($roleCounts as $roleCode => $count) {
             for ($i = 1; $i <= $count; $i++) {
                 $firstName = $faker->firstName();
                 $lastName = $faker->lastName();
@@ -210,7 +210,7 @@ class FakeUsersSeeder extends Seeder
                 $dni = $faker->numberBetween(10000000, 99999999);
 
                 // Adjust birthdate based on role
-                $birthdate = $this->getBirthdateForRole($roleKey, $faker);
+                $birthdate = $this->getBirthdateForRole($roleCode, $faker);
 
                 // Set nationality (80% Argentine, 20% other)
                 $nationality = $faker->boolean(80) ? 'Argentina' : $faker->randomElement([
@@ -225,7 +225,7 @@ class FakeUsersSeeder extends Seeder
                 ]);
 
                 $user = User::firstOrCreate(
-                    ['email' => "{$roleKey}_{$school->key}_{$i}@example.com"],
+                    ['email' => "{$roleCode}_{$school->code}_{$i}@example.com"],
                     [
                         'name' => $firstName . ' ' . $lastName,
                         'firstname' => $firstName,
@@ -242,8 +242,8 @@ class FakeUsersSeeder extends Seeder
                     ]
                 );
 
-                // Get the role by key
-                $role = Role::where('key', $roleKey)->first();
+                // Get the role by code
+                $role = Role::where('code', $roleCode)->first();
                 if ($role) {
                     $user->assignRole($role);
                 }
@@ -254,9 +254,9 @@ class FakeUsersSeeder extends Seeder
     /**
      * Get appropriate birthdate range based on role
      */
-    private function getBirthdateForRole(string $roleKey, $faker): \DateTime
+    private function getBirthdateForRole(string $roleCode, $faker): \DateTime
     {
-        return match ($roleKey) {
+        return match ($roleCode) {
             'student' => $faker->dateTimeBetween('-18 years', '-5 years'),
             'former_student' => $faker->dateTimeBetween('-30 years', '-19 years'),
             'guardian' => $faker->dateTimeBetween('-60 years', '-25 years'),

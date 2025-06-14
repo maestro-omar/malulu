@@ -22,11 +22,6 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-
-        // Add foreign key to role_relationships table
-        Schema::table('role_relationships', function (Blueprint $table) {
-            $table->foreignId('end_reason_id')->nullable()->constrained('role_relationship_end_reasons')->nullOnDelete();
-        });
     }
 
     /**
@@ -34,11 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('role_relationships', function (Blueprint $table) {
-            $table->dropForeign(['end_reason_id']);
-            $table->dropColumn('end_reason_id');
-        });
-
         Schema::dropIfExists('role_relationship_end_reasons');
     }
 }; 

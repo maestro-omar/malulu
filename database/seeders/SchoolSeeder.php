@@ -25,7 +25,7 @@ class SchoolSeeder extends Seeder
 
         $schools = [
             [
-                'key' => 'GLOBAL',
+                'code' => 'GLOBAL',
                 'name' => 'GLOBAL',
                 'short' => 'GLOBAL',
                 'locality_id' => $this->localities['San Luis'],
@@ -42,7 +42,7 @@ class SchoolSeeder extends Seeder
                 'shifts' => ['morning']
             ],
             [
-                'key' => '740058000',
+                'code' => '740058000',
                 'name' => 'CENTRO EDUCATIVO N° 8 MAESTRAS LUCIO LUCERO',
                 'short' => 'CE N° 8',
                 'locality_id' => $this->localities['San Luis'],
@@ -70,7 +70,7 @@ class SchoolSeeder extends Seeder
                 'shifts' => ['morning', 'afternoon']
             ],
             [
-                'key' => '740058100',
+                'code' => '740058100',
                 'name' => 'CENTRO EDUCATIVO N°1 JUAN PASCUAL PRINGLES',
                 'short' => 'CE N°1',
                 'locality_id' => $this->localities['San Luis'],
@@ -87,7 +87,7 @@ class SchoolSeeder extends Seeder
                 'shifts' => ['morning', 'afternoon']
             ],
             [
-                'key' => '740058050',
+                'code' => '740058050',
                 'name' => 'ESCUELA DE NIVEL INICIAL N°6 CRECER JUGANDO',
                 'short' => 'ENI N°6',
                 'locality_id' => $this->localities['Villa Mercedes'],
@@ -104,7 +104,7 @@ class SchoolSeeder extends Seeder
                 'shifts' => ['morning']
             ],
             [
-                'key' => '740058500',
+                'code' => '740058500',
                 'name' => 'CENTRO EDUCATIVO N°5 SENADOR ALFREDO BERTIN',
                 'short' => 'CE N°5',
                 'locality_id' => $this->localities['Merlo'],
@@ -121,7 +121,7 @@ class SchoolSeeder extends Seeder
                 'shifts' => ['morning']
             ],
             [
-                'key' => '740058040',
+                'code' => '740058040',
                 'name' => 'ESCUELA DE NIVEL INICIAL N°5 MARIA EDELMIRA ALRIC DE CASTILLO',
                 'short' => 'ENI N°5',
                 'locality_id' => $this->localities['San Luis'],
@@ -138,7 +138,7 @@ class SchoolSeeder extends Seeder
                 'shifts' => ['morning']
             ],
             [
-                'key' => '740058600',
+                'code' => '740058600',
                 'name' => 'ESCUELA PUBLICA DIGITAL BILING NELSON MANDELA',
                 'short' => 'EPD NELSON MANDELA',
                 'locality_id' => $this->localities['La Punta'],
@@ -155,7 +155,7 @@ class SchoolSeeder extends Seeder
                 'shifts' => ['morning', 'afternoon']
             ],
             [
-                'key' => '740058700',
+                'code' => '740058700',
                 'name' => 'CENTRO EDUCATIVO N°27 GOBERNADOR SANTIAGO BESSO',
                 'short' => 'CE N°27',
                 'locality_id' => $this->localities['Juana Koslay'],
@@ -198,7 +198,7 @@ class SchoolSeeder extends Seeder
 
     private function initSchoolLevels()
     {
-        $this->schoolLevels = SchoolLevel::all()->pluck('id', 'key')->toArray();
+        $this->schoolLevels = SchoolLevel::all()->pluck('id', 'code')->toArray();
     }
 
     private function initLocalities()
@@ -208,11 +208,11 @@ class SchoolSeeder extends Seeder
 
     private function initManagementTypes()
     {
-        $this->managementTypes = SchoolManagementType::all()->pluck('id', 'key')->toArray();
+        $this->managementTypes = SchoolManagementType::all()->pluck('id', 'code')->toArray();
     }
 
     private function initShifts()
     {
-        $this->shifts = SchoolShift::all()->pluck('id', 'key')->toArray();
+        $this->shifts = SchoolShift::all()->pluck('id', 'code')->toArray();
     }
 }

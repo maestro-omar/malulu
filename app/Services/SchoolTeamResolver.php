@@ -42,7 +42,7 @@ class SchoolTeamResolver implements PermissionsTeamResolver
                 // ]);
 
                 if ($isAdmin) {
-                    $globalSchool = School::where('key', 'GLOBAL')->first();
+                    $globalSchool = School::where('code', 'GLOBAL')->first();
                     $teamId = $globalSchool ? $globalSchool->id : null;
                     // Log::info('SchoolTeamResolver: Admin user, returning team_id', [
                     //     'team_id' => $teamId,

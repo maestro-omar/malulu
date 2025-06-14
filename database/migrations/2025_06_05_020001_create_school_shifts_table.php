@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('school_shifts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('key')->unique();
+            $table->string('code')->unique();
             $table->timestamps();
         });
     }

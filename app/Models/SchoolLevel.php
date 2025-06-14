@@ -22,8 +22,10 @@ class SchoolLevel extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'key',
-        'name'
+        'name',
+        'code',
+        'order',
+        'active'
     ];
 
     /**

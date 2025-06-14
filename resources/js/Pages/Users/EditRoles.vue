@@ -178,7 +178,7 @@ console.log('Form Roles (final):', form.roles);
 // Helper function to get role object by ID
 const getRoleObject = (roleId) => {
     const role = props.availableRoles.find(r => r.id === roleId);
-    return role || { name: 'Rol desconocido', short: '???', key: 'unknown' };
+    return role || { name: 'Rol desconocido', short: '???', code: 'unknown' };
 };
 
 // Get schools with assigned roles

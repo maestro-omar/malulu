@@ -17,7 +17,7 @@ class Province extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'key',
+        'code',
         'name',
         'order'
     ];

@@ -16,17 +16,17 @@ class SchoolLevelSeeder extends Seeder
         $levels = [
 
             [
-                'key' => SchoolLevel::KINDER,
+                'code' => SchoolLevel::KINDER,
                 'name' => 'Inicial',
             ],
 
             [
-                'key' => SchoolLevel::PRIMARY,
+                'code' => SchoolLevel::PRIMARY,
                 'name' => 'Primaria',
             ],
 
             [
-                'key' => SchoolLevel::SECONDARY,
+                'code' => SchoolLevel::SECONDARY,
                 'name' => 'Secundaria',
             ],
         ];

@@ -15,99 +15,99 @@ class ProvinceSeeder extends Seeder
     {
         $provinces = [
             [
-                'key' => Province::DEFAULT,
+                'code' => Province::DEFAULT,
                 'name' => 'San Luis',
             ],
             [
-                'key' => 'mza',
+                'code' => 'mza',
                 'name' => 'Mendoza',
             ],
             [
-                'key' => 'cba',
+                'code' => 'cba',
                 'name' => 'Córdoba',
             ],
             [
-                'key' => 'sj',
+                'code' => 'sj',
                 'name' => 'San Juan',
             ],
             [
-                'key' => 'lr',
+                'code' => 'lr',
                 'name' => 'La Rioja',
             ],
             [
-                'key' => 'bsas',
+                'code' => 'bsas',
                 'name' => 'Buenos Aires',
             ],
             [
-                'key' => 'caba',
+                'code' => 'caba',
                 'name' => 'Ciudad Autónoma de Buenos Aires',
             ],
             [
-                'key' => 'cat',
+                'code' => 'cat',
                 'name' => 'Catamarca',
             ],
             [
-                'key' => 'cha',
+                'code' => 'cha',
                 'name' => 'Chaco',
             ],
             [
-                'key' => 'chu',
+                'code' => 'chu',
                 'name' => 'Chubut',
             ],
             [
-                'key' => 'cor',
+                'code' => 'cor',
                 'name' => 'Corrientes',
             ],
             [
-                'key' => 'ent',
+                'code' => 'ent',
                 'name' => 'Entre Ríos',
             ],
             [
-                'key' => 'for',
+                'code' => 'for',
                 'name' => 'Formosa',
             ],
             [
-                'key' => 'juj',
+                'code' => 'juj',
                 'name' => 'Jujuy',
             ],
             [
-                'key' => 'lpa',
+                'code' => 'lpa',
                 'name' => 'La Pampa',
             ],
             [
-                'key' => 'mis',
+                'code' => 'mis',
                 'name' => 'Misiones',
             ],
             [
-                'key' => 'neu',
+                'code' => 'neu',
                 'name' => 'Neuquén',
             ],
             [
-                'key' => 'rng',
+                'code' => 'rng',
                 'name' => 'Río Negro',
             ],
             [
-                'key' => 'sal',
+                'code' => 'sal',
                 'name' => 'Salta',
             ],
             [
-                'key' => 'sct',
+                'code' => 'sct',
                 'name' => 'Santa Cruz',
             ],
             [
-                'key' => 'sfe',
+                'code' => 'sfe',
                 'name' => 'Santa Fe',
             ],
             [
-                'key' => 'sde',
+                'code' => 'sde',
                 'name' => 'Santiago del Estero',
             ],
             [
-                'key' => 'tfu',
+                'code' => 'tfu',
                 'name' => 'Tierra del Fuego',
             ],
             [
-                'key' => 'tuc',
+                'code' => 'tuc',
                 'name' => 'Tucumán',
             ],
         ];

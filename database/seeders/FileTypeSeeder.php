@@ -9,37 +9,37 @@ class FileTypeSeeder extends Seeder
 {
     protected array $fileTypes = [
         [
-            'key' => 'provincial',
+            'code' => 'provincial',
             'name' => 'Provincial',
             'relate_with' => null,
             'active' => true
         ],
         [
-            'key' => 'institutional',
+            'code' => 'institutional',
             'name' => 'Institucional',
             'relate_with' => 'school',
             'active' => true
         ],
         [
-            'key' => 'course',
+            'code' => 'course',
             'name' => 'Grupo',
             'relate_with' => 'course',
             'active' => true
         ],
         [
-            'key' => 'teacher',
+            'code' => 'teacher',
             'name' => 'Docente',
             'relate_with' => 'teacher',
             'active' => true
         ],
         [
-            'key' => 'student',
+            'code' => 'student',
             'name' => 'Alumna/o',
             'relate_with' => 'student',
             'active' => true
         ],
         [
-            'key' => 'user',
+            'code' => 'user',
             'name' => 'Usuario',
             'relate_with' => 'user',
             'active' => true

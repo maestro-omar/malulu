@@ -13,7 +13,7 @@ class FileSubtypeService
                 'id' => $fileSubtype->id,
                 'file_type_id' => $fileSubtype->file_type_id,
                 'file_type' => $fileSubtype->fileType->name,
-                'key' => $fileSubtype->key,
+                'code' => $fileSubtype->code,
                 'name' => $fileSubtype->name,
                 'description' => $fileSubtype->description,
                 'new_overwrites' => $fileSubtype->new_overwrites,

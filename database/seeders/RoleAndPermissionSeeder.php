@@ -8,13 +8,14 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 use App\Models\User;
 use App\Models\School;
+use App\Models\Role as AppRole;
 
 class RoleAndPermissionSeeder extends Seeder
 {
     public function run(): void
     {
         // Get global school ID
-        $globalSchool = School::where('key', 'GLOBAL')->first();
+        $globalSchool = School::where('code', 'GLOBAL')->first();
         if (!$globalSchool) {
             throw new \Exception('Global school not found. Please run SchoolSeeder first.');
         }
@@ -122,9 +123,9 @@ class RoleAndPermissionSeeder extends Seeder
 
         // Create roles and assign permissions
         $roles = [
-            'admin' => [
+            AppRole::ADMIN => [
                 'name' => 'Administrador',
-                'key' => 'admin',
+                'code' => AppRole::ADMIN,
                 'description' => 'Administrador del sistema con acceso total',
                 'short' => 'Admin',
                 'permissions' => [
@@ -174,9 +175,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'delete historical data',
                 ],
             ],
-            'director' => [
+            AppRole::DIRECTOR => [
                 'name' => 'Director',
-                'key' => 'director',
+                'code' => AppRole::DIRECTOR,
                 'description' => 'Director de la institución',
                 'short' => 'Dir',
                 'permissions' => [
@@ -225,9 +226,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'delete historical data',
                 ],
             ],
-            'regent' => [
+            AppRole::REGENT => [
                 'name' => 'Regente',
-                'key' => 'regent',
+                'code' => AppRole::REGENT,
                 'description' => 'Regente de la institución',
                 'short' => 'Reg',
                 'permissions' => [
@@ -261,9 +262,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view historical data',
                 ],
             ],
-            'secretary' => [
+            AppRole::SECRETARY => [
                 'name' => 'Secretario',
-                'key' => 'secretary',
+                'code' => AppRole::SECRETARY,
                 'description' => 'Secretario de la institución',
                 'short' => 'Sec',
                 'permissions' => [
@@ -297,9 +298,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view historical data',
                 ],
             ],
-            'professor' => [
+            AppRole::PROFESSOR => [
                 'name' => 'Profesor',
-                'key' => 'professor',
+                'code' => AppRole::PROFESSOR,
                 'description' => 'Profesor de la institución',
                 'short' => 'Prof',
                 'permissions' => [
@@ -319,9 +320,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view library',
                 ],
             ],
-            'class_assistant' => [
+            AppRole::CLASS_ASSISTANT => [
                 'name' => 'Preceptor',
-                'key' => 'class_assistant',
+                'code' => AppRole::CLASS_ASSISTANT,
                 'description' => 'Preceptor de nivel secundario',
                 'short' => 'Prec',
                 'permissions' => [
@@ -341,9 +342,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view library',
                 ],
             ],
-            'grade_teacher' => [
+            AppRole::GRADE_TEACHER => [
                 'name' => 'Maestra/o de Grado',
-                'key' => 'grade_teacher',
+                'code' => AppRole::GRADE_TEACHER,
                 'description' => 'Maestra/o de grado',
                 'short' => 'Maes',
                 'permissions' => [
@@ -363,9 +364,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view library',
                 ],
             ],
-            'assistant_teacher' => [
+            AppRole::ASSISTANT_TEACHER => [
                 'name' => 'Maestra/o Auxiliar',
-                'key' => 'assistant_teacher',
+                'code' => AppRole::ASSISTANT_TEACHER,
                 'description' => 'Maestra/o auxiliar',
                 'short' => 'Auxi',
                 'permissions' => [
@@ -385,9 +386,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view library',
                 ],
             ],
-            'curricular_teacher' => [
+            AppRole::CURRICULAR_TEACHER => [
                 'name' => 'Profesor Curricular',
-                'key' => 'curricular_teacher',
+                'code' => AppRole::CURRICULAR_TEACHER,
                 'description' => 'Profesor de materias curriculares',
                 'short' => 'Curr',
                 'permissions' => [
@@ -407,9 +408,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view library',
                 ],
             ],
-            'special_teacher' => [
+            AppRole::SPECIAL_TEACHER => [
                 'name' => 'Profesor/a Especial',
-                'key' => 'special_teacher',
+                'code' => AppRole::SPECIAL_TEACHER,
                 'description' => 'Profesor/a de educación especial',
                 'short' => 'Esp',
                 'permissions' => [
@@ -429,9 +430,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view library',
                 ],
             ],
-            'librarian' => [
+            AppRole::LIBRARIAN => [
                 'name' => 'Bibliotecario/a',
-                'key' => 'librarian',
+                'code' => AppRole::LIBRARIAN,
                 'description' => 'Responsable de la biblioteca',
                 'short' => 'Biblio',
                 'permissions' => [
@@ -447,9 +448,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'delete library',
                 ],
             ],
-            'guardian' => [
+            AppRole::GUARDIAN => [
                 'name' => 'Responsable',
-                'key' => 'guardian',
+                'code' => AppRole::GUARDIAN,
                 'description' => 'Adulto responsable legal del estudiante',
                 'short' => 'Tut',
                 'permissions' => [
@@ -461,9 +462,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'edit children data',
                 ],
             ],
-            'student' => [
+            AppRole::STUDENT => [
                 'name' => 'Estudiante',
-                'key' => 'student',
+                'code' => AppRole::STUDENT,
                 'description' => 'Estudiante/alumno/a de la institución',
                 'short' => 'Est',
                 'permissions' => [
@@ -473,9 +474,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'edit own student data',
                 ],
             ],
-            'cooperative' => [
+            AppRole::COOPERATIVE => [
                 'name' => 'Cooperadora',
-                'key' => 'cooperative',
+                'code' => AppRole::COOPERATIVE,
                 'description' => 'Miembro de la cooperadora',
                 'short' => 'Coop',
                 'permissions' => [
@@ -485,9 +486,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'edit own cooperative data',
                 ],
             ],
-            'former_student' => [
+            AppRole::FORMER_STUDENT => [
                 'name' => 'Ex-Estudiante',
-                'key' => 'former_student',
+                'code' => AppRole::FORMER_STUDENT,
                 'description' => 'Ex-estudiante de la institución',
                 'short' => 'Exalum',
                 'permissions' => [
@@ -500,10 +501,10 @@ class RoleAndPermissionSeeder extends Seeder
         ];
 
         $adminRole = null;
-        foreach ($roles as $roleKey => $roleData) {
+        foreach ($roles as $roleCode => $roleData) {
             $role = Role::firstOrCreate([
                 'name' => $roleData['name'],
-                'key' => $roleData['key'],
+                'code' => $roleData['code'],
                 'guard_name' => 'web', // All roles use web guard
                 // ROLES are the same for every team/school
             ], [
@@ -517,7 +518,7 @@ class RoleAndPermissionSeeder extends Seeder
                 ->get();
             $role->syncPermissions($rolePermissions);
 
-            if ($roleKey === 'admin') {
+            if ($roleCode === 'admin') {
                 $adminRole = $role;
             }
         }

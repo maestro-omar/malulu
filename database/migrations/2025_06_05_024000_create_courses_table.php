@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('school_id')->constrained()->onDelete('cascade');
             $table->foreignId('school_level_id')->constrained()->onDelete('cascade');
             $table->foreignId('school_shift_id')->constrained()->onDelete('cascade');
-            $table->unsignedInteger('previous_course_id')->nullable();
+            $table->unsignedBigInteger('previous_course_id')->nullable();
             $table->unsignedTinyInteger('number');
             $table->string('letter', 1);
             $table->date('start_date');

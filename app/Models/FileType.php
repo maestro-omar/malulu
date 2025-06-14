@@ -28,7 +28,7 @@ class FileType extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'key',
+        'code',
         'name',
         'relate_with',
         'active'

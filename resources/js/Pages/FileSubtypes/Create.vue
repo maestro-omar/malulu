@@ -29,15 +29,16 @@
                             </div>
 
                             <div class="mb-4">
-                                <InputLabel for="key" value="Clave" />
+                                <InputLabel for="code" value="Clave" />
                                 <TextInput
-                                    id="key"
-                                    v-model="form.key"
+                                    id="code"
+                                    v-model="form.code"
                                     type="text"
                                     class="mt-1 block w-full"
                                     required
+                                    autofocus
                                 />
-                                <InputError :message="form.errors.key" class="mt-2" />
+                                <InputError :message="form.errors.code" class="mt-2" />
                             </div>
 
                             <div class="mb-4">
@@ -127,7 +128,7 @@ defineProps({
 
 const form = useForm({
     file_type_id: "",
-    key: "",
+    code: "",
     name: "",
     description: "",
     new_overwrites: false,

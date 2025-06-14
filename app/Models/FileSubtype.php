@@ -14,13 +14,14 @@ class FileSubtype extends Model
      */
     protected $fillable = [
         'file_type_id',
-        'key',
+        'code',
         'name',
         'description',
         'new_overwrites',
         'hidden_for_familiy',
         'upload_by_familiy',
-        'order'
+        'order',
+        'active'
     ];
 
     /**
