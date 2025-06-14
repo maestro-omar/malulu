@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId('province_id')->nullable()->after('locality')->constrained('provinces');
             $table->foreignId('country_id')->nullable()->after('province_id')->constrained('countries');
             $table->string('nationality')->nullable()->after('country_id');
+            $table->string('picture')->nullable()->after('nationality');
         });
     }
 
@@ -43,7 +44,8 @@ return new class extends Migration
                 'locality',
                 'province_id',
                 'country_id',
-                'nationality'
+                'nationality',
+                'picture'
             ]);
         });
     }

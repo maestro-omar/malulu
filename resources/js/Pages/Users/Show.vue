@@ -4,10 +4,17 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import RoleBadge from '@/Components/RoleBadge.vue';
 import PhoneField from '@/Components/PhoneField.vue';
 import EmailField from '@/Components/EmailField.vue';
+import EditableImage from '@/Components/EditableImage.vue';
 
 const props = defineProps({
     user: Object
 });
+
+const destroy = () => {
+    if (confirm("¿Está seguro que desea eliminar este usuario?")) {
+        router.delete(route("users.destroy", props.user.id));
+    }
+};
 </script>
 
 <template>
@@ -21,31 +28,20 @@ const props = defineProps({
                     Detalles del Usuario
                 </h2>
                 <div class="flex space-x-4">
-                    <Link
-                        :href="route('users.index')"
-                        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Volver a Usuarios
+                    <Link :href="route('users.index')"
+                        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Volver a Usuarios
                     </Link>
-                    <Link
-                        v-if="$page.props.auth.user.can['edit users']"
-                        :href="route('users.edit', user.id)"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Editar Usuario
+                    <Link v-if="$page.props.auth.user.can['edit users']" :href="route('users.edit', user.id)"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Editar Usuario
                     </Link>
-                    <Link
-                        v-if="$page.props.auth.user.can['edit users']"
-                        :href="route('users.edit-roles', user.id)"
-                        class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Editar Roles
+                    <Link v-if="$page.props.auth.user.can['edit users']" :href="route('users.edit-roles', user.id)"
+                        class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                    Editar Roles
                     </Link>
-                    <button
-                        v-if="$page.props.auth.user.can['delete users']"
-                        @click="destroy"
-                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    >
+                    <button v-if="$page.props.auth.user.can['delete users']" @click="destroy"
+                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                         Eliminar Usuario
                     </button>
                 </div>
@@ -59,49 +55,69 @@ const props = defineProps({
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Basic Information -->
                             <div class="space-y-4">
+                                <div>
+                                    <EditableImage v-model="user.picture" type="picture" :model-id="user.id"
+                                        image-class="h-32 w-32 rounded-full object-cover"
+                                        upload-route="users.upload-image" delete-route="users.delete-image"
+                                        delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?" />
+                                </div>
                                 <h3 class="text-lg font-semibold mb-4">Información Básica</h3>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Nombre de usuario</label>
-                                    <div class="mt-1 text-sm text-gray-900">{{ user.name }}</div>
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-400">Nombre</label>
-                                        <div class="mt-1 text-sm text-gray-900">{{ user.firstname || '-' }}</div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-400">Apellido</label>
-                                        <div class="mt-1 text-sm text-gray-900">{{ user.lastname || '-' }}</div>
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-400">DNI</label>
-                                        <div class="mt-1 text-sm text-gray-900">{{ user.id_number || '-' }}</div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-400">Fecha de Nacimiento</label>
-                                        <div class="mt-1 text-sm text-gray-900">
-                                            {{ user.birthdate ? new Date(user.birthdate).toLocaleDateString('es-AR', {
-                                            timeZone: 'UTC' }) : '-' }}
+                                <div class="flex items-start space-x-4">
+                                    <div class="flex-1">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-400">Nombre de
+                                                usuario</label>
+                                            <div class="mt-1 text-sm text-gray-900">{{ user.name }}</div>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-400">Nacionalidad</label>
-                                        <div class="mt-1 text-sm text-gray-900">{{ user.nationality || '-' }}</div>
-                                    </div>
-                                </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400">Escuelas y roles</label>
-                                    <div class="mt-1 flex flex-wrap gap-2">
-                                        <div v-for="school in user.schools" :key="school.id"
-                                            class="flex items-center gap-2">
-                                            <span class="text-sm font-medium text-gray-600">{{ school.short }}:</span>
-                                            <RoleBadge v-for="role in user.roles.filter(r => r.team_id === school.id)"
-                                                :key="role.id" :role="role" />
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-400">Nombre</label>
+                                                <div class="mt-1 text-sm text-gray-900">{{ user.firstname || '-' }}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-400">Apellido</label>
+                                                <div class="mt-1 text-sm text-gray-900">{{ user.lastname || '-' }}</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-400">DNI</label>
+                                                <div class="mt-1 text-sm text-gray-900">{{ user.id_number || '-' }}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-400">Fecha de
+                                                    Nacimiento</label>
+                                                <div class="mt-1 text-sm text-gray-900">
+                                                    {{ user.birthdate ? new
+                                                        Date(user.birthdate).toLocaleDateString('es-AR', {
+                                                    timeZone: 'UTC' }) : '-' }}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-400">Nacionalidad</label>
+                                                <div class="mt-1 text-sm text-gray-900">{{ user.nationality || '-' }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-400">Escuelas y
+                                                roles</label>
+                                            <div class="mt-1 flex flex-wrap gap-2">
+                                                <div v-for="school in user.schools" :key="school.id"
+                                                    class="flex items-center gap-2">
+                                                    <span class="text-sm font-medium text-gray-600">{{ school.short
+                                                        }}:</span>
+                                                    <RoleBadge
+                                                        v-for="role in user.roles.filter(r => r.team_id === school.id)"
+                                                        :key="role.id" :role="role" />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -155,7 +171,8 @@ const props = defineProps({
                                         </div>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-400">Última Actualización</label>
+                                        <label class="block text-sm font-medium text-gray-400">Última
+                                            Actualización</label>
                                         <div class="mt-1 text-sm text-gray-900">
                                             {{ new Date(user.updated_at).toLocaleDateString() }}
                                         </div>

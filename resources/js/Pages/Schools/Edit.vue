@@ -132,7 +132,7 @@
               </div>
 
               <div class="mt-6">
-                <h3 class="text-lg font-semibold mb-4">Social</h3>
+                <h3 class="text-lg font-semibold mb-4">Redes sociales</h3>
                 <div class="space-y-4">
                   <div v-for="(social, index) in form.social" :key="index" class="grid grid-cols-12 gap-4 items-end">
                     <div class="col-span-3">
@@ -183,13 +183,11 @@
                 </div>
               </div>
 
-              <div class="flex items-center justify-end mt-4">
-                <Link :href="route('schools.index')" class="mr-4 text-gray-600 hover:text-gray-900">
-                Cancelar
-                </Link>
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+              <div class="flex items-center justify-between mt-4">
+                <PrimaryButton :disabled="form.processing">
                   Actualizar Escuela
                 </PrimaryButton>
+                <CancelLink :href="route('schools.show', school.id)" />
               </div>
             </form>
           </div>
@@ -208,6 +206,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import SearchableDropdown from '@/Components/SearchableDropdown.vue';
+import CancelLink from '@/Components/CancelLink.vue';
 import { ref, computed, onMounted, watch } from 'vue';
 
 const props = defineProps({

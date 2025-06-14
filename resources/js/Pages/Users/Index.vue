@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import RoleBadge from '@/Components/RoleBadge.vue';
 import { ref } from 'vue';
+import noImage from '@images/no-image-person.png';
 
 const props = defineProps({
     users: Object,
@@ -81,6 +82,9 @@ const isCurrentUserAdmin = () => {
                                 <thead class="">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Foto
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Nombre
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -106,6 +110,11 @@ const isCurrentUserAdmin = () => {
                                             'bg-white': user.id !== $page.props.auth.user.id && index % 2 === 1
                                         }"
                                     >
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <img :src="user.picture || noImage" 
+                                                 :alt="user.name"
+                                                 class="h-10 w-10 rounded-full object-cover" />
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm font-medium text-gray-900">
                                                 {{ user.name }}
@@ -176,9 +185,14 @@ const isCurrentUserAdmin = () => {
                                 class="rounded-lg shadow p-4"
                             >
                                 <div class="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h3 class="text-sm font-medium text-gray-900">{{ user.name }}</h3>
-                                        <p class="text-sm text-gray-500">{{ user.email }}</p>
+                                    <div class="flex items-center space-x-3">
+                                        <img :src="user.picture || '/images/no-image.png'" 
+                                             :alt="user.name"
+                                             class="h-10 w-10 rounded-full object-cover" />
+                                        <div>
+                                            <h3 class="text-sm font-medium text-gray-900">{{ user.name }}</h3>
+                                            <p class="text-sm text-gray-500">{{ user.email }}</p>
+                                        </div>
                                     </div>
                                     <div class="flex space-x-2">
                                         <Link

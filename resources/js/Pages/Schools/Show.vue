@@ -1,4 +1,5 @@
 <template>
+
   <Head title="Detalles de la Escuela" />
 
   <AuthenticatedLayout>
@@ -8,22 +9,15 @@
           Detalles de la Escuela
         </h2>
         <div class="flex space-x-4">
-          <Link
-            :href="route('schools.index')"
-            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Volver a Escuelas
+          <Link :href="route('schools.index')"
+            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Volver a Escuelas
           </Link>
-          <Link
-            :href="route('schools.edit', school.id)"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Editar Escuela
+          <Link :href="route('schools.edit', school.id)"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Editar Escuela
           </Link>
-          <button
-            @click="destroy"
-            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
+          <button @click="destroy" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
             Eliminar Escuela
           </button>
         </div>
@@ -41,146 +35,91 @@
                 </h3>
                 <div class="space-y-4">
                   <div>
-                    <label class="block text-sm font-medium text-gray-400"
-                      >Nombre</label
-                    >
+                    <label class="block text-sm font-medium text-gray-400">Nombre</label>
                     <p class="mt-1 text-sm text-gray-900">{{ school.name }}</p>
                   </div>
 
                   <div class="grid grid-cols-2 gap-4">
                     <div>
-                      <label class="block text-sm font-medium text-gray-400"
-                        >Logo</label
-                      >
-                      <div class="mt-1 relative group">
-                        <img 
-                          :src="school.logo || noImage" 
-                          class="h-12 w-12 object-contain" 
-                        />
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button 
-                            @click="openFileInput('logo')"
-                            class="bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75"
-                          >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                            </svg>
-                          </button>
-                        </div>
-                        <input 
-                          type="file" 
-                          ref="logoInput"
-                          class="hidden" 
-                          accept="image/*"
-                          @change="handleLogoUpload"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400"
-                        >Imagen Principal</label
-                      >
-                      <div class="mt-1 relative group">
-                        <img 
-                          :src="school.picture || noImage" 
-                          class="h-24 w-24 object-cover rounded" 
-                        />
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button 
-                            @click="openFileInput('picture')"
-                            class="bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75"
-                          >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                            </svg>
-                          </button>
-                        </div>
-                        <input 
-                          type="file" 
-                          ref="pictureInput"
-                          class="hidden" 
-                          accept="image/*"
-                          @change="handlePictureUpload"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="grid grid-cols-2 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400"
-                        >Nombre Corto</label
-                      >
+                      <label class="block text-sm font-medium text-gray-400">Nombre Corto</label>
                       <p class="mt-1 text-sm text-gray-900">
                         {{ school.short }}
                       </p>
                     </div>
 
                     <div>
-                      <label class="block text-sm font-medium text-gray-400"
-                        >CUE</label
-                      >
+                      <label class="block text-sm font-medium text-gray-400">CUE</label>
                       <p class="mt-1 text-sm text-gray-900">{{ school.cue }}</p>
                     </div>
                   </div>
 
                   <div>
-                    <label class="block text-sm font-medium text-gray-400"
-                      >Tipo de Gestión</label
-                    >
+                    <label class="block text-sm font-medium text-gray-400">Tipo de Gestión</label>
                     <div class="mt-1">
-                      <ManagementTypeBadge
-                        :type="school.management_type.name"
-                      />
+                      <ManagementTypeBadge :type="school.management_type.name" />
                     </div>
                   </div>
 
                   <div>
-                    <label class="block text-sm font-medium text-gray-400"
-                      >Niveles</label
-                    >
+                    <label class="block text-sm font-medium text-gray-400">Niveles</label>
                     <div class="mt-2 flex flex-wrap gap-2">
-                      <SchoolLevelBadge
-                        v-for="level in school.school_levels"
-                        :key="level.id"
-                        :level="level"
-                      />
+                      <SchoolLevelBadge v-for="level in school.school_levels" :key="level.id" :level="level" />
                     </div>
                   </div>
 
                   <div>
-                    <label class="block text-sm font-medium text-gray-400"
-                      >Turnos</label
-                    >
+                    <label class="block text-sm font-medium text-gray-400">Turnos</label>
                     <div class="mt-2 flex flex-wrap gap-2">
-                      <ShiftBadge
-                        v-for="shift in school.shifts"
-                        :key="shift.id"
-                        :shift="shift.name"
-                      />
+                      <ShiftBadge v-for="shift in school.shifts" :key="shift.id" :shift="shift.name" />
                     </div>
                   </div>
                 </div>
               </div>
 
               <div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-400">Logo</label>
+                    <div class="mt-1">
+                      <EditableImage
+                        v-model="school.logo"
+                        type="logo"
+                        :model-id="school.id"
+                        image-class="h-12 w-12 object-contain"
+                        upload-route="schools.upload-image"
+                        delete-route="schools.delete-image"
+                        delete-confirm-message="¿Está seguro que desea eliminar el logo?"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-400">Imagen Principal</label>
+                    <div class="mt-1">
+                      <EditableImage
+                        v-model="school.picture"
+                        type="picture"
+                        :model-id="school.id"
+                        upload-route="schools.upload-image"
+                        delete-route="schools.delete-image"
+                        delete-confirm-message="¿Está seguro que desea eliminar la imagen principal?"
+                      />
+                    </div>
+                  </div>
+                </div>
                 <h3 class="text-lg font-semibold mb-4">Ubicación y Contacto</h3>
                 <div class="space-y-4">
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label class="block text-sm font-medium text-gray-400"
-                        >Localidad</label
-                      >
+                      <label class="block text-sm font-medium text-gray-400">Localidad</label>
                       <p class="mt-1 text-sm text-gray-900">
                         {{ school.locality.name }}
                       </p>
                     </div>
 
                     <div>
-                      <label class="block text-sm font-medium text-gray-400"
-                        >Dirección</label
-                      >
+                      <label class="block text-sm font-medium text-gray-400">Dirección</label>
                       <p class="mt-1 text-sm text-gray-900">
                         {{ school.address }}
                       </p>
@@ -189,36 +128,23 @@
 
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label class="block text-sm font-medium text-gray-400"
-                        >Código Postal</label
-                      >
+                      <label class="block text-sm font-medium text-gray-400">Código Postal</label>
                       <p class="mt-1 text-sm text-gray-900">
                         {{ school.zip_code }}
                       </p>
                     </div>
 
                     <div>
-                      <label class="block text-sm font-medium text-gray-400"
-                        >Coordenadas</label
-                      >
+                      <label class="block text-sm font-medium text-gray-400">Coordenadas</label>
                       <div class="flex items-center space-x-2">
                         <p class="mt-1 text-sm text-gray-900">
                           {{ school.coordinates }}
                         </p>
-                        <a
-                          :href="`https://www.google.com/maps/search/?api=1&query=${school.coordinates}`"
-                          target="_blank"
-                          class="text-blue-600 hover:text-blue-800"
-                          title="Ver en Google Maps"
-                        >
-                          <svg
-                            class="w-5 h-5"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
+                        <a :href="`https://www.google.com/maps/search/?api=1&query=${school.coordinates}`"
+                          target="_blank" class="text-blue-600 hover:text-blue-800" title="Ver en Google Maps">
+                          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                             <path
-                              d="M12 0C7.802 0 4 3.403 4 7.602C4 11.8 7.469 16.812 12 24C16.531 16.812 20 11.8 20 7.602C20 3.403 16.199 0 12 0ZM12 11C10.343 11 9 9.657 9 8C9 6.343 10.343 5 12 5C13.657 5 15 6.343 15 8C15 9.657 13.657 11 12 11Z"
-                            />
+                              d="M12 0C7.802 0 4 3.403 4 7.602C4 11.8 7.469 16.812 12 24C16.531 16.812 20 11.8 20 7.602C20 3.403 16.199 0 12 0ZM12 11C10.343 11 9 9.657 9 8C9 6.343 10.343 5 12 5C13.657 5 15 6.343 15 8C15 9.657 13.657 11 12 11Z" />
                           </svg>
                         </a>
                       </div>
@@ -227,16 +153,12 @@
 
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label class="block text-sm font-medium text-gray-400"
-                        >Teléfono</label
-                      >
+                      <label class="block text-sm font-medium text-gray-400">Teléfono</label>
                       <PhoneField :phone="school.phone" />
                     </div>
 
                     <div>
-                      <label class="block text-sm font-medium text-gray-400"
-                        >Email</label
-                      >
+                      <label class="block text-sm font-medium text-gray-400">Email</label>
                       <EmailField :email="school.email" />
                     </div>
                   </div>
@@ -247,32 +169,18 @@
             <div class="mt-6">
               <h3 class="text-lg font-semibold mb-4">Social</h3>
               <div class="space-y-4">
-                <div
-                  v-for="(social, index) in school.social"
-                  :key="index"
-                  class="grid grid-cols-12 gap-4"
-                >
+                <div v-for="(social, index) in school.social" :key="index" class="grid grid-cols-12 gap-4">
                   <div class="col-span-3">
-                    <label class="block text-sm font-medium text-gray-400"
-                      >Tipo</label
-                    >
+                    <label class="block text-sm font-medium text-gray-400">Tipo</label>
                     <p class="mt-1 text-sm text-gray-900">{{ social.type }}</p>
                   </div>
                   <div class="col-span-3">
-                    <label class="block text-sm font-medium text-gray-400"
-                      >Etiqueta</label
-                    >
+                    <label class="block text-sm font-medium text-gray-400">Etiqueta</label>
                     <p class="mt-1 text-sm text-gray-900">{{ social.label }}</p>
                   </div>
                   <div class="col-span-6">
-                    <label class="block text-sm font-medium text-gray-400"
-                      >Enlace</label
-                    >
-                    <a
-                      :href="social.link"
-                      target="_blank"
-                      class="mt-1 text-sm text-indigo-600 hover:text-indigo-900"
-                    >
+                    <label class="block text-sm font-medium text-gray-400">Enlace</label>
+                    <a :href="social.link" target="_blank" class="mt-1 text-sm text-indigo-600 hover:text-indigo-900">
                       {{ social.link }}
                     </a>
                   </div>
@@ -295,65 +203,11 @@ import ShiftBadge from "@/Components/ShiftBadge.vue";
 import ManagementTypeBadge from "@/Components/ManagementTypeBadge.vue";
 import PhoneField from "@/Components/PhoneField.vue";
 import EmailField from "@/Components/EmailField.vue";
-import { ref } from 'vue';
-import noImage from '@images/no-image.png'
+import EditableImage from "@/Components/EditableImage.vue";
 
 const props = defineProps({
   school: Object,
 });
-
-const logoInput = ref(null);
-const pictureInput = ref(null);
-
-const openFileInput = (type) => {
-  if (type === 'logo') {
-    logoInput.value.click();
-  } else {
-    pictureInput.value.click();
-  }
-};
-
-const handleLogoUpload = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const formData = new FormData();
-    formData.append('logo', file);
-    formData.append('_method', 'PUT');
-
-    router.post(route('schools.update', props.school.id), formData, {
-      preserveScroll: true,
-      onSuccess: () => {
-        // Reset the input
-        event.target.value = '';
-      },
-      onError: (errors) => {
-        console.error('Upload error:', errors);
-      },
-      forceFormData: true
-    });
-  }
-};
-
-const handlePictureUpload = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const formData = new FormData();
-    formData.append('picture', file);
-    formData.append('_method', 'PUT');
-
-    router.post(route('schools.update', props.school.id), formData, {
-      preserveScroll: true,
-      onSuccess: () => {
-        // Reset the input
-        event.target.value = '';
-      },
-      onError: (errors) => {
-        console.error('Upload error:', errors);
-      },
-      forceFormData: true
-    });
-  }
-};
 
 const destroy = () => {
   if (confirm("¿Está seguro que desea eliminar esta escuela?")) {

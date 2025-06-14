@@ -15,6 +15,8 @@ use App\Models\Province;
 use App\Models\Country;
 use App\Models\School;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UserController extends SystemBaseController
 {
@@ -232,6 +234,69 @@ class UserController extends SystemBaseController
             return redirect()->back()
                 ->withErrors(['error' => 'Error al actualizar los roles. Por favor, intente nuevamente.'])
                 ->withInput();
+        }
+    }
+
+    public function uploadImage(Request $request, User $user)
+    {
+        try {
+            $request->validate([
+                'image' => 'required|image|max:2048', // Max 2MB
+                'type' => 'required|in:picture'
+            ]);
+
+            $image = $request->file('image');
+            $type = $request->input('type');
+
+            // Delete old image if exists
+            if ($type === 'picture' && $user->picture) {
+                $oldPath = str_replace('/storage/', '', $user->picture);
+                Storage::disk('public')->delete($oldPath);
+            }
+
+            // Generate timestamp and slugged filename
+            $timestamp = now()->format('YmdHis');
+            $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $image->getClientOriginalExtension();
+            $sluggedName = Str::slug($originalName);
+            $newFilename = $timestamp . '_' . $sluggedName . '.' . $extension;
+
+            // Store new image with custom filename
+            $path = $image->storeAs('users/' . $user->id, $newFilename, 'public');
+            
+            // Get the full URL for the stored image using the asset helper
+            $url = asset('storage/' . $path);
+
+            // Update user with new image path
+            $user->update([
+                $type => $url
+            ]);
+
+            return back()->with('success', 'Imagen subida exitosamente');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function deleteImage(Request $request, User $user)
+    {
+        try {
+            $request->validate([
+                'type' => 'required|in:picture'
+            ]);
+
+            $type = $request->input('type');
+
+            // Delete the image file if it exists
+            if ($type === 'picture' && $user->picture) {
+                $oldPath = str_replace('/storage/', '', $user->picture);
+                Storage::disk('public')->delete($oldPath);
+                $user->update(['picture' => null]);
+            }
+
+            return back()->with('success', 'Imagen eliminada exitosamente');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
 }

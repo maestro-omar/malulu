@@ -39,6 +39,8 @@ Route::prefix('sistema')->group(function () {
             Route::delete('usuarios/{user}', [UserController::class, 'destroy'])->name('users.destroy');
             Route::get('usuarios/{user}/editar-roles', [UserController::class, 'editRoles'])->name('users.edit-roles');
             Route::put('usuarios/{user}/roles', [UserController::class, 'updateRoles'])->name('users.update-roles');
+            Route::post('usuarios/{user}/upload-image', [UserController::class, 'uploadImage'])->name('users.upload-image');
+            Route::delete('usuarios/{user}/delete-image', [UserController::class, 'deleteImage'])->name('users.delete-image');
             Route::resource('usuarios', UserController::class)->except(['index', 'show', 'create', 'edit', 'destroy']);
         });
 
@@ -53,6 +55,7 @@ Route::prefix('sistema')->group(function () {
             Route::get('escuelas/{school}', [SchoolController::class, 'show'])->name('schools.show');
             Route::get('escuelas/{school}/editar', [SchoolController::class, 'edit'])->name('schools.edit');
             Route::put('escuelas/{school}', [SchoolController::class, 'update'])->name('schools.update');
+            Route::post('escuelas/{school}/upload-image', [SchoolController::class, 'uploadImage'])->name('schools.upload-image');
             Route::delete('escuelas/{school}', [SchoolController::class, 'destroy'])->name('schools.destroy');
         });
 

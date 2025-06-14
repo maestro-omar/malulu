@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\System\SchoolController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,3 +29,6 @@ Route::get('/', function () {
 require __DIR__ . '/auth.php';
 require __DIR__ . '/system-admin.php';
 require __DIR__ . '/school-admin.php';
+
+Route::post('/schools/{school}/upload-image', [SchoolController::class, 'uploadImage'])->name('schools.upload-image');
+Route::delete('/schools/{school}/delete-image', [SchoolController::class, 'deleteImage'])->name('schools.delete-image');
