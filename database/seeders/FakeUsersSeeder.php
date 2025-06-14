@@ -98,6 +98,22 @@ class FakeUsersSeeder extends Seeder
             $user->assignRole($guardianRole);
         }
 
+        // Make one teacher from default school also be a guardian in another school
+        $teacherFromDefaultSchool = User::whereHas('roles', function ($query) {
+            $query->where('key', 'grade_teacher');
+        })->first();
+
+        if ($teacherFromDefaultSchool) {
+            // Get a random school that's not the default school
+            $otherSchool = School::where('key', '!=', '740058000')->inRandomOrder()->first();
+            if ($otherSchool) {
+                // Set the team ID for the other school
+                app(PermissionRegistrar::class)->setPermissionsTeamId($otherSchool->id);
+                // Assign guardian role in the other school
+                $teacherFromDefaultSchool->assignRole($guardianRole);
+            }
+        }
+
         // Create users for other schools
         $otherSchools = School::where('key', '!=', '740058000')->get();
         $availableRoles = [
@@ -163,21 +179,21 @@ class FakeUsersSeeder extends Seeder
 
         // Common addresses in San Luis
         $addresses = [
+            'Pringles',
+            'Av. Juan D. Perón',
             'Av. Illia',
             'Av. Lafinur',
-            'Av. Pringles',
             'Av. España',
-            'Av. Mitre',
-            'Av. Independencia',
-            'Av. Juan D. Perón',
-            'Av. Presidente Arturo Illia',
+            'La Rioja',
+            'Riobamba',
+            'Mitre',
             'Av. Justo Daract',
             'Av. Juan B. Justo',
-            'Av. 25 de Mayo',
-            'Av. 9 de Julio',
-            'Av. San Martín',
-            'Av. Rivadavia',
-            'Av. Colón'
+            '25 de Mayo',
+            '9 de Julio',
+            'San Martín',
+            'Rivadavia',
+            'Colón'
         ];
 
         foreach ($roleCounts as $roleKey => $count) {
