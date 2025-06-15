@@ -12,8 +12,8 @@ const showingNavigationDropdown = ref(false);
 const page = usePage();
 
 onMounted(() => {
-    console.log('Auth User:', page.props.auth.user);
-    console.log('Debug Info:', page.props.debug);
+    // console.log('Auth User:', page.props.auth.user);
+    // console.log('Debug Info:', page.props.debug);
     // console.log('Menu Items:', page.props.menu.items);
 });
 </script>

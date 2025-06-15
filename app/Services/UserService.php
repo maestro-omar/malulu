@@ -253,6 +253,8 @@ class UserService
     public function getUserShowData(User $user): array
     {
         $user->load([
+            'province',
+            'country',
             'allRolesAcrossTeams',
             'roleRelationships' => function ($query) {
                 $query->with([
@@ -297,7 +299,7 @@ class UserService
                 'code' => $role->code,
                 'team_id' => $role->pivot->team_id
             ];
-        })->toArray();
+        })->values()->toArray();
 
         // Add schools to user data
         $transformedUser['schools'] = $schools->map(function ($school) {
@@ -306,7 +308,7 @@ class UserService
                 'name' => $school->name,
                 'short' => $school->short
             ];
-        })->toArray();
+        })->values()->toArray();
 
         // Add role relationships data
         $transformedUser['roleRelationships'] = $user->roleRelationships->map(function ($relationship) {
@@ -323,7 +325,7 @@ class UserService
                 'created_at' => $relationship->created_at,
                 'updated_at' => $relationship->updated_at
             ];
-        })->toArray();
+        })->values()->toArray();
 
         // Add teacher relationships with detailed information
         $transformedUser['teacherRelationships'] = $user->roleRelationships
@@ -354,7 +356,7 @@ class UserService
                     'schedule' => $relationship->schedule,
                     'degree_title' => $relationship->degree_title
                 ];
-            })->toArray();
+            })->values()->toArray();
 
         // Add guardian relationships with student information
         $transformedUser['guardianRelationships'] = $user->roleRelationships
@@ -385,7 +387,7 @@ class UserService
                     'is_restricted' => $relationship->is_restricted,
                     'emergency_contact_priority' => $relationship->emergency_contact_priority
                 ];
-            })->toArray();
+            })->values()->toArray();
 
         // Add student relationships with course information
         $transformedUser['studentRelationships'] = $user->roleRelationships
@@ -402,7 +404,7 @@ class UserService
                         'section' => $relationship->currentCourse->section
                     ] : null
                 ];
-            })->toArray();
+            })->values()->toArray();
 
         return $transformedUser;
     }

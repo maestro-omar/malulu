@@ -38,10 +38,6 @@ const destroy = () => {
                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Editar Usuario
                     </Link>
-                    <Link v-if="$page.props.auth.user.can['edit users']" :href="route('users.edit-roles', user.id)"
-                        class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
-                    Editar Roles
-                    </Link>
                     <button v-if="$page.props.auth.user.can['delete users']" @click="destroy"
                         class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                         Eliminar Usuario
@@ -72,7 +68,7 @@ const destroy = () => {
                                             <div class="mt-1 text-sm text-gray-900">{{ user.name }}</div>
                                         </div>
 
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-400">Nombre</label>
                                                 <div class="mt-1 text-sm text-gray-900">{{ user.firstname || '-' }}
@@ -84,7 +80,7 @@ const destroy = () => {
                                             </div>
                                         </div>
 
-                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-400">DNI</label>
                                                 <div class="mt-1 text-sm text-gray-900">{{ user.id_number || '-' }}
@@ -114,8 +110,8 @@ const destroy = () => {
                             <!-- Contact Information -->
                             <div class="space-y-4">
                                 <h3 class="text-lg font-semibold mb-4">Información de Contacto</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-400">Email</label>
                                         <EmailField :email="user.email" />
                                     </div>
@@ -148,6 +144,18 @@ const destroy = () => {
                                 </div>
                             </div>
 
+                        </div>
+                    </div>
+                </div>
+                <SchoolsAndRolesCard 
+                :guardian-relationships="user.guardianRelationships"
+                :schools="user.schools" 
+                :roles="user.roles"
+                    :role-relationships="user.roleRelationships" :teacher-relationships="user.teacherRelationships"
+                    :student-relationships="user.studentRelationships" />
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-2">
+                    <div class="p-6 text-gray-900">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- System Information -->
                             <div class="space-y-4">
                                 <h3 class="text-lg font-semibold mb-4">Información del Sistema</h3>
@@ -170,10 +178,6 @@ const destroy = () => {
                         </div>
                     </div>
                 </div>
-                <SchoolsAndRolesCard :schools="user.schools" :roles="user.roles"
-                    :role-relationships="user.roleRelationships" :teacher-relationships="user.teacherRelationships"
-                    :guardian-relationships="user.guardianRelationships"
-                    :student-relationships="user.studentRelationships" />
             </div>
         </div>
     </AuthenticatedLayout>
