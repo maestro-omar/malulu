@@ -18,6 +18,9 @@ use Carbon\Carbon;
 
 class FakeUsersSeeder extends Seeder
 {
+    const DEFAULT_CUE = '740058000'; //LUCIO_LUCERO
+    const OTHER_SCHOOLS_LIMIT = 1;
+    const FAST_TEST = true;
     private $mathSubject;
     private $course;
 
@@ -46,7 +49,7 @@ class FakeUsersSeeder extends Seeder
         $faker = Faker::create('es_ES'); // Using Spanish locale for more realistic names
 
         // Create users for default school (740058000)
-        $defaultSchool = School::where('code', '740058000')->first();
+        $defaultSchool = School::where('code', self::DEFAULT_CUE)->first();
         if (!$defaultSchool) {
             throw new \Exception('School with code 740058000 not found. Please run SchoolSeeder first.');
         }
@@ -58,6 +61,8 @@ class FakeUsersSeeder extends Seeder
         if (!$province || !$country) {
             throw new \Exception('Default province or country not found. Please run ProvinceSeeder and CountrySeeder first.');
         }
+
+        $guardianRole = Role::where('code', 'guardian')->first();
 
         // Set the team ID globally for default school
         app(PermissionRegistrar::class)->setPermissionsTeamId($defaultSchool->id);
@@ -91,52 +96,19 @@ class FakeUsersSeeder extends Seeder
         $this->createUsersForSchool($defaultSchool, [
             'director' => 1,
             'regent' => 2,
-            'secretary' => 3,
-            'grade_teacher' => 30,
-            'assistant_teacher' => 20,
-            'curricular_teacher' => 20,
-            'special_teacher' => 4,
-            'professor' => 20,
-            'class_assistant' => 6,
+            'secretary' => self::FAST_TEST ? 1 : 3,
+            'grade_teacher' => self::FAST_TEST ? 2 : 30,
+            'assistant_teacher' => self::FAST_TEST ? 2 : 20,
+            'curricular_teacher' => self::FAST_TEST ? 2 : 20,
+            'special_teacher' => self::FAST_TEST ? 2 : 4,
+            'professor' => self::FAST_TEST ? 2 : 20,
+            'class_assistant' => self::FAST_TEST ? 2 : 6,
             'librarian' => 2,
-            'guardian' => 200,
-            'student' => 1000,
-            'cooperative' => 10,
-            'former_student' => 20,
+            'guardian' => self::FAST_TEST ? 20 : 200,
+            'student' => self::FAST_TEST ? 40 : 1000,
+            'cooperative' => self::FAST_TEST ? 2 : 10,
+            'former_student' => self::FAST_TEST ? 2 : 20,
         ], $province, $country);
-
-        // Make cooperative members also guardians
-        $cooperativeUsers = User::whereHas('roles', function ($query) {
-            $query->where('code', 'cooperative');
-        })->get();
-        $guardianRole = Role::where('code', 'guardian')->first();
-        foreach ($cooperativeUsers as $user) {
-            $user->assignRole($guardianRole);
-        }
-
-        // Make 3 grade teachers also guardians
-        $gradeTeachers = User::whereHas('roles', function ($query) {
-            $query->where('code', 'grade_teacher');
-        })->take(3)->get();
-        foreach ($gradeTeachers as $user) {
-            $user->assignRole($guardianRole);
-        }
-
-        // Make one teacher from default school also be a guardian in another school
-        $teacherFromDefaultSchool = User::whereHas('roles', function ($query) {
-            $query->where('code', 'grade_teacher');
-        })->first();
-
-        if ($teacherFromDefaultSchool) {
-            // Get a random school that's not the default school
-            $otherSchool = School::where('code', '!=', '740058000')->inRandomOrder()->first();
-            if ($otherSchool) {
-                // Set the team ID for the other school
-                app(PermissionRegistrar::class)->setPermissionsTeamId($otherSchool->id);
-                // Assign guardian role in the other school
-                $teacherFromDefaultSchool->assignRole($guardianRole);
-            }
-        }
 
         // Create a teacher who is also a guardian in the same school
         $teacherGuardian = User::whereHas('roles', function ($query) {
@@ -180,11 +152,49 @@ class FakeUsersSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
+                $this->command->info('teacher and guardian: ' . $teacherGuardian->id);
+            } else {
+                throw new \Exception('Cant find student to by a child.');
+            }
+        } else {
+            throw new \Exception('Cant find guardian to assign a child.');
+        }
+
+        // Make cooperative members also guardians
+        $cooperativeUsers = User::whereHas('roles', function ($query) {
+            $query->where('code', 'cooperative');
+        })->get();
+
+        foreach ($cooperativeUsers as $user) {
+            $user->assignRole($guardianRole);
+        }
+
+        // Make 3 grade teachers also guardians
+        $gradeTeachers = User::whereHas('roles', function ($query) {
+            $query->where('code', 'grade_teacher');
+        })->take(3)->get();
+        foreach ($gradeTeachers as $user) {
+            $user->assignRole($guardianRole);
+        }
+
+        // Make one teacher from default school also be a guardian in another school
+        $teacherFromDefaultSchool = User::whereHas('roles', function ($query) {
+            $query->where('code', 'grade_teacher');
+        })->first();
+
+        if ($teacherFromDefaultSchool) {
+            // Get a random school that's not the default school
+            $otherSchool = School::where('code', '!=', self::DEFAULT_CUE)->inRandomOrder()->first();
+            if ($otherSchool) {
+                // Set the team ID for the other school
+                app(PermissionRegistrar::class)->setPermissionsTeamId($otherSchool->id);
+                // Assign guardian role in the other school
+                $teacherFromDefaultSchool->assignRole($guardianRole);
             }
         }
 
         // Create users for other schools
-        $otherSchools = School::where('code', '!=', '740058000')->get();
+        $otherSchools = School::where('code', '!=', self::DEFAULT_CUE)->limit(self::OTHER_SCHOOLS_LIMIT)->get();
         $availableRoles = [
             'regent',
             'secretary',
