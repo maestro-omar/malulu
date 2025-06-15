@@ -138,6 +138,51 @@ class FakeUsersSeeder extends Seeder
             }
         }
 
+        // Create a teacher who is also a guardian in the same school
+        $teacherGuardian = User::whereHas('roles', function ($query) {
+            $query->where('code', 'grade_teacher');
+        })->first();
+
+        if ($teacherGuardian) {
+            // Find a student in the same school
+            $student = User::whereHas('roles', function ($query) {
+                $query->where('code', 'student');
+            })->whereHas('roleRelationships', function ($query) use ($defaultSchool) {
+                $query->where('school_id', $defaultSchool->id);
+            })->first();
+
+            if ($student) {
+                // Create role relationship for guardian role
+                $roleRelationship = [
+                    'user_id' => $teacherGuardian->id,
+                    'role_id' => $guardianRole->id,
+                    'school_id' => $defaultSchool->id,
+                    'start_date' => Carbon::now()->subYears(2),
+                    'end_date' => null,
+                    'end_reason_id' => null,
+                    'notes' => "Auto-generated guardian relationship for teacher",
+                    'created_by' => 1,
+                    'updated_by' => 1,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ];
+
+                $roleRelationshipId = DB::table('role_relationships')->insertGetId($roleRelationship);
+
+                // Create guardian relationship
+                DB::table('guardian_relationships')->insert([
+                    'role_relationship_id' => $roleRelationshipId,
+                    'student_id' => $student->id,
+                    'relationship_type' => 'father',
+                    'is_emergency_contact' => true,
+                    'is_restricted' => false,
+                    'emergency_contact_priority' => 1,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            }
+        }
+
         // Create users for other schools
         $otherSchools = School::where('code', '!=', '740058000')->get();
         $availableRoles = [
@@ -328,6 +373,7 @@ class FakeUsersSeeder extends Seeder
                             })->inRandomOrder()->first();
 
                             if ($student) {
+                                // Create guardian relationship
                                 DB::table('guardian_relationships')->insert([
                                     'role_relationship_id' => $roleRelationshipId,
                                     'student_id' => $student->id,
@@ -338,6 +384,41 @@ class FakeUsersSeeder extends Seeder
                                     'created_at' => Carbon::now(),
                                     'updated_at' => Carbon::now(),
                                 ]);
+
+                                // 30% chance to add a second student relationship
+                                if ($faker->boolean(30)) {
+                                    $secondStudent = User::whereHas('roles', function ($query) {
+                                        $query->where('code', 'student');
+                                    })->where('id', '!=', $student->id)->inRandomOrder()->first();
+
+                                    if ($secondStudent) {
+                                        DB::table('guardian_relationships')->insert([
+                                            'role_relationship_id' => $roleRelationshipId,
+                                            'student_id' => $secondStudent->id,
+                                            'relationship_type' => $faker->randomElement(['father', 'mother', 'grandfather', 'grandmother', 'uncle', 'aunt']),
+                                            'is_emergency_contact' => $faker->boolean(70),
+                                            'is_restricted' => $faker->boolean(10),
+                                            'emergency_contact_priority' => $faker->numberBetween(1, 3),
+                                            'created_at' => Carbon::now(),
+                                            'updated_at' => Carbon::now(),
+                                        ]);
+                                    }
+                                }
+                            } else {
+                                // If no student is found, create a relationship with a random user
+                                $randomUser = User::inRandomOrder()->first();
+                                if ($randomUser) {
+                                    DB::table('guardian_relationships')->insert([
+                                        'role_relationship_id' => $roleRelationshipId,
+                                        'student_id' => $randomUser->id,
+                                        'relationship_type' => $faker->randomElement(['father', 'mother', 'grandfather', 'grandmother', 'uncle', 'aunt']),
+                                        'is_emergency_contact' => $faker->boolean(70),
+                                        'is_restricted' => $faker->boolean(10),
+                                        'emergency_contact_priority' => $faker->numberBetween(1, 3),
+                                        'created_at' => Carbon::now(),
+                                        'updated_at' => Carbon::now(),
+                                    ]);
+                                }
                             }
                             break;
                     }

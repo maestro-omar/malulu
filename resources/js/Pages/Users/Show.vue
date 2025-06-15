@@ -5,6 +5,8 @@ import RoleBadge from '@/Components/RoleBadge.vue';
 import PhoneField from '@/Components/PhoneField.vue';
 import EmailField from '@/Components/EmailField.vue';
 import EditableImage from '@/Components/EditableImage.vue';
+import { router } from '@inertiajs/vue3';
+import SchoolsAndRolesCard from '@/Components/SchoolsAndRolesCard.vue';
 
 const props = defineProps({
     user: Object
@@ -50,7 +52,7 @@ const destroy = () => {
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-2">
                     <div class="p-6 text-gray-900">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Basic Information -->
@@ -94,28 +96,14 @@ const destroy = () => {
                                                 <div class="mt-1 text-sm text-gray-900">
                                                     {{ user.birthdate ? new
                                                         Date(user.birthdate).toLocaleDateString('es-AR', {
-                                                    timeZone: 'UTC' }) : '-' }}
+                                                            timeZone: 'UTC'
+                                                        }) : '-' }}
                                                 </div>
                                             </div>
                                             <div>
                                                 <label
                                                     class="block text-sm font-medium text-gray-400">Nacionalidad</label>
                                                 <div class="mt-1 text-sm text-gray-900">{{ user.nationality || '-' }}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-400">Escuelas y
-                                                roles</label>
-                                            <div class="mt-1 flex flex-wrap gap-2">
-                                                <div v-for="school in user.schools" :key="school.id"
-                                                    class="flex items-center gap-2">
-                                                    <span class="text-sm font-medium text-gray-600">{{ school.short
-                                                        }}:</span>
-                                                    <RoleBadge
-                                                        v-for="role in user.roles.filter(r => r.team_id === school.id)"
-                                                        :key="role.id" :role="role" />
                                                 </div>
                                             </div>
                                         </div>
@@ -182,6 +170,10 @@ const destroy = () => {
                         </div>
                     </div>
                 </div>
+                <SchoolsAndRolesCard :schools="user.schools" :roles="user.roles"
+                    :role-relationships="user.roleRelationships" :teacher-relationships="user.teacherRelationships"
+                    :guardian-relationships="user.guardianRelationships"
+                    :student-relationships="user.studentRelationships" />
             </div>
         </div>
     </AuthenticatedLayout>

@@ -143,4 +143,34 @@ class User extends Authenticatable
             ->active()
             ->first();
     }
+
+    /**
+     * Get the student relationship for the user.
+     */
+    public function studentRelationship()
+    {
+        return $this->hasOne(StudentRelationship::class, 'role_relationship_id', 'id')
+            ->whereHas('roleRelationship', function ($query) {
+                $query->where('user_id', $this->id);
+            });
+    }
+
+    /**
+     * Get the guardian relationships for the user.
+     */
+    public function guardianRelationships()
+    {
+        return $this->hasMany(GuardianRelationship::class, 'student_id');
+    }
+
+    /**
+     * Get the students that this user is a guardian for.
+     */
+    public function students()
+    {
+        return $this->belongsToMany(User::class, 'guardian_relationships', 'student_id', 'role_relationship_id')
+            ->whereHas('roleRelationship', function ($query) {
+                $query->where('user_id', $this->id);
+            });
+    }
 }

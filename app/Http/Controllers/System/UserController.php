@@ -167,43 +167,8 @@ class UserController extends SystemBaseController
 
     public function show(User $user): Response
     {
-        $user->load(['allRolesAcrossTeams']);
-
-        // Transform the data to include roles and schools
-        $transformedUser = $user->toArray();
-
-        // Get unique school IDs from roles
-        $schoolIds = collect($user->allRolesAcrossTeams)
-            ->pluck('pivot.team_id')
-            ->filter()
-            ->unique()
-            ->values()
-            ->toArray();
-
-        // Get schools for these IDs
-        $schools = \App\Models\School::whereIn('id', $schoolIds)->get();
-
-        $transformedUser['roles'] = collect($user->allRolesAcrossTeams)->map(function ($role) {
-            return [
-                'id' => $role->id,
-                'name' => $role->name,
-                'short' => $role->short,
-                'code' => $role->code,
-                'team_id' => $role->pivot->team_id
-            ];
-        })->toArray();
-
-        // Add schools to user data
-        $transformedUser['schools'] = $schools->map(function ($school) {
-            return [
-                'id' => $school->id,
-                'name' => $school->name,
-                'short' => $school->short
-            ];
-        })->toArray();
-
         return Inertia::render('Users/Show', [
-            'user' => $transformedUser
+            'user' => $this->userService->getUserShowData($user)
         ]);
     }
 

@@ -246,4 +246,164 @@ class UserService
             throw $e;
         }
     }
+
+    /**
+     * Get user data for show view with all relationships
+     */
+    public function getUserShowData(User $user): array
+    {
+        $user->load([
+            'allRolesAcrossTeams',
+            'roleRelationships' => function ($query) {
+                $query->with([
+                    'teacherRelationship' => function ($query) {
+                        $query->with(['classSubject']);
+                    },
+                    'guardianRelationship' => function ($query) {
+                        $query->with(['student' => function ($query) {
+                            $query->with(['roleRelationships' => function ($query) {
+                                $query->with(['studentRelationship' => function ($query) {
+                                    $query->with(['currentCourse']);
+                                }]);
+                            }]);
+                        }]);
+                    },
+                    'studentRelationship' => function ($query) {
+                        $query->with(['currentCourse']);
+                    }
+                ]);
+            }
+        ]);
+
+        // Transform the data to include roles and schools
+        $transformedUser = $user->toArray();
+
+        // Get unique school IDs from roles
+        $schoolIds = collect($user->allRolesAcrossTeams)
+            ->pluck('pivot.team_id')
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        // Get schools for these IDs
+        $schools = \App\Models\School::whereIn('id', $schoolIds)->get();
+
+        $transformedUser['roles'] = collect($user->allRolesAcrossTeams)->map(function ($role) {
+            return [
+                'id' => $role->id,
+                'name' => $role->name,
+                'short' => $role->short,
+                'code' => $role->code,
+                'team_id' => $role->pivot->team_id
+            ];
+        })->toArray();
+
+        // Add schools to user data
+        $transformedUser['schools'] = $schools->map(function ($school) {
+            return [
+                'id' => $school->id,
+                'name' => $school->name,
+                'short' => $school->short
+            ];
+        })->toArray();
+
+        // Add role relationships data
+        $transformedUser['roleRelationships'] = $user->roleRelationships->map(function ($relationship) {
+            return [
+                'id' => $relationship->id,
+                'user_id' => $relationship->user_id,
+                'role_id' => $relationship->role_id,
+                'school_id' => $relationship->school_id,
+                'start_date' => $relationship->start_date,
+                'end_date' => $relationship->end_date,
+                'end_reason_id' => $relationship->end_reason_id,
+                'notes' => $relationship->notes,
+                'custom_fields' => $relationship->custom_fields,
+                'created_at' => $relationship->created_at,
+                'updated_at' => $relationship->updated_at
+            ];
+        })->toArray();
+
+        // Add teacher relationships with detailed information
+        $transformedUser['teacherRelationships'] = $user->roleRelationships
+            ->pluck('teacherRelationship')
+            ->filter()
+            ->map(function ($relationship) use ($user) {
+                $roleRelationship = $user->roleRelationships->firstWhere('id', $relationship->role_relationship_id);
+                $role = $user->allRolesAcrossTeams->firstWhere('id', $roleRelationship->role_id);
+
+                return [
+                    'id' => $relationship->id,
+                    'role_relationship_id' => $relationship->role_relationship_id,
+                    'role' => $role ? [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                        'short' => $role->short,
+                        'code' => $role->code
+                    ] : null,
+                    'class_subject' => $relationship->classSubject ? [
+                        'id' => $relationship->classSubject->id,
+                        'name' => $relationship->classSubject->name,
+                        'short_name' => $relationship->classSubject->short_name
+                    ] : null,
+                    'job_status' => $relationship->job_status,
+                    'job_status_date' => $relationship->job_status_date,
+                    'decree_number' => $relationship->decree_number,
+                    'decree_file_id' => $relationship->decree_file_id,
+                    'schedule' => $relationship->schedule,
+                    'degree_title' => $relationship->degree_title
+                ];
+            })->toArray();
+
+        // Add guardian relationships with student information
+        $transformedUser['guardianRelationships'] = $user->roleRelationships
+            ->pluck('guardianRelationship')
+            ->filter()
+            ->map(function ($relationship) {
+                $student = $relationship->student;
+                $studentRoleRelationship = $student ? $student->roleRelationships->first() : null;
+                $studentRelationship = $studentRoleRelationship ? $studentRoleRelationship->studentRelationship : null;
+                $currentCourse = $studentRelationship ? $studentRelationship->currentCourse : null;
+
+                return [
+                    'id' => $relationship->id,
+                    'role_relationship_id' => $relationship->role_relationship_id,
+                    'student' => $student ? [
+                        'id' => $student->id,
+                        'name' => $student->name,
+                        'current_course' => $currentCourse ? [
+                            'id' => $currentCourse->id,
+                            'name' => $currentCourse->name,
+                            'grade' => $currentCourse->grade,
+                            'section' => $currentCourse->section
+                        ] : null
+                    ] : null,
+                    'student_id' => $relationship->student_id,
+                    'relationship_type' => $relationship->relationship_type,
+                    'is_emergency_contact' => $relationship->is_emergency_contact,
+                    'is_restricted' => $relationship->is_restricted,
+                    'emergency_contact_priority' => $relationship->emergency_contact_priority
+                ];
+            })->toArray();
+
+        // Add student relationships with course information
+        $transformedUser['studentRelationships'] = $user->roleRelationships
+            ->pluck('studentRelationship')
+            ->filter()
+            ->map(function ($relationship) {
+                return [
+                    'id' => $relationship->id,
+                    'role_relationship_id' => $relationship->role_relationship_id,
+                    'current_course' => $relationship->currentCourse ? [
+                        'id' => $relationship->currentCourse->id,
+                        'name' => $relationship->currentCourse->name,
+                        'grade' => $relationship->currentCourse->grade,
+                        'section' => $relationship->currentCourse->section
+                    ] : null
+                ];
+            })->toArray();
+
+        return $transformedUser;
+    }
 }
