@@ -185,7 +185,7 @@ class UserController extends SystemBaseController
             'assignedSchools' => $userData['schools'],
             'availableRoles' => \Spatie\Permission\Models\Role::all(),
             'roleRelationships' => $userData['roleRelationships'],
-            'teacherRelationships' => $userData['teacherRelationships'],
+            'workerRelationships' => $userData['workerRelationships'],
             'guardianRelationships' => $userData['guardianRelationships'],
             'studentRelationships' => $userData['studentRelationships'],
             'roles' => $userData['roles'],
@@ -204,12 +204,12 @@ class UserController extends SystemBaseController
             'start_date' => ['required', 'date'],
             'notes' => ['nullable', 'string', 'max:1000'],
             // Specific fields based on role will be validated in the service or within this method
-            'teacher_details.job_status' => ['nullable', 'string'],
-            'teacher_details.job_status_date' => ['nullable', 'date'],
-            'teacher_details.decree_number' => ['nullable', 'string'],
-            'teacher_details.degree_title' => ['nullable', 'string'],
-            'teacher_details.schedule' => ['nullable', 'array'],
-            'teacher_details.class_subject_id' => ['nullable', 'exists:class_subjects,id'],
+            'worker_details.job_status' => ['nullable', 'string'],
+            'worker_details.job_status_date' => ['nullable', 'date'],
+            'worker_details.decree_number' => ['nullable', 'string'],
+            'worker_details.degree_title' => ['nullable', 'string'],
+            'worker_details.schedule' => ['nullable', 'array'],
+            'worker_details.class_subject_id' => ['nullable', 'exists:class_subjects,id'],
 
             'guardian_details.relationship_type' => ['nullable', 'string'],
             'guardian_details.is_emergency_contact' => ['nullable', 'boolean'],
@@ -264,7 +264,7 @@ class UserController extends SystemBaseController
 
             // Store new image with custom filename
             $path = $image->storeAs('users/' . $user->id, $newFilename, 'public');
-            
+
             // Get the full URL for the stored image using the asset helper
             $url = asset('storage/' . $path);
 

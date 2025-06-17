@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TeacherRelationship extends Model
+class WorkerRelationship extends Model
 {
     use SoftDeletes;
 
@@ -25,12 +25,6 @@ class TeacherRelationship extends Model
         'job_status_date' => 'date',
         'schedule' => 'array',
     ];
-
-    // Job status constants
-    const JOB_STATUS_SUPLENTE = 'suplente';
-    const JOB_STATUS_INTERINO = 'interino';
-    const JOB_STATUS_TITULAR = 'titular';
-
     /**
      * Get the role relationship that owns this teacher relationship.
      */
@@ -54,16 +48,4 @@ class TeacherRelationship extends Model
     {
         return $this->belongsTo(File::class, 'decree_file_id');
     }
-
-    /**
-     * Get all available job statuses.
-     */
-    public static function jobStatuses(): array
-    {
-        return [
-            self::JOB_STATUS_SUPLENTE => 'Suplente',
-            self::JOB_STATUS_INTERINO => 'Interino',
-            self::JOB_STATUS_TITULAR => 'Titular'
-        ];
-    }
-} 
+}

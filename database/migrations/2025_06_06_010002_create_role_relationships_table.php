@@ -49,13 +49,13 @@ return new class extends Migration
         });
 
         // Teacher relationships
-        Schema::create('teacher_relationships', function (Blueprint $table) {
+        Schema::create('worker_relationships', function (Blueprint $table) {
             $table->id();
             $table->foreignId('role_relationship_id')->constrained()->onDelete('cascade'); // Link to the main role relationship
-            $table->foreignId('class_subject_id')->constrained()->onDelete('cascade'); // Link to the subject
+            $table->foreignId('class_subject_id')->nullable()->constrained()->onDelete('cascade'); // Link to the subject
             $table->string('job_status'); // Employment status (titular, interino, suplente)
             $table->date('job_status_date')->nullable(); // Employment status date
-            $table->string('decree_number')->nullable(); // Decree number and year that assings to this job 
+            $table->string('decree_number')->nullable(); // Decree number and year that assings to this job
             $table->foreignId('decree_file_id')->nullable()->constrained('files')->onDelete('cascade'); // Link to the file
             $table->json('schedule')->nullable();
             $table->string('degree_title'); // Academic degree title
@@ -93,7 +93,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('student_relationships');
         Schema::dropIfExists('guardian_relationships');
-        Schema::dropIfExists('teacher_relationships');
+        Schema::dropIfExists('worker_relationships');
         Schema::dropIfExists('role_relationships');
     }
 };

@@ -38,7 +38,7 @@ Route::prefix('sistema')->group(function () {
             Route::put('usuarios/{user}', [UserController::class, 'update'])->name('users.update');
             Route::delete('usuarios/{user}', [UserController::class, 'destroy'])->name('users.destroy');
             Route::get('usuarios/{user}/nuevo-rol', [UserController::class, 'addRole'])->name('users.add-role');
-            Route::put('usuarios/{user}/new-role', [UserController::class, 'newRole'])->name('users.save-new-role');
+            Route::put('usuarios/{user}/store-role', [UserController::class, 'storeRole'])->name('users.roles.store');
             Route::post('usuarios/{user}/upload-image', [UserController::class, 'uploadImage'])->name('users.upload-image');
             Route::delete('usuarios/{user}/delete-image', [UserController::class, 'deleteImage'])->name('users.delete-image');
             Route::resource('usuarios', UserController::class)->except(['index', 'show', 'create', 'edit', 'destroy']);

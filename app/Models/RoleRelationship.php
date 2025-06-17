@@ -30,15 +30,17 @@ class RoleRelationship extends Model
     ];
 
     // Job status constants
-    const JOB_STATUS_SUPLENTE = 'suplente';
-    const JOB_STATUS_INTERINO = 'interino';
-    const JOB_STATUS_TITULAR = 'titular';
+    const JOB_STATUS_SUBSTITUTE = 'substitute';
+    const JOB_STATUS_INTERIM = 'interim';
+    const JOB_STATUS_PERMANENT = 'permanent';
 
     // Relationship type constants
-    const RELATIONSHIP_PADRE = 'padre';
-    const RELATIONSHIP_MADRE = 'madre';
-    const RELATIONSHIP_TUTOR = 'tutor';
-    const RELATIONSHIP_OTRO = 'otro';
+    const RELATIONSHIP_FATHER = 'father';
+    const RELATIONSHIP_MOTHER = 'mother';
+    const RELATIONSHIP_GUARDIAN = 'legal_guardian';
+    const RELATIONSHIP_PARENT = 'parent';
+    const RELATIONSHIP_RELATIVE = 'relative';
+    const RELATIONSHIP_OTRO = 'other';
 
     /**
      * Get the user that owns the relationship.
@@ -127,9 +129,9 @@ class RoleRelationship extends Model
     public static function jobStatuses(): array
     {
         return [
-            self::JOB_STATUS_SUPLENTE => 'Suplente',
-            self::JOB_STATUS_INTERINO => 'Interino',
-            self::JOB_STATUS_TITULAR => 'Titular'
+            self::JOB_STATUS_SUBSTITUTE => 'Suplente',
+            self::JOB_STATUS_INTERIM  => 'Interino',
+            self::JOB_STATUS_PERMANENT => 'Titular'
         ];
     }
 
@@ -139,17 +141,19 @@ class RoleRelationship extends Model
     public static function relationshipTypes(): array
     {
         return [
-            self::RELATIONSHIP_PADRE => 'Padre',
-            self::RELATIONSHIP_MADRE => 'Madre',
-            self::RELATIONSHIP_TUTOR => 'Tutor',
-            self::RELATIONSHIP_OTRO => 'Otro'
+            self::RELATIONSHIP_FATHER => 'Padre',
+            self::RELATIONSHIP_MOTHER => 'Madre',
+            self::RELATIONSHIP_GUARDIAN => 'Tutor/a',
+            self::RELATIONSHIP_PARENT => 'Xadre',
+            self::RELATIONSHIP_RELATIVE => 'Pariente',
+            self::RELATIONSHIP_OTRO => 'other'
         ];
     }
 
     // Role-specific relationships
-    public function teacherRelationship()
+    public function workerRelationship()
     {
-        return $this->hasOne(TeacherRelationship::class);
+        return $this->hasOne(WorkerRelationship::class);
     }
 
     public function guardianRelationship()
@@ -165,8 +169,8 @@ class RoleRelationship extends Model
     // Helper method to get the specific relationship based on role
     public function getSpecificRelationship()
     {
-        return match($this->role_id) {
-            1 => $this->teacherRelationship,
+        return match ($this->role_id) {
+            1 => $this->workerRelationship,
             2 => $this->guardianRelationship,
             3 => $this->studentRelationship,
             default => null,
@@ -180,4 +184,4 @@ class RoleRelationship extends Model
     {
         return is_null($this->end_date) && is_null($this->end_reason_id);
     }
-} 
+}

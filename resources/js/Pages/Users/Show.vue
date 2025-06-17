@@ -59,6 +59,7 @@ const destroy = () => {
                             <div class="space-y-4">
                                 <div>
                                     <EditableImage v-model="user.picture" type="picture" :model-id="user.id"
+                                        :can-edit="true"
                                         image-class="h-32 w-32 rounded-full object-cover"
                                         upload-route="users.upload-image" delete-route="users.delete-image"
                                         delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?" />
@@ -151,14 +152,14 @@ const destroy = () => {
                         </div>
                     </div>
                 </div>
-                <SchoolsAndRolesCard 
+                <SchoolsAndRolesCard
                 :guardian-relationships="user.guardianRelationships"
-                :schools="user.schools" 
+                :schools="user.schools"
                 :roles="user.roles"
-                    :role-relationships="user.roleRelationships" 
-                    :teacher-relationships="user.teacherRelationships"
+                    :role-relationships="user.roleRelationships"
+                    :teacher-relationships="user.workerRelationships"
                     :student-relationships="user.studentRelationships"
-                    :can-add-roles="page.props.auth.user.can['superadmin']" 
+                    :can-add-roles="page.props.auth.user.can['superadmin']"
                     :user-id="user.id"
                 />
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-2">

@@ -13,6 +13,7 @@ use App\Models\Province;
 use App\Models\Country;
 use App\Models\ClassSubject;
 use App\Models\Course;
+use App\Models\RoleRelationship;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -145,7 +146,7 @@ class FakeUsersSeeder extends Seeder
                 DB::table('guardian_relationships')->insert([
                     'role_relationship_id' => $roleRelationshipId,
                     'student_id' => $student->id,
-                    'relationship_type' => 'father',
+                    'relationship_type' => RoleRelationship::RELATIONSHIP_FATHER,
                     'is_emergency_contact' => true,
                     'is_restricted' => false,
                     'emergency_contact_priority' => 1,
@@ -350,10 +351,10 @@ class FakeUsersSeeder extends Seeder
                         case 'curricular_teacher':
                         case 'special_teacher':
                         case 'professor':
-                            DB::table('teacher_relationships')->insert([
+                            DB::table('worker_relationships')->insert([
                                 'role_relationship_id' => $roleRelationshipId,
                                 'class_subject_id' => $this->mathSubject->id,
-                                'job_status' => $faker->randomElement(['titular', 'interim', 'substitute']),
+                                'job_status' => $faker->randomElement($this->jobStatuses()),
                                 'job_status_date' => Carbon::now()->subYears($faker->numberBetween(1, 5)),
                                 'decree_number' => 'DEC-' . date('Y') . '-' . str_pad($faker->numberBetween(1, 999), 3, '0', STR_PAD_LEFT),
                                 'degree_title' => $faker->randomElement([
@@ -387,7 +388,7 @@ class FakeUsersSeeder extends Seeder
                                 DB::table('guardian_relationships')->insert([
                                     'role_relationship_id' => $roleRelationshipId,
                                     'student_id' => $student->id,
-                                    'relationship_type' => $faker->randomElement(['father', 'mother', 'grandfather', 'grandmother', 'uncle', 'aunt']),
+                                    'relationship_type' => $faker->randomElement($this->relationshipTypes()),
                                     'is_emergency_contact' => $faker->boolean(70),
                                     'is_restricted' => $faker->boolean(10),
                                     'emergency_contact_priority' => $faker->numberBetween(1, 3),
@@ -405,7 +406,7 @@ class FakeUsersSeeder extends Seeder
                                         DB::table('guardian_relationships')->insert([
                                             'role_relationship_id' => $roleRelationshipId,
                                             'student_id' => $secondStudent->id,
-                                            'relationship_type' => $faker->randomElement(['father', 'mother', 'grandfather', 'grandmother', 'uncle', 'aunt']),
+                                            'relationship_type' => $faker->randomElement($this->relationshipTypes()),
                                             'is_emergency_contact' => $faker->boolean(70),
                                             'is_restricted' => $faker->boolean(10),
                                             'emergency_contact_priority' => $faker->numberBetween(1, 3),
@@ -421,7 +422,7 @@ class FakeUsersSeeder extends Seeder
                                     DB::table('guardian_relationships')->insert([
                                         'role_relationship_id' => $roleRelationshipId,
                                         'student_id' => $randomUser->id,
-                                        'relationship_type' => $faker->randomElement(['father', 'mother', 'grandfather', 'grandmother', 'uncle', 'aunt']),
+                                        'relationship_type' => $faker->randomElement($this->relationshipTypes()),
                                         'is_emergency_contact' => $faker->boolean(70),
                                         'is_restricted' => $faker->boolean(10),
                                         'emergency_contact_priority' => $faker->numberBetween(1, 3),
@@ -453,5 +454,21 @@ class FakeUsersSeeder extends Seeder
             'cooperative' => $faker->dateTimeBetween('-70 years', '-30 years'),
             default => $faker->dateTimeBetween('-70 years', '-30 years'), // For director, regent, secretary
         };
+    }
+
+    private function relationshipTypes(): array
+    {
+        static $types;
+        if (empty($types))
+            $types = array_keys(RoleRelationship::relationshipTypes());
+        return $types;
+    }
+
+    private function jobStatuses(): array
+    {
+        static $types;
+        if (empty($types))
+            $types = array_keys(RoleRelationship::jobStatuses());
+        return $types;
     }
 }

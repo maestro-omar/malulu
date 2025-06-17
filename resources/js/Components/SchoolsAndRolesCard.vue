@@ -38,12 +38,12 @@
           <!-- Conditional rendering will be handled inside the role loop -->
           <template v-for="role in getRolesForSchool(school.id)" :key="`details-${role.id}`">
             <div v-if="expandedRoleDetails[school.id]?.[role.id]" class="space-y-4 mt-4">
-              <!-- Teacher Relationships -->
-              <div v-if="hasTeacherRelationshipsForRole(role.id, school.id)" :class="getRoleBackgroundColor(role)"
+              <!-- Worker Relationships -->
+              <div v-if="hasworkerRelationshipsForRole(role.id, school.id)" :class="getRoleBackgroundColor(role)"
                 class="p-4 rounded-lg">
                 <h5 class="text-sm font-medium text-gray-900 mb-3">Información Docente - {{ role.name }}</h5>
                 <div class="space-y-3">
-                  <div v-for="relationship in getTeacherRelationshipsForRole(role.id, school.id)" :key="relationship.id"
+                  <div v-for="relationship in getWorkerRelationshipsForRole(role.id, school.id)" :key="relationship.id"
                     class="bg-white p-3 rounded-md shadow-sm">
                     <div class="grid grid-cols-2 gap-4">
                       <div>
@@ -74,7 +74,7 @@
                         <span class="text-xs text-gray-500">Fecha:</span>
                         <p class="text-sm font-medium">{{ formatDate(relationship.job_status_date) }}</p>
                       </div>
-                      <div v-if="relationship.class_subject" class="col-span-2">
+                      <div v-if="hasTeacherRelationshipsForRole(role.id, school.id) && relationship.class_subject" class="col-span-2">
                         <span class="text-xs text-gray-500">Asignatura:</span>
                         <div class="mt-1 space-y-1">
                           <p class="text-sm font-medium">{{ relationship.class_subject.name }}</p>
@@ -229,7 +229,7 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  teacherRelationships: {
+  workerRelationships: {
     type: Array,
     default: () => []
   },
@@ -270,13 +270,13 @@ const getRoleRelationshipsForSchoolAndRole = (schoolId, roleId) => {
   );
 };
 
-const hasTeacherRelationshipsForRole = (roleId, schoolId) => {
-  return getTeacherRelationshipsForRole(roleId, schoolId).length > 0;
+const hasworkerRelationshipsForRole = (roleId, schoolId) => {
+  return getWorkerRelationshipsForRole(roleId, schoolId).length > 0;
 };
 
-const getTeacherRelationshipsForRole = (roleId, schoolId) => {
+const getWorkerRelationshipsForRole = (roleId, schoolId) => {
   const relevantRoleRelationships = getRoleRelationshipsForSchoolAndRole(schoolId, roleId);
-  return props.teacherRelationships.filter(tr =>
+  return props.workerRelationships.filter(tr =>
     relevantRoleRelationships.some(rrr => rrr.id === tr.role_relationship_id)
   );
 };
@@ -312,7 +312,7 @@ const getGeneralRoleRelationshipsForRole = (roleId, schoolId) => {
 
   // Filter out relationships that are already handled by specific types (teacher, guardian, student)
   const generalRelationships = relevantRoleRelationships.filter(rr => {
-    const isTeacher = props.teacherRelationships.some(tr => tr.role_relationship_id === rr.id);
+    const isTeacher = props.workerRelationships.some(tr => tr.role_relationship_id === rr.id);
     const isGuardian = props.guardianRelationships.some(gr => gr.role_relationship_id === rr.id);
     const isStudent = props.studentRelationships.some(sr => sr.role_relationship_id === rr.id);
 

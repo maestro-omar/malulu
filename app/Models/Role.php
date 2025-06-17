@@ -166,4 +166,16 @@ class Role extends SpatieRole
         return (is_array($code) && !empty(array_intersect($code, self::teacherCodes())))
             || (!is_array($code) && in_array($code, self::teacherCodes()));
     }
-} 
+
+    /**
+     * Check if role is a worker
+     *
+     * @param array|string $code
+     * @return bool
+     */
+    public static function isWorker(array|string $code): bool
+    {
+        return (is_array($code) && !empty(array_intersect($code, self::workersCodes())))
+            || (!is_array($code) && in_array($code, self::workersCodes()));
+    }
+}

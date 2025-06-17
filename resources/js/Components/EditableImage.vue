@@ -3,14 +3,14 @@
     <img :src="modelValue || noImage" :class="[imageClass]" />
     <div
       class="absolute top-0 left-0 flex space-x-2 p-1 opacity-50 group-hover:opacity-100 transition-opacity">
-      <button @click="openFileInput"
+      <button v-if="canEdit" @click="openFileInput"
         class="bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
         </svg>
       </button>
-      <button v-if="allowDelete" @click="handleDelete"
+      <button v-if="canEdit" @click="handleDelete"
         class="bg-red-500 bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -47,10 +47,10 @@ const props = defineProps({
     type: String,
     default: 'h-24 w-24 object-cover rounded'
   },
-  // Whether to show the delete button
-  allowDelete: {
+  // Whether to show the edit and delete buttons
+  canEdit: {
     type: Boolean,
-    default: true
+    default: false
   },
   // The route name for uploading (without parameters)
   uploadRoute: {
@@ -88,7 +88,7 @@ const handleFileChange = (event) => {
     const formData = new FormData();
     formData.append('image', file);
     formData.append('type', props.type);
-    
+
     // Add any additional data
     Object.entries(props.additionalData).forEach(([key, value]) => {
       formData.append(key, value);
@@ -111,9 +111,9 @@ const handleFileChange = (event) => {
 };
 
 const handleDelete = () => {
-  const confirmMessage = props.deleteConfirmMessage || 
+  const confirmMessage = props.deleteConfirmMessage ||
     `¿Está seguro que desea eliminar esta imagen?`;
-    
+
   if (confirm(confirmMessage)) {
     const data = {
       type: props.type,
@@ -133,4 +133,4 @@ const handleDelete = () => {
     });
   }
 };
-</script> 
+</script>

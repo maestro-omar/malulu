@@ -31,8 +31,8 @@
                                         <div>
                                             <EditableImage
                                                 :model-value="user.picture"
-                                                :default-image="'/images/no-image-person.png'" 
-                                                :can-edit="false" 
+                                                :default-image="'/images/no-image-person.png'"
+                                                :can-edit="false"
                                                 class="w-32 h-32 rounded-full object-cover"
                                             />
                                             <div id="userCompleteName" class="mt-1 text-sm text-gray-900">{{ user.firstname + ' ' + user.lastname }}</div>
@@ -52,7 +52,7 @@
                                             :user="user"
                                             :schools="assignedSchools"
                                             :role-relationships="roleRelationships"
-                                            :teacher-relationships="teacherRelationships"
+                                            :teacher-relationships="workerRelationships"
                                             :guardian-relationships="guardianRelationships"
                                             :student-relationships="studentRelationships"
                                             :roles="roles"
@@ -137,9 +137,9 @@
                                                 id="jobStatus"
                                                 type="text"
                                                 class="mt-1 block w-full"
-                                                v-model="form.teacher_details.job_status"
+                                                v-model="form.worker_details.job_status"
                                             />
-                                            <InputError class="mt-2" :message="form.errors['teacher_details.job_status']" />
+                                            <InputError class="mt-2" :message="form.errors['worker_details.job_status']" />
                                         </div>
                                         <div>
                                             <InputLabel for="jobStatusDate" value="Fecha de Estado de Empleo" />
@@ -147,9 +147,9 @@
                                                 id="jobStatusDate"
                                                 type="date"
                                                 class="mt-1 block w-full"
-                                                v-model="form.teacher_details.job_status_date"
+                                                v-model="form.worker_details.job_status_date"
                                             />
-                                            <InputError class="mt-2" :message="form.errors['teacher_details.job_status_date']" />
+                                            <InputError class="mt-2" :message="form.errors['worker_details.job_status_date']" />
                                         </div>
                                         <div>
                                             <InputLabel for="decreeNumber" value="Número de Decreto" />
@@ -157,9 +157,9 @@
                                                 id="decreeNumber"
                                                 type="text"
                                                 class="mt-1 block w-full"
-                                                v-model="form.teacher_details.decree_number"
+                                                v-model="form.worker_details.decree_number"
                                             />
-                                            <InputError class="mt-2" :message="form.errors['teacher_details.decree_number']" />
+                                            <InputError class="mt-2" :message="form.errors['worker_details.decree_number']" />
                                         </div>
                                         <div>
                                             <InputLabel for="degreeTitle" value="Título" />
@@ -167,9 +167,9 @@
                                                 id="degreeTitle"
                                                 type="text"
                                                 class="mt-1 block w-full"
-                                                v-model="form.teacher_details.degree_title"
+                                                v-model="form.worker_details.degree_title"
                                             />
-                                            <InputError class="mt-2" :message="form.errors['teacher_details.degree_title']" />
+                                            <InputError class="mt-2" :message="form.errors['worker_details.degree_title']" />
                                         </div>
                                         <div>
                                             <InputLabel for="classSubject" value="Asignatura (ID)" />
@@ -177,10 +177,10 @@
                                                 id="classSubject"
                                                 type="number"
                                                 class="mt-1 block w-full"
-                                                v-model="form.teacher_details.class_subject_id"
+                                                v-model="form.worker_details.class_subject_id"
                                                 placeholder="ID de la asignatura"
                                             />
-                                            <InputError class="mt-2" :message="form.errors['teacher_details.class_subject_id']" />
+                                            <InputError class="mt-2" :message="form.errors['worker_details.class_subject_id']" />
                                         </div>
                                         <!-- Schedule will need custom components or further complexity -->
                                     </div>
@@ -266,7 +266,7 @@
                                     Este rol ya está asignado a este usuario para la escuela seleccionada.
                                 </div>
 
-                                <ActionButtons 
+                                <ActionButtons
                                     button-label="Guardar Rol"
                                     :cancel-href="route('users.show', user.id)"
                                     :disabled="form.processing || isRoleAlreadyAssigned"
@@ -301,7 +301,7 @@ const props = defineProps({
     assignedSchools: Array, // Assigned schools for SchoolsAndRolesCard
     availableRoles: Array,
     roleRelationships: Array,
-    teacherRelationships: Array,
+    workerRelationships: Array,
     guardianRelationships: Array,
     studentRelationships: Array,
     roles: Array,
@@ -341,11 +341,12 @@ const filteredAvailableRoles = computed(() => {
 
 // Initialize form for a single role assignment
 const form = useForm({
+    _method: 'PUT',
     school_id: null,
     role_id: null,
     start_date: '',
     notes: '',
-    teacher_details: {
+    worker_details: {
         job_status: '',
         job_status_date: '',
         decree_number: '',
@@ -375,7 +376,7 @@ watch(selectedRole, (newRole) => {
     form.role_id = newRole ? newRole.id : null;
 
     // Reset specific details when role changes
-    form.teacher_details = {
+    form.worker_details = {
         job_status: '',
         job_status_date: '',
         decree_number: '',
@@ -449,7 +450,7 @@ const getRoleSelectedClass = (role) => {
 };
 
 const submit = () => {
-    form.post(route('users.roles.store', props.user.id), {
+    form.put(route('users.roles.store', props.user.id), {
         preserveScroll: true,
         onSuccess: () => {
             // Optionally, reset the form or give feedback
@@ -470,4 +471,4 @@ const isRoleAlreadyAssigned = computed(() => {
                relationship.role_id === selectedRole.value.id;
     });
 });
-</script> 
+</script>
