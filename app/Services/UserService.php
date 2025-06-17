@@ -257,23 +257,23 @@ class UserService
             'country',
             'allRolesAcrossTeams',
             'roleRelationships' => function ($query) {
-                $query->with([
-                    'teacherRelationship' => function ($query) {
-                        $query->with(['classSubject']);
-                    },
-                    'guardianRelationship' => function ($query) {
-                        $query->with(['student' => function ($query) {
-                            $query->with(['roleRelationships' => function ($query) {
-                                $query->with(['studentRelationship' => function ($query) {
-                                    $query->with(['currentCourse']);
-                                }]);
+                $query->with(['teacherRelationship' => function ($query) {
+                    $query->with(['classSubject']);
+                },
+                'guardianRelationship' => function ($query) {
+                    $query->with(['student' => function ($query) {
+                        $query->with(['roleRelationships' => function ($query) {
+                            $query->with(['studentRelationship' => function ($query) {
+                                $query->with(['currentCourse']);
                             }]);
                         }]);
-                    },
-                    'studentRelationship' => function ($query) {
-                        $query->with(['currentCourse']);
-                    }
-                ]);
+                    }]);
+                },
+                'studentRelationship' => function ($query) {
+                    $query->with(['currentCourse']);
+                },
+                'creator'
+            ]);
             }
         ]);
 
@@ -317,13 +317,17 @@ class UserService
                 'user_id' => $relationship->user_id,
                 'role_id' => $relationship->role_id,
                 'school_id' => $relationship->school_id,
-                'start_date' => $relationship->start_date,
+                'start_date' => $relationship->start_date ? $relationship->start_date->toDateString() : null,
                 'end_date' => $relationship->end_date,
                 'end_reason_id' => $relationship->end_reason_id,
                 'notes' => $relationship->notes,
                 'custom_fields' => $relationship->custom_fields,
                 'created_at' => $relationship->created_at,
-                'updated_at' => $relationship->updated_at
+                'updated_at' => $relationship->updated_at,
+                'creator' => $relationship->creator ? [
+                    'id' => $relationship->creator->id,
+                    'name' => $relationship->creator->name
+                ] : null
             ];
         })->values()->toArray();
 
@@ -354,7 +358,12 @@ class UserService
                     'decree_number' => $relationship->decree_number,
                     'decree_file_id' => $relationship->decree_file_id,
                     'schedule' => $relationship->schedule,
-                    'degree_title' => $relationship->degree_title
+                    'degree_title' => $relationship->degree_title,
+                    'start_date' => $roleRelationship->start_date ? $roleRelationship->start_date->toDateString() : null,
+                    'creator' => $roleRelationship->creator ? [
+                        'id' => $roleRelationship->creator->id,
+                        'name' => $roleRelationship->creator->name
+                    ] : null
                 ];
             })->values()->toArray();
 
@@ -362,7 +371,8 @@ class UserService
         $transformedUser['guardianRelationships'] = $user->roleRelationships
             ->pluck('guardianRelationship')
             ->filter()
-            ->map(function ($relationship) {
+            ->map(function ($relationship) use ($user) {
+                $roleRelationship = $user->roleRelationships->firstWhere('id', $relationship->role_relationship_id);
                 $student = $relationship->student;
                 $studentRoleRelationship = $student ? $student->roleRelationships->first() : null;
                 $studentRelationship = $studentRoleRelationship ? $studentRoleRelationship->studentRelationship : null;
@@ -385,7 +395,12 @@ class UserService
                     'relationship_type' => $relationship->relationship_type,
                     'is_emergency_contact' => $relationship->is_emergency_contact,
                     'is_restricted' => $relationship->is_restricted,
-                    'emergency_contact_priority' => $relationship->emergency_contact_priority
+                    'emergency_contact_priority' => $relationship->emergency_contact_priority,
+                    'start_date' => $roleRelationship->start_date ? $roleRelationship->start_date->toDateString() : null,
+                    'creator' => $roleRelationship->creator ? [
+                        'id' => $roleRelationship->creator->id,
+                        'name' => $roleRelationship->creator->name
+                    ] : null
                 ];
             })->values()->toArray();
 
@@ -393,7 +408,8 @@ class UserService
         $transformedUser['studentRelationships'] = $user->roleRelationships
             ->pluck('studentRelationship')
             ->filter()
-            ->map(function ($relationship) {
+            ->map(function ($relationship) use ($user) {
+                $roleRelationship = $user->roleRelationships->firstWhere('id', $relationship->role_relationship_id);
                 return [
                     'id' => $relationship->id,
                     'role_relationship_id' => $relationship->role_relationship_id,
@@ -402,6 +418,11 @@ class UserService
                         'name' => $relationship->currentCourse->name,
                         'grade' => $relationship->currentCourse->grade,
                         'section' => $relationship->currentCourse->section
+                    ] : null,
+                    'start_date' => $roleRelationship->start_date ? $roleRelationship->start_date->toDateString() : null,
+                    'creator' => $roleRelationship->creator ? [
+                        'id' => $roleRelationship->creator->id,
+                        'name' => $roleRelationship->creator->name
                     ] : null
                 ];
             })->values()->toArray();
