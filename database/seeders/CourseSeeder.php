@@ -42,7 +42,7 @@ class CourseSeeder extends Seeder
 
         // Get two other schools that are not the global school
         $otherSchools = School::where('code', '!=', '740058000')
-            ->where('code', '!=', 'global')
+            ->where('code', '!=', School::GLOBAL)
             ->inRandomOrder()
             ->take(2)
             ->get();

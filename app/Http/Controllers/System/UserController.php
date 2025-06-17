@@ -175,29 +175,65 @@ class UserController extends SystemBaseController
     /**
      * Show the form for editing user roles.
      */
-    public function editRoles(User $user): Response
+    public function addRole(User $user): Response
     {
-        return Inertia::render('Users/EditRoles', $this->userService->getUserRolesData($user));
+        $userData = $this->userService->getUserShowData($user);
+
+        return Inertia::render('Users/AddRole', [
+            'user' => $userData,
+            'allSchools' => \App\Models\School::all(),
+            'assignedSchools' => $userData['schools'],
+            'availableRoles' => \Spatie\Permission\Models\Role::all(),
+            'roleRelationships' => $userData['roleRelationships'],
+            'teacherRelationships' => $userData['teacherRelationships'],
+            'guardianRelationships' => $userData['guardianRelationships'],
+            'studentRelationships' => $userData['studentRelationships'],
+            'roles' => $userData['roles'],
+            // 'classSubjects', 'students', 'courses' are no longer passed as props as per previous discussions
+        ]);
     }
 
     /**
-     * Update the user's roles.
+     * Creates the user's new role.
      */
-    public function updateRoles(Request $request, User $user)
+    public function storeRole(Request $request, User $user)
     {
         $request->validate([
-            'roles' => 'array',
-            'roles.*' => 'array',
-            'roles.*.*' => 'exists:roles,id',
+            'school_id' => ['required', 'exists:schools,id'],
+            'role_id' => ['required', 'exists:roles,id'],
+            'start_date' => ['required', 'date'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+            // Specific fields based on role will be validated in the service or within this method
+            'teacher_details.job_status' => ['nullable', 'string'],
+            'teacher_details.job_status_date' => ['nullable', 'date'],
+            'teacher_details.decree_number' => ['nullable', 'string'],
+            'teacher_details.degree_title' => ['nullable', 'string'],
+            'teacher_details.schedule' => ['nullable', 'array'],
+            'teacher_details.class_subject_id' => ['nullable', 'exists:class_subjects,id'],
+
+            'guardian_details.relationship_type' => ['nullable', 'string'],
+            'guardian_details.is_emergency_contact' => ['nullable', 'boolean'],
+            'guardian_details.is_restricted' => ['nullable', 'boolean'],
+            'guardian_details.emergency_contact_priority' => ['nullable', 'integer'],
+            'guardian_details.student_id' => ['nullable', 'exists:users,id'], // Assuming students are also users
+
+            'student_details.current_course_id' => ['nullable', 'exists:courses,id'],
         ]);
 
         try {
-            $this->userService->updateUserRoles($user, $request->roles);
+            // Pass the authenticated user as the creator
+            $creator = auth()->user();
+            $this->userService->assignRoleWithDetails($user, $request->school_id, $request->role_id, $request->all(), $creator);
             return redirect()->route('users.show', $user)
-                ->with('success', 'Roles actualizados correctamente.');
-        } catch (\Exception $e) {
+                ->with('success', 'Rol añadido correctamente.');
+        } catch (ValidationException $e) {
             return redirect()->back()
-                ->withErrors(['error' => 'Error al actualizar los roles. Por favor, intente nuevamente.'])
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            Log::error('Error al asignar el nuevo rol: ' . $e->getMessage());
+            return redirect()->back()
+                ->withErrors(['error' => 'Error al asignar el nuevo rol. Por favor, intente nuevamente.'])
                 ->withInput();
         }
     }

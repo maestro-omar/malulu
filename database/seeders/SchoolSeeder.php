@@ -25,7 +25,7 @@ class SchoolSeeder extends Seeder
 
         $schools = [
             [
-                'code' => 'GLOBAL',
+                'code' => School::GLOBAL,
                 'name' => 'GLOBAL',
                 'short' => 'GLOBAL',
                 'locality_id' => $this->localities['San Luis'],

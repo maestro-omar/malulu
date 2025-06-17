@@ -14,6 +14,8 @@ class School extends Model
 
     protected $table = 'schools';
 
+    const GLOBAL = 'GLOBAL'; //code for special "global" school, for admin uses
+
     /**
      * Profile code constants
      */

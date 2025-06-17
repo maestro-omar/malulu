@@ -15,7 +15,7 @@ class RoleAndPermissionSeeder extends Seeder
     public function run(): void
     {
         // Get global school ID
-        $globalSchool = School::where('code', 'GLOBAL')->first();
+        $globalSchool = School::where('code', School::GLOBAL)->first();
         if (!$globalSchool) {
             throw new \Exception('Global school not found. Please run SchoolSeeder first.');
         }

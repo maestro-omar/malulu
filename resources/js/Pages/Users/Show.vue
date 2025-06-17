@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import RoleBadge from '@/Components/RoleBadge.vue';
 import PhoneField from '@/Components/PhoneField.vue';
@@ -11,6 +11,10 @@ import SchoolsAndRolesCard from '@/Components/SchoolsAndRolesCard.vue';
 const props = defineProps({
     user: Object
 });
+
+const page = usePage();
+
+console.log('Permissions in Show.vue:', page.props.auth.user.can);
 
 const destroy = () => {
     if (confirm("¿Está seguro que desea eliminar este usuario?")) {
@@ -151,8 +155,12 @@ const destroy = () => {
                 :guardian-relationships="user.guardianRelationships"
                 :schools="user.schools" 
                 :roles="user.roles"
-                    :role-relationships="user.roleRelationships" :teacher-relationships="user.teacherRelationships"
-                    :student-relationships="user.studentRelationships" />
+                    :role-relationships="user.roleRelationships" 
+                    :teacher-relationships="user.teacherRelationships"
+                    :student-relationships="user.studentRelationships"
+                    :can-add-roles="page.props.auth.user.can['superadmin']" 
+                    :user-id="user.id"
+                />
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-2">
                     <div class="p-6 text-gray-900">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

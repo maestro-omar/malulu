@@ -35,7 +35,7 @@ class SchoolService
             ->when($request->input('locality_id'), function ($query, $localityId) {
                 $query->where('locality_id', $localityId);
             })
-            ->where('name', '!=', 'GLOBAL');
+            ->where('name', '!=', School::GLOBAL);
 
         return $query->orderBy('name')->paginate(10);
     }
@@ -112,7 +112,7 @@ class SchoolService
      */
     public function updateSchool(School $school, array $data)
     {
-        if ($school->name === 'GLOBAL') {
+        if ($school->name === School::GLOBAL) {
             throw new \Exception('Cannot update GLOBAL school.');
         }
 
@@ -138,7 +138,7 @@ class SchoolService
      */
     public function deleteSchool(School $school)
     {
-        if ($school->name === 'GLOBAL') {
+        if ($school->name === School::GLOBAL) {
             throw new \Exception('Cannot delete GLOBAL school.');
         }
 

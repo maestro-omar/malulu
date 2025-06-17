@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class UserService
 {
@@ -243,6 +244,76 @@ class UserService
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error updating user roles: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Assign a single role to a user with associated details.
+     */
+    public function assignRoleWithDetails(User $user, int $schoolId, int $roleId, array $details, User $creator)
+    {
+        DB::beginTransaction();
+
+        try {
+            // 1. Assign the role using Spatie
+            $user->assignRole($roleId, $schoolId);
+
+            // 2. Create the RoleRelationship entry
+            $roleRelationship = $user->roleRelationships()->create([
+                'role_id' => $roleId,
+                'school_id' => $schoolId,
+                'start_date' => $details['start_date'],
+                'notes' => $details['notes'] ?? null,
+                'created_by' => $creator->id, // Store the creator's ID
+            ]);
+
+            // 3. Conditionally create specific relationship details based on role
+            $roleCode = Role::find($roleId)->code; // Get the role code from the role ID
+
+            switch ($roleCode) {
+                case 'professor':
+                case 'grade_teacher':
+                case 'assistant_teacher':
+                case 'curricular_teacher':
+                case 'special_teacher':
+                    if (!empty($details['teacher_details'])) {
+                        $roleRelationship->teacherRelationship()->create([
+                            'job_status' => $details['teacher_details']['job_status'] ?? null,
+                            'job_status_date' => $details['teacher_details']['job_status_date'] ?? null,
+                            'decree_number' => $details['teacher_details']['decree_number'] ?? null,
+                            'degree_title' => $details['teacher_details']['degree_title'] ?? null,
+                            'schedule' => $details['teacher_details']['schedule'] ?? null,
+                            'class_subject_id' => $details['teacher_details']['class_subject_id'] ?? null,
+                        ]);
+                    }
+                    break;
+                case 'guardian':
+                    if (!empty($details['guardian_details'])) {
+                        $roleRelationship->guardianRelationship()->create([
+                            'student_id' => $details['guardian_details']['student_id'] ?? null,
+                            'relationship_type' => $details['guardian_details']['relationship_type'] ?? null,
+                            'is_emergency_contact' => $details['guardian_details']['is_emergency_contact'] ?? false,
+                            'is_restricted' => $details['guardian_details']['is_restricted'] ?? false,
+                            'emergency_contact_priority' => $details['guardian_details']['emergency_contact_priority'] ?? null,
+                        ]);
+                    }
+                    break;
+                case 'student':
+                    if (!empty($details['student_details'])) {
+                        $roleRelationship->studentRelationship()->create([
+                            'current_course_id' => $details['student_details']['current_course_id'] ?? null,
+                        ]);
+                    }
+                    break;
+                // Add more cases for other specific role types if needed
+            }
+
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error assigning role with details: ' . $e->getMessage());
             throw $e;
         }
     }

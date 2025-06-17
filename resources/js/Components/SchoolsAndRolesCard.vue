@@ -1,7 +1,13 @@
 <template>
   <div class="bg-white rounded-lg shadow-sm border border-gray-200">
     <div class="p-4">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">Escuelas y Roles</h3>
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Escuelas y Roles</h3>
+        <Link v-if="canAddRoles" :href="route('users.add-role', userId)"
+            class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-sm">
+        NUEVO ROL
+        </Link>
+      </div>
 
       <div class="space-y-6">
         <div v-for="school in schools" :key="school.id" class="border-b border-gray-200 last:border-b-0 pb-6 last:pb-0">
@@ -208,6 +214,7 @@
 <script setup>
 import { ref } from 'vue';
 import RoleBadge from './RoleBadge.vue';
+import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
   schools: {
@@ -233,6 +240,14 @@ const props = defineProps({
   studentRelationships: {
     type: Array,
     default: () => []
+  },
+  canAddRoles: {
+    type: Boolean,
+    default: false
+  },
+  userId: {
+    type: Number,
+    required: true
   }
 });
 

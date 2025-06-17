@@ -63,6 +63,7 @@ class HandleInertiaRequests extends Middleware
                         'create schools' => $user->can('create schools'),
                         'edit schools' => $user->can('edit schools'),
                         'delete schools' => $user->can('delete schools'),
+                        'superadmin' => $user->can('superadmin'),
                     ],
                 ] : null,
             ],

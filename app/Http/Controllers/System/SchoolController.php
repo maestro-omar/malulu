@@ -63,7 +63,7 @@ class SchoolController extends SystemBaseController
 
     public function edit(School $school)
     {
-        if ($school->name === 'GLOBAL') {
+        if ($school->name === School::GLOBAL) {
             abort(403, 'Cannot edit GLOBAL school.');
         }
 

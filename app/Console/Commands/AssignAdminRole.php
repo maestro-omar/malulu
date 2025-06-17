@@ -29,7 +29,7 @@ class AssignAdminRole extends Command
         }
 
         // Get global school
-        $globalSchool = School::where('code', 'GLOBAL')->first();
+        $globalSchool = School::where('code', School::GLOBAL)->first();
         if (!$globalSchool) {
             $this->error('Global school not found! Please run SchoolSeeder first.');
             return 1;
