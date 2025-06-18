@@ -16,6 +16,7 @@ use App\Models\Course;
 use App\Models\RoleRelationship;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\SchoolLevel;
 
 class FakeUsersSeeder extends Seeder
 {
@@ -24,12 +25,14 @@ class FakeUsersSeeder extends Seeder
     const FAST_TEST = true;
     private $mathSubject;
     private $course;
+    private $schoolLevels;
 
     public function __construct()
     {
         // Get required IDs
         $this->mathSubject = ClassSubject::where('short_name', 'MAT')->first();
         $this->course = Course::first();
+        $this->schoolLevels = SchoolLevel::all(); // Get all school levels
     }
 
     /**
@@ -37,6 +40,11 @@ class FakeUsersSeeder extends Seeder
      */
     public function run(): void
     {
+        if (SchoolLevel::count() === 0) {
+            $this->command->error('No school levels found. Please run SchoolLevelSeeder first.');
+            return;
+        }
+
         if (!$this->mathSubject) {
             $this->command->error('Mathematics subject not found. Please run ClassSubjectSeeder first.');
             return;
@@ -90,7 +98,7 @@ class FakeUsersSeeder extends Seeder
         // Assign admin role
         $adminRole = Role::where('code', 'admin')->first();
         if ($adminRole) {
-            $admin->assignRoleForSchool($adminRole, null);
+            $admin->assignRoleForSchool($adminRole, $defaultSchool->id);
         }
 
         // Create users with specific counts
@@ -167,7 +175,7 @@ class FakeUsersSeeder extends Seeder
         })->get();
 
         foreach ($cooperativeUsers as $user) {
-            $user->assignRoleForSchool($guardianRole, null);
+            $user->assignRoleForSchool($guardianRole, $defaultSchool->id);
         }
 
         // Make 3 grade teachers also guardians
@@ -175,7 +183,7 @@ class FakeUsersSeeder extends Seeder
             $query->where('code', 'grade_teacher');
         })->take(3)->get();
         foreach ($gradeTeachers as $user) {
-            $user->assignRoleForSchool($guardianRole, null);
+            $user->assignRoleForSchool($guardianRole, $defaultSchool->id);
         }
 
         // Make one teacher from default school also be a guardian in another school
@@ -323,13 +331,24 @@ class FakeUsersSeeder extends Seeder
                 // Get the role by code
                 $role = Role::where('code', $roleCode)->first();
                 if ($role) {
-                    $user->assignRoleForSchool($role, null);
+                    // Determine if this role should have a school level
+                    $schoolLevelId = null;
+                    if (in_array($roleCode, ['grade_teacher', 'assistant_teacher', 'curricular_teacher', 'special_teacher', 'professor', 'student'])) {
+                        // Get school levels for this school
+                        $schoolLevels = $school->schoolLevels;
+                        if ($schoolLevels->isNotEmpty()) {
+                            $schoolLevelId = $schoolLevels->random()->id;
+                        }
+                    }
+
+                    $user->assignRoleForSchool($role, $school->id);
 
                     // Create role relationship
                     $roleRelationship = [
                         'user_id' => $user->id,
                         'role_id' => $role->id,
                         'school_id' => $school->id,
+                        'school_level_id' => $schoolLevelId,
                         'start_date' => Carbon::now()->subYears($faker->numberBetween(1, 5)),
                         'end_date' => null,
                         'end_reason_id' => null,

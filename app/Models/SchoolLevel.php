@@ -35,4 +35,9 @@ class SchoolLevel extends Model
     {
         return $this->belongsToMany(School::class, 'school_level');
     }
+
+    public function roleRelationships()
+    {
+        return $this->hasMany(RoleRelationship::class);
+    }
 }

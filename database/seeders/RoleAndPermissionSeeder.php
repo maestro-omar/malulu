@@ -526,7 +526,7 @@ class RoleAndPermissionSeeder extends Seeder
         // Assign admin role to the first user (if exists)
         $user = User::first();
         if ($user && $adminRole) {
-            $user->assignRoleForSchool($adminRole, null);
+            $user->assignRoleForSchool($adminRole, $globalSchool->id);
         }
     }
 }

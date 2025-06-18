@@ -16,11 +16,15 @@ class RoleRelationship extends Model
         'user_id',
         'role_id',
         'school_id',
+        'school_level_id',
         'start_date',
         'end_date',
         'end_reason_id',
         'notes',
         'custom_fields',
+        'created_by',
+        'updated_by',
+        'deleted_by'
     ];
 
     protected $casts = [
@@ -183,5 +187,11 @@ class RoleRelationship extends Model
     public function isActive(): bool
     {
         return is_null($this->end_date) && is_null($this->end_reason_id);
+    }
+
+    // Add the relationship to SchoolLevel
+    public function schoolLevel()
+    {
+        return $this->belongsTo(SchoolLevel::class);
     }
 }
