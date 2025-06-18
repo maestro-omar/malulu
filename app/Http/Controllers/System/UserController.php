@@ -14,6 +14,7 @@ use App\Http\Requests\UserRequest;
 use App\Models\Province;
 use App\Models\Country;
 use App\Models\School;
+use App\Models\RoleRelationship;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -190,6 +191,9 @@ class UserController extends SystemBaseController
             'studentRelationships' => $userData['studentRelationships'],
             'roles' => $userData['roles'],
             // 'classSubjects', 'students', 'courses' are no longer passed as props as per previous discussions
+            // Use the static methods from RoleRelationship model
+            'jobStatuses' => RoleRelationship::jobStatuses(),
+            'relationshipTypes' => RoleRelationship::relationshipTypes(),
         ]);
     }
 
@@ -223,7 +227,7 @@ class UserController extends SystemBaseController
         try {
             // Pass the authenticated user as the creator
             $creator = auth()->user();
-            $this->userService->assignRoleWithDetails($user, $request->school_id, $request->role_id,$request->school_level_id,  $request->all(), $creator);
+            $this->userService->assignRoleWithDetails($user, $request->school_id, $request->role_id, $request->school_level_id,  $request->all(), $creator);
             return redirect()->route('users.show', $user)
                 ->with('success', 'Rol añadido correctamente.');
         } catch (ValidationException $e) {
