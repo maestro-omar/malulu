@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\PermissionRegistrar;
 
 class UserService
 {
@@ -135,7 +136,7 @@ class UserService
         ]);
 
         if (!empty($validatedData['role'])) {
-            $user->assignRole($validatedData['role']);
+            $user->assignRoleForSchool($validatedData['role'], null);
         }
 
         return $user;
@@ -231,8 +232,50 @@ class UserService
         DB::beginTransaction();
 
         try {
+            // // Debug logging before role assignment
+            // Log::info('Before role assignment:', [
+            //     'user_id' => $user->id,
+            //     'role_id' => $roleId,
+            //     'school_id' => $schoolId,
+            //     'current_team_id' => app(PermissionRegistrar::class)->getPermissionsTeamId(),
+            //     'current_roles' => $user->allRolesAcrossTeams->map(function ($role) {
+            //         return [
+            //             'role_id' => $role->id,
+            //             'role_name' => $role->name,
+            //             'team_id' => $role->pivot->team_id
+            //         ];
+            //     })->toArray()
+            // ]);
+
+            // Get the role to check its code
+            $role = Role::find($roleId);
+
+            // Check if role already exists for this school
+            $existingRoleRelationship = $user->roleRelationships()
+                ->where('role_id', $roleId)
+                ->where('school_id', $schoolId)
+                ->first();
+
+            // Only prevent duplicate if role is not in allowedMutipleOnSameSchool
+            if ($existingRoleRelationship && !in_array($role->code, Role::allowedMutipleOnSameSchool())) {
+                throw new \Exception('Este rol ya está asignado a este usuario para la escuela seleccionada.');
+            }
+
             // 1. Assign the role using Spatie
-            $user->assignRole($roleId, $schoolId);
+            $user->assignRoleForSchool($roleId, $schoolId);
+
+            // // Debug logging after role assignment
+            // Log::info('After role assignment:', [
+            //     'user_id' => $user->id,
+            //     'updated_roles' => $user->allRolesAcrossTeams->map(function ($role) {
+            //         return [
+            //             'role_id' => $role->id,
+            //             'role_name' => $role->name,
+            //             'team_id' => $role->pivot->team_id
+            //         ];
+            //     })->toArray(),
+            //     'current_team_id' => app(PermissionRegistrar::class)->getPermissionsTeamId()
+            // ]);
 
             // 2. Create the RoleRelationship entry
             $roleRelationship = $user->roleRelationships()->create([
@@ -244,7 +287,7 @@ class UserService
             ]);
 
             // 3. Conditionally create specific relationship details based on role
-            $roleCode = Role::find($roleId)->code; // Get the role code from the role ID
+            $roleCode = $role->code; // Get the role code from the role ID
 
             if (Role::isWorker($roleCode)) {
                 if (!empty($details['worker_details'])) {
@@ -274,8 +317,6 @@ class UserService
                     ]);
                 }
             }
-            // Add more cases for other specific role types if needed
-
 
             DB::commit();
             return true;

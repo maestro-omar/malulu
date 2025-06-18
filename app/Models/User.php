@@ -9,6 +9,9 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Models\Role;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -172,5 +175,69 @@ class User extends Authenticatable
             ->whereHas('roleRelationship', function ($query) {
                 $query->where('user_id', $this->id);
             });
+    }
+
+    public function assignRoleForSchool(int|Collection|Role $role, ?int $schoolId)
+    {
+        // $activeSchoolId = app(PermissionRegistrar::class)->getPermissionsTeamId();
+
+        // Log::info('assignRoleForSchool called:', [
+        //     'user_id' => $this->id,
+        //     'role' => $role,
+        //     'school_id' => $schoolId,
+        //     'active_school_id' => $activeSchoolId
+        // ]);
+
+        try {
+            // Get the role ID if a Role object was passed
+            $roleId = $role instanceof Role ? $role->id : $role;
+            // $roleModel = $role instanceof Role ? $role : Role::find($roleId);
+
+            // Check if role already exists for this school
+            $exists = DB::table('model_has_roles')
+                ->where('role_id', $roleId)
+                ->where('model_type', get_class($this))
+                ->where('model_id', $this->id)
+                ->where('team_id', $schoolId)
+                ->exists();
+
+            if (!$exists) {
+                // Direct DB insertion
+                DB::table('model_has_roles')->insert([
+                    'role_id' => $roleId,
+                    'model_type' => get_class($this),
+                    'model_id' => $this->id,
+                    'team_id' => $schoolId
+                ]);
+
+                // Force refresh the model to ensure we're working with fresh data
+                $this->refresh();
+            }
+
+            // // Log after insertion
+            // Log::info('After role insertion:', [
+            //     'user_id' => $this->id,
+            //     'role_id' => $roleId,
+            //     'role_code' => $roleModel->code,
+            //     'team_id' => $schoolId,
+            //     'current_roles' => $this->allRolesAcrossTeams->map(function ($role) {
+            //         return [
+            //             'id' => $role->id,
+            //             'name' => $role->name,
+            //             'team_id' => $role->pivot->team_id
+            //         ];
+            //     })->toArray()
+            // ]);
+
+            return $this;
+        } catch (\Exception $e) {
+            // Log::error('Error assigning role:', [
+            //     'error' => $e->getMessage(),
+            //     'user_id' => $this->id,
+            //     'role_id' => $roleId ?? null,
+            //     'team_id' => $schoolId
+            // ]);
+            throw $e;
+        }
     }
 }

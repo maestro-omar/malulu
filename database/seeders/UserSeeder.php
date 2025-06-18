@@ -74,7 +74,7 @@ class FakeUsersSeeder extends Seeder
             $role = Role::where('guard_name', $roleCode)->first();
             if ($role) {
                 // Assign role with team_id (school)
-                $user->assignRole($role, $school->id);
+                $user->assignRoleForSchool($role, $school->id);
             }
         }
 
@@ -102,7 +102,7 @@ class FakeUsersSeeder extends Seeder
             $randomRoleCode = array_rand($roles);
             $role = Role::where('guard_name', $randomRoleCode)->first();
             if ($role) {
-                $user->assignRole($role, $school->id);
+                $user->assignRoleForSchool($role, $school->id);
             }
         }
 

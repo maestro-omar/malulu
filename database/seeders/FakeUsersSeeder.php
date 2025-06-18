@@ -90,7 +90,7 @@ class FakeUsersSeeder extends Seeder
         // Assign admin role
         $adminRole = Role::where('code', 'admin')->first();
         if ($adminRole) {
-            $admin->assignRole($adminRole);
+            $admin->assignRoleForSchool($adminRole, null);
         }
 
         // Create users with specific counts
@@ -167,7 +167,7 @@ class FakeUsersSeeder extends Seeder
         })->get();
 
         foreach ($cooperativeUsers as $user) {
-            $user->assignRole($guardianRole);
+            $user->assignRoleForSchool($guardianRole, null);
         }
 
         // Make 3 grade teachers also guardians
@@ -175,7 +175,7 @@ class FakeUsersSeeder extends Seeder
             $query->where('code', 'grade_teacher');
         })->take(3)->get();
         foreach ($gradeTeachers as $user) {
-            $user->assignRole($guardianRole);
+            $user->assignRoleForSchool($guardianRole, null);
         }
 
         // Make one teacher from default school also be a guardian in another school
@@ -187,10 +187,8 @@ class FakeUsersSeeder extends Seeder
             // Get a random school that's not the default school
             $otherSchool = School::where('code', '!=', self::DEFAULT_CUE)->inRandomOrder()->first();
             if ($otherSchool) {
-                // Set the team ID for the other school
-                app(PermissionRegistrar::class)->setPermissionsTeamId($otherSchool->id);
                 // Assign guardian role in the other school
-                $teacherFromDefaultSchool->assignRole($guardianRole);
+                $teacherFromDefaultSchool->assignRoleForSchool($guardianRole, $otherSchool->id);
             }
         }
 
@@ -325,7 +323,7 @@ class FakeUsersSeeder extends Seeder
                 // Get the role by code
                 $role = Role::where('code', $roleCode)->first();
                 if ($role) {
-                    $user->assignRole($role);
+                    $user->assignRoleForSchool($role, null);
 
                     // Create role relationship
                     $roleRelationship = [
