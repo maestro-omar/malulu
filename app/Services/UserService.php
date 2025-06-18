@@ -227,7 +227,7 @@ class UserService
     /**
      * Assign a single role to a user with associated details.
      */
-    public function assignRoleWithDetails(User $user, int $schoolId, int $roleId, array $details, User $creator)
+    public function assignRoleWithDetails(User $user, int $schoolId, int $roleId, ?int $levelId, array $details, User $creator)
     {
         DB::beginTransaction();
 
@@ -281,6 +281,7 @@ class UserService
             $roleRelationship = $user->roleRelationships()->create([
                 'role_id' => $roleId,
                 'school_id' => $schoolId,
+                'school_level_id' => $levelId,
                 'start_date' => $details['start_date'],
                 'notes' => $details['notes'] ?? null,
                 'created_by' => $creator->id, // Store the creator's ID

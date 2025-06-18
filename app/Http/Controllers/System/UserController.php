@@ -181,7 +181,7 @@ class UserController extends SystemBaseController
 
         return Inertia::render('Users/AddRole', [
             'user' => $userData,
-            'allSchools' => \App\Models\School::all(),
+            'allSchools' => \App\Models\School::with('schoolLevels')->get(),
             'assignedSchools' => $userData['schools'],
             'availableRoles' => \Spatie\Permission\Models\Role::all(),
             'roleRelationships' => $userData['roleRelationships'],
@@ -223,7 +223,7 @@ class UserController extends SystemBaseController
         try {
             // Pass the authenticated user as the creator
             $creator = auth()->user();
-            $this->userService->assignRoleWithDetails($user, $request->school_id, $request->role_id, $request->all(), $creator);
+            $this->userService->assignRoleWithDetails($user, $request->school_id, $request->role_id,$request->school_level_id,  $request->all(), $creator);
             return redirect()->route('users.show', $user)
                 ->with('success', 'Rol añadido correctamente.');
         } catch (ValidationException $e) {
