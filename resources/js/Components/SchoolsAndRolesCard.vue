@@ -2,7 +2,7 @@
   <div class="bg-white rounded-lg shadow-sm border border-gray-200">
     <div class="p-4">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold text-gray-900">Escuelas y Roles</h3>
+        <h3 class="text-lg font-semibold text-gray-900">{{ title || 'Escuelas y Roles' }}</h3>
         <Link v-if="canAddRoles" :href="route('users.add-role', userId)"
             class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-sm">
         NUEVO ROL
@@ -217,6 +217,10 @@ import RoleBadge from './RoleBadge.vue';
 import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
+  title: {
+    type: String,
+    required: false
+  },
   schools: {
     type: Array,
     required: true

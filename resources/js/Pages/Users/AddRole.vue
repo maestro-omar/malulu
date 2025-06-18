@@ -22,7 +22,31 @@
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           <div class="p-6 text-gray-900">
-            <form @submit.prevent="submit" class="space-y-6">
+            <div class="space-y-6">
+              <UserInformation
+                :user="user"
+                :show-picture="true"
+                :show-roles="true"
+                :show-contact="true"
+                :schools="assignedSchools"
+                :role-relationships="roleRelationships"
+                :worker-relationships="workerRelationships"
+                :guardian-relationships="guardianRelationships"
+                :student-relationships="studentRelationships"
+                :roles="roles"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pb-12">
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+          <div class="p-6 text-gray-900">
+            <!-- Form Section -->
+            <form @submit.prevent="submit" class="space-y-6 mt-6">
               <div
                 v-if="form.errors.error"
                 class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded"
@@ -30,70 +54,10 @@
                 {{ form.errors.error }}
               </div>
               <div class="space-y-6">
-                <!-- User Info -->
-                <div class="bg-gray-50 p-4 rounded-lg">
-                  <h3 class="text-lg font-semibold mb-4">
-                    Información del Usuario
-                  </h3>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <EditableImage
-                        :model-value="user.picture"
-                        :default-image="'/images/no-image-person.png'"
-                        :can-edit="false"
-                        class="w-32 h-32 rounded-full object-cover"
-                      />
-                      <div
-                        id="userCompleteName"
-                        class="mt-1 text-sm text-gray-900"
-                      >
-                        {{ user.firstname + " " + user.lastname }}
-                      </div>
-                    </div>
-                    <div>
-                      <InputLabel
-                        for="userIdNumber"
-                        value="Número de Identificación"
-                      />
-                      <div id="userIdNumber" class="mt-1 text-sm text-gray-900">
-                        {{ user.id_number }}
-                      </div>
-                    </div>
-                    <div>
-                      <InputLabel
-                        for="userBirthdate"
-                        value="Fecha de Nacimiento"
-                      />
-                      <div
-                        id="userBirthdate"
-                        class="mt-1 text-sm text-gray-900"
-                      >
-                        {{ formatDateShort(user.birthdate) }}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="mt-6">
-                    <h4 class="text-md font-medium text-gray-900 mb-2">
-                      Escuelas y Roles Asignados:
-                    </h4>
-                    <SchoolsAndRolesCard
-                      :user="user"
-                      :schools="assignedSchools"
-                      :role-relationships="roleRelationships"
-                      :workers-relationships="workerRelationships"
-                      :guardian-relationships="guardianRelationships"
-                      :student-relationships="studentRelationships"
-                      :roles="roles"
-                      :user-id="user.id"
-                      :show-add-role-button="false"
-                    />
-                  </div>
-                </div>
-
                 <!-- School Selection -->
                 <div class="bg-gray-50 p-4 rounded-lg">
                   <h3 class="text-lg font-semibold mb-4">
-                    Seleccionar Escuela
+                    Seleccionar la esscuela para el nuevo rol
                   </h3>
                   <div>
                     <InputLabel for="school" value="Escuela" />
@@ -123,8 +87,45 @@
 
                 <!-- School Level Selection -->
                 <div v-if="selectedSchool" class="bg-gray-50 p-4 rounded-lg">
-                  <h3 class="text-lg font-semibold mb-4">Seleccionar Nivel</h3>
+                  <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Nivel Escolar</h3>
+                    <button
+                      v-if="selectedLevel !== null"
+                      type="button"
+                      @click="selectedLevel = null"
+                      class="text-gray-600 hover:text-gray-900"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!-- Show selected level or selection options -->
                   <div
+                    v-if="selectedLevel !== null"
+                    class="p-3 bg-white rounded-md shadow-sm"
+                  >
+                    <div
+                      :class="[
+                        getLevelColorClasses(selectedLevel),
+                        'inline-block px-4 py-2 rounded-lg',
+                      ]"
+                    >
+                      {{
+                        selectedLevel ? selectedLevel.name : "Sin especificar"
+                      }}
+                    </div>
+                  </div>
+                  <div
+                    v-else
                     class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3"
                   >
                     <!-- Add "Sin especificar" option first -->
@@ -160,8 +161,43 @@
 
                 <!-- Role Selection -->
                 <div v-if="selectedSchool" class="bg-gray-50 p-4 rounded-lg">
-                  <h3 class="text-lg font-semibold mb-4">Seleccionar Rol</h3>
+                  <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Rol</h3>
+                    <button
+                      v-if="selectedRole !== null"
+                      type="button"
+                      @click="selectedRole = null"
+                      class="text-gray-600 hover:text-gray-900"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!-- Show selected role or selection options -->
                   <div
+                    v-if="selectedRole !== null"
+                    class="p-3 bg-white rounded-md shadow-sm"
+                  >
+                    <div
+                      :class="[
+                        getRoleColorClasses(selectedRole),
+                        'inline-block px-4 py-2 rounded-lg',
+                      ]"
+                    >
+                      {{ selectedRole.name }}
+                    </div>
+                  </div>
+                  <div
+                    v-else
                     class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                   >
                     <button
@@ -468,6 +504,7 @@ import SchoolsAndRolesCard from "@/Components/SchoolsAndRolesCard.vue";
 import EditableImage from "@/Components/EditableImage.vue";
 import { formatDateShort, calculateAge } from "@/utils/date";
 import axios from "axios";
+import UserInformation from "@/Components/UserInformation.vue";
 
 const props = defineProps({
   user: Object,
