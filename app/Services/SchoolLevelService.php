@@ -12,7 +12,7 @@ class SchoolLevelService
     /**
      * Get school levels with filters
      */
-    public function getSchoolLevels(Request $request = null, ?bool $active = null)
+    public function getSchoolLevels(Request $request = null)
     {
         $query = SchoolLevel::query();
 
@@ -20,10 +20,6 @@ class SchoolLevelService
             $query->when($request->input('search'), function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
             });
-        }
-
-        if ($active !== null) {
-            $query->where('active', $active);
         }
 
         return $query->orderBy('name')->get();
@@ -74,4 +70,4 @@ class SchoolLevelService
     {
         return $schoolLevel->delete();
     }
-} 
+}
