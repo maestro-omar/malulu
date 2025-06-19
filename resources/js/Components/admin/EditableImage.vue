@@ -24,7 +24,7 @@
         </svg>
       </button>
       <button
-        v-if="canEdit"
+        v-if="canEdit && modelValue"
         @click="handleDelete"
         class="bg-red-500 bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75"
       >

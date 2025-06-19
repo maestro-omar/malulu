@@ -13,20 +13,17 @@
             class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
           Volver a Escuelas
           </Link>
-          <Link :href="route('schools.index')"
-            class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
-          Ver alumnos
+          <Link v-for="level in school.school_levels" :key="level.id"
+            :href="route('courses.index', { school: school.cue, schoolLevel: level.code })"
+            :class="[ 'font-bold py-2 px-4 rounded', `bg-${levelColors[level.code]?.color}-600 hover:bg-${levelColors[level.code]?.color}-800 text-white` ]">
+          Cursos ({{ level.name }})
           </Link>
-          <Link :href="route('courses.index', school.cue)"
-            class="bg-lime-600 hover:bg-lime-800 text-white font-bold py-2 px-4 rounded">
-          Ver cursos
-          </Link>
-          <Link :href="route('schools.edit', school.id)"
+          <Link :href="route('schools.edit', school.cue)"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Editar Escuela
+          Editar
           </Link>
           <button @click="destroy" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-            Eliminar Escuela
+            Eliminar
           </button>
         </div>
       </div>
@@ -47,7 +44,7 @@
                     <p class="mt-1 text-sm text-gray-900">{{ school.name }}</p>
                   </div>
 
-                  <div class="grid grid-cols-2 gap-4">
+                  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div>
                       <label class="block text-sm font-medium text-gray-400">Nombre Corto</label>
                       <p class="mt-1 text-sm text-gray-900">
@@ -61,24 +58,26 @@
                     </div>
                   </div>
 
-                  <div>
-                    <label class="block text-sm font-medium text-gray-400">Tipo de Gestión</label>
-                    <div class="mt-1">
-                      <ManagementTypeBadge :type="school.management_type.name" />
+                  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-400">Tipo de Gestión</label>
+                      <div class="mt-1">
+                        <ManagementTypeBadge :mtype="school.management_type" :key="school.management_type.id" />
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <label class="block text-sm font-medium text-gray-400">Niveles</label>
-                    <div class="mt-2 flex flex-wrap gap-2">
-                      <SchoolLevelBadge v-for="level in school.school_levels" :key="level.id" :level="level" />
+                    <div>
+                      <label class="block text-sm font-medium text-gray-400">Niveles</label>
+                      <div class="mt-2 flex flex-wrap gap-2">
+                        <SchoolLevelBadge v-for="level in school.school_levels" :key="level.id" :level="level" />
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <label class="block text-sm font-medium text-gray-400">Turnos</label>
-                    <div class="mt-2 flex flex-wrap gap-2">
-                      <ShiftBadge v-for="shift in school.shifts" :key="shift.id" :shift="shift.name" />
+                    <div>
+                      <label class="block text-sm font-medium text-gray-400">Turnos</label>
+                      <div class="mt-2 flex flex-wrap gap-2">
+                        <ShiftBadge v-for="shift in school.shifts" :key="shift.id" :shift="shift.name" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -90,30 +89,19 @@
                   <div>
                     <label class="block text-sm font-medium text-gray-400">Logo</label>
                     <div class="mt-1">
-                      <EditableImage
-                        v-model="school.logo"
-                        type="logo"
-                        :model-id="school.id"
-                        image-class="h-12 w-12 object-contain"
-                        upload-route="schools.upload-image"
+                      <EditableImage v-model="school.logo" type="logo" :model-id="school.cue" :can-edit="true"
+                        image-class="h-12 w-12 object-contain" upload-route="schools.upload-image"
                         delete-route="schools.delete-image"
-                        delete-confirm-message="¿Está seguro que desea eliminar el logo?"
-                      />
+                        delete-confirm-message="¿Está seguro que desea eliminar el logo?" />
                     </div>
                   </div>
 
                   <div>
                     <label class="block text-sm font-medium text-gray-400">Imagen Principal</label>
                     <div class="mt-1">
-                      <EditableImage
-                        v-model="school.picture"
-                        type="picture"
-                        :model-id="school.id"
-                        :can-edit="true"
-                        upload-route="schools.upload-image"
-                        delete-route="schools.delete-image"
-                        delete-confirm-message="¿Está seguro que desea eliminar la imagen principal?"
-                      />
+                      <EditableImage v-model="school.picture" type="picture" :model-id="school.cue" :can-edit="true"
+                        upload-route="schools.upload-image" delete-route="schools.delete-image"
+                        delete-confirm-message="¿Está seguro que desea eliminar la imagen principal?" />
                     </div>
                   </div>
                 </div>
@@ -176,21 +164,12 @@
             </div>
 
             <div class="mt-6">
-              <h3 class="text-lg font-semibold mb-4">Social</h3>
+              <h3 class="text-lg font-semibold mb-4">Redes sociales</h3>
               <div class="space-y-4">
                 <div v-for="(social, index) in school.social" :key="index" class="grid grid-cols-12 gap-4">
-                  <div class="col-span-3">
-                    <label class="block text-sm font-medium text-gray-400">Tipo</label>
-                    <p class="mt-1 text-sm text-gray-900">{{ social.type }}</p>
-                  </div>
-                  <div class="col-span-3">
-                    <label class="block text-sm font-medium text-gray-400">Etiqueta</label>
-                    <p class="mt-1 text-sm text-gray-900">{{ social.label }}</p>
-                  </div>
                   <div class="col-span-6">
-                    <label class="block text-sm font-medium text-gray-400">Enlace</label>
                     <a :href="social.link" target="_blank" class="mt-1 text-sm text-indigo-600 hover:text-indigo-900">
-                      {{ social.link }}
+                      {{ social.label }}
                     </a>
                   </div>
                 </div>
@@ -213,10 +192,14 @@ import ManagementTypeBadge from "@/Components/Badges/ManagementTypeBadge.vue";
 import PhoneField from "@/Components/admin/PhoneField.vue";
 import EmailField from "@/Components/admin/EmailField.vue";
 import EditableImage from "@/Components/admin/EditableImage.vue";
+import { computed } from 'vue'
+import { schoolLevelOptions } from '@/Composables/schoolLevelOptions'
 
 const props = defineProps({
   school: Object,
 });
+
+const { options: levelColors } = schoolLevelOptions()
 
 const destroy = () => {
   if (confirm("¿Está seguro que desea eliminar esta escuela?")) {

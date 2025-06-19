@@ -57,8 +57,10 @@ Route::prefix('sistema')->group(function () {
             Route::get('escuelas/{school}/editar', [SchoolController::class, 'edit'])->name('schools.edit');
             Route::put('escuelas/{school}', [SchoolController::class, 'update'])->name('schools.update');
             Route::post('escuelas/{school}/upload-image', [SchoolController::class, 'uploadImage'])->name('schools.upload-image');
+            Route::post('escuelas/{school}/delete-image', [SchoolController::class, 'deleteImage'])->name('schools.delete-image');
             Route::delete('escuelas/{school}', [SchoolController::class, 'destroy'])->name('schools.destroy');
         });
+
 
         // Academic Years Routes
         Route::middleware('permission:superadmin')->group(function () {

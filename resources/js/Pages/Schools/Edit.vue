@@ -184,7 +184,7 @@
               </div>
             </div>
           </div>
-          <ActionButtons button-label="Actualizar Escuela" :cancel-href="route('schools.show', school.id)"
+          <ActionButtons button-label="Actualizar Escuela" :cancel-href="route('schools.show', school.cue)"
             :disabled="form.processing" class="mt-4" />
         </form>
       </div>

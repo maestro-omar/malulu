@@ -184,7 +184,7 @@ class SchoolController extends SystemBaseController
 
             // Store new image with custom filename
             $path = $image->storeAs('schools/' . $school->id, $newFilename, 'public');
-            
+
             // Get the full URL for the stored image using the asset helper
             $url = asset('storage/' . $path);
 

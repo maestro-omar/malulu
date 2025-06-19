@@ -213,7 +213,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import RoleBadge from './RoleBadge.vue';
+import RoleBadge from '@/Components/Badges/RoleBadge.vue';
 import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
