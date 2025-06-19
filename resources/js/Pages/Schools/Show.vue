@@ -8,10 +8,18 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
           Detalles de la Escuela
         </h2>
-        <div class="flex space-x-4">
+        <div class="flex flex-col space-y-2 md:flex-row md:space-x-4 md:space-y-0">
           <Link :href="route('schools.index')"
             class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
           Volver a Escuelas
+          </Link>
+          <Link :href="route('schools.index')"
+            class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+          Ver alumnos
+          </Link>
+          <Link :href="route('courses.index', school.cue)"
+            class="bg-lime-600 hover:bg-lime-800 text-white font-bold py-2 px-4 rounded">
+          Ver cursos
           </Link>
           <Link :href="route('schools.edit', school.id)"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -199,12 +207,12 @@
 import { Head, Link } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { router } from "@inertiajs/vue3";
-import SchoolLevelBadge from "@/Components/SchoolLevelBadge.vue";
-import ShiftBadge from "@/Components/ShiftBadge.vue";
-import ManagementTypeBadge from "@/Components/ManagementTypeBadge.vue";
-import PhoneField from "@/Components/PhoneField.vue";
-import EmailField from "@/Components/EmailField.vue";
-import EditableImage from "@/Components/EditableImage.vue";
+import SchoolLevelBadge from "@/Components/admin/SchoolLevelBadge.vue";
+import ShiftBadge from "@/Components/admin/ShiftBadge.vue";
+import ManagementTypeBadge from "@/Components/admin/ManagementTypeBadge.vue";
+import PhoneField from "@/Components/admin/PhoneField.vue";
+import EmailField from "@/Components/admin/EmailField.vue";
+import EditableImage from "@/Components/admin/EditableImage.vue";
 
 const props = defineProps({
   school: Object,

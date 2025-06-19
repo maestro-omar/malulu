@@ -92,8 +92,8 @@ import { ref } from "vue";
 import { useForm, usePage, Link } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import CancelLink from '@/Components/CancelLink.vue';
+import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
+import CancelLink from '@/Components/admin/CancelLink.vue';
 
 const page = usePage();
 const roles = page.props.roles || [];

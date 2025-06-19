@@ -77,11 +77,11 @@
 </template>
 
 <script setup>
-import EditableImage from "@/Components/EditableImage.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import EmailField from "@/Components/EmailField.vue";
-import PhoneField from "@/Components/PhoneField.vue";
-import SchoolsAndRolesCard from "@/Components/SchoolsAndRolesCard.vue";
+import EditableImage from "@/Components/admin/EditableImage.vue";
+import InputLabel from "@/Components/admin/InputLabel.vue";
+import EmailField from "@/Components/admin/EmailField.vue";
+import PhoneField from "@/Components/admin/PhoneField.vue";
+import SchoolsAndRolesCard from "@/Components/admin/SchoolsAndRolesCard.vue";
 import { formatDateShort, calculateAge } from "@/utils/date";
 
 const props = defineProps({

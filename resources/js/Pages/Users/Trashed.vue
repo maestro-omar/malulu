@@ -2,7 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref } from 'vue';
-import Pagination from '@/Components/Pagination.vue';
+import Pagination from '@/Components/admin/Pagination.vue';
 
 const props = defineProps({
     users: Object,

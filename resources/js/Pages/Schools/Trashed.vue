@@ -168,8 +168,8 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Pagination from '@/Components/Pagination.vue';
-import SchoolLevelBadge from '@/Components/SchoolLevelBadge.vue';
+import Pagination from '@/Components/admin/Pagination.vue';
+import SchoolLevelBadge from '@/Components/admin/SchoolLevelBadge.vue';
 
 const props = defineProps({
   schools: Object

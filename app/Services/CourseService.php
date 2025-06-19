@@ -13,7 +13,7 @@ class CourseService
     /**
      * Get courses with filters
      */
-    public function getCourses(Request $request)
+    public function getCourses(Request $request, ?int $schoolId = null)
     {
         $query = Course::query()
             ->with(['school', 'schoolLevel', 'schoolShift', 'previousCourse'])
@@ -32,7 +32,7 @@ class CourseService
                         });
                 });
             })
-            ->when($request->input('school_id'), function ($query, $schoolId) {
+            ->when($schoolId !== null, function ($query) use ($schoolId) {
                 $query->where('school_id', $schoolId);
             })
             ->when($request->input('school_level_id'), function ($query, $schoolLevelId) {
@@ -135,39 +135,23 @@ class CourseService
     /**
      * Get active courses for a school
      */
-    public function getActiveCoursesForSchool($schoolId)
+    public function getCoursesForSchool(?int $schoolId, ?int $levelId, ?int $shiftId, ?bool $active)
     {
-        return Course::where('school_id', $schoolId)
-            ->where('active', true)
-            ->with(['schoolLevel', 'schoolShift'])
+        return Course::when($schoolId !== null, function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId);
+            })
+            ->when($levelId !== null, function ($query) use ($levelId) {
+                $query->where('school_level_id', $levelId);
+            })
+            ->when($shiftId !== null, function ($query) use ($shiftId) {
+                $query->where('school_shift_id', $shiftId);
+            })
+            ->when($active !== null, function ($query) use ($active) {
+                $query->where('active', $active);
+            })
+            ->with(['school', 'schoolShift', 'schoolLevel'])
             ->orderBy('number')
             ->orderBy('letter')
             ->get();
     }
-
-    /**
-     * Get courses by school level
-     */
-    public function getCoursesBySchoolLevel($schoolLevelId)
-    {
-        return Course::where('school_level_id', $schoolLevelId)
-            ->where('active', true)
-            ->with(['school', 'schoolShift'])
-            ->orderBy('number')
-            ->orderBy('letter')
-            ->get();
-    }
-
-    /**
-     * Get courses by school shift
-     */
-    public function getCoursesBySchoolShift($schoolShiftId)
-    {
-        return Course::where('school_shift_id', $schoolShiftId)
-            ->where('active', true)
-            ->with(['school', 'schoolLevel'])
-            ->orderBy('number')
-            ->orderBy('letter')
-            ->get();
-    }
-} 
+}

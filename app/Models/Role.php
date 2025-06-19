@@ -193,4 +193,34 @@ class Role extends SpatieRole
             self::FORMER_STUDENT,
         ];
     }
+
+    public static function vueOptions(): array
+    {
+        $constants = (new \ReflectionClass(static::class))->getConstants();
+
+        $map = [
+            self::ADMIN => ['label' => 'Administrador', 'color' => 'purple'],
+            self::DIRECTOR => ['label' => 'Director/a', 'color' => 'blue'],
+            self::REGENT => ['label' => 'Regente', 'color' => 'green'],
+            self::SECRETARY => ['label' => 'Secretario/a', 'color' => 'yellow'],
+            self::PROFESSOR => ['label' => 'Profesor/a', 'color' => 'indigo'],
+            self::GRADE_TEACHER => ['label' => 'Maestro/a de Grado', 'color' => 'pink'],
+            self::ASSISTANT_TEACHER => ['label' => 'Auxiliar Docente', 'color' => 'orange'],
+            self::CURRICULAR_TEACHER => ['label' => 'Maestro/a Curricular', 'color' => 'teal'],
+            self::SPECIAL_TEACHER => ['label' => 'Maestro/a Especial', 'color' => 'cyan'],
+            self::CLASS_ASSISTANT => ['label' => 'Preceptor/a', 'color' => 'emerald'],
+            self::LIBRARIAN => ['label' => 'Bibliotecario/a', 'color' => 'violet'],
+            self::GUARDIAN => ['label' => 'Tutor/a', 'color' => 'rose'],
+            self::STUDENT => ['label' => 'Alumno/a', 'color' => 'sky'],
+            self::COOPERATIVE => ['label' => 'Cooperadora', 'color' => 'amber'],
+            self::FORMER_STUDENT => ['label' => 'Ex-alumno/a', 'color' => 'slate'],
+        ];
+
+        return collect($constants)
+            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? [
+                'label' => ucfirst(str_replace('_', ' ', $value)),
+                'color' => 'gray',
+            ]])
+            ->toArray();
+    }
 }

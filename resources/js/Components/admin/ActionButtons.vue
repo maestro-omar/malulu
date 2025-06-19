@@ -11,8 +11,8 @@
 
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import CancelLink from '@/Components/CancelLink.vue';
+import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
+import CancelLink from '@/Components/admin/CancelLink.vue';
 
 defineProps({
     buttonLabel: {

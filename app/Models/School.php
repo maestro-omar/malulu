@@ -49,6 +49,14 @@ class School extends Model
     ];
 
     /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'cue';
+    }
+
+    /**
      * The school levels that belong to the school.
      */
     public function schoolLevels(): BelongsToMany

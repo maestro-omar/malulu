@@ -1,8 +1,8 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Pagination from '@/Components/Pagination.vue';
-import RoleBadge from '@/Components/RoleBadge.vue';
+import Pagination from '@/Components/admin/Pagination.vue';
+import RoleBadge from '@/Components/admin/RoleBadge.vue';
 import { ref, computed } from 'vue';
 import noImage from '@images/no-image-person.png';
 

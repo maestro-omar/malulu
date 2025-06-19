@@ -77,12 +77,12 @@
 import { useForm, Link } from "@inertiajs/vue3";
 import { Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
-import InputError from "@/Components/InputError.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import Checkbox from "@/Components/Checkbox.vue";
-import CancelLink from "@/Components/CancelLink.vue";
+import InputLabel from "@/Components/admin/InputLabel.vue";
+import TextInput from "@/Components/admin/TextInput.vue";
+import InputError from "@/Components/admin/InputError.vue";
+import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
+import Checkbox from "@/Components/admin/Checkbox.vue";
+import CancelLink from "@/Components/admin/CancelLink.vue";
 
 const relateWithOptions = {
   school: 'Escuela',

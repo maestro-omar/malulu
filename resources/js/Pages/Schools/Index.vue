@@ -162,9 +162,9 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Pagination from '@/Components/Pagination.vue';
-import SearchableDropdown from '@/Components/SearchableDropdown.vue';
-import SchoolLevelBadge from '@/Components/SchoolLevelBadge.vue';
+import Pagination from '@/Components/admin/Pagination.vue';
+import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
+import SchoolLevelBadge from '@/Components/admin/SchoolLevelBadge.vue';
 
 const props = defineProps({
   schools: Object,

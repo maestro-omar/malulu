@@ -114,11 +114,11 @@
 import { useForm } from "@inertiajs/vue3";
 import { Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
-import InputError from "@/Components/InputError.vue";
-import Checkbox from "@/Components/Checkbox.vue";
-import ActionButtons from "@/Components/ActionButtons.vue";
+import InputLabel from "@/Components/admin/InputLabel.vue";
+import TextInput from "@/Components/admin/TextInput.vue";
+import InputError from "@/Components/admin/InputError.vue";
+import Checkbox from "@/Components/admin/Checkbox.vue";
+import ActionButtons from "@/Components/admin/ActionButtons.vue";
 
 const props = defineProps({
     fileSubtype: Object,

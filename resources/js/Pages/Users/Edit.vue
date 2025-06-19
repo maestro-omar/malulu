@@ -1,10 +1,10 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import ActionButtons from '@/Components/ActionButtons.vue';
+import InputError from '@/Components/admin/InputError.vue';
+import InputLabel from '@/Components/admin/InputLabel.vue';
+import TextInput from '@/Components/admin/TextInput.vue';
+import ActionButtons from '@/Components/admin/ActionButtons.vue';
 
 const props = defineProps({
     user: Object,

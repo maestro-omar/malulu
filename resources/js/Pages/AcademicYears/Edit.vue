@@ -86,7 +86,7 @@
 <script setup>
 import { useForm, Head } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
-import ActionButtons from '@/Components/ActionButtons.vue'
+import ActionButtons from '@/Components/admin/ActionButtons.vue'
 
 const props = defineProps({
   academicYear: {

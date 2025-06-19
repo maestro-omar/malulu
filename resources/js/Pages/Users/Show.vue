@@ -1,12 +1,12 @@
 <script setup>
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import RoleBadge from '@/Components/RoleBadge.vue';
-import PhoneField from '@/Components/PhoneField.vue';
-import EmailField from '@/Components/EmailField.vue';
-import EditableImage from '@/Components/EditableImage.vue';
+import RoleBadge from '@/Components/admin/RoleBadge.vue';
+import PhoneField from '@/Components/admin/PhoneField.vue';
+import EmailField from '@/Components/admin/EmailField.vue';
+import EditableImage from '@/Components/admin/EditableImage.vue';
 import { router } from '@inertiajs/vue3';
-import SchoolsAndRolesCard from '@/Components/SchoolsAndRolesCard.vue';
+import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
 
 const props = defineProps({
     user: Object
@@ -33,7 +33,7 @@ const destroy = () => {
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     Detalles del Usuario
                 </h2>
-                <div class="flex space-x-4">
+                <div class="flex flex-col space-y-2 md:flex-row md:space-x-4 md:space-y-0">
                     <Link :href="route('users.index')"
                         class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                     Volver a Usuarios

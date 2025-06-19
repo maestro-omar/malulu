@@ -492,19 +492,22 @@
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import RoleBadge from "@/Components/RoleBadge.vue";
+import RoleBadge from "@/Components/admin/RoleBadge.vue";
 import { ref, computed, watch } from "vue";
-import ActionButtons from "@/Components/ActionButtons.vue";
-import SearchableDropdown from "@/Components/SearchableDropdown.vue";
-import SelectInput from "@/Components/SelectInput.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
-import InputError from "@/Components/InputError.vue";
-import SchoolsAndRolesCard from "@/Components/SchoolsAndRolesCard.vue";
-import EditableImage from "@/Components/EditableImage.vue";
-import { formatDateShort, calculateAge } from "@/utils/date";
+import ActionButtons from "@/Components/admin/ActionButtons.vue";
+import SearchableDropdown from "@/Components/admin/SearchableDropdown.vue";
+import SelectInput from "@/Components/admin/SelectInput.vue";
+import InputLabel from "@/Components/admin/InputLabel.vue";
+import TextInput from "@/Components/admin/TextInput.vue";
+import InputError from "@/Components/admin/InputError.vue";
+import SchoolsAndRolesCard from "@/Components/admin/SchoolsAndRolesCard.vue";
+import EditableImage from "@/Components/admin/EditableImage.vue";
+import { formatDateShort, calculateAge } from "@/utils/date.js";
 import axios from "axios";
-import UserInformation from "@/Components/UserInformation.vue";
+import UserInformation from "@/Components/admin/UserInformation.vue";
+import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
+import { roleOptions } from "@/Composables/roleOptions";
+import { schoolLevelOptions } from "@/Composables/schoolLevelOptions";
 
 const props = defineProps({
   user: Object,
@@ -518,6 +521,7 @@ const props = defineProps({
   roles: Array,
   jobStatuses: Object,
   relationshipTypes: Object,
+  schoolLevels: Array,
 });
 
 // Debugging info (can be removed later)
@@ -540,6 +544,9 @@ console.log(
 const selectedSchool = ref(null);
 const selectedLevel = ref(null);
 const selectedRole = ref(null);
+
+const { options: roleColorOptions } = roleOptions();
+const { options: schoolLevelColorOptions } = schoolLevelOptions();
 
 const userAge = computed(() => {
   return calculateAge(props.user.birthdate);
@@ -566,25 +573,25 @@ const filteredAvailableRoles = computed(() => {
   // Then filter by school levels
   if (selectedSchool.value) {
     const schoolLevels = selectedSchool.value.school_levels || [];
-    const hasKinder = schoolLevels.some((level) => level.code === "kinder");
-    const hasPrimary = schoolLevels.some((level) => level.code === "primary");
+    const hasKinder = schoolLevels.some((level) => level.code === "inicial");
+    const hasPrimary = schoolLevels.some((level) => level.code === "primaria");
     const hasSecondary = schoolLevels.some(
-      (level) => level.code === "secondary"
+      (level) => level.code === "secundaria"
     );
 
     // If a specific level is selected, filter roles based on that level
     if (selectedLevel.value) {
       const selectedLevelCode = selectedLevel.value.code;
 
-      if (selectedLevelCode === "kinder") {
+      if (selectedLevelCode === "inicial") {
         roles = roles.filter(
           (role) => !["professor", "class_assistant"].includes(role.code)
         );
-      } else if (selectedLevelCode === "primary") {
+      } else if (selectedLevelCode === "primaria") {
         roles = roles.filter(
           (role) => !["professor", "class_assistant"].includes(role.code)
         );
-      } else if (selectedLevelCode === "secondary") {
+      } else if (selectedLevelCode === "secundaria") {
         roles = roles.filter(
           (role) =>
             ![
@@ -597,7 +604,7 @@ const filteredAvailableRoles = computed(() => {
     }
     // If no level is selected (unspecified) but school has limited levels
     else if (!hasKinder && !hasPrimary && hasSecondary) {
-      // Only secondary school
+      // Only secundaria school
       roles = roles.filter(
         (role) =>
           ![
@@ -607,7 +614,7 @@ const filteredAvailableRoles = computed(() => {
           ].includes(role.code)
       );
     } else if ((hasKinder || hasPrimary) && !hasSecondary) {
-      // Only kinder/primary school
+      // Only inicial/primaria school
       roles = roles.filter(
         (role) => !["professor", "class_assistant"].includes(role.code)
       );
@@ -762,31 +769,25 @@ const showStudentFields = computed(() => {
   return selectedRoleCode.value === "student";
 });
 
-// Role color mapping (copied from RoleBadge.vue)
-const roleColors = {
-  admin: "bg-purple-100 text-purple-800 border-purple-300",
-  director: "bg-blue-100 text-blue-800 border-blue-300",
-  regent: "bg-green-100 text-green-800 border-green-300",
-  secretary: "bg-yellow-100 text-yellow-800 border-yellow-300",
-  professor: "bg-indigo-100 text-indigo-800 border-indigo-300",
-  grade_teacher: "bg-pink-100 text-pink-800 border-pink-300",
-  assistant_teacher: "bg-orange-100 text-orange-800 border-orange-300",
-  curricular_teacher: "bg-teal-100 text-teal-800 border-teal-300",
-  special_teacher: "bg-cyan-100 text-cyan-800 border-cyan-300",
-  class_assistant: "bg-emerald-100 text-emerald-800 border-emerald-300",
-  librarian: "bg-violet-100 text-violet-800 border-violet-300",
-  guardian: "bg-rose-100 text-rose-800 border-rose-300",
-  student: "bg-sky-100 text-sky-800 border-sky-300",
-  cooperative: "bg-amber-100 text-amber-800 border-amber-300",
-  former_student: "bg-slate-100 text-slate-800 border-slate-300",
-};
+// New computed property to check if the role is already assigned
+const isRoleAlreadyAssigned = computed(() => {
+  if (!selectedSchool.value || !selectedRole.value) {
+    return false;
+  }
+  return props.roleRelationships.some((relationship) => {
+    return (
+      relationship.school_id === selectedSchool.value.id &&
+      relationship.role_id === selectedRole.value.id
+    );
+  });
+});
 
 const getRoleColorClasses = (role) => {
   const baseClasses =
     "px-4 py-2 rounded-lg cursor-pointer transition-all duration-200 text-center";
   const colorClass =
-    roleColors[role.code] || "bg-gray-100 text-gray-800 border-gray-300";
-  return `${baseClasses} ${colorClass}`;
+    roleColorOptions.value[role.code]?.color || "gray";
+  return `${baseClasses} bg-${colorClass}-100 text-${colorClass}-800 border-${colorClass}-300`;
 };
 
 const getRoleSelectedClass = (role) => {
@@ -795,20 +796,12 @@ const getRoleSelectedClass = (role) => {
     : "";
 };
 
-// Modify the level color mapping to include unspecified
-const levelColors = {
-  kinder: "bg-pink-100 text-pink-800 border-pink-300",
-  primary: "bg-blue-100 text-blue-800 border-blue-300",
-  secondary: "bg-green-100 text-green-800 border-green-300",
-  unspecified: "bg-gray-100 text-gray-800 border-gray-300",
-};
-
 const getLevelColorClasses = (level) => {
   const baseClasses =
     "px-4 py-2 rounded-lg cursor-pointer transition-all duration-200 text-center";
   const colorClass =
-    levelColors[level.code] || "bg-gray-100 text-gray-800 border-gray-300";
-  return `${baseClasses} ${colorClass}`;
+    schoolLevelColorOptions.value[level.code]?.color || "gray";
+  return `${baseClasses} bg-${colorClass}-100 text-${colorClass}-800 border-${colorClass}-300`;
 };
 
 const getLevelSelectedClass = (level) => {
@@ -873,17 +866,4 @@ const submit = () => {
     },
   });
 };
-
-// New computed property to check if the role is already assigned
-const isRoleAlreadyAssigned = computed(() => {
-  if (!selectedSchool.value || !selectedRole.value) {
-    return false;
-  }
-  return props.roleRelationships.some((relationship) => {
-    return (
-      relationship.school_id === selectedSchool.value.id &&
-      relationship.role_id === selectedRole.value.id
-    );
-  });
-});
 </script>

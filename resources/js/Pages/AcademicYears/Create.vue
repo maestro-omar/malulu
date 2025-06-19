@@ -146,8 +146,8 @@ import { Link, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import { formatDateForInput } from "@/utils/date";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import CancelLink from "@/Components/CancelLink.vue";
+import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
+import CancelLink from "@/Components/admin/CancelLink.vue";
 
 const form = useForm({
   year: "",

@@ -195,12 +195,12 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import Checkbox from '@/Components/Checkbox.vue';
-import SearchableDropdown from '@/Components/SearchableDropdown.vue';
-import ActionButtons from '@/Components/ActionButtons.vue';
+import InputError from '@/Components/admin/InputError.vue';
+import InputLabel from '@/Components/admin/InputLabel.vue';
+import TextInput from '@/Components/admin/TextInput.vue';
+import Checkbox from '@/Components/admin/Checkbox.vue';
+import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
+import ActionButtons from '@/Components/admin/ActionButtons.vue';
 import { ref, computed, onMounted, watch } from 'vue';
 
 const props = defineProps({

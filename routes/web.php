@@ -27,6 +27,7 @@ Route::get('/', function () {
 });
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/json-options.php';
 require __DIR__ . '/system-admin.php';
 require __DIR__ . '/school-admin.php';
 

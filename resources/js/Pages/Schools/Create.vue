@@ -184,13 +184,13 @@
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import InputError from "@/Components/InputError.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import TextInput from "@/Components/TextInput.vue";
-import Checkbox from "@/Components/Checkbox.vue";
-import SearchableDropdown from "@/Components/SearchableDropdown.vue";
-import CancelLink from "@/Components/CancelLink.vue";
+import InputError from "@/Components/admin/InputError.vue";
+import InputLabel from "@/Components/admin/InputLabel.vue";
+import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
+import TextInput from "@/Components/admin/TextInput.vue";
+import Checkbox from "@/Components/admin/Checkbox.vue";
+import SearchableDropdown from "@/Components/admin/SearchableDropdown.vue";
+import CancelLink from "@/Components/admin/CancelLink.vue";
 
 const props = defineProps({
   localities: Array,
