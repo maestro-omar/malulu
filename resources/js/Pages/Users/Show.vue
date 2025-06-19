@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import RoleBadge from '@/Components/admin/RoleBadge.vue';
+import RoleBadge from '@/Components/Badges/RoleBadge.vue';
 import PhoneField from '@/Components/admin/PhoneField.vue';
 import EmailField from '@/Components/admin/EmailField.vue';
 import EditableImage from '@/Components/admin/EditableImage.vue';

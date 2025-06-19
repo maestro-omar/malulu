@@ -10,13 +10,13 @@ class SchoolShiftSeeder extends Seeder
     public function run(): void
     {
         $shifts = [
-            ['name' => 'Mañana', 'code' => 'morning'],
-            ['name' => 'Tarde', 'code' => 'afternoon'],
-            ['name' => 'Noche', 'code' => 'night'],
+            ['name' => 'Mañana', 'code' => SchoolShift::MORNING],
+            ['name' => 'Tarde', 'code' => SchoolShift::AFTERNOON],
+            ['name' => 'Noche', 'code' => SchoolShift::NIGHT],
         ];
 
         foreach ($shifts as $shift) {
             SchoolShift::create($shift);
         }
     }
-} 
+}

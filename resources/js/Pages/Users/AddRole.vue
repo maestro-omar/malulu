@@ -492,7 +492,7 @@
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import RoleBadge from "@/Components/admin/RoleBadge.vue";
+import RoleBadge from "@/Components/Badges/RoleBadge.vue";
 import { ref, computed, watch } from "vue";
 import ActionButtons from "@/Components/admin/ActionButtons.vue";
 import SearchableDropdown from "@/Components/admin/SearchableDropdown.vue";

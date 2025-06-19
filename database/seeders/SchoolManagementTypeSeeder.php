@@ -10,14 +10,14 @@ class SchoolManagementTypeSeeder extends Seeder
     public function run(): void
     {
         $types = [
-            ['name' => 'Estatal', 'code' => 'state'],
-            ['name' => 'Privada', 'code' => 'private'],
-            ['name' => 'Generativa', 'code' => 'generative'],
-            ['name' => 'Autogestionada', 'code' => 'self_managed'],
+            ['name' => 'Estatal', 'code' => SchoolManagementType::PUBLIC],
+            ['name' => 'Privada', 'code' => SchoolManagementType::PRIVATE],
+            ['name' => 'Generativa', 'code' => SchoolManagementType::GENERATIVE],
+            ['name' => 'Autogestionada', 'code' => SchoolManagementType::SELF_MANAGED],
         ];
 
         foreach ($types as $type) {
             SchoolManagementType::create($type);
         }
     }
-} 
+}

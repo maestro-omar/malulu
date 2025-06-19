@@ -2,7 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
-import RoleBadge from '@/Components/admin/RoleBadge.vue';
+import RoleBadge from '@/Components/Badges/RoleBadge.vue';
 import { ref, computed } from 'vue';
 import noImage from '@images/no-image-person.png';
 
@@ -117,7 +117,7 @@ const getUniqueRoles = (roles) => {
                                         }"
                                     >
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <img :src="user.picture || noImage" 
+                                            <img :src="user.picture || noImage"
                                                  :alt="user.name"
                                                  class="h-10 w-10 rounded-full object-cover" />
                                         </td>
@@ -157,7 +157,7 @@ const getUniqueRoles = (roles) => {
                                                 Ver
                                             </Link>
                                             <Link
-                                                v-if="$page.props.auth.user.can['edit users'] && 
+                                                v-if="$page.props.auth.user.can['edit users'] &&
                                                       (!isAdmin(user) || (isAdmin(user) && user.id === $page.props.auth.user.id))"
                                                 :href="route('users.edit', user.id)"
                                                 class="text-indigo-600 hover:text-indigo-900 mr-4"
@@ -165,8 +165,8 @@ const getUniqueRoles = (roles) => {
                                                 Editar
                                             </Link>
                                             <button
-                                                v-if="$page.props.auth.user.can['delete users'] && 
-                                                      !isAdmin(user) && 
+                                                v-if="$page.props.auth.user.can['delete users'] &&
+                                                      !isAdmin(user) &&
                                                       user.id !== $page.props.auth.user.id"
                                                 @click="deleteUser(user.id)"
                                                 class="text-red-600 hover:text-red-900"
@@ -192,7 +192,7 @@ const getUniqueRoles = (roles) => {
                             >
                                 <div class="flex justify-between items-start mb-2">
                                     <div class="flex items-center space-x-3">
-                                        <img :src="user.picture || '/images/no-image.png'" 
+                                        <img :src="user.picture || '/images/no-image.png'"
                                              :alt="user.name"
                                              class="h-10 w-10 rounded-full object-cover" />
                                         <div>
@@ -208,7 +208,7 @@ const getUniqueRoles = (roles) => {
                                             Ver
                                         </Link>
                                         <Link
-                                            v-if="$page.props.auth.user.can['edit users'] && 
+                                            v-if="$page.props.auth.user.can['edit users'] &&
                                                   (!isAdmin(user) || (isAdmin(user) && user.id === $page.props.auth.user.id))"
                                             :href="route('users.edit', user.id)"
                                             class="text-indigo-600 hover:text-indigo-900"
@@ -216,8 +216,8 @@ const getUniqueRoles = (roles) => {
                                             Editar
                                         </Link>
                                         <button
-                                            v-if="$page.props.auth.user.can['delete users'] && 
-                                                  !isAdmin(user) && 
+                                            v-if="$page.props.auth.user.can['delete users'] &&
+                                                  !isAdmin(user) &&
                                                   user.id !== $page.props.auth.user.id"
                                             @click="deleteUser(user.id)"
                                             class="text-red-600 hover:text-red-900"
@@ -229,8 +229,8 @@ const getUniqueRoles = (roles) => {
                                 <div class="mt-2">
                                     <div class="text-xs font-medium text-gray-500 mb-1">Escuelas:</div>
                                     <div class="flex flex-wrap gap-2">
-                                        <span v-for="school in user.schools" 
-                                              :key="school.id" 
+                                        <span v-for="school in user.schools"
+                                              :key="school.id"
                                               class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800"
                                               :title="school.name">
                                             {{ school.short }}
@@ -264,4 +264,4 @@ const getUniqueRoles = (roles) => {
             </div>
         </div>
     </AuthenticatedLayout>
-</template> 
+</template>

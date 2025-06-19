@@ -40,7 +40,7 @@
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="(school, index) in schools.data" 
+                  <tr v-for="(school, index) in schools.data"
                       :key="school.id"
                       :class="{
                         'bg-red-50': index % 2 === 0,
@@ -58,8 +58,8 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div class="flex flex-wrap gap-1">
-                        <SchoolLevelBadge 
-                          v-for="level in school.school_levels" 
+                        <SchoolLevelBadge
+                          v-for="level in school.school_levels"
                           :key="level.id"
                           :level="level"
                         />
@@ -133,8 +133,8 @@
                 <div class="mt-2">
                   <div class="text-xs font-medium text-gray-500 mb-1">Niveles:</div>
                   <div class="flex flex-wrap gap-2">
-                    <SchoolLevelBadge 
-                      v-for="level in school.school_levels" 
+                    <SchoolLevelBadge
+                      v-for="level in school.school_levels"
                       :key="level.id"
                       :level="level"
                     />
@@ -169,7 +169,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
-import SchoolLevelBadge from '@/Components/admin/SchoolLevelBadge.vue';
+import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 
 const props = defineProps({
   schools: Object
@@ -186,4 +186,4 @@ const forceDeleteSchool = (id) => {
     router.delete(route('schools.force-delete', id));
   }
 };
-</script> 
+</script>

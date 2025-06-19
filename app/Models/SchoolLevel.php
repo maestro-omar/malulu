@@ -54,9 +54,9 @@ class SchoolLevel extends Model
         $constants = (new \ReflectionClass(static::class))->getConstants();
 
         $map = [
-            'inicial' => ['label' => 'Inicial', 'color' => 'rose'],
-            'primaria'   => ['label' => 'Primaria', 'color' => 'amber'],
-            'secundaria' => ['label' => 'Secundaria', 'color' => 'violet'],
+            SchoolLevel::KINDER => ['label' => 'Inicial', 'color' => 'rose'],
+            SchoolLevel::PRIMARY   => ['label' => 'Primaria', 'color' => 'amber'],
+            SchoolLevel::SECONDARY => ['label' => 'Secundaria', 'color' => 'violet'],
         ];
 
         return collect($constants)

@@ -72,7 +72,10 @@
                       }">
                       <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900">{{ school.name }}</div>
-                        <div class="text-sm text-gray-500">{{ school.short }}</div>
+                        <div class="text-sm text-gray-500">{{ school.short }}
+                          <ManagementTypeBadge :mtype="school.management_type" :key="school.management_type.id" />
+                          <SchoolShiftBadge v-for="shift in school.shifts" :key="shift.id" :shift="shift" />
+                        </div>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {{ school.cue }}
@@ -164,7 +167,9 @@ import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
 import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
-import SchoolLevelBadge from '@/Components/admin/SchoolLevelBadge.vue';
+import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
+import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
+import ManagementTypeBadge from '@/Components/Badges/ManagementTypeBadge.vue';
 
 const props = defineProps({
   schools: Object,
@@ -217,4 +222,6 @@ const clearSearch = () => {
 watch(search, (value) => {
   handleSearch();
 });
+
+console.log('schools:', props.schools.data[0])
 </script>

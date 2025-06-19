@@ -35,11 +35,11 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => null,
                 'cue' => 'GLOBAL',
-                'management_type_id' => $this->managementTypes['state'],
+                'management_type_id' => $this->managementTypes[SchoolManagementType::PUBLIC],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
-                'shifts' => ['morning']
+                'shifts' => [SchoolShift::MORNING]
             ],
             [
                 'code' => '740058000',
@@ -52,7 +52,7 @@ class SchoolSeeder extends Seeder
                 'email' => 'centroeducativo8@gmail.com',
                 'coordinates' => '-33.2972111111111,-66.3128472222222',
                 'cue' => '740058000',
-                'management_type_id' => $this->managementTypes['state'],
+                'management_type_id' => $this->managementTypes[SchoolManagementType::PUBLIC],
                 'social' => [
                     [
                         'type' => 'facebook',
@@ -67,7 +67,7 @@ class SchoolSeeder extends Seeder
                 ],
                 'extra' => null,
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
-                'shifts' => ['morning', 'afternoon']
+                'shifts' => [SchoolShift::MORNING, SchoolShift::AFTERNOON]
             ],
             [
                 'code' => '740058100',
@@ -80,15 +80,15 @@ class SchoolSeeder extends Seeder
                 'email' => '',
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058100',
-                'management_type_id' => $this->managementTypes['state'],
+                'management_type_id' => $this->managementTypes[ SchoolManagementType::PUBLIC],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
-                'shifts' => ['morning', 'afternoon']
+                'shifts' => [SchoolShift::MORNING, SchoolShift::AFTERNOON]
             ],
             [
                 'code' => '740058050',
-                'name' => 'ESCUELA DE NIVEL INICIAL N°6 CRECER JUGANDO',
+                'name' => 'ESCUELA DE NIVEL INICIAL PATITO FEO',
                 'short' => 'ENI N°6',
                 'locality_id' => $this->localities['Villa Mercedes'],
                 'address' => 'PASEO DEL BOSQUE S/N',
@@ -97,11 +97,11 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058050',
-                'management_type_id' => $this->managementTypes['state'],
+                'management_type_id' => $this->managementTypes[ SchoolManagementType::PRIVATE],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::KINDER],
-                'shifts' => ['morning']
+                'shifts' => [SchoolShift::MORNING]
             ],
             [
                 'code' => '740058500',
@@ -114,11 +114,11 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058500',
-                'management_type_id' => $this->managementTypes['state'],
+                'management_type_id' => $this->managementTypes[ SchoolManagementType::GENERATIVE],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
-                'shifts' => ['morning']
+                'shifts' => [SchoolShift::MORNING]
             ],
             [
                 'code' => '740058040',
@@ -131,11 +131,11 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058040',
-                'management_type_id' => $this->managementTypes['state'],
+                'management_type_id' => $this->managementTypes[ SchoolManagementType::SELF_MANAGED],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::KINDER],
-                'shifts' => ['morning']
+                'shifts' => [SchoolShift::MORNING]
             ],
             [
                 'code' => '740058600',
@@ -148,11 +148,11 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058600',
-                'management_type_id' => $this->managementTypes['state'],
+                'management_type_id' => $this->managementTypes[ SchoolManagementType::PUBLIC],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
-                'shifts' => ['morning', 'afternoon']
+                'shifts' => [SchoolShift::MORNING, SchoolShift::AFTERNOON]
             ],
             [
                 'code' => '740058700',
@@ -165,11 +165,11 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058700',
-                'management_type_id' => $this->managementTypes['state'],
+                'management_type_id' => $this->managementTypes[ SchoolManagementType::PUBLIC],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
-                'shifts' => ['morning', 'afternoon']
+                'shifts' => [SchoolShift::MORNING, SchoolShift::AFTERNOON]
             ],
         ];
 
