@@ -72,7 +72,7 @@
                       }">
                       <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900">{{ school.name }}</div>
-                        <div class="text-sm text-gray-500">{{ school.short }}
+                        <div class="text-sm text-gray-500 flex flex-wrap gap-1">{{ school.short }}
                           <ManagementTypeBadge :mtype="school.management_type" :key="school.management_type.id" />
                           <SchoolShiftBadge v-for="shift in school.shifts" :key="shift.id" :shift="shift" />
                         </div>

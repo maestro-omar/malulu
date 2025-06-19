@@ -1,5 +1,5 @@
 <template>
-  <span :class="['px-2 py-1 text-xs rounded-full', 'bg-' + basecolor + '-100 text-' + basecolor + '-800']"
+  <span :class="['inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', 'bg-' + basecolor + '-100 text-' + basecolor + '-800']"
     :title="mtype.name">
     {{ label }}
   </span>
