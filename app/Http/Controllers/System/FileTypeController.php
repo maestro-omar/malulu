@@ -6,9 +6,8 @@ use App\Models\FileType;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Services\FileTypeService;
-use App\Http\Requests\System\FileTypeStoreRequest;
-use App\Http\Requests\System\FileTypeUpdateRequest;
 use App\Http\Controllers\System\SystemBaseController;
+use Diglactic\Breadcrumbs\Breadcrumbs;
 
 class FileTypeController extends SystemBaseController
 {
@@ -21,12 +20,11 @@ class FileTypeController extends SystemBaseController
         $this->middleware('can:superadmin');
     }
 
-    public function index(Request $request)
+    public function index()
     {
         return Inertia::render('FileTypes/Index', [
-            'fileTypes' => $this->fileTypeService->getPaginated($request->search),
-            'search' => $request->search,
-            'breadcrumbs' => \Breadcrumbs::generate('file-types.index'),
+            'fileTypes' => $this->fileTypeService->getFileTypes(),
+            'breadcrumbs' => Breadcrumbs::generate('file-types.index'),
         ]);
     }
 
@@ -34,7 +32,7 @@ class FileTypeController extends SystemBaseController
     {
         return Inertia::render('FileTypes/Create', [
             'relateWithOptions' => FileType::relateWithOptions(),
-            'breadcrumbs' => \Breadcrumbs::generate('file-types.create'),
+            'breadcrumbs' => Breadcrumbs::generate('file-types.create'),
         ]);
     }
 
@@ -62,7 +60,7 @@ class FileTypeController extends SystemBaseController
     {
         return Inertia::render('FileTypes/Edit', [
             'fileType' => $fileType->load('fileSubtypes'),
-            'breadcrumbs' => \Breadcrumbs::generate('file-types.edit', $fileType),
+            'breadcrumbs' => Breadcrumbs::generate('file-types.edit', $fileType),
         ]);
     }
 

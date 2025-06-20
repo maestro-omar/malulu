@@ -52,23 +52,23 @@ Breadcrumbs::for('schools.create', function (Trail $trail) {
 
 Breadcrumbs::for('schools.edit', function (Trail $trail, $school) {
     $trail->parent('schools.index');
-    $trail->push("Editar {$school->name}");
+    $trail->push("Editar {$school->short}");
 });
 
 Breadcrumbs::for('schools.show', function (Trail $trail, $school) {
     $trail->parent('schools.index');
-    $trail->push($school->name);
+    $trail->push($school->short, route('schools.show', $school));
 });
 
-// 📅 Ciclos escolares
+// 📅 Ciclos lectivos
 Breadcrumbs::for('academic-years.index', function (Trail $trail) {
     $trail->parent('dashboard');
-    $trail->push('Ciclos escolares', route('academic-years.index'));
+    $trail->push('Ciclos lectivos', route('academic-years.index'));
 });
 
 Breadcrumbs::for('academic-years.create', function (Trail $trail) {
     $trail->parent('academic-years.index');
-    $trail->push('Crear ciclo escolar');
+    $trail->push('Crear ciclo lectivo');
 });
 
 Breadcrumbs::for('academic-years.edit', function (Trail $trail, $year) {
@@ -85,6 +85,7 @@ Breadcrumbs::for('file-types.index', function (Trail $trail) {
 // 📂 Subtipos de archivo
 Breadcrumbs::for('file-subtypes.index', function (Trail $trail) {
     $trail->parent('dashboard');
+    $trail->push('Tipos de archivo', route('file-types.index'));
     $trail->push('Subtipos de archivo', route('file-subtypes.index'));
 });
 
@@ -92,7 +93,7 @@ Breadcrumbs::for('file-subtypes.index', function (Trail $trail) {
 // 🏫 Niveles de escuela (desde una escuela)
 Breadcrumbs::for('courses.index', function (Trail $trail, School $school, SchoolLevel $schoolLevel) {
     $trail->parent('schools.show', $school); // usa breadcrumb ya definido para la escuela
-    $trail->push($schoolLevel->label ?? 'Nivel', route('courses.index', [$school, $schoolLevel]));
+    $trail->push($schoolLevel->name ?? 'Nivel', route('courses.index', [$school, $schoolLevel]));
 });
 
 Breadcrumbs::for('courses.create', function (Trail $trail, School $school, SchoolLevel $schoolLevel) {

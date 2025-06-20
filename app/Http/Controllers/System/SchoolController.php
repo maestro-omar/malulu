@@ -16,8 +16,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Http\Controllers\System\SystemBaseController;
-use App\Http\Requests\System\SchoolStoreRequest;
-use App\Http\Requests\System\SchoolUpdateRequest;
+use Diglactic\Breadcrumbs\Breadcrumbs;
 
 class SchoolController extends SystemBaseController
 {
@@ -32,16 +31,16 @@ class SchoolController extends SystemBaseController
     public function index(Request $request)
     {
         return Inertia::render('Schools/Index', [
-            'schools' => $this->schoolService->getPaginated($request->search),
+            'schools' => $this->schoolService->getSchools($request),
             'search' => $request->search,
-            'breadcrumbs' => \Breadcrumbs::generate('schools.index'),
+            'breadcrumbs' => Breadcrumbs::generate('schools.index'),
         ]);
     }
 
     public function create()
     {
         return Inertia::render('Schools/Create', [
-            'breadcrumbs' => \Breadcrumbs::generate('schools.create'),
+            'breadcrumbs' => Breadcrumbs::generate('schools.create'),
             'localities' => \App\Models\Locality::orderBy('order')->get(),
             'schoolLevels' => SchoolLevel::orderBy('id')->get(),
             'managementTypes' => SchoolManagementType::orderBy('id')->get(),
@@ -71,7 +70,7 @@ class SchoolController extends SystemBaseController
 
         return Inertia::render('Schools/Edit', [
             'school' => $school->load(['locality', 'schoolLevels', 'managementType', 'shifts']),
-            'breadcrumbs' => \Breadcrumbs::generate('schools.edit', $school),
+            'breadcrumbs' => Breadcrumbs::generate('schools.edit', $school),
             'localities' => \App\Models\Locality::orderBy('order')->get(),
             'schoolLevels' => SchoolLevel::orderBy('id')->get(),
             'managementTypes' => SchoolManagementType::orderBy('id')->get(),
@@ -120,7 +119,7 @@ class SchoolController extends SystemBaseController
 
         return Inertia::render('Schools/Show', [
             'school' => $school,
-            'breadcrumbs' => \Breadcrumbs::generate('schools.show', $school),
+            'breadcrumbs' => Breadcrumbs::generate('schools.show', $school),
         ]);
     }
 

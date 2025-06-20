@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\FilterConstants;
 
 class GuardianRelationship extends Model
 {
     use SoftDeletes;
+    use FilterConstants;
 
     protected $fillable = [
         'role_relationship_id',
@@ -52,11 +54,15 @@ class GuardianRelationship extends Model
      */
     public static function relationshipTypes(): array
     {
-        return [
+        $map = [
             self::RELATIONSHIP_PADRE => 'Padre',
             self::RELATIONSHIP_MADRE => 'Madre',
             self::RELATIONSHIP_TUTOR => 'Tutor',
             self::RELATIONSHIP_OTRO => 'Otro'
         ];
+
+        return collect(self::getFilteredConstants())
+            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
+            ->toArray();
     }
 } 

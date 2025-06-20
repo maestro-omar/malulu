@@ -4,7 +4,16 @@
 
   <AuthenticatedLayout>
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Escuelas</h2>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Listado de Escuelas`" :add="{
+        show: $page.props.auth.user.can['superadmin'],
+        href: route('schools.create'),
+        label: 'Nueva'
+      }" :trashed="{
+        show: $page.props.auth.user.can['superadmin'],
+        href: route('schools.trashed'),
+        label: 'Eliminadas'
+      }">
+      </AdminHeader>
     </template>
 
     <div class="py-12">
@@ -170,11 +179,13 @@ import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
 import ManagementTypeBadge from '@/Components/Badges/ManagementTypeBadge.vue';
+import AdminHeader from '@/Sections/AdminHeader.vue';
 
 const props = defineProps({
   schools: Object,
   filters: Object,
-  localities: Array
+  localities: Array,
+  breadcrumbs: Array
 });
 
 const search = ref(props.filters?.search || '');

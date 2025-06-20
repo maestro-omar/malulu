@@ -4,7 +4,7 @@
 
   <AuthenticatedLayout>
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Editar Escuela</h2>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Escuela ${props.school.short}`"></AdminHeader>
     </template>
 
     <div class="py-12">
@@ -202,13 +202,15 @@ import Checkbox from '@/Components/admin/Checkbox.vue';
 import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
 import ActionButtons from '@/Components/admin/ActionButtons.vue';
 import { ref, computed, onMounted, watch } from 'vue';
+import AdminHeader from '@/Sections/AdminHeader.vue';
 
 const props = defineProps({
   school: Object,
   localities: Array,
   schoolLevels: Array,
   managementTypes: Array,
-  shifts: Array
+  shifts: Array,
+  breadcrumbs: Array,
 });
 
 // Parse extra data if it's a string

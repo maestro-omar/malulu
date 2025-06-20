@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\FilterConstants;
 
 class RoleRelationship extends Model
 {
     use SoftDeletes;
+    use FilterConstants;
 
     protected $table = 'role_relationships';
 
@@ -132,11 +134,15 @@ class RoleRelationship extends Model
      */
     public static function jobStatuses(): array
     {
-        return [
+        $map = [
             self::JOB_STATUS_SUBSTITUTE => 'Suplente',
             self::JOB_STATUS_INTERIM  => 'Interino',
             self::JOB_STATUS_PERMANENT => 'Titular'
         ];
+
+        return collect(self::getFilteredConstants())
+            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
+            ->toArray();
     }
 
     /**
@@ -144,7 +150,7 @@ class RoleRelationship extends Model
      */
     public static function relationshipTypes(): array
     {
-        return [
+        $map = [
             self::RELATIONSHIP_FATHER => 'Padre',
             self::RELATIONSHIP_MOTHER => 'Madre',
             self::RELATIONSHIP_GUARDIAN => 'Tutor/a',
@@ -152,6 +158,10 @@ class RoleRelationship extends Model
             self::RELATIONSHIP_RELATIVE => 'Pariente',
             self::RELATIONSHIP_OTRO => 'other'
         ];
+
+        return collect(self::getFilteredConstants())
+            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
+            ->toArray();
     }
 
     // Role-specific relationships

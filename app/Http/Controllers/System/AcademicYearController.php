@@ -6,9 +6,8 @@ use App\Models\AcademicYear;
 use App\Services\AcademicYearService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Http\Requests\System\AcademicYearStoreRequest;
-use App\Http\Requests\System\AcademicYearUpdateRequest;
 use App\Http\Controllers\System\SystemBaseController;
+use Diglactic\Breadcrumbs\Breadcrumbs;
 
 class AcademicYearController extends SystemBaseController
 {
@@ -20,19 +19,19 @@ class AcademicYearController extends SystemBaseController
         $this->middleware('permission:superadmin');
     }
 
-    public function index(Request $request)
+    public function index()
     {
+        $academicYears = $this->academicYearService->getAcademicYears();
         return Inertia::render('AcademicYears/Index', [
-            'academicYears' => $this->academicYearService->getPaginated($request->search),
-            'search' => $request->search,
-            'breadcrumbs' => \Breadcrumbs::generate('academic-years.index'),
+            'academicYears' => $academicYears,
+            'breadcrumbs' => Breadcrumbs::generate('academic-years.index'),
         ]);
     }
 
     public function create()
     {
         return Inertia::render('AcademicYears/Create', [
-            'breadcrumbs' => \Breadcrumbs::generate('academic-years.create'),
+            'breadcrumbs' => Breadcrumbs::generate('academic-years.create'),
         ]);
     }
 
@@ -53,7 +52,7 @@ class AcademicYearController extends SystemBaseController
     {
         return Inertia::render('AcademicYears/Edit', [
             'academicYear' => $academicYear,
-            'breadcrumbs' => \Breadcrumbs::generate('academic-years.edit', $academicYear),
+            'breadcrumbs' => Breadcrumbs::generate('academic-years.edit', $academicYear),
         ]);
     }
 

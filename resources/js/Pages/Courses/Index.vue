@@ -4,82 +4,117 @@
 
   <AuthenticatedLayout>
     <template #header>
-      <div class="flex justify-between items-center">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Cursos</h2>
-        <Link :href="route('courses.create', {school: school.cue, schoolLevel: selectedLevel.code})"
-          class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-        Agregar Nuevo Curso
-        </Link>
-      </div>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Cursos de ${school.short} - ${selectedLevel.name}`">
+        <template #additional-buttons>
+          <Link :href="route('courses.create', { school: school.cue, schoolLevel: selectedLevel.code })"
+            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+          Agregar Nuevo Curso
+          </Link>
+        </template>
+      </AdminHeader>
     </template>
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           <div class="p-6 text-gray-900">
-            <div v-if="schoolLevels.length > 1" class="mb-4">
-              <p class="text-lg font-semibold">Selecciona un Nivel Escolar:</p>
-              <div class="flex flex-wrap gap-2 mt-2">
-                <button v-for="level in schoolLevels" :key="level.id"
-                  @click="selectLevel(level)"
-                  :class="getLevelClasses(level, 'button')">
-                  {{ level.name }}
-                </button>
+            <!-- Filter Section -->
+            <div class="mb-4 p-4 border rounded-lg bg-gray-50">
+              <h3 class="text-lg font-semibold mb-2">Filtros</h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Year Filter -->
+                <div>
+                  <label for="year-filter" class="block text-sm font-medium text-gray-700">Año</label>
+                  <input type="number" id="year-filter" v-model.number="selectedYear"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                </div>
+
+                <!-- Active Status Filter -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Estado</label>
+                  <div class="mt-1 flex items-center">
+                    <label class="inline-flex items-center mr-4">
+                      <input type="radio" class="form-radio" name="active-status" :value="true" v-model="activeStatus">
+                      <span class="ml-2">Activo</span>
+                    </label>
+                    <label class="inline-flex items-center mr-4">
+                      <input type="radio" class="form-radio" name="active-status" :value="false" v-model="activeStatus">
+                      <span class="ml-2">Inactivo</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                      <input type="radio" class="form-radio" name="active-status" :value="null" v-model="activeStatus">
+                      <span class="ml-2">Todos</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Shift Filter -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Turno</label>
+                  <div class="mt-1 flex flex-wrap gap-2">
+                    <template v-for="([code, shiftData]) in filteredShiftOptions" :key="code">
+                      <button
+                        @click="selectedShift = code"
+                        :class="getShiftButtonClasses(shiftData, selectedShift === code)"
+                      >
+                        {{ shiftData.label }}
+                      </button>
+                    </template>
+                    <button
+                      @click="selectedShift = null"
+                      :class="{
+                        'px-3 py-1 rounded-full text-sm font-medium': true,
+                        'bg-blue-600 text-white': selectedShift === null,
+                        'bg-gray-200 text-gray-700 hover:bg-gray-300': selectedShift !== null,
+                      }"
+                    >
+                      Todos
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div v-if="selectedLevel" class="mb-4 flex items-center gap-2">
-              <span :class="getLevelClasses(selectedLevel, 'badge')">
-                Nivel Seleccionado: {{ selectedLevel.name }}
-              </span>
-              <button @click="clearLevel" class="text-gray-500 hover:text-gray-700">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 18.862c1.01-1.01 1.01-2.651 0-3.66S13.21 14.19 12 15.344l-2.92-2.92c-.172-.172-.45-.172-.622 0-.172.172-.172.45 0 .622l2.92 2.92c1.01 1.01 1.01 2.651 0 3.66s-2.651 1.01-3.66 0L5.344 12c-1.01-1.01-1.01-2.651 0-3.66S8.79 7.81 9.944 6.656l2.92-2.92c.172-.172.45-.172.622 0 .172.172.172.45 0 .622l-2.92 2.92c-1.01 1.01-1.01 2.651 0 3.66s2.651 1.01 3.66 0L18.862 7.138c1.01-1.01 1.01-2.651 0-3.66s-2.651-1.01-3.66 0L12 1.344C10.344 0 7.656 0 6.656 1.344L1.344 6.656C0 7.656 0 10.344 1.344 12L7.138 17.862c1.01 1.01 2.651 1.01 3.66 0s1.01-2.651 0-3.66L16.862 18.862Z" />
-                </svg>
-              </button>
-            </div>
-
-            <div v-if="selectedLevel" class="overflow-x-auto">
+            <div class="overflow-x-auto">
               <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                   <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Número</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Letra</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Escuela</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nivel</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turno</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Inicio</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Fin</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activo</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Curso
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turno
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de
+                      Inicio</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de
+                      Fin
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activo
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones
+                    </th>
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                   <tr v-for="course in courses.data" :key="course.id">
-                    <td class="px-6 py-4 whitespace-nowrap">{{ course.number }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ course.letter }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ course.school.name }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ course.school_level.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ course.number + ' º ' + course.letter }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ course.school_shift.name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(course.start_date) }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ course.end_date ? formatDate(course.end_date) : '-' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ course.end_date ? formatDate(course.end_date) : '-' }}
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <span
-                        :class="{
-                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
-                          'bg-green-100 text-green-800': course.active,
-                          'bg-red-100 text-red-800': !course.active,
-                        }"
-                      >
+                      <span :class="{
+                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
+                        'bg-green-100 text-green-800': course.active,
+                        'bg-red-100 text-red-800': !course.active,
+                      }">
                         {{ course.active ? 'Sí' : 'No' }}
                       </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <Link
-                        :href="route('courses.edit', {school: school.cue, schoolLevel: selectedLevel.code, course: course.id})"
-                        class="text-indigo-600 hover:text-indigo-900 mr-4"
-                      >
-                        Editar
+                        :href="route('courses.edit', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
+                        class="text-indigo-600 hover:text-indigo-900 mr-4">
+                      Editar
                       </Link>
                     </td>
                   </tr>
@@ -99,7 +134,9 @@ import { Link, Head, router } from '@inertiajs/vue3'
 import { formatDate } from '../../utils/date'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import Pagination from '@/Components/admin/Pagination.vue'
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, computed } from 'vue'
+import AdminHeader from '@/Sections/AdminHeader.vue';
+import { schoolShiftOptions } from '@/Composables/schoolShiftOptions';
 
 const props = defineProps({
   courses: {
@@ -110,79 +147,70 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  schoolLevels: {
-    type: Array,
-    required: true,
-  },
   selectedLevel: {
     type: Object,
-    required: false, // Make it optional as it might be null initially or if only one level
+    required: true,
   },
+  breadcrumbs: Array,
 })
 
-const selectedLevel = ref(props.selectedLevel)
+const currentYear = computed(() => new Date().getFullYear());
+const selectedYear = ref(props.courses?.year || currentYear.value);
+const activeStatus = ref(props.courses?.active !== undefined ? props.courses.active : null);
+const selectedShift = ref(props.courses?.shift || null);
 
-onMounted(() => {
-  // If there's only one level, automatically select it and navigate
-  if (props.schoolLevels.length === 1) {
-    selectedLevel.value = props.schoolLevels[0];
-    router.get(route('courses.index', { school: props.school.cue, schoolLevel: selectedLevel.value.code }), {}, { preserveState: true });
+const { options: rawShiftOptions } = schoolShiftOptions();
+
+const filteredShiftOptions = computed(() => {
+  if (!rawShiftOptions.value || typeof rawShiftOptions.value !== 'object') {
+    return [];
   }
-  // If a level is already passed through props (e.g., from a redirect or initial load with URL parameter)
-  // No need to set selectedLevel if it's already set by the prop
-  // else if (props.schoolLevels.length > 1 && router.page.props.request && router.page.props.request.school_level_id) {
-  //   selectedLevel.value = props.schoolLevels.find(level => level.id == router.page.props.request.school_level_id)
-  // }
-})
+  return Object.entries(rawShiftOptions.value).filter(([, shiftData]) => {
+    return typeof shiftData === 'object' && shiftData !== null && shiftData.label;
+  });
+});
 
-watch(selectedLevel, (newLevel) => {
-  if (newLevel) {
-    router.get(route('courses.index', { school: props.school.cue, schoolLevel: newLevel.code }), {}, { preserveState: true })
-  } else {
-    // This case should ideally not be hit if a level is mandatory. 
-    // If it is hit, it means the user cleared the selection, and we should redirect to the base URL.
-    // However, since we expect a schoolLevel to always be present in the URL, this clearLevel logic is complex.
-    // Let's rethink how `clearLevel` behaves with the new mandatory schoolLevel in the route.
+console.log('rawShiftOptions:', rawShiftOptions);
+console.log('filteredShiftOptions.value:', filteredShiftOptions.value);
+console.log('props.courses:', props.courses);
+
+watch([selectedYear, activeStatus, selectedShift, () => props.selectedLevel, rawShiftOptions], ([newYear, newActiveStatus, newShiftId, newSelectedLevel, newRawShiftOptions]) => {
+  if (newSelectedLevel) {
+    router.get(route('courses.index', {
+      school: props.school.cue,
+      schoolLevel: newSelectedLevel.code,
+      year: newYear,
+      active: newActiveStatus,
+      shift: newShiftId,
+    }), {}, { preserveState: true, replace: true });
   }
-})
+}, { immediate: true });
 
-const selectLevel = (level) => {
-  selectedLevel.value = level
-}
-
-const clearLevel = () => {
-  // When clearLevel is called, it means the user wants to go back to selecting a level.
-  // If schoolLevels.length > 1, we should navigate back to the page where they can select a level.
-  // This would mean navigating to /sistema/{school}/cursos without a {schoolLevel} parameter.
-  // However, our routes now *require* {schoolLevel}.
-  // For now, let's just null out selectedLevel, which will hide the table.
-  // The user would then need to manually select a new level.
-  selectedLevel.value = null
-  // No route change here, as changing the route without schoolLevel would lead to 404 now.
-  // router.get(route('courses.index', { school: props.school.cue }), {}, { preserveState: true })
-}
-
-const getLevelClasses = (level, type) => {
-  const baseClasses = {
-    button: 'px-4 py-2 rounded-md',
-    badge: 'px-3 py-1 text-sm font-medium rounded-full',
-  };
-
-  const colorClasses = {
-    'inicial': {
-      button: 'bg-rose-100 text-rose-800 hover:bg-rose-200',
-      badge: 'bg-rose-100 text-rose-800',
+const getShiftButtonClasses = (shiftData, isActive) => {
+  const baseClasses = 'px-3 py-1 rounded-full text-sm font-medium';
+  const colorMap = {
+    green: {
+      active: 'bg-green-600 text-white',
+      inactive: 'bg-green-100 text-green-800 hover:bg-green-200',
     },
-    'primaria': {
-      button: 'bg-amber-100 text-amber-800 hover:bg-amber-200',
-      badge: 'bg-amber-100 text-amber-800',
+    orange: {
+      active: 'bg-orange-600 text-white',
+      inactive: 'bg-orange-100 text-orange-800 hover:bg-orange-200',
     },
-    'secundaria': {
-      button: 'bg-violet-100 text-violet-800 hover:bg-violet-200',
-      badge: 'bg-violet-100 text-violet-800',
+    indigo: {
+      active: 'bg-indigo-600 text-white',
+      inactive: 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
+    },
+    // Add more colors if needed based on your API response
+    gray: {
+      active: 'bg-gray-600 text-white',
+      inactive: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
     },
   };
 
-  return `${baseClasses[type]} ${colorClasses[level.code]?.[type] || 'bg-gray-200 text-gray-800'}`;
+  const colorClasses = colorMap[shiftData.color] || colorMap.gray;
+
+  return `${baseClasses} ${isActive ? colorClasses.active : colorClasses.inactive}`;
 };
+
 </script>

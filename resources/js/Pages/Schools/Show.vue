@@ -4,29 +4,27 @@
 
   <AuthenticatedLayout>
     <template #header>
-      <div class="flex justify-between items-center">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-          Detalles de la Escuela
-        </h2>
-        <div class="flex flex-col space-y-2 md:flex-row md:space-x-4 md:space-y-0">
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles de la Escuela: ${school.short}`" :edit="{
+        show: $page.props.auth.user.can['edit schools'],
+        href: route('schools.edit', school.cue),
+        label: 'Editar'
+      }" :del="{
+        show: $page.props.auth.user.can['delete schools'],
+        onClick: destroy,
+        label: 'Eliminar'
+      }">
+        <template #additional-buttons>
           <Link :href="route('schools.index')"
             class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
           Volver a Escuelas
           </Link>
           <Link v-for="level in school.school_levels" :key="level.id"
             :href="route('courses.index', { school: school.cue, schoolLevel: level.code })"
-            :class="[ 'font-bold py-2 px-4 rounded', `bg-${levelColors[level.code]?.color}-600 hover:bg-${levelColors[level.code]?.color}-800 text-white` ]">
+            :class="['font-bold py-2 px-4 rounded', `bg-${levelColors[level.code]?.color}-600 hover:bg-${levelColors[level.code]?.color}-800 text-white`]">
           Cursos ({{ level.name }})
           </Link>
-          <Link :href="route('schools.edit', school.cue)"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Editar
-          </Link>
-          <button @click="destroy" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-            Eliminar
-          </button>
-        </div>
-      </div>
+        </template>
+      </AdminHeader>
     </template>
 
     <div class="py-12">
@@ -35,10 +33,27 @@
           <div class="p-6 text-gray-900">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 class="text-lg font-semibold mb-4">
-                  Información de la Escuela
-                </h3>
                 <div class="space-y-4">
+                  <div class="grid grid-cols-3 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-400">Logo</label>
+                      <div class="mt-1">
+                        <EditableImage v-model="school.logo" type="logo" :model-id="school.cue" :can-edit="true"
+                          image-class="h-12 w-12 object-contain" upload-route="schools.upload-image"
+                          delete-route="schools.delete-image"
+                          delete-confirm-message="¿Está seguro que desea eliminar el logo?" />
+                      </div>
+                    </div>
+
+                    <div class="col-span-2">
+                      <label class="block text-sm font-medium text-gray-400">Imagen Principal</label>
+                      <div class="mt-1">
+                        <EditableImage v-model="school.picture" type="picture" :model-id="school.cue" :can-edit="true"
+                          upload-route="schools.upload-image" delete-route="schools.delete-image"
+                          delete-confirm-message="¿Está seguro que desea eliminar la imagen principal?" />
+                      </div>
+                    </div>
+                  </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-400">Nombre</label>
                     <p class="mt-1 text-sm text-gray-900">{{ school.name }}</p>
@@ -84,27 +99,6 @@
               </div>
 
               <div>
-
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-400">Logo</label>
-                    <div class="mt-1">
-                      <EditableImage v-model="school.logo" type="logo" :model-id="school.cue" :can-edit="true"
-                        image-class="h-12 w-12 object-contain" upload-route="schools.upload-image"
-                        delete-route="schools.delete-image"
-                        delete-confirm-message="¿Está seguro que desea eliminar el logo?" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label class="block text-sm font-medium text-gray-400">Imagen Principal</label>
-                    <div class="mt-1">
-                      <EditableImage v-model="school.picture" type="picture" :model-id="school.cue" :can-edit="true"
-                        upload-route="schools.upload-image" delete-route="schools.delete-image"
-                        delete-confirm-message="¿Está seguro que desea eliminar la imagen principal?" />
-                    </div>
-                  </div>
-                </div>
                 <h3 class="text-lg font-semibold mb-4">Ubicación y Contacto</h3>
                 <div class="space-y-4">
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -194,16 +188,18 @@ import EmailField from "@/Components/admin/EmailField.vue";
 import EditableImage from "@/Components/admin/EditableImage.vue";
 import { computed } from 'vue'
 import { schoolLevelOptions } from '@/Composables/schoolLevelOptions'
+import AdminHeader from "@/Sections/AdminHeader.vue";
 
 const props = defineProps({
   school: Object,
+  breadcrumbs: Array,
 });
 
 const { options: levelColors } = schoolLevelOptions()
 
 const destroy = () => {
-  if (confirm("¿Está seguro que desea eliminar esta escuela?")) {
-    router.delete(route("schools.destroy", props.school.id));
+  if (confirm('¿Está seguro que desea eliminar esta escuela?')) {
+    router.delete(route('schools.destroy', props.school.cue));
   }
 };
 

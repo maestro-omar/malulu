@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\FilterConstants;
 
 class SchoolManagementType extends Model
 {
+    use FilterConstants;
+
     const PUBLIC = 'publica';
     const PRIVATE = 'privada';
     const SELF_MANAGED = 'autogestionada';
@@ -22,16 +25,14 @@ class SchoolManagementType extends Model
 
     public static function vueOptions(): array
     {
-        $constants = (new \ReflectionClass(static::class))->getConstants();
-
         $map = [
-            SchoolManagementType::PUBLIC   => ['label' => 'Pública', 'color' => 'sky'],
-            SchoolManagementType::PRIVATE => ['label' => 'Privada', 'color' => 'purple'],
-            SchoolManagementType::GENERATIVE   => ['label' => 'Generativa', 'color' => 'emerald'],
-            SchoolManagementType::SELF_MANAGED   => ['label' => 'Autogestionada', 'color' => 'pink'],
+            self::PUBLIC   => ['label' => 'Pública', 'color' => 'sky'],
+            self::PRIVATE => ['label' => 'Privada', 'color' => 'purple'],
+            self::GENERATIVE   => ['label' => 'Generativa', 'color' => 'emerald'],
+            self::SELF_MANAGED   => ['label' => 'Autogestionada', 'color' => 'pink'],
         ];
 
-        return collect($constants)
+        return collect(self::getFilteredConstants())
             ->mapWithKeys(fn($value) => [$value => $map[$value] ?? [
                 'label' => ucfirst($value),
                 'color' => 'gray',

@@ -5,13 +5,15 @@ import Pagination from '@/Components/admin/Pagination.vue';
 import RoleBadge from '@/Components/Badges/RoleBadge.vue';
 import { ref, computed } from 'vue';
 import noImage from '@images/no-image-person.png';
+import AdminHeader from '@/Sections/AdminHeader.vue';
 
 const props = defineProps({
     users: Object,
     flash: {
         type: Object,
         default: () => ({})
-    }
+    },
+    breadcrumbs: Array,
 });
 
 // Debug log when component receives props
@@ -43,12 +45,12 @@ const getUniqueRoles = (roles) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles del usuario ${user.firstname} ${user.lastname}`"
-                :new="{
+            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Listado de usuarios`"
+                :add="{
                     show: $page.props.auth.user.can['create users'],
                     href: route('users.create'),
                     label: 'Nuevo usuario'
-                }">
+                }"
                 :trashed="{
                     show: $page.props.auth.user.can['delete users'],
                     href: route('users.trashed'),
@@ -185,7 +187,7 @@ const getUniqueRoles = (roles) => {
                             >
                                 <div class="flex justify-between items-start mb-2">
                                     <div class="flex items-center space-x-3">
-                                        <img :src="user.picture || '/images/no-image.png'"
+                                        <img :src="user.picture || noImage"
                                              :alt="user.name"
                                              class="h-10 w-10 rounded-full object-cover" />
                                         <div>

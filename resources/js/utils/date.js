@@ -3,7 +3,7 @@ export function formatDate(date) {
     const d = new Date(date);
     return d.toLocaleDateString('es-ES', {
         year: 'numeric',
-        month: 'long',
+        month: 'short',
         day: 'numeric',
         timeZone: 'UTC'
     });

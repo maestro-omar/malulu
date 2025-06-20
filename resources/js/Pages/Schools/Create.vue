@@ -2,9 +2,7 @@
   <AuthenticatedLayout>
     <Head title="Crear Escuela" />
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Crear Escuela
-      </h2>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Crear Escuela`"></AdminHeader>
     </template>
 
     <div class="py-12">
@@ -191,12 +189,14 @@ import TextInput from "@/Components/admin/TextInput.vue";
 import Checkbox from "@/Components/admin/Checkbox.vue";
 import SearchableDropdown from "@/Components/admin/SearchableDropdown.vue";
 import CancelLink from "@/Components/admin/CancelLink.vue";
+import AdminHeader from "@/Sections/AdminHeader.vue";
 
 const props = defineProps({
   localities: Array,
   schoolLevels: Array,
   managementTypes: Array,
   shifts: Array,
+  breadcrumbs: Array,
 });
 
 const form = useForm({

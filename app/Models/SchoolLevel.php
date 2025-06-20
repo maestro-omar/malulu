@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\FilterConstants;
 
 class SchoolLevel extends Model
 {
     use HasFactory;
+    use FilterConstants;
 
     /**
      * SchoolLevel code constants
@@ -51,15 +53,13 @@ class SchoolLevel extends Model
 
     public static function vueOptions(): array
     {
-        $constants = (new \ReflectionClass(static::class))->getConstants();
-
         $map = [
-            SchoolLevel::KINDER => ['label' => 'Inicial', 'color' => 'rose'],
-            SchoolLevel::PRIMARY   => ['label' => 'Primaria', 'color' => 'amber'],
-            SchoolLevel::SECONDARY => ['label' => 'Secundaria', 'color' => 'violet'],
+            self::KINDER => ['label' => 'Inicial', 'color' => 'rose'],
+            self::PRIMARY   => ['label' => 'Primaria', 'color' => 'amber'],
+            self::SECONDARY => ['label' => 'Secundaria', 'color' => 'violet'],
         ];
 
-        return collect($constants)
+        return collect(self::getFilteredConstants())
             ->mapWithKeys(fn($value) => [$value => $map[$value] ?? [
                 'label' => ucfirst($value),
                 'color' => 'gray',

@@ -12,8 +12,6 @@ use Inertia\Inertia;
 use Illuminate\Validation\ValidationException;
 use App\Models\School;
 use App\Models\SchoolLevel;
-use App\Http\Requests\System\CourseStoreRequest;
-use App\Http\Requests\System\CourseUpdateRequest;
 use App\Http\Controllers\System\SystemBaseController;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
@@ -43,17 +41,19 @@ class CourseController extends SystemBaseController
         $request->merge([
             'school_level_id' => $schoolLevel->id,
             'school_id' => $school->id,
+            'year' => $request->input('year', date('Y')),
+            'active' => $request->has('active') ? $request->boolean('active') : null,
+            'shift' => $request->input('shift'),
         ]);
 
-        $schoolLevels = $this->schoolLevelService->getSchoolLevels(new Request());
+        $courses = $this->courseService->getCourses($request);
 
         return Inertia::render('Courses/Index', [
-            'courses' => $this->courseService->getCourses($request),
+            'courses' => $courses,
             'search' => $request->search,
             'breadcrumbs' => Breadcrumbs::generate('courses.index', $school, $schoolLevel),
             'school' => $school,
             'selectedLevel' => $schoolLevel,
-            'schoolLevels' => $schoolLevels,
         ]);
     }
 

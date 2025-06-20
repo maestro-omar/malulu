@@ -2,9 +2,7 @@
   <AuthenticatedLayout>
     <Head title="Ciclos lectivos" />
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Crear Nuevo Ciclo Lectivo
-      </h2>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Nuevo Ciclo Lectivo`"></AdminHeader>
     </template>
 
     <div class="py-12">

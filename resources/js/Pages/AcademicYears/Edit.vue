@@ -4,7 +4,7 @@
 
   <AuthenticatedLayout>
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Editar Ciclo Lectivo</h2>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Ciclo Lectivo ${props.academicYear.year}`"></AdminHeader>
     </template>
 
     <div class="py-12">

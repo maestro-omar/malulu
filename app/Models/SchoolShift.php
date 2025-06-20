@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Traits\FilterConstants;
 
 class SchoolShift extends Model
 {
+    use FilterConstants;
+
     const MORNING = 'manana';
     const AFTERNOON = 'tarde';
     const NIGHT = 'noche';
@@ -19,15 +22,13 @@ class SchoolShift extends Model
 
     public static function vueOptions(): array
     {
-        $constants = (new \ReflectionClass(static::class))->getConstants();
-
         $map = [
-            SchoolShift::MORNING   => ['label' => 'Mañana', 'color' => 'green'],
-            SchoolShift::AFTERNOON => ['label' => 'Tarde', 'color' => 'orange'],
-            SchoolShift::NIGHT   => ['label' => 'Noche', 'color' => 'indigo'],
+            self::MORNING   => ['label' => 'Mañana', 'color' => 'green'],
+            self::AFTERNOON => ['label' => 'Tarde', 'color' => 'orange'],
+            self::NIGHT   => ['label' => 'Noche', 'color' => 'indigo'],
         ];
 
-        return collect($constants)
+        return collect(self::getFilteredConstants())
             ->mapWithKeys(fn($value) => [$value => $map[$value] ?? [
                 'label' => ucfirst($value),
                 'color' => 'gray',

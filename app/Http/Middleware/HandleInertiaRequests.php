@@ -131,7 +131,7 @@ class HandleInertiaRequests extends Middleware
 
         if ($user->can('superadmin')) {
             $items[] = [
-                'name' => 'Ciclos escolares',
+                'name' => 'Ciclos lectivos',
                 'route' => 'academic-years.index',
                 'icon' => 'calendar',
             ];

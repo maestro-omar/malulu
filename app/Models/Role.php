@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Spatie\Permission\Models\Role as SpatieRole;
+use App\Traits\FilterConstants;
 
 class Role extends SpatieRole
 {
+    use FilterConstants;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -196,8 +199,6 @@ class Role extends SpatieRole
 
     public static function vueOptions(): array
     {
-        $constants = (new \ReflectionClass(static::class))->getConstants();
-
         $map = [
             self::ADMIN => ['label' => 'Administrador', 'color' => 'purple'],
             self::DIRECTOR => ['label' => 'Director/a', 'color' => 'blue'],
@@ -216,7 +217,7 @@ class Role extends SpatieRole
             self::FORMER_STUDENT => ['label' => 'Ex-alumno/a', 'color' => 'slate'],
         ];
 
-        return collect($constants)
+        return collect(self::getFilteredConstants())
             ->mapWithKeys(fn($value) => [$value => $map[$value] ?? [
                 'label' => ucfirst(str_replace('_', ' ', $value)),
                 'color' => 'gray',

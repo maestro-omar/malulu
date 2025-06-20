@@ -3,15 +3,16 @@
 
   <AuthenticatedLayout>
     <template #header>
-      <div class="flex justify-between items-center">
-        <h2 class="font-semibold text-xl text-red-600 leading-tight">Escuelas Eliminadas</h2>
-        <Link
-          :href="route('schools.index')"
-          class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-        >
-          Volver a Escuelas
-        </Link>
-      </div>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Escuelas Eliminadas`">
+        <template #additional-buttons>
+          <Link
+            :href="route('schools.index')"
+            class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+          >
+            Volver a Escuelas
+          </Link>
+        </template>
+      </AdminHeader>
     </template>
 
     <div class="py-12">
@@ -170,9 +171,11 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
+import AdminHeader from '@/Sections/AdminHeader.vue';
 
 const props = defineProps({
-  schools: Object
+  schools: Object,
+  breadcrumbs: Array,
 });
 
 const restoreSchool = (id) => {

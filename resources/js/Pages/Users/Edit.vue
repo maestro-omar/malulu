@@ -5,12 +5,14 @@ import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
 import ActionButtons from '@/Components/admin/ActionButtons.vue';
+import AdminHeader from '@/Sections/AdminHeader.vue';
 
 const props = defineProps({
     user: Object,
     roles: Array,
     provinces: Array,
     countries: Array,
+    breadcrumbs: Array,
 });
 
 const form = useForm({
@@ -44,11 +46,7 @@ const submit = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Editar Usuario
-                </h2>
-            </div>
+            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Usuario: ${props.user.name}`"></AdminHeader>
         </template>
 
         <div class="py-12">

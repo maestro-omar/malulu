@@ -2,9 +2,7 @@
   <AuthenticatedLayout>
     <Head title="Crear Usuario" />
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Crear Usuario
-      </h2>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Crear Usuario`"></AdminHeader>
     </template>
 
     <div class="py-12">
@@ -94,9 +92,14 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
 import CancelLink from '@/Components/admin/CancelLink.vue';
+import AdminHeader from "@/Sections/AdminHeader.vue";
 
 const page = usePage();
 const roles = page.props.roles || [];
+
+const props = defineProps({
+    breadcrumbs: Array,
+});
 
 const form = useForm({
   name: "",

@@ -3,19 +3,16 @@
 
   <AuthenticatedLayout>
     <template #header>
-      <div class="flex justify-between items-center">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-          Añadir rol a Usuario
-        </h2>
-        <div class="flex space-x-4">
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Añadir rol a Usuario`">
+        <template #additional-buttons>
           <Link
             :href="route('users.show', user.id)"
             class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
           >
             Volver a Usuario
           </Link>
-        </div>
-      </div>
+        </template>
+      </AdminHeader>
     </template>
 
     <div class="py-12">
@@ -508,6 +505,7 @@ import UserInformation from "@/Components/admin/UserInformation.vue";
 import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
 import { roleOptions } from "@/Composables/roleOptions";
 import { schoolLevelOptions } from "@/Composables/schoolLevelOptions";
+import AdminHeader from '@/Sections/AdminHeader.vue';
 
 const props = defineProps({
   user: Object,

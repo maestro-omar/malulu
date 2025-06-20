@@ -41,11 +41,23 @@ class CourseService
             ->when($request->input('school_shift_id'), function ($query, $schoolShiftId) {
                 $query->where('school_shift_id', $schoolShiftId);
             })
+            ->when($request->input('shift'), function ($query, $schoolShiftCode) {
+                $query->whereHas('schoolShift', function ($q) use ($schoolShiftCode) {
+                    $q->where('code', $schoolShiftCode);
+                });
+            })
             ->when($request->input('active') !== null, function ($query) use ($request) {
                 $query->where('active', $request->boolean('active'));
+            })
+            ->when($request->input('year'), function ($query, $year) {
+                $query->whereYear('start_date', $year);
             });
 
-        return $query->orderBy('number')->orderBy('letter')->paginate(10);
+        $courses = $query->orderBy('number')->orderBy('letter')->paginate(10);
+
+        return $courses->appends($request->only(['search', 'school_level_id', 'school_id', 'year', 'active', 'shift']))->through(function ($course) use ($request) {
+            return $course;
+        })->withQueryString()->toArray();
     }
 
     /**

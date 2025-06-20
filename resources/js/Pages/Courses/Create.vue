@@ -2,9 +2,7 @@
   <AuthenticatedLayout>
     <Head title="Cursos" />
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Crear Nuevo Curso para {{ school.name }} (Nivel: {{ selectedLevel.name }})
-      </h2>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Crear Nuevo Curso para ${school.name} (Nivel: ${selectedLevel.name})`"></AdminHeader>
     </template>
 
     <div class="py-12">
@@ -124,6 +122,7 @@ import SelectInput from '@/Components/admin/SelectInput.vue'
 import CancelLink from '@/Components/admin/CancelLink.vue'
 import Checkbox from '@/Components/admin/Checkbox.vue'
 import { formatDateForInput } from '@/utils/date'
+import AdminHeader from '@/Sections/AdminHeader.vue';
 
 const props = defineProps({
   school: Object,
@@ -132,6 +131,7 @@ const props = defineProps({
   schoolShifts: Array,
   courses: Array,
   selectedLevel: Object,
+  breadcrumbs: Array,
 })
 
 const form = useForm({
