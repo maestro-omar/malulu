@@ -27,8 +27,7 @@ class CourseController extends SystemBaseController
         SchoolService $schoolService,
         SchoolLevelService $schoolLevelService,
         SchoolShiftService $schoolShiftService
-    )
-    {
+    ) {
         $this->courseService = $courseService;
         $this->schoolService = $schoolService;
         $this->schoolLevelService = $schoolLevelService;
@@ -46,11 +45,14 @@ class CourseController extends SystemBaseController
             'shift' => $request->input('shift'),
         ]);
 
-        $courses = $this->courseService->getCourses($request);
+        $courses = $this->courseService->getCourses($request, $school->id);
 
         return Inertia::render('Courses/Index', [
             'courses' => $courses,
             'search' => $request->search,
+            'year' => $request->year,
+            'active' => $request->active,
+            'shift' => $request->shift,
             'breadcrumbs' => Breadcrumbs::generate('courses.index', $school, $schoolLevel),
             'school' => $school,
             'selectedLevel' => $schoolLevel,
@@ -113,5 +115,17 @@ class CourseController extends SystemBaseController
         $this->courseService->deleteCourse($course);
 
         return redirect()->route('courses.index')->with('success', 'Course deleted successfully!');
+    }
+
+    public function show(School $school, SchoolLevel $schoolLevel, Course $course)
+    {
+        $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse']);
+
+        return Inertia::render('Courses/Show', [
+            'course' => $course,
+            'school' => $school,
+            'selectedLevel' => $schoolLevel,
+            'breadcrumbs' => Breadcrumbs::generate('courses.show', $school, $schoolLevel, $course),
+        ]);
     }
 }

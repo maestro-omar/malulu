@@ -12,6 +12,7 @@ Route::prefix('sistema/{school}')->group(function () {
             Route::get('{schoolLevel}/cursos/crear', [CourseController::class, 'create'])->name('courses.create');
             Route::post('{schoolLevel}/cursos', [CourseController::class, 'store'])->name('courses.store');
             Route::get('{schoolLevel}/cursos/{course}/editar', [CourseController::class, 'edit'])->name('courses.edit');
+            Route::get('{schoolLevel}/cursos/{course}', [CourseController::class, 'show'])->name('courses.show');
             Route::put('{schoolLevel}/cursos/{course}', [CourseController::class, 'update'])->name('courses.update');
             Route::delete('{schoolLevel}/cursos/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
         });

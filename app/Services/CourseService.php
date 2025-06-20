@@ -38,9 +38,6 @@ class CourseService
             ->when($request->input('school_level_id'), function ($query, $schoolLevelId) {
                 $query->where('school_level_id', $schoolLevelId);
             })
-            ->when($request->input('school_shift_id'), function ($query, $schoolShiftId) {
-                $query->where('school_shift_id', $schoolShiftId);
-            })
             ->when($request->input('shift'), function ($query, $schoolShiftCode) {
                 $query->whereHas('schoolShift', function ($q) use ($schoolShiftCode) {
                     $q->where('code', $schoolShiftCode);

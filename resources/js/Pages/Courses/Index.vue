@@ -26,6 +26,7 @@
                 <div>
                   <label for="year-filter" class="block text-sm font-medium text-gray-700">Año</label>
                   <input type="number" id="year-filter" v-model.number="selectedYear"
+                    @input="triggerFilter"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
 
@@ -34,15 +35,18 @@
                   <label class="block text-sm font-medium text-gray-700">Estado</label>
                   <div class="mt-1 flex items-center">
                     <label class="inline-flex items-center mr-4">
-                      <input type="radio" class="form-radio" name="active-status" :value="true" v-model="activeStatus">
+                      <input type="radio" class="form-radio" name="active-status" :value="true" v-model="activeStatus"
+                        @change="triggerFilter">
                       <span class="ml-2">Activo</span>
                     </label>
                     <label class="inline-flex items-center mr-4">
-                      <input type="radio" class="form-radio" name="active-status" :value="false" v-model="activeStatus">
+                      <input type="radio" class="form-radio" name="active-status" :value="false" v-model="activeStatus"
+                        @change="triggerFilter">
                       <span class="ml-2">Inactivo</span>
                     </label>
                     <label class="inline-flex items-center">
-                      <input type="radio" class="form-radio" name="active-status" :value="null" v-model="activeStatus">
+                      <input type="radio" class="form-radio" name="active-status" :value="null" v-model="activeStatus"
+                        @change="triggerFilter">
                       <span class="ml-2">Todos</span>
                     </label>
                   </div>
@@ -54,14 +58,14 @@
                   <div class="mt-1 flex flex-wrap gap-2">
                     <template v-for="([code, shiftData]) in filteredShiftOptions" :key="code">
                       <button
-                        @click="selectedShift = code"
+                        @click="selectedShift = code; triggerFilter();"
                         :class="getShiftButtonClasses(shiftData, selectedShift === code)"
                       >
                         {{ shiftData.label }}
                       </button>
                     </template>
                     <button
-                      @click="selectedShift = null"
+                      @click="selectedShift = null; triggerFilter();"
                       :class="{
                         'px-3 py-1 rounded-full text-sm font-medium': true,
                         'bg-blue-600 text-white': selectedShift === null,
@@ -83,10 +87,12 @@
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turno
                     </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Curso Anterior
+                    </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de
-                      Inicio</th>
+                       Inicio</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de
-                      Fin
+                       Fin
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activo
                     </th>
@@ -98,19 +104,35 @@
                   <tr v-for="course in courses.data" :key="course.id">
                     <td class="px-6 py-4 whitespace-nowrap">{{ course.number + ' º ' + course.letter }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ course.school_shift.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <Link
+                        v-if="course.previous_course"
+                        :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
+                        class="text-blue-600 hover:text-blue-900"
+                      >
+                        {{ course.previous_course.number }} º {{ course.previous_course.letter }}
+                      </Link>
+                      <span v-else>-</span>
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(course.start_date) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ course.end_date ? formatDate(course.end_date) : '-' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <span :class="{
-                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
-                        'bg-green-100 text-green-800': course.active,
-                        'bg-red-100 text-red-800': !course.active,
-                      }">
+                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
+                          'bg-green-100 text-green-800': course.active,
+                          'bg-red-100 text-red-800': !course.active,
+                        }">
                         {{ course.active ? 'Sí' : 'No' }}
                       </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <Link
+                        :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
+                        class="text-blue-600 hover:text-blue-900 mr-3"
+                      >
+                        Ver
+                      </Link>
                       <Link
                         :href="route('courses.edit', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
                         class="text-indigo-600 hover:text-indigo-900 mr-4">
@@ -152,12 +174,24 @@ const props = defineProps({
     required: true,
   },
   breadcrumbs: Array,
+  year: {
+    type: [Number, null],
+    default: null,
+  },
+  active: {
+    type: [Boolean, null],
+    default: null,
+  },
+  shift: {
+    type: [String, null],
+    default: null,
+  },
 })
 
 const currentYear = computed(() => new Date().getFullYear());
-const selectedYear = ref(props.courses?.year || currentYear.value);
-const activeStatus = ref(props.courses?.active !== undefined ? props.courses.active : null);
-const selectedShift = ref(props.courses?.shift || null);
+const selectedYear = ref(props.year || currentYear.value);
+const activeStatus = ref(props.active !== undefined ? props.active : null);
+const selectedShift = ref(props.shift || null);
 
 const { options: rawShiftOptions } = schoolShiftOptions();
 
@@ -170,21 +204,30 @@ const filteredShiftOptions = computed(() => {
   });
 });
 
-console.log('rawShiftOptions:', rawShiftOptions);
-console.log('filteredShiftOptions.value:', filteredShiftOptions.value);
 console.log('props.courses:', props.courses);
 
-watch([selectedYear, activeStatus, selectedShift, () => props.selectedLevel, rawShiftOptions], ([newYear, newActiveStatus, newShiftId, newSelectedLevel, newRawShiftOptions]) => {
-  if (newSelectedLevel) {
-    router.get(route('courses.index', {
-      school: props.school.cue,
-      schoolLevel: newSelectedLevel.code,
-      year: newYear,
-      active: newActiveStatus,
-      shift: newShiftId,
-    }), {}, { preserveState: true, replace: true });
+// Debounce function and filter trigger
+let filterTimeout = null;
+
+const triggerFilter = () => {
+  if (filterTimeout) {
+    clearTimeout(filterTimeout);
   }
-}, { immediate: true });
+
+  filterTimeout = setTimeout(() => {
+    router.get(
+      route('courses.index', {
+        school: props.school.cue,
+        schoolLevel: props.selectedLevel.code,
+        year: selectedYear.value,
+        active: activeStatus.value,
+        shift: selectedShift.value,
+      }),
+      {},
+      { preserveState: true, replace: true }
+    );
+  }, 300);
+};
 
 const getShiftButtonClasses = (shiftData, isActive) => {
   const baseClasses = 'px-3 py-1 rounded-full text-sm font-medium';
