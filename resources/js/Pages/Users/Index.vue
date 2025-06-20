@@ -43,25 +43,18 @@ const getUniqueRoles = (roles) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Usuarios</h2>
-                <div class="flex space-x-4">
-                    <Link
-                        v-if="$page.props.auth.user.can['create users']"
-                        :href="route('users.create')"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                    >
-                        Nuevo Usuario
-                    </Link>
-                    <Link
-                        v-if="$page.props.auth.user.can['delete users']"
-                        :href="route('users.trashed')"
-                        class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-                    >
-                        Usuarios Eliminados
-                    </Link>
-                </div>
-            </div>
+            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles del usuario ${user.firstname} ${user.lastname}`"
+                :new="{
+                    show: $page.props.auth.user.can['create users'],
+                    href: route('users.create'),
+                    label: 'Nuevo usuario'
+                }">
+                :trashed="{
+                    show: $page.props.auth.user.can['delete users'],
+                    href: route('users.trashed'),
+                    label: 'Eliminados'
+                }">
+            </AdminHeader>
         </template>
 
         <div class="py-12">

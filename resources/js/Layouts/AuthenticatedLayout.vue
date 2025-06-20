@@ -1,23 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import { usePage } from '@inertiajs/vue3';
-import ApplicationLogo from '@/Components/admin/ApplicationLogo.vue';
-import Dropdown from '@/Components/admin/Dropdown.vue';
-import DropdownLink from '@/Components/admin/DropdownLink.vue';
-import NavLink from '@/Components/admin/NavLink.vue';
-import ResponsiveNavLink from '@/Components/admin/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
-
-const showingNavigationDropdown = ref(false);
-const page = usePage();
-
-onMounted(() => {
-    // console.log('Auth User:', page.props.auth.user);
-    // console.log('Debug Info:', page.props.debug);
-    // console.log('Menu Items:', page.props.menu.items);
-});
-</script>
-
 <template>
     <div>
         <div class="min-h-screen bg-gray-100">
@@ -178,3 +158,24 @@ onMounted(() => {
         </div>
     </div>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+import ApplicationLogo from '@/Components/admin/ApplicationLogo.vue';
+import Dropdown from '@/Components/admin/Dropdown.vue';
+import DropdownLink from '@/Components/admin/DropdownLink.vue';
+import NavLink from '@/Components/admin/NavLink.vue';
+import Breadcrumb from '@/Components/admin/Breadcrumbs.vue';
+import ResponsiveNavLink from '@/Components/admin/ResponsiveNavLink.vue';
+import { Link } from '@inertiajs/vue3';
+
+const showingNavigationDropdown = ref(false);
+const page = usePage();
+
+onMounted(() => {
+    // console.log('Auth User:', page.props.auth.user);
+    // console.log('Debug Info:', page.props.debug);
+    // console.log('Menu Items:', page.props.menu.items);
+});
+</script>

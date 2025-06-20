@@ -519,9 +519,10 @@ const props = defineProps({
   guardianRelationships: Array,
   studentRelationships: Array,
   roles: Array,
-  jobStatuses: Object,
-  relationshipTypes: Object,
+  jobStatuses: Array,
+  relationshipTypes: Array,
   schoolLevels: Array,
+  breadcrumbs: Array,
 });
 
 // Debugging info (can be removed later)

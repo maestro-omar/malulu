@@ -21,6 +21,7 @@ class ProfileController extends SystemBaseController
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'breadcrumbs' => \Breadcrumbs::generate('profile.edit'),
         ]);
     }
 

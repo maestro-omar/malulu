@@ -7,9 +7,11 @@ import EmailField from '@/Components/admin/EmailField.vue';
 import EditableImage from '@/Components/admin/EditableImage.vue';
 import { router } from '@inertiajs/vue3';
 import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
+import AdminHeader from '@/Sections/AdminHeader.vue';
 
 const props = defineProps({
-    user: Object
+    user: Object,
+    breadcrumbs: Array,
 });
 
 const page = usePage();
@@ -29,25 +31,18 @@ const destroy = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Detalles del Usuario
-                </h2>
-                <div class="flex flex-col space-y-2 md:flex-row md:space-x-4 md:space-y-0">
-                    <Link :href="route('users.index')"
-                        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    Volver a Usuarios
-                    </Link>
-                    <Link v-if="$page.props.auth.user.can['edit users']" :href="route('users.edit', user.id)"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Editar Usuario
-                    </Link>
-                    <button v-if="$page.props.auth.user.can['delete users']" @click="destroy"
-                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                        Eliminar Usuario
-                    </button>
-                </div>
-            </div>
+            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles del usuario ${user.firstname} ${user.lastname}`"
+                :edit="{
+                    show: $page.props.auth.user.can['edit users'],
+                    href: route('users.edit', user.id),
+                    label: 'Editar'
+                }" :del="{
+                    show: $page.props.auth.user.can['delete users'],
+                    onClick: destroy,
+                    label: 'Eliminar'
+                }">
+
+            </AdminHeader>
         </template>
 
         <div class="py-12">
@@ -59,8 +54,7 @@ const destroy = () => {
                             <div class="space-y-4">
                                 <div>
                                     <EditableImage v-model="user.picture" type="picture" :model-id="user.id"
-                                        :can-edit="true"
-                                        image-class="h-32 w-32 rounded-full object-cover"
+                                        :can-edit="true" image-class="h-32 w-32 rounded-full object-cover"
                                         upload-route="users.upload-image" delete-route="users.delete-image"
                                         delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?" />
                                 </div>
@@ -152,16 +146,10 @@ const destroy = () => {
                         </div>
                     </div>
                 </div>
-                <SchoolsAndRolesCard
-                :guardian-relationships="user.guardianRelationships"
-                :schools="user.schools"
-                :roles="user.roles"
-                    :role-relationships="user.roleRelationships"
-                    :teacher-relationships="user.workerRelationships"
-                    :student-relationships="user.studentRelationships"
-                    :can-add-roles="page.props.auth.user.can['superadmin']"
-                    :user-id="user.id"
-                />
+                <SchoolsAndRolesCard :guardian-relationships="user.guardianRelationships" :schools="user.schools"
+                    :roles="user.roles" :role-relationships="user.roleRelationships"
+                    :teacher-relationships="user.workerRelationships" :student-relationships="user.studentRelationships"
+                    :can-add-roles="page.props.auth.user.can['superadmin']" :user-id="user.id" />
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-2">
                     <div class="p-6 text-gray-900">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

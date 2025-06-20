@@ -1,5 +1,5 @@
 <template>
-  <nav aria-label="breadcrumb" class="text-sm text-gray-600 mb-4">
+  <nav aria-label="breadcrumb" class="text-sm text-gray-600 mb-0">
     <ol class="list-reset flex">
       <li v-for="(crumb, index) in breadcrumbs" :key="index" class="flex items-center">
         <template v-if="crumb.url && index !== breadcrumbs.length - 1">

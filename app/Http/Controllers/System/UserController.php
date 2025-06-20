@@ -18,10 +18,13 @@ use App\Models\RoleRelationship;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Http\Controllers\System\SystemBaseController;
+use Diglactic\Breadcrumbs\Breadcrumbs;
 
 class UserController extends SystemBaseController
 {
     protected $userService;
+    protected $roleService;
 
     public function __construct(UserService $userService)
     {
@@ -32,10 +35,11 @@ class UserController extends SystemBaseController
     /**
      * Display a listing of the users.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('Users/Index', [
             'users' => $this->userService->getUsers(request()),
+            'breadcrumbs' => Breadcrumbs::generate('users.index'),
         ]);
     }
 
@@ -90,6 +94,7 @@ class UserController extends SystemBaseController
             'roles' => Role::all(),
             'provinces' => Province::orderBy('order')->get(),
             'countries' => Country::orderBy('order')->get(),
+            'breadcrumbs' => Breadcrumbs::generate('users.edit', $user),
         ]);
     }
 
@@ -169,7 +174,8 @@ class UserController extends SystemBaseController
     public function show(User $user): Response
     {
         return Inertia::render('Users/Show', [
-            'user' => $this->userService->getUserShowData($user)
+            'user' => $this->userService->getUserShowData($user),
+            'breadcrumbs' => Breadcrumbs::generate('users.show', $user),
         ]);
     }
 
@@ -194,6 +200,7 @@ class UserController extends SystemBaseController
             // Use the static methods from RoleRelationship model
             'jobStatuses' => RoleRelationship::jobStatuses(),
             'relationshipTypes' => RoleRelationship::relationshipTypes(),
+            'breadcrumbs' => Breadcrumbs::generate('users.show', $user),
         ]);
     }
 
