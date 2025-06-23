@@ -4,6 +4,10 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Auth\Access\AuthorizationException;
+use Spatie\Permission\Exceptions\UnauthorizedException;
+use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\Response;
 
 class Handler extends ExceptionHandler
 {
@@ -44,5 +48,20 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+
+    public function render($request, Throwable $exception): Response
+    {
+        if (($exception instanceof AuthorizationException || $exception instanceof UnauthorizedException)
+            && $request->expectsJson() === false
+        ) {
+            // dd($request);
+            return Inertia::render('Errors/403')
+                ->toResponse($request)
+                ->setStatusCode(403);
+        }
+
+        return parent::render($request, $exception);
     }
 }
