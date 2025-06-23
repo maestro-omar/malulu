@@ -19,7 +19,16 @@ class UserService
 {
     public function getUsers(Request $request)
     {
-        $users = User::with('allRolesAcrossTeams')->paginate(10);
+        $query = User::with('allRolesAcrossTeams');
+        // Apply search filter if present
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+        $users = $query->paginate(10);
 
         // Transform the data to include roles in the expected format
         $transformedUsers = json_decode(json_encode($users), true);
@@ -76,6 +85,7 @@ class UserService
             'firstname' => ['nullable', 'string', 'max:255'],
             'lastname' => ['nullable', 'string', 'max:255'],
             'id_number' => ['nullable', 'string', 'max:50'],
+            'gender' => ['nullable', 'string', 'max:50'],
             'birthdate' => ['nullable', 'date'],
             'phone' => ['nullable', 'string', 'max:50'],
             'address' => ['nullable', 'string', 'max:255'],
@@ -125,6 +135,7 @@ class UserService
             'firstname' => $validatedData['firstname'] ?? null,
             'lastname' => $validatedData['lastname'] ?? null,
             'id_number' => $validatedData['id_number'] ?? null,
+            'gender' => $validatedData['gender'] ?? null,
             'birthdate' => $validatedData['birthdate'] ?? null,
             'phone' => $validatedData['phone'] ?? null,
             'address' => $validatedData['address'] ?? null,
@@ -152,6 +163,7 @@ class UserService
             'firstname' => $validatedData['firstname'] ?? $user->firstname,
             'lastname' => $validatedData['lastname'] ?? $user->lastname,
             'id_number' => $validatedData['id_number'] ?? $user->id_number,
+            'gender' => $validatedData['gender'] ?? $user->gender,
             'birthdate' => $validatedData['birthdate'] ?? $user->birthdate,
             'phone' => $validatedData['phone'] ?? $user->phone,
             'address' => $validatedData['address'] ?? $user->address,
@@ -485,9 +497,9 @@ class UserService
         $query = User::with(['allRolesAcrossTeams' => function ($query) use ($schoolId) {
             $query->wherePivot('team_id', $schoolId);
         }])
-        ->whereHas('allRolesAcrossTeams', function ($query) use ($schoolId) {
-            $query->wherePivot('team_id', $schoolId);
-        });
+            ->whereHas('allRolesAcrossTeams', function ($query) use ($schoolId) {
+                $query->wherePivot('team_id', $schoolId);
+            });
 
         // Apply filters if needed (example: search by name or email)
         if ($request->has('search')) {
@@ -543,5 +555,10 @@ class UserService
         })->toArray();
 
         return $transformedUsers;
+    }
+
+    public static function genders()
+    {
+        return User::genders();
     }
 }

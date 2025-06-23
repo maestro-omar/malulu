@@ -15,7 +15,8 @@ return new class extends Migration
             $table->string('firstname')->nullable()->after('name');
             $table->string('lastname')->nullable()->after('firstname');
             $table->string('id_number')->nullable()->after('lastname');
-            $table->date('birthdate')->nullable()->after('id_number');
+            $table->string('gender')->nullable()->after('id_number');
+            $table->date('birthdate')->nullable()->after('gender');
             $table->string('phone')->nullable()->after('birthdate');
             $table->string('address')->nullable()->after('phone');
             $table->string('locality')->nullable()->after('address');
@@ -38,6 +39,7 @@ return new class extends Migration
                 'firstname',
                 'lastname',
                 'id_number',
+                'gender',
                 'birthdate',
                 'phone',
                 'address',

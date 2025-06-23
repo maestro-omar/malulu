@@ -35,19 +35,6 @@ class RoleRelationship extends Model
         'custom_fields' => 'array',
     ];
 
-    // Job status constants
-    const JOB_STATUS_SUBSTITUTE = 'substitute';
-    const JOB_STATUS_INTERIM = 'interim';
-    const JOB_STATUS_PERMANENT = 'permanent';
-
-    // Relationship type constants
-    const RELATIONSHIP_FATHER = 'father';
-    const RELATIONSHIP_MOTHER = 'mother';
-    const RELATIONSHIP_GUARDIAN = 'legal_guardian';
-    const RELATIONSHIP_PARENT = 'parent';
-    const RELATIONSHIP_RELATIVE = 'relative';
-    const RELATIONSHIP_OTRO = 'other';
-
     /**
      * Get the user that owns the relationship.
      */
@@ -127,41 +114,6 @@ class RoleRelationship extends Model
     public function scopeForSchool($query, $schoolId)
     {
         return $query->where('school_id', $schoolId);
-    }
-
-    /**
-     * Get all job statuses.
-     */
-    public static function jobStatuses(): array
-    {
-        $map = [
-            self::JOB_STATUS_SUBSTITUTE => 'Suplente',
-            self::JOB_STATUS_INTERIM  => 'Interino',
-            self::JOB_STATUS_PERMANENT => 'Titular'
-        ];
-
-        return collect(self::getFilteredConstants())
-            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
-            ->toArray();
-    }
-
-    /**
-     * Get all relationship types.
-     */
-    public static function relationshipTypes(): array
-    {
-        $map = [
-            self::RELATIONSHIP_FATHER => 'Padre',
-            self::RELATIONSHIP_MOTHER => 'Madre',
-            self::RELATIONSHIP_GUARDIAN => 'Tutor/a',
-            self::RELATIONSHIP_PARENT => 'Xadre',
-            self::RELATIONSHIP_RELATIVE => 'Pariente',
-            self::RELATIONSHIP_OTRO => 'other'
-        ];
-
-        return collect(self::getFilteredConstants())
-            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
-            ->toArray();
     }
 
     // Role-specific relationships

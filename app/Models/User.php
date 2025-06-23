@@ -14,10 +14,11 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Models\Role;
 use App\Models\School;
+use App\Traits\FilterConstants;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
+    use FilterConstants, HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -29,6 +30,7 @@ class User extends Authenticatable
         'firstname',
         'lastname',
         'id_number',
+        'gender',
         'birthdate',
         'phone',
         'address',
@@ -62,6 +64,14 @@ class User extends Authenticatable
         'deleted_at' => 'datetime',
         'birthdate' => 'date',
     ];
+
+    // Gender type constants
+    const GENDER_MALE = 'masc';
+    const GENDER_FEMALE = 'fem';
+    const GENDER_TRANS = 'trans';
+    const GENDER_FLUID = 'fluido';
+    const GENDER_NOBINARY = 'no-bin';
+    const GENDER_OTHER = 'otro';
 
     private $permissionBySchoolCache;
 
@@ -293,5 +303,24 @@ class User extends Authenticatable
 
         // dd($matrix);
         return $matrix;
+    }
+
+    /**
+     * Get all available relationship types.
+     */
+    public static function genders(): array
+    {
+        $map = [
+            self::GENDER_MALE => 'Masculino',
+            self::GENDER_FEMALE => 'Femenino',
+            self::GENDER_TRANS => 'Trans',
+            self::GENDER_FLUID => 'Fluido',
+            self::GENDER_NOBINARY => 'No-binario',
+            self::GENDER_OTHER => 'Otro'
+        ];
+
+        return collect(self::getFilteredConstants())
+            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
+            ->toArray();
     }
 }

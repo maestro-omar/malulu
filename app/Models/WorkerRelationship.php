@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\FilterConstants;
 
 class WorkerRelationship extends Model
 {
-    use SoftDeletes;
+    use FilterConstants, SoftDeletes;
 
     protected $fillable = [
         'role_relationship_id',
@@ -25,6 +26,14 @@ class WorkerRelationship extends Model
         'job_status_date' => 'date',
         'schedule' => 'array',
     ];
+
+
+    // Job status constants
+    const JOB_STATUS_SUBSTITUTE = 'substitute';
+    const JOB_STATUS_INTERIM = 'interim';
+    const JOB_STATUS_PERMANENT = 'permanent';
+
+
     /**
      * Get the role relationship that owns this teacher relationship.
      */
@@ -47,5 +56,22 @@ class WorkerRelationship extends Model
     public function decreeFile(): BelongsTo
     {
         return $this->belongsTo(File::class, 'decree_file_id');
+    }
+
+
+    /**
+     * Get all job statuses.
+     */
+    public static function jobStatuses(): array
+    {
+        $map = [
+            self::JOB_STATUS_SUBSTITUTE => 'Suplente',
+            self::JOB_STATUS_INTERIM  => 'Interino',
+            self::JOB_STATUS_PERMANENT => 'Titular'
+        ];
+
+        return collect(self::getFilteredConstants())
+            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
+            ->toArray();
     }
 }

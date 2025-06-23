@@ -20,19 +20,6 @@
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           <div class="p-6 text-gray-900">
-            <div class="flex justify-between items-center mb-6">
-              <div class="flex space-x-4">
-                <Link v-if="hasPermission($page.props, 'create schools')" :href="route('schools.create')"
-                  class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                Agregar Escuela
-                </Link>
-                <Link v-if="hasPermission($page.props, 'delete schools')" :href="route('schools.trashed')"
-                  class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
-                Escuelas Eliminadas
-                </Link>
-              </div>
-            </div>
-
             <!-- Filters -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <!-- Search Input -->
@@ -98,12 +85,12 @@
                         </div>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <Link v-if="hasPermission($page.props, 'view schools')" :href="route('schools.show', school.cue)"
-                          class="text-blue-600 hover:text-blue-900 mr-3">
+                        <Link v-if="hasPermission($page.props, 'view schools')"
+                          :href="route('schools.show', school.cue)" class="text-blue-600 hover:text-blue-900 mr-3">
                         Ver
                         </Link>
-                        <Link v-if="hasPermission($page.props, 'edit schools')" :href="route('schools.edit', school.cue)"
-                          class="text-indigo-600 hover:text-indigo-900 mr-3">
+                        <Link v-if="hasPermission($page.props, 'edit schools')"
+                          :href="route('schools.edit', school.cue)" class="text-indigo-600 hover:text-indigo-900 mr-3">
                         Editar
                         </Link>
                         <Link v-if="hasPermission($page.props, 'delete schools')"

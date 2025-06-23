@@ -30,7 +30,9 @@ class GuardianRelationship extends Model
     // Relationship type constants
     const RELATIONSHIP_PADRE = 'padre';
     const RELATIONSHIP_MADRE = 'madre';
+    const RELATIONSHIP_XADRE = 'xadre';
     const RELATIONSHIP_TUTOR = 'tutor';
+    const RELATIONSHIP_PARIENTE = 'pariente';
     const RELATIONSHIP_OTRO = 'otro';
 
     /**
@@ -53,11 +55,13 @@ class GuardianRelationship extends Model
      * Get all available relationship types.
      */
     public static function relationshipTypes(): array
-    {
+     {
         $map = [
             self::RELATIONSHIP_PADRE => 'Padre',
             self::RELATIONSHIP_MADRE => 'Madre',
             self::RELATIONSHIP_TUTOR => 'Tutor',
+            self::RELATIONSHIP_XADRE => 'Xadre',
+            self::RELATIONSHIP_PARIENTE => 'Pariente',
             self::RELATIONSHIP_OTRO => 'Otro'
         ];
 
@@ -65,4 +69,4 @@ class GuardianRelationship extends Model
             ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
             ->toArray();
     }
-} 
+}

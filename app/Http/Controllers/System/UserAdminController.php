@@ -15,6 +15,8 @@ use App\Models\Province;
 use App\Models\Country;
 use App\Models\School;
 use App\Models\RoleRelationship;
+use App\Models\WorkerRelationship;
+use App\Models\GuardianRelationship;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -38,7 +40,8 @@ class UserAdminController extends SystemBaseController
     public function index(Request $request): Response
     {
         return Inertia::render('Users/Index', [
-            'users' => $this->userService->getUsers(request()),
+            'users' => $this->userService->getUsers($request),
+            'filters' => $request->only(['search']),
             'breadcrumbs' => Breadcrumbs::generate('users.index'),
         ]);
     }
@@ -62,6 +65,8 @@ class UserAdminController extends SystemBaseController
             'roles' => Role::all(),
             'provinces' => Province::orderBy('order')->get(),
             'countries' => Country::orderBy('order')->get(),
+            'genders' => User::genders(),
+            'breadcrumbs' => Breadcrumbs::generate('users.create'),
         ]);
     }
 
@@ -94,6 +99,7 @@ class UserAdminController extends SystemBaseController
             'roles' => Role::all(),
             'provinces' => Province::orderBy('order')->get(),
             'countries' => Country::orderBy('order')->get(),
+            'genders' => User::genders(),
             'breadcrumbs' => Breadcrumbs::generate('users.edit', $user),
         ]);
     }
@@ -175,6 +181,7 @@ class UserAdminController extends SystemBaseController
     {
         return Inertia::render('Users/Show', [
             'user' => $this->userService->getUserShowData($user),
+            'genders' => User::genders(),
             'breadcrumbs' => Breadcrumbs::generate('users.show', $user),
         ]);
     }
@@ -198,8 +205,8 @@ class UserAdminController extends SystemBaseController
             'roles' => $userData['roles'],
             // 'classSubjects', 'students', 'courses' are no longer passed as props as per previous discussions
             // Use the static methods from RoleRelationship model
-            'jobStatuses' => RoleRelationship::jobStatuses(),
-            'relationshipTypes' => RoleRelationship::relationshipTypes(),
+            'jobStatuses' => WorkerRelationship::jobStatuses(),
+            'relationshipTypes' => GuardianRelationship::relationshipTypes(),
             'breadcrumbs' => Breadcrumbs::generate('users.show', $user),
         ]);
     }

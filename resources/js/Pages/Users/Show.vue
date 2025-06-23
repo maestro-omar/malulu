@@ -12,6 +12,7 @@ import { hasPermission } from '@/utils/permissions';
 
 const props = defineProps({
     user: Object,
+    genders: Object,
     breadcrumbs: Array,
 });
 
@@ -75,6 +76,12 @@ const destroy = () => {
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-400">Apellido</label>
                                                 <div class="mt-1 text-sm text-gray-900">{{ user.lastname || '-' }}</div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-400">Género</label>
+                                                <div class="mt-1 text-sm text-gray-900">
+                                                    {{ genders[user.gender] || user.gender || '-' }}
+                                                </div>
                                             </div>
                                         </div>
 
@@ -148,7 +155,7 @@ const destroy = () => {
                 <SchoolsAndRolesCard :guardian-relationships="user.guardianRelationships" :schools="user.schools"
                     :roles="user.roles" :role-relationships="user.roleRelationships"
                     :teacher-relationships="user.workerRelationships" :student-relationships="user.studentRelationships"
-                    :can-add-roles="hasPermission(page.props.auth.user.permissionBySchool, 'superadmin')" :user-id="user.id" />
+                    :can-add-roles="hasPermission(page.props, 'superadmin')" :user-id="user.id" />
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-2">
                     <div class="p-6 text-gray-900">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

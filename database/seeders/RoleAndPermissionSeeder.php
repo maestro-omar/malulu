@@ -3,12 +3,12 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
+// use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 use App\Models\User;
 use App\Models\School;
-use App\Models\Role as AppRole;
+use App\Models\Role;
 
 class RoleAndPermissionSeeder extends Seeder
 {
@@ -123,9 +123,9 @@ class RoleAndPermissionSeeder extends Seeder
 
         // Create roles and assign permissions
         $roles = [
-            AppRole::ADMIN => [
+            Role::ADMIN => [
                 'name' => 'Administrador',
-                'code' => AppRole::ADMIN,
+                'code' => Role::ADMIN,
                 'description' => 'Administrador del sistema con acceso total',
                 'short' => 'Admin',
                 'permissions' => [
@@ -175,9 +175,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'delete historical data',
                 ],
             ],
-            AppRole::DIRECTOR => [
+            Role::DIRECTOR => [
                 'name' => 'Director',
-                'code' => AppRole::DIRECTOR,
+                'code' => Role::DIRECTOR,
                 'description' => 'Director de la institución',
                 'short' => 'Dir',
                 'permissions' => [
@@ -226,9 +226,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'delete historical data',
                 ],
             ],
-            AppRole::REGENT => [
+            Role::REGENT => [
                 'name' => 'Regente',
-                'code' => AppRole::REGENT,
+                'code' => Role::REGENT,
                 'description' => 'Regente de la institución',
                 'short' => 'Reg',
                 'permissions' => [
@@ -262,9 +262,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view historical data',
                 ],
             ],
-            AppRole::SECRETARY => [
+            Role::SECRETARY => [
                 'name' => 'Secretario',
-                'code' => AppRole::SECRETARY,
+                'code' => Role::SECRETARY,
                 'description' => 'Secretario de la institución',
                 'short' => 'Sec',
                 'permissions' => [
@@ -298,9 +298,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view historical data',
                 ],
             ],
-            AppRole::PROFESSOR => [
+            Role::PROFESSOR => [
                 'name' => 'Profesor',
-                'code' => AppRole::PROFESSOR,
+                'code' => Role::PROFESSOR,
                 'description' => 'Profesor de la institución',
                 'short' => 'Prof',
                 'permissions' => [
@@ -320,9 +320,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view library',
                 ],
             ],
-            AppRole::CLASS_ASSISTANT => [
+            Role::CLASS_ASSISTANT => [
                 'name' => 'Preceptor',
-                'code' => AppRole::CLASS_ASSISTANT,
+                'code' => Role::CLASS_ASSISTANT,
                 'description' => 'Preceptor de nivel secundario',
                 'short' => 'Prec',
                 'permissions' => [
@@ -342,9 +342,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view library',
                 ],
             ],
-            AppRole::GRADE_TEACHER => [
+            Role::GRADE_TEACHER => [
                 'name' => 'Maestra/o de Grado',
-                'code' => AppRole::GRADE_TEACHER,
+                'code' => Role::GRADE_TEACHER,
                 'description' => 'Maestra/o de grado',
                 'short' => 'Maes',
                 'permissions' => [
@@ -364,9 +364,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view library',
                 ],
             ],
-            AppRole::ASSISTANT_TEACHER => [
+            Role::ASSISTANT_TEACHER => [
                 'name' => 'Maestra/o Auxiliar',
-                'code' => AppRole::ASSISTANT_TEACHER,
+                'code' => Role::ASSISTANT_TEACHER,
                 'description' => 'Maestra/o auxiliar',
                 'short' => 'Auxi',
                 'permissions' => [
@@ -386,9 +386,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view library',
                 ],
             ],
-            AppRole::CURRICULAR_TEACHER => [
+            Role::CURRICULAR_TEACHER => [
                 'name' => 'Profesor Curricular',
-                'code' => AppRole::CURRICULAR_TEACHER,
+                'code' => Role::CURRICULAR_TEACHER,
                 'description' => 'Profesor de materias curriculares',
                 'short' => 'Curr',
                 'permissions' => [
@@ -408,9 +408,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view library',
                 ],
             ],
-            AppRole::SPECIAL_TEACHER => [
+            Role::SPECIAL_TEACHER => [
                 'name' => 'Profesor/a Especial',
-                'code' => AppRole::SPECIAL_TEACHER,
+                'code' => Role::SPECIAL_TEACHER,
                 'description' => 'Profesor/a de educación especial',
                 'short' => 'Esp',
                 'permissions' => [
@@ -430,9 +430,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'view library',
                 ],
             ],
-            AppRole::LIBRARIAN => [
+            Role::LIBRARIAN => [
                 'name' => 'Bibliotecario/a',
-                'code' => AppRole::LIBRARIAN,
+                'code' => Role::LIBRARIAN,
                 'description' => 'Responsable de la biblioteca',
                 'short' => 'Biblio',
                 'permissions' => [
@@ -448,9 +448,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'delete library',
                 ],
             ],
-            AppRole::GUARDIAN => [
+            Role::GUARDIAN => [
                 'name' => 'Responsable',
-                'code' => AppRole::GUARDIAN,
+                'code' => Role::GUARDIAN,
                 'description' => 'Adulto responsable legal del estudiante',
                 'short' => 'Tut',
                 'permissions' => [
@@ -462,9 +462,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'edit children data',
                 ],
             ],
-            AppRole::STUDENT => [
+            Role::STUDENT => [
                 'name' => 'Estudiante',
-                'code' => AppRole::STUDENT,
+                'code' => Role::STUDENT,
                 'description' => 'Estudiante/alumno/a de la institución',
                 'short' => 'Est',
                 'permissions' => [
@@ -474,9 +474,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'edit own student data',
                 ],
             ],
-            AppRole::COOPERATIVE => [
+            Role::COOPERATIVE => [
                 'name' => 'Cooperadora',
-                'code' => AppRole::COOPERATIVE,
+                'code' => Role::COOPERATIVE,
                 'description' => 'Miembro de la cooperadora',
                 'short' => 'Coop',
                 'permissions' => [
@@ -486,9 +486,9 @@ class RoleAndPermissionSeeder extends Seeder
                     'edit own cooperative data',
                 ],
             ],
-            AppRole::FORMER_STUDENT => [
+            Role::FORMER_STUDENT => [
                 'name' => 'Ex-Estudiante',
-                'code' => AppRole::FORMER_STUDENT,
+                'code' => Role::FORMER_STUDENT,
                 'description' => 'Ex-estudiante de la institución',
                 'short' => 'Exalum',
                 'permissions' => [
