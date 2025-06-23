@@ -4,79 +4,26 @@ namespace App\Http\Controllers\School;
 
 use App\Http\Controllers\School\SchoolBaseController;
 use Illuminate\Http\Request;
-use App\Services\UserService;
-use App\Models\Role;
+use App\Services\DashboardService;
 use Inertia\Inertia;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
 class DashboardController extends SchoolBaseController
 {
-    protected $userService;
+    protected $dashboardService;
 
-    public function __construct(UserService $userService)
+    public function __construct(DashboardService $dashboardService)
     {
-        $this->userService = $userService;
+        $this->dashboardService = $dashboardService;
     }
 
     public function dashboard(Request $request)
     {
         $loggedUser = auth()->user();
-        $loggedUserData = $this->userService->getUserShowData($loggedUser);
-        // dd($loggedUserData);
-        return Inertia::render('Dashboard', [
-            'loggedUserData' => $loggedUserData,
-            'rolesCardsFlags' => self::getFlagsForCards($loggedUser, $loggedUserData),
-            'breadcrumbs' => Breadcrumbs::generate('dashboard'),
-        ]);
-    }
-
-    private static function getFlagsForCards($loggedUser, $loggedUserData)
-    {
-
-        $flags = [
-            'isGlobalAdmin' => $loggedUser->isSuperadmin(),
-            'isSchoolAdmin' => false,
-            'isTeacher'  => false,
-            'isParent'  => false,
-            'isFormerStudent'  => false,
-            'isOtherWorker'  => false,
-            'isStudent'  => false,
-            'isFormerStudent'  => false,
-            'isCooperative'  => false,
-        ];
-        if (!$loggedUser->isSuperadmin()) {
-            foreach ($loggedUserData['all_roles_across_teams'] as $roleData) {
-                $roleCode = $roleData['code'];
-
-                if ($roleCode === Role::ADMIN) {
-                    $flags['isSchoolAdmin'] = true;
-                }
-
-                if (Role::isTeacher($roleCode)) {
-                    $flags['isTeacher'] = true;
-                }
-
-                if ($roleCode === Role::STUDENT) {
-                    $flags['isStudent'] = true;
-                }
-
-                if ($roleCode === Role::GUARDIAN) {
-                    $flags['isParent'] = true;
-                }
-
-                if ($roleCode === Role::FORMER_STUDENT) {
-                    $flags['isFormerStudent'] = true;
-                }
-
-                if ($roleCode === Role::COOPERATIVE) {
-                    $flags['isCooperative'] = true;
-                }
-
-                if (in_array($roleCode, [Role::CLASS_ASSISTANT, Role::LIBRARIAN])) {
-                    $flags['isOtherWorker'] = true;
-                }
-            }
-        }
-        return $flags;
+        $data = $this->dashboardService->getData($request, $loggedUser);
+        return Inertia::render(
+            'Dashboard',
+            $data + ['breadcrumbs' => Breadcrumbs::generate('dashboard')],
+        );
     }
 }
