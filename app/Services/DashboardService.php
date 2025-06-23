@@ -4,72 +4,153 @@ namespace App\Services;
 
 use App\Services\UserService;
 use App\Models\Role;
+use App\Models\User;
 
 class DashboardService
 {
-    private $userService;
+    private Userservice $userService;
+    private User $user;
+    private $userData;
 
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
     }
 
-    public function getData($request, $loggedUser)
+    public function getData($request, User $loggedUser)
     {
-        $loggedUserData = $this->userService->getUserShowData($loggedUser);
-        $flags = self::getFlagsForCards($loggedUser, $loggedUserData);
-        return [
-            'loggedUserData' => $loggedUserData,
-            'rolesCardsFlags' => $flags
+        $this->user = $loggedUser;
+        $this->userData = $this->userService->getUserShowData($loggedUser);
+        $data = $this->getFlagsForCards();
+        return $data + [
+            'loggedUserData' => $this->userData
         ];
     }
-    private static function getFlagsForCards($loggedUser, $loggedUserData)
+    private function getFlagsForCards()
     {
 
+        $isGlobalAdmin =  $this->user->isSuperadmin();
         $flags = [
-            'isGlobalAdmin' => $loggedUser->isSuperadmin(),
-            'isSchoolAdmin' => false,
-            'isTeacher'  => false,
-            'isParent'  => false,
-            'isFormerStudent'  => false,
-            'isOtherWorker'  => false,
-            'isStudent'  => false,
-            'isFormerStudent'  => false,
-            'isCooperative'  => false,
+            'isGlobalAdmin' => $isGlobalAdmin,
+            'isSchoolAdmin' => [],
+            'isTeacher'  => [],
+            'isGuardian'  => [],
+            'isFormerStudent'  => [],
+            'isOtherWorker'  => [],
+            'isStudent'  => [],
+            'isFormerStudent'  => [],
+            'isCooperative'  => [],
         ];
-        if (!$loggedUser->isSuperadmin()) {
-            foreach ($loggedUserData['all_roles_across_teams'] as $roleData) {
+        $schools = [];
+        if (!$isGlobalAdmin) {
+            $rolesAndSchools = $this->userData['all_roles_across_teams'];
+            foreach ($rolesAndSchools as $roleData) {
                 $roleCode = $roleData['code'];
+                $schoolId = $roleData['pivot']['team_id'];
 
                 if ($roleCode === Role::ADMIN) {
-                    $flags['isSchoolAdmin'] = true;
-                }
-
-                if (Role::isTeacher($roleCode)) {
-                    $flags['isTeacher'] = true;
-                }
-
-                if ($roleCode === Role::STUDENT) {
-                    $flags['isStudent'] = true;
-                }
-
-                if ($roleCode === Role::GUARDIAN) {
-                    $flags['isParent'] = true;
-                }
-
-                if ($roleCode === Role::FORMER_STUDENT) {
-                    $flags['isFormerStudent'] = true;
-                }
-
-                if ($roleCode === Role::COOPERATIVE) {
-                    $flags['isCooperative'] = true;
-                }
-
-                if (in_array($roleCode, [Role::CLASS_ASSISTANT, Role::LIBRARIAN])) {
-                    $flags['isOtherWorker'] = true;
+                    $flags['isSchoolAdmin'][$schoolId] = $this->schoolAdmin($roleData);
+                } elseif (Role::isTeacher($roleCode)) {
+                    $flags['isTeacher'][$schoolId] = $this->schoolTeacher($roleData);
+                } elseif ($roleCode === Role::STUDENT) {
+                    $flags['isStudent'][$schoolId] = $this->schoolStudent($roleData);
+                } elseif ($roleCode === Role::GUARDIAN) {
+                    $flags['isGuardian'][$schoolId] = $this->schoolGuardian($roleData);
+                } elseif ($roleCode === Role::FORMER_STUDENT) {
+                    $flags['isFormerStudent'][$schoolId] = $this->schoolFormerStudent($roleData);
+                } elseif ($roleCode === Role::COOPERATIVE) {
+                    $flags['isCooperative'][$schoolId] = $this->schoolCooperative($roleData);
+                } elseif (Role::isWorker($roleCode) && !Role::isTeacher($roleCode)) {
+                    $flags['isOtherWorker'][$schoolId] = $this->schoolWorker($roleData);
                 }
             }
         }
-        return $flags;
+        return ['rolesCardsFlags' => $flags, 'schools' => $schools];
+    }
+
+    /**
+     * Get dashboard data for a school administrator.
+     *
+     * @param  \App\Models\User  $loggedUser
+     * @param  array  $roleData
+     * @return array
+     */
+    protected function schoolAdmin(array $roleData): array
+    {
+        $data = ['news' => ['Novedad1', 'Novedad DOS']];
+        return $data;
+    }
+
+    /**
+     * Get dashboard data for a teacher in a school.
+     *
+     * @param  \App\Models\User  $loggedUser
+     * @param  array  $roleData
+     * @return array
+     */
+    protected function schoolTeacher(array $roleData): array
+    {
+        dd($roleData);
+        return [];
+    }
+
+    /**
+     * Get dashboard data for a student in a school.
+     *
+     * @param  \App\Models\User  $loggedUser
+     * @param  array  $roleData
+     * @return array
+     */
+    protected function schoolStudent(array $roleData): array
+    {
+        return [];
+    }
+
+    /**
+     * Get dashboard data for a guardian in a school.
+     *
+     * @param  \App\Models\User  $loggedUser
+     * @param  array  $roleData
+     * @return array
+     */
+    protected function schoolGuardian(array $roleData): array
+    {
+        return [];
+    }
+
+    /**
+     * Get dashboard data for a former student in a school.
+     *
+     * @param  \App\Models\User  $loggedUser
+     * @param  array  $roleData
+     * @return array
+     */
+    protected function schoolFormerStudent(array $roleData): array
+    {
+        return [];
+    }
+
+    /**
+     * Get dashboard data for a cooperative member in a school.
+     *
+     * @param  \App\Models\User  $loggedUser
+     * @param  array  $roleData
+     * @return array
+     */
+    protected function schoolCooperative(array $roleData): array
+    {
+        return [];
+    }
+
+    /**
+     * Get dashboard data for other workers in a school (not teachers).
+     *
+     * @param  \App\Models\User  $loggedUser
+     * @param  array  $roleData
+     * @return array
+     */
+    protected function schoolWorker(array $roleData): array
+    {
+        return [];
     }
 }

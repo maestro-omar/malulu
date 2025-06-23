@@ -7,5 +7,11 @@
 </template>
 
 <script setup>
-// Any script specific to School Admin Panel
-</script> 
+
+const props = defineProps({
+    data: {
+        type: Object,
+    },
+});
+console.log('wwwww', props.data);
+</script>
