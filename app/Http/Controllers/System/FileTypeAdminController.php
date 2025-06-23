@@ -9,7 +9,7 @@ use App\Services\FileTypeService;
 use App\Http\Controllers\System\SystemBaseController;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
-class FileTypeController extends SystemBaseController
+class FileTypeAdminController extends SystemBaseController
 {
     protected $fileTypeService;
 

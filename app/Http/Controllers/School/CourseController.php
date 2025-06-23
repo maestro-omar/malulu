@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\System;
+namespace App\Http\Controllers\School;
 
+use App\Http\Controllers\School\SchoolBaseController;
 use App\Models\Course;
 use App\Services\CourseService;
 use App\Services\SchoolService;
@@ -12,10 +13,9 @@ use Inertia\Inertia;
 use Illuminate\Validation\ValidationException;
 use App\Models\School;
 use App\Models\SchoolLevel;
-use App\Http\Controllers\System\SystemBaseController;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
-class CourseController extends SystemBaseController
+class CourseController extends SchoolBaseController
 {
     protected $courseService;
     protected $schoolService;
@@ -32,7 +32,6 @@ class CourseController extends SystemBaseController
         $this->schoolService = $schoolService;
         $this->schoolLevelService = $schoolLevelService;
         $this->schoolShiftService = $schoolShiftService;
-        $this->middleware('permission:superadmin');
     }
 
     public function index(Request $request, School $school, SchoolLevel $schoolLevel)
@@ -119,6 +118,8 @@ class CourseController extends SystemBaseController
 
     public function show(School $school, SchoolLevel $schoolLevel, Course $course)
     {
+        dd('afasqw');
+
         $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse']);
 
         return Inertia::render('Courses/Show', [

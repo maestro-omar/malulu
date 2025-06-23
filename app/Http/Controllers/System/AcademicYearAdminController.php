@@ -9,7 +9,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\System\SystemBaseController;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
-class AcademicYearController extends SystemBaseController
+class AcademicYearAdminController extends SystemBaseController
 {
     protected $academicYearService;
 

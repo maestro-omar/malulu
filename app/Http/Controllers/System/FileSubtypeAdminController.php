@@ -10,7 +10,7 @@ use App\Services\FileSubtypeService;
 use App\Http\Controllers\System\SystemBaseController;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
-class FileSubtypeController extends SystemBaseController
+class FileSubtypeAdminController extends SystemBaseController
 {
     protected $fileSubtypeService;
 

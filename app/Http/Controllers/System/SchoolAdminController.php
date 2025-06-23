@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\System\SystemBaseController;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
-class SchoolController extends SystemBaseController
+class SchoolAdminController extends SystemBaseController
 {
     protected $schoolService;
 

@@ -9,7 +9,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Services\RoleService;
 
-class RoleController extends SystemBaseController
+class RoleAdminController extends SystemBaseController
 {
     protected $roleService;
 

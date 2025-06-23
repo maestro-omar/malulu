@@ -21,7 +21,7 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\System\SystemBaseController;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
-class UserController extends SystemBaseController
+class UserAdminController extends SystemBaseController
 {
     protected $userService;
     protected $roleService;

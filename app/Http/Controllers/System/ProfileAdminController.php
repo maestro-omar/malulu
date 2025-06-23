@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Diglactic\Breadcrumbs\Breadcrumbs;
 
-class ProfileController extends SystemBaseController
+class ProfileAdminController extends SystemBaseController
 {
     /**
      * Display the user's profile form.
@@ -21,7 +22,7 @@ class ProfileController extends SystemBaseController
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
-            'breadcrumbs' => \Breadcrumbs::generate('profile.edit'),
+            'breadcrumbs' => Breadcrumbs::generate('profile.edit'),
         ]);
     }
 

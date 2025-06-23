@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\System;
+namespace App\Http\Controllers\School;
 
-use App\Http\Controllers\System\SystemBaseController;
+use App\Http\Controllers\School\SchoolBaseController;
 use Illuminate\Http\Request;
 use App\Services\UserService;
 use App\Models\Role;
 use Inertia\Inertia;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
-class DashboardController extends SystemBaseController
+class DashboardController extends SchoolBaseController
 {
     protected $userService;
 
