@@ -3,15 +3,17 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use App\Models\Role;
+use App\Models\School;
 
 class User extends Authenticatable
 {
@@ -61,6 +63,8 @@ class User extends Authenticatable
         'birthdate' => 'date',
     ];
 
+    private $permissionBySchoolCache;
+
     /**
      * Get the province that owns the user.
      */
@@ -84,24 +88,6 @@ class User extends Authenticatable
             ->withPivot('team_id');
     }
 
-    /**
-     * Get the role metadata for the user.
-     */
-    public function roleMetadata()
-    {
-        return $this->hasMany(UserRoleMetadata::class);
-    }
-
-    /**
-     * Get the role metadata for a specific role and school.
-     */
-    public function getRoleMetadata($roleId, $schoolId)
-    {
-        return $this->roleMetadata()
-            ->where('role_id', $roleId)
-            ->where('school_id', $schoolId)
-            ->first();
-    }
 
     /**
      * Get the role relationships for the user.
@@ -181,25 +167,13 @@ class User extends Authenticatable
     {
         // $activeSchoolId = app(PermissionRegistrar::class)->getPermissionsTeamId();
 
-        // Log::info('assignRoleForSchool called:', [
-        //     'user_id' => $this->id,
-        //     'role' => $role,
-        //     'school_id' => $schoolId,
-        //     'active_school_id' => $activeSchoolId
-        // ]);
-
         try {
             // Get the role ID if a Role object was passed
             $roleId = $role instanceof Role ? $role->id : $role;
             // $roleModel = $role instanceof Role ? $role : Role::find($roleId);
 
             // Check if role already exists for this school
-            $exists = DB::table('model_has_roles')
-                ->where('role_id', $roleId)
-                ->where('model_type', get_class($this))
-                ->where('model_id', $this->id)
-                ->where('team_id', $schoolId)
-                ->exists();
+            $exists = $this->hasRoleForSchool($roleId, $schoolId);
 
             if (!$exists) {
                 // Direct DB insertion
@@ -214,20 +188,6 @@ class User extends Authenticatable
                 $this->refresh();
             }
 
-            // // Log after insertion
-            // Log::info('After role insertion:', [
-            //     'user_id' => $this->id,
-            //     'role_id' => $roleId,
-            //     'role_code' => $roleModel->code,
-            //     'team_id' => $schoolId,
-            //     'current_roles' => $this->allRolesAcrossTeams->map(function ($role) {
-            //         return [
-            //             'id' => $role->id,
-            //             'name' => $role->name,
-            //             'team_id' => $role->pivot->team_id
-            //         ];
-            //     })->toArray()
-            // ]);
 
             return $this;
         } catch (\Exception $e) {
@@ -239,5 +199,99 @@ class User extends Authenticatable
             // ]);
             throw $e;
         }
+    }
+
+    public function hasRoleForSchool(int $roleId, int $schoolId): bool
+    {
+        return DB::table('model_has_roles')
+            ->where('role_id', $roleId)
+            ->where('model_type', get_class($this))
+            ->where('model_id', $this->id)
+            ->where('team_id', $schoolId)
+            ->exists();
+    }
+
+    public function isSuperadmin(): bool
+    {
+        $adminRoleId = DB::table('roles')
+            ->where('code', Role::ADMIN)
+            ->value('id');
+        $globalSchoolId = School::specialGlobalId();
+        return DB::table('model_has_roles')
+            ->where('model_id', $this->id)
+            ->where('model_type', User::class)
+            ->where('role_id', $adminRoleId)
+            ->where('team_id', $globalSchoolId)
+            ->exists();
+    }
+
+
+    public function permissionBySchoolDirect(): array
+    {
+        if (isset($this->permissionBySchoolCache)) {
+            return $this->permissionBySchoolCache;
+        }
+
+        // If user is superadmin, grant all permissions for the global school
+        if ($this->isSuperadmin()) {
+            $allPermissions = Permission::all()->pluck('name');
+            $globalSchoolId = School::specialGlobalId();
+            $matrix = [];
+            foreach ($allPermissions as $permName) {
+                $matrix[$permName] = [$globalSchoolId];
+            }
+            return $matrix;
+        }
+
+        // 1. Get all roles for this user with their associated team_id (school)
+        $userRoleTeams = $this->roles()->withPivot('team_id')->get();
+
+        // 2. Group roles by team_id (school)
+        $rolesByTeam = $userRoleTeams->groupBy(fn($role) => $role->pivot->team_id);
+
+        // dd($this, $userRoleTeams, $rolesByTeam);
+        // 3. Get all permissions in the system (id => name)
+        $allPermissions = Permission::all()->pluck('name', 'id');
+
+        // 4. Get permission assignments per role
+        $rolePermissions = DB::table('role_has_permissions')
+            ->get()
+            ->groupBy('role_id');
+
+        // // 5 (OPTIONAL): Get direct permissions assigned to the user
+        // $userPermissions = DB::table('model_has_permissions')
+        //     ->where('model_id', $this->id)
+        //     ->where('model_type', get_class($this))
+        //     ->get()
+        //     ->groupBy('team_id'); // Might be null if permissions are global
+
+        // 6. Build matrix [permission_name => [team_id1, team_id2, ...]]
+        $matrix = [];
+
+        foreach ($allPermissions as $permId => $permName) {
+            $matrix[$permName] = [];
+
+            // Check role-based permissions
+            foreach ($rolesByTeam as $teamId => $roles) {
+                foreach ($roles as $role) {
+                    $permissions = $rolePermissions->get($role->id);
+
+                    if ($permissions && $permissions->pluck('permission_id')->contains($permId)) {
+                        $matrix[$permName][] = $teamId;
+                        break; // Avoid duplicate team_id entries
+                    }
+                }
+            }
+
+            // // Check direct permissions (OPTIONAL)
+            // foreach ($userPermissions as $teamId => $permissions) {
+            //     if ($permissions->pluck('permission_id')->contains($permId)) {
+            //         $matrix[$permName][] = $teamId;
+            //     }
+            // }
+        }
+
+        // dd($matrix);
+        return $matrix;
     }
 }

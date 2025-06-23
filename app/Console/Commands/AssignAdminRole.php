@@ -29,14 +29,14 @@ class AssignAdminRole extends Command
         }
 
         // Get global school
-        $globalSchool = School::where('code', School::GLOBAL)->first();
-        if (!$globalSchool) {
+        $globalSchoolId = School::specialGlobalId();
+        if (!$globalSchoolId) {
             $this->error('Global school not found! Please run SchoolSeeder first.');
             return 1;
         }
 
         // Set the team ID globally
-        app(\Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($globalSchool->id);
+        app(\Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($globalSchoolId);
 
         $user->assignRole($adminRole);
         $this->info("Admin role assigned to {$user->name} ({$user->email})");

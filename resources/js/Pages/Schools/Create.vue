@@ -190,6 +190,7 @@ import Checkbox from "@/Components/admin/Checkbox.vue";
 import SearchableDropdown from "@/Components/admin/SearchableDropdown.vue";
 import CancelLink from "@/Components/admin/CancelLink.vue";
 import AdminHeader from "@/Sections/AdminHeader.vue";
+import { hasPermission } from '@/utils/permissions';
 
 const props = defineProps({
   localities: Array,

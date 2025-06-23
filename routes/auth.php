@@ -9,8 +9,8 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\System\DashboardController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::prefix('sistema')->group(function () {
     Route::get('/', function () {
@@ -20,9 +20,7 @@ Route::prefix('sistema')->group(function () {
         return redirect()->route('login');
     });
 
-    Route::get('/inicio', function () {
-        return Inertia::render('Dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    Route::get('/inicio', [DashboardController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
     Route::middleware('guest')->group(function () {
         // Route::get('registro', [RegisteredUserController::class, 'create'])

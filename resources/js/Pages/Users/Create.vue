@@ -93,6 +93,7 @@ import { Head } from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
 import CancelLink from '@/Components/admin/CancelLink.vue';
 import AdminHeader from "@/Sections/AdminHeader.vue";
+import { hasPermission } from '@/utils/permissions';
 
 const page = usePage();
 const roles = page.props.roles || [];

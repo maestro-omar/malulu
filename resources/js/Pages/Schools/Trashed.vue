@@ -73,14 +73,14 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
-                        v-if="$page.props.auth.user.can['delete schools']"
+                        v-if="hasPermission($page.props, 'delete schools')"
                         @click="restoreSchool(school.id)"
                         class="text-indigo-600 hover:text-indigo-900 mr-4"
                       >
                         Restaurar
                       </button>
                       <button
-                        v-if="$page.props.auth.user.can['delete schools']"
+                        v-if="hasPermission($page.props, 'delete schools')"
                         @click="forceDeleteSchool(school.id)"
                         class="text-red-600 hover:text-red-900"
                       >
@@ -108,14 +108,14 @@
                   </div>
                   <div class="flex space-x-2">
                     <button
-                      v-if="$page.props.auth.user.can['delete schools']"
+                      v-if="hasPermission($page.props, 'delete schools')"
                       @click="restoreSchool(school.id)"
                       class="text-indigo-600 hover:text-indigo-900"
                     >
                       Restaurar
                     </button>
                     <button
-                      v-if="$page.props.auth.user.can['delete schools']"
+                      v-if="hasPermission($page.props, 'delete schools')"
                       @click="forceDeleteSchool(school.id)"
                       class="text-red-600 hover:text-red-900"
                     >
@@ -172,6 +172,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import { hasPermission } from '@/utils/permissions';
 
 const props = defineProps({
   schools: Object,

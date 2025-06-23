@@ -506,6 +506,7 @@ import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
 import { roleOptions } from "@/Composables/roleOptions";
 import { schoolLevelOptions } from "@/Composables/schoolLevelOptions";
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import { hasPermission } from '@/utils/permissions';
 
 const props = defineProps({
   user: Object,

@@ -5,11 +5,11 @@
   <AuthenticatedLayout>
     <template #header>
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Listado de Escuelas`" :add="{
-        show: $page.props.auth.user.can['superadmin'],
+        show: hasPermission($page.props, 'superadmin', null),
         href: route('schools.create'),
         label: 'Nueva'
       }" :trashed="{
-        show: $page.props.auth.user.can['superadmin'],
+        show: hasPermission($page.props, 'superadmin', null),
         href: route('schools.trashed'),
         label: 'Eliminadas'
       }">
@@ -22,11 +22,11 @@
           <div class="p-6 text-gray-900">
             <div class="flex justify-between items-center mb-6">
               <div class="flex space-x-4">
-                <Link v-if="$page.props.auth.user.can['create schools']" :href="route('schools.create')"
+                <Link v-if="hasPermission($page.props, 'create schools')" :href="route('schools.create')"
                   class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                 Agregar Escuela
                 </Link>
-                <Link v-if="$page.props.auth.user.can['delete schools']" :href="route('schools.trashed')"
+                <Link v-if="hasPermission($page.props, 'delete schools')" :href="route('schools.trashed')"
                   class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
                 Escuelas Eliminadas
                 </Link>
@@ -98,15 +98,15 @@
                         </div>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <Link v-if="$page.props.auth.user.can['view schools']" :href="route('schools.show', school.cue)"
+                        <Link v-if="hasPermission($page.props, 'view schools')" :href="route('schools.show', school.cue)"
                           class="text-blue-600 hover:text-blue-900 mr-3">
                         Ver
                         </Link>
-                        <Link v-if="$page.props.auth.user.can['edit schools']" :href="route('schools.edit', school.cue)"
+                        <Link v-if="hasPermission($page.props, 'edit schools')" :href="route('schools.edit', school.cue)"
                           class="text-indigo-600 hover:text-indigo-900 mr-3">
                         Editar
                         </Link>
-                        <Link v-if="$page.props.auth.user.can['delete schools']"
+                        <Link v-if="hasPermission($page.props, 'delete schools')"
                           :href="route('schools.destroy', school.cue)" method="delete" as="button"
                           class="text-red-600 hover:text-red-900">
                         Eliminar
@@ -129,15 +129,15 @@
                       <p class="text-sm text-gray-500">{{ school.short }}</p>
                     </div>
                     <div class="flex space-x-2">
-                      <Link v-if="$page.props.auth.user.can['view schools']" :href="route('schools.show', school.cue)"
+                      <Link v-if="hasPermission($page.props, 'view schools')" :href="route('schools.show', school.cue)"
                         class="text-blue-600 hover:text-blue-900">
                       Ver
                       </Link>
-                      <Link v-if="$page.props.auth.user.can['edit schools']" :href="route('schools.edit', school.cue)"
+                      <Link v-if="hasPermission($page.props, 'edit schools')" :href="route('schools.edit', school.cue)"
                         class="text-indigo-600 hover:text-indigo-900">
                       Editar
                       </Link>
-                      <Link v-if="$page.props.auth.user.can['delete schools']"
+                      <Link v-if="hasPermission($page.props, 'delete schools')"
                         :href="route('schools.destroy', school.cue)" method="delete" as="button"
                         class="text-red-600 hover:text-red-900">
                       Eliminar
@@ -180,6 +180,7 @@ import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
 import ManagementTypeBadge from '@/Components/Badges/ManagementTypeBadge.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import { hasPermission } from '@/utils/permissions';
 
 const props = defineProps({
   schools: Object,

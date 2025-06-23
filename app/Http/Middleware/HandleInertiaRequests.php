@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Models\School;
+use App\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -34,47 +37,47 @@ class HandleInertiaRequests extends Middleware
         $user = $request->user();
         $menuItems = $this->getMenuItems($user);
         $userMenuItems = $this->getUserMenuItems($user);
-
-        // More detailed debug information
-        // Log::info('Debug Menu Items:', [
-        //     'user_id' => $user?->id,
-        //     'user_name' => $user?->name,
-        //     'user_email' => $user?->email,
-        //     'user_roles' => $user?->getRoleNames()->toArray(),
-        //     'user_permissions' => $user?->getAllPermissions()->pluck('name')->toArray(),
-        //     'can_view_schools' => $user?->can('view schools'),
-        //     'menu_items' => $menuItems,
-        //     'guard' => Auth::getDefaultDriver(),
-        // ]);
-
+        // dd($user->permissionBySchoolDirect());
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $user ? [
                     'id' => $user->id,
                     'name' => $user->name,
+                    'firstname' => $user->firstname,
+                    'lastname' => $user->lastname,
                     'email' => $user->email,
-                    'can' => [
-                        'view users' => $user->can('view users'),
-                        'create users' => $user->can('create users'),
-                        'edit users' => $user->can('edit users'),
-                        'delete users' => $user->can('delete users'),
-                        'view schools' => $user->can('view schools'),
-                        'create schools' => $user->can('create schools'),
-                        'edit schools' => $user->can('edit schools'),
-                        'delete schools' => $user->can('delete schools'),
-                        'superadmin' => $user->can('superadmin'),
-                    ],
+                    'permissionBySchool' => $user->permissionBySchoolDirect()
                 ] : null,
             ],
             'menu' => [
                 'items' => $menuItems,
                 'userItems' => $userMenuItems,
             ],
+            'constants' => [
+                'schoolGlobalId' => School::specialGlobalId(),
+                // 'role_codes' => [
+                //     'admin' => Role::ADMIN,
+                //     'director' => Role::DIRECTOR,
+                //     'regent' => Role::REGENT,
+                //     'secretary' => Role::SECRETARY,
+                //     'grade_teacher' => Role::GRADE_TEACHER,
+                //     'assistant_teacher' => Role::ASSISTANT_TEACHER,
+                //     'curricular_teacher' => Role::CURRICULAR_TEACHER,
+                //     'special_teacher' => Role::SPECIAL_TEACHER,
+                //     'professor' => Role::PROFESSOR,
+                //     'class_assistant' => Role::CLASS_ASSISTANT,
+                //     'librarian' => Role::LIBRARIAN,
+                //     'guardian' => Role::GUARDIAN,
+                //     'student' => Role::STUDENT,
+                //     'cooperative' => Role::COOPERATIVE,
+                //     'former_student' => Role::FORMER_STUDENT,
+                //     'workers_codes' => Role::workersCodes(),
+                //     'teacher_codes' => Role::teacherCodes(),
+                //     'family_codes' => Role::familyCodes(),
+                // ],
+            ],
             'debug' => [
-                'can_view_schools' => $user?->can('view schools'),
-                'user_roles' => $user?->getRoleNames()->toArray(),
-                'user_permissions' => $user?->getAllPermissions()->pluck('name')->toArray(),
                 'guard' => Auth::getDefaultDriver(),
             ],
         ];

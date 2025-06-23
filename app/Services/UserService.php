@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\PermissionRegistrar;
+use Illuminate\Support\Facades\Auth;
 
 class UserService
 {
@@ -201,30 +202,6 @@ class UserService
     }
 
     /**
-     * Get user roles data for editing
-     */
-    public function getUserRolesData(User $user)
-    {
-        // Load the roles relationship with team_id
-        $user->load(['allRolesAcrossTeams']);
-
-        // Get current roles grouped by team_id
-        $currentRoles = $user->allRolesAcrossTeams->groupBy('pivot.team_id')
-            ->map(function ($roles) {
-                return $roles->pluck('id')->toArray();
-            })
-            ->toArray();
-
-        return [
-            'user' => $user,
-            'schools' => \App\Models\School::all(),
-            'availableRoles' => \Spatie\Permission\Models\Role::all(),
-            'currentRoles' => $currentRoles,
-        ];
-    }
-
-
-    /**
      * Assign a single role to a user with associated details.
      */
     public function assignRoleWithDetails(User $user, int $schoolId, int $roleId, ?int $levelId, array $details, User $creator)
@@ -232,21 +209,6 @@ class UserService
         DB::beginTransaction();
 
         try {
-            // // Debug logging before role assignment
-            // Log::info('Before role assignment:', [
-            //     'user_id' => $user->id,
-            //     'role_id' => $roleId,
-            //     'school_id' => $schoolId,
-            //     'current_team_id' => app(PermissionRegistrar::class)->getPermissionsTeamId(),
-            //     'current_roles' => $user->allRolesAcrossTeams->map(function ($role) {
-            //         return [
-            //             'role_id' => $role->id,
-            //             'role_name' => $role->name,
-            //             'team_id' => $role->pivot->team_id
-            //         ];
-            //     })->toArray()
-            // ]);
-
             // Get the role to check its code
             $role = Role::find($roleId);
 
@@ -256,26 +218,13 @@ class UserService
                 ->where('school_id', $schoolId)
                 ->first();
 
-            // Only prevent duplicate if role is not in allowedMutipleOnSameSchool
+            // Only prevent duplicate if role is not in allowed Mutiple On Same School
             if ($existingRoleRelationship && !in_array($role->code, Role::allowedMutipleOnSameSchool())) {
                 throw new \Exception('Este rol ya está asignado a este usuario para la escuela seleccionada.');
             }
 
             // 1. Assign the role using Spatie
             $user->assignRoleForSchool($roleId, $schoolId);
-
-            // // Debug logging after role assignment
-            // Log::info('After role assignment:', [
-            //     'user_id' => $user->id,
-            //     'updated_roles' => $user->allRolesAcrossTeams->map(function ($role) {
-            //         return [
-            //             'role_id' => $role->id,
-            //             'role_name' => $role->name,
-            //             'team_id' => $role->pivot->team_id
-            //         ];
-            //     })->toArray(),
-            //     'current_team_id' => app(PermissionRegistrar::class)->getPermissionsTeamId()
-            // ]);
 
             // 2. Create the RoleRelationship entry
             $roleRelationship = $user->roleRelationships()->create([
@@ -361,9 +310,10 @@ class UserService
 
         // Transform the data to include roles and schools
         $transformedUser = $user->toArray();
+        $allRolesAcrossTeams = collect($user->allRolesAcrossTeams);
 
         // Get unique school IDs from roles
-        $schoolIds = collect($user->allRolesAcrossTeams)
+        $schoolIds = $allRolesAcrossTeams
             ->pluck('pivot.team_id')
             ->filter()
             ->unique()
@@ -373,7 +323,7 @@ class UserService
         // Get schools for these IDs
         $schools = \App\Models\School::whereIn('id', $schoolIds)->get();
 
-        $transformedUser['roles'] = collect($user->allRolesAcrossTeams)->map(function ($role) {
+        $transformedUser['roles'] = $allRolesAcrossTeams->map(function ($role) {
             return [
                 'id' => $role->id,
                 'name' => $role->name,
@@ -510,5 +460,88 @@ class UserService
             })->values()->toArray();
 
         return $transformedUser;
+    }
+
+    public function hasAccessToSchool(int $schoolId): bool
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if (!$user) {
+            return false;
+        }
+
+        // Global admins have access to all schools
+        if ($user->hasRole('global admin')) {
+            return true;
+        }
+
+        // Check if the user has any roles associated with the given school ID
+        return $user->allRolesAcrossTeams()->wherePivot('team_id', $schoolId)->exists();
+    }
+
+    public function getUsersBySchool(Request $request, int $schoolId)
+    {
+        $query = User::with(['allRolesAcrossTeams' => function ($query) use ($schoolId) {
+            $query->wherePivot('team_id', $schoolId);
+        }])
+        ->whereHas('allRolesAcrossTeams', function ($query) use ($schoolId) {
+            $query->wherePivot('team_id', $schoolId);
+        });
+
+        // Apply filters if needed (example: search by name or email)
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        $users = $query->paginate(10);
+
+        // Transform the data to include roles in the expected format, similar to getUsers
+        $transformedUsers = json_decode(json_encode($users), true);
+        $transformedUsers['data'] = collect($transformedUsers['data'])->map(function ($user) use ($schoolId) {
+            // Re-filter allRolesAcrossTeams to only include those for the current school
+            $filteredRoles = collect($user['all_roles_across_teams'])->filter(function ($role) use ($schoolId) {
+                return $role['pivot']['team_id'] == $schoolId;
+            });
+
+            // Get unique school IDs from the filtered roles
+            $schoolIds = $filteredRoles
+                ->pluck('pivot.team_id')
+                ->filter()
+                ->unique()
+                ->values()
+                ->toArray();
+
+            // Get schools for these IDs
+            $schools = \App\Models\School::whereIn('id', $schoolIds)->get();
+
+            $user['roles'] = $filteredRoles->map(function ($role) {
+                return [
+                    'id' => $role['id'],
+                    'name' => $role['name'],
+                    'short' => $role['short'],
+                    'code' => $role['code'],
+                    'team_id' => $role['pivot']['team_id']
+                ];
+            })->toArray();
+            unset($user['all_roles_across_teams']);
+
+            // Add schools to user data
+            $user['schools'] = $schools->map(function ($school) {
+                return [
+                    'id' => $school->id,
+                    'name' => $school->name,
+                    'short' => $school->short
+                ];
+            })->toArray();
+
+            return $user;
+        })->toArray();
+
+        return $transformedUsers;
     }
 }

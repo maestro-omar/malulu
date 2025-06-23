@@ -6,7 +6,6 @@ use App\Http\Controllers\System\SchoolController;
 use App\Http\Controllers\System\AcademicYearController;
 use App\Http\Controllers\System\FileTypeController;
 use App\Http\Controllers\System\FileSubtypeController;
-use App\Http\Controllers\System\CourseController;
 use Illuminate\Support\Facades\Route;
 // use Inertia\Inertia;
 

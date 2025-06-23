@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref } from 'vue';
 import Pagination from '@/Components/admin/Pagination.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import { hasPermission } from '@/utils/permissions';
 
 const props = defineProps({
     users: Object,
@@ -105,14 +106,14 @@ const forceDeleteUser = (id) => {
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <button
-                                                v-if="$page.props.auth.user.can['delete users']"
+                                                v-if="hasPermission($page.props, 'delete users')"
                                                 @click="restoreUser(user.id)"
                                                 class="text-indigo-600 hover:text-indigo-900 mr-4"
                                             >
                                                 Restaurar
                                             </button>
                                             <button
-                                                v-if="$page.props.auth.user.can['delete users']"
+                                                v-if="hasPermission($page.props, 'delete users')"
                                                 @click="forceDeleteUser(user.id)"
                                                 class="text-red-600 hover:text-red-900"
                                             >
@@ -140,14 +141,14 @@ const forceDeleteUser = (id) => {
                                     </div>
                                     <div class="flex space-x-2">
                                         <button
-                                            v-if="$page.props.auth.user.can['delete users']"
+                                            v-if="hasPermission($page.props, 'delete users')"
                                             @click="restoreUser(user.id)"
                                             class="text-indigo-600 hover:text-indigo-900"
                                         >
                                             Restaurar
                                         </button>
                                         <button
-                                            v-if="$page.props.auth.user.can['delete users']"
+                                            v-if="hasPermission($page.props, 'delete users')"
                                             @click="forceDeleteUser(user.id)"
                                             class="text-red-600 hover:text-red-900"
                                         >

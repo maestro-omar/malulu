@@ -182,7 +182,7 @@ class Role extends SpatieRole
             || (!is_array($code) && in_array($code, self::workersCodes()));
     }
 
-    public static function allowedMutipleOnSameSchool(array|string $code): array
+    public static function allowedMutipleOnSameSchool(): array
     {
         return [
             self::PROFESSOR,

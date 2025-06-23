@@ -5,7 +5,7 @@
   <AuthenticatedLayout>
     <template #header>
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Ciclos Lectivos`" :add="{
-        show: $page.props.auth.user.can['superadmin'],
+        show: hasPermission($page.props, 'superadmin', null),
         href: route('academic-years.create'),
         label: 'Nuevo'
       }">
@@ -65,6 +65,7 @@ import { Head, Link } from '@inertiajs/vue3'
 import { formatDate } from '../../utils/date'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import { hasPermission } from '@/utils/permissions';
 
 defineProps({
   academicYears: {

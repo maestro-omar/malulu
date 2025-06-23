@@ -5,7 +5,7 @@
     <AuthenticatedLayout>
         <template #header>
             <AdminHeader :breadcrumbs="breadcrumbs" :title="`Subtipos de Archivo`" :add="{
-                show: $page.props.auth.user.can['superadmin'],
+                show: hasPermission($page.props, 'superadmin', null),
                 href: route('file-subtypes.create'),
                 label: 'Nuevo'
             }">
@@ -69,6 +69,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import { hasPermission } from '@/utils/permissions';
 
 defineProps({
     fileSubtypes: Array,

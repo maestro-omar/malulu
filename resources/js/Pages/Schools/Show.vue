@@ -5,11 +5,11 @@
   <AuthenticatedLayout>
     <template #header>
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles de la Escuela: ${school.short}`" :edit="{
-        show: $page.props.auth.user.can['edit schools'],
+        show: hasPermission($page.props, 'edit schools', school.id),
         href: route('schools.edit', school.cue),
         label: 'Editar'
       }" :del="{
-        show: $page.props.auth.user.can['delete schools'],
+        show: hasPermission($page.props, 'delete schools', school.id),
         onClick: destroy,
         label: 'Eliminar'
       }">
@@ -19,6 +19,7 @@
           Volver a Escuelas
           </Link>
           <Link v-for="level in school.school_levels" :key="level.id"
+            v-if="hasPermission($page.props, 'view assigned schools', school.id)"
             :href="route('courses.index', { school: school.cue, schoolLevel: level.code })"
             :class="['font-bold py-2 px-4 rounded', `bg-${levelColors[level.code]?.color}-600 hover:bg-${levelColors[level.code]?.color}-800 text-white`]">
           Cursos ({{ level.name }})
@@ -189,6 +190,7 @@ import EditableImage from "@/Components/admin/EditableImage.vue";
 import { computed } from 'vue'
 import { schoolLevelOptions } from '@/Composables/schoolLevelOptions'
 import AdminHeader from "@/Sections/AdminHeader.vue";
+import { hasPermission } from '@/utils/permissions';
 
 const props = defineProps({
   school: Object,

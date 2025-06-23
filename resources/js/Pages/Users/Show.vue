@@ -8,6 +8,7 @@ import EditableImage from '@/Components/admin/EditableImage.vue';
 import { router } from '@inertiajs/vue3';
 import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import { hasPermission } from '@/utils/permissions';
 
 const props = defineProps({
     user: Object,
@@ -15,8 +16,6 @@ const props = defineProps({
 });
 
 const page = usePage();
-
-console.log('Permissions in Show.vue:', page.props.auth.user.can);
 
 const destroy = () => {
     if (confirm("¿Está seguro que desea eliminar este usuario?")) {
@@ -33,11 +32,11 @@ const destroy = () => {
         <template #header>
             <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles del usuario ${user.firstname} ${user.lastname}`"
                 :edit="{
-                    show: $page.props.auth.user.can['edit users'],
+                    show: hasPermission($page.props, 'edit users'),
                     href: route('users.edit', user.id),
                     label: 'Editar'
                 }" :del="{
-                    show: $page.props.auth.user.can['delete users'],
+                    show: hasPermission($page.props, 'delete users'),
                     onClick: destroy,
                     label: 'Eliminar'
                 }">
@@ -149,7 +148,7 @@ const destroy = () => {
                 <SchoolsAndRolesCard :guardian-relationships="user.guardianRelationships" :schools="user.schools"
                     :roles="user.roles" :role-relationships="user.roleRelationships"
                     :teacher-relationships="user.workerRelationships" :student-relationships="user.studentRelationships"
-                    :can-add-roles="page.props.auth.user.can['superadmin']" :user-id="user.id" />
+                    :can-add-roles="hasPermission(page.props.auth.user.permissionBySchool, 'superadmin')" :user-id="user.id" />
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-2">
                     <div class="p-6 text-gray-900">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

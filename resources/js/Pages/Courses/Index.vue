@@ -25,9 +25,8 @@
                 <!-- Year Filter -->
                 <div>
                   <label for="year-filter" class="block text-sm font-medium text-gray-700">Año</label>
-                  <input type="number" id="year-filter" v-model.number="selectedYear"
-                    @input="triggerFilter"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                  <input type="number" id="year-filter" v-model.number="selectedYear" @input="triggerFilter"
+                    class="text-sm py-1 w-24 mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
 
                 <!-- Active Status Filter -->
@@ -57,21 +56,16 @@
                   <label class="block text-sm font-medium text-gray-700">Turno</label>
                   <div class="mt-1 flex flex-wrap gap-2">
                     <template v-for="([code, shiftData]) in filteredShiftOptions" :key="code">
-                      <button
-                        @click="selectedShift = code; triggerFilter();"
-                        :class="getShiftButtonClasses(shiftData, selectedShift === code)"
-                      >
+                      <button @click="selectedShift = code; triggerFilter();"
+                        :class="getShiftButtonClasses(shiftData, selectedShift === code)">
                         {{ shiftData.label }}
                       </button>
                     </template>
-                    <button
-                      @click="selectedShift = null; triggerFilter();"
-                      :class="{
-                        'px-3 py-1 rounded-full text-sm font-medium': true,
-                        'bg-blue-600 text-white': selectedShift === null,
-                        'bg-gray-200 text-gray-700 hover:bg-gray-300': selectedShift !== null,
-                      }"
-                    >
+                    <button @click="selectedShift = null; triggerFilter();" :class="{
+                      'px-3 py-1 rounded-full text-sm font-medium': true,
+                      'bg-blue-600 text-white': selectedShift === null,
+                      'bg-gray-200 text-gray-700 hover:bg-gray-300': selectedShift !== null,
+                    }">
                       Todos
                     </button>
                   </div>
@@ -83,18 +77,19 @@
               <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                   <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Curso
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Curso
                     </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turno
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Turno
                     </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Curso Anterior
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Curso
+                      Anterior
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de
-                       Inicio</th>
+                      Inicio</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de
-                       Fin
+                      Fin
                     </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activo
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Activo
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones
                     </th>
@@ -102,36 +97,35 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                   <tr v-for="course in courses.data" :key="course.id">
-                    <td class="px-6 py-4 whitespace-nowrap">{{ course.number + ' º ' + course.letter }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ course.school_shift.name }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <Link
-                        v-if="course.previous_course"
+                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ course.number + ' º ' + course.letter }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                      <SchoolShiftBadge :shift="course.school_shift" />
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                      <Link v-if="course.previous_course"
                         :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
-                        class="text-blue-600 hover:text-blue-900"
-                      >
-                        {{ course.previous_course.number }} º {{ course.previous_course.letter }}
+                        class="text-blue-600 hover:text-blue-900">
+                      {{ course.previous_course.number }} º {{ course.previous_course.letter }}
                       </Link>
                       <span v-else>-</span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(course.start_date) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ course.end_date ? formatDate(course.end_date) : '-' }}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
                       <span :class="{
-                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
-                          'bg-green-100 text-green-800': course.active,
-                          'bg-red-100 text-red-800': !course.active,
-                        }">
+                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
+                        'bg-green-100 text-green-800': course.active,
+                        'bg-red-100 text-red-800': !course.active,
+                      }">
                         {{ course.active ? 'Sí' : 'No' }}
                       </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <Link
                         :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
-                        class="text-blue-600 hover:text-blue-900 mr-3"
-                      >
-                        Ver
+                        class="text-blue-600 hover:text-blue-900 mr-3">
+                      Ver
                       </Link>
                       <Link
                         :href="route('courses.edit', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
@@ -159,6 +153,7 @@ import Pagination from '@/Components/admin/Pagination.vue'
 import { ref, watch, computed } from 'vue'
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { schoolShiftOptions } from '@/Composables/schoolShiftOptions';
+import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
 
 const props = defineProps({
   courses: {

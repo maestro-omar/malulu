@@ -203,6 +203,7 @@ import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
 import ActionButtons from '@/Components/admin/ActionButtons.vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import { hasPermission } from '@/utils/permissions';
 
 const props = defineProps({
   school: Object,

@@ -15,13 +15,13 @@ class RoleAndPermissionSeeder extends Seeder
     public function run(): void
     {
         // Get global school ID
-        $globalSchool = School::where('code', School::GLOBAL)->first();
-        if (!$globalSchool) {
+        $globalSchoolId = School::specialGlobalId();
+        if (!$globalSchoolId) {
             throw new \Exception('Global school not found. Please run SchoolSeeder first.');
         }
 
         // Set the team ID globally
-        app(PermissionRegistrar::class)->setPermissionsTeamId($globalSchool->id);
+        app(PermissionRegistrar::class)->setPermissionsTeamId($globalSchoolId);
 
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
@@ -526,7 +526,7 @@ class RoleAndPermissionSeeder extends Seeder
         // Assign admin role to the first user (if exists)
         $user = User::first();
         if ($user && $adminRole) {
-            $user->assignRoleForSchool($adminRole, $globalSchool->id);
+            $user->assignRoleForSchool($adminRole, $globalSchoolId);
         }
     }
 }

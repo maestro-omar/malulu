@@ -87,4 +87,12 @@ class School extends Model
     {
         return $this->belongsTo(Locality::class);
     }
+
+    /**
+     * Get the ID of the special school GLOBAL (used for superadmin user)
+     */
+    public static function specialGlobalId(): int
+    {
+        return self::where('code', self::GLOBAL)->select('id')->firstOrFail()->id;
+    }
 }
