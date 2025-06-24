@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -30,4 +30,4 @@ class StudentRelationship extends Model
     {
         return $this->belongsTo(Course::class, 'current_course_id');
     }
-} 
+}

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class RoleRelationshipEndReason extends Model
@@ -69,4 +69,4 @@ class RoleRelationshipEndReason extends Model
     {
         return in_array($role, $this->applicable_roles ?? []);
     }
-} 
+}

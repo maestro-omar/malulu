@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ClassSubject extends Model
@@ -24,4 +24,4 @@ class ClassSubject extends Model
     {
         return $this->belongsTo(SchoolLevel::class);
     }
-} 
+}

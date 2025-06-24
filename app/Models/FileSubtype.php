@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseCatalogModel as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FileSubtype extends Model

@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+// use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\BaseCatalogModel as Model;
 use App\Traits\FilterConstants;
 
 class SchoolLevel extends Model
 {
-    use HasFactory;
+    // use HasFactory;
     use FilterConstants;
 
     /**

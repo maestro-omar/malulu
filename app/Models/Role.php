@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Spatie\Permission\Models\Role as SpatieRole;
 use App\Traits\FilterConstants;
+use App\Traits\HasCatalogAttributes;
 
 class Role extends SpatieRole
 {
-    use FilterConstants;
+    use FilterConstants, HasCatalogAttributes;
 
     /**
      * The attributes that are mass assignable.
