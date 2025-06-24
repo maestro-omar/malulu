@@ -222,7 +222,7 @@ class UserAdminController extends SystemBaseController
             'start_date' => ['required', 'date'],
             'notes' => ['nullable', 'string', 'max:1000'],
             // Specific fields based on role will be validated in the service or within this method
-            'worker_details.job_status' => ['nullable', 'string'],
+            'worker_details.job_status_id' => ['nullable', 'exists:job_statuses,id'],
             'worker_details.job_status_date' => ['nullable', 'date'],
             'worker_details.decree_number' => ['nullable', 'string'],
             'worker_details.degree_title' => ['nullable', 'string'],

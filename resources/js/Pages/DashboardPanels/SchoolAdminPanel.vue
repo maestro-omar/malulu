@@ -19,5 +19,5 @@ const props = defineProps({
         type: Number,
     },
 });
-console.log('aaaa', props);
+console.log('SCHOOLADMIN', props);
 </script>

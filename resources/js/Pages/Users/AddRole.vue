@@ -252,7 +252,7 @@
                       <SelectInput
                         id="jobStatus"
                         class="mt-1 block w-full"
-                        v-model="form.worker_details.job_status"
+                        v-model="form.worker_details.job_status_id"
                       >
                         <option value="">Seleccionar estado...</option>
                         <option

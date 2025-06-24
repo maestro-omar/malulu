@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\School;
+use App\Models\JobStatus;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -397,7 +398,7 @@ class FakeUsersSeeder extends Seeder
     {
         static $types;
         if (empty($types))
-            $types = array_keys(WorkerRelationship::jobStatuses());
+            $types = array_keys(JobStatus::optionsById());
         return $types;
     }
 
@@ -436,7 +437,7 @@ class FakeUsersSeeder extends Seeder
                 DB::table('worker_relationships')->insert([
                     'role_relationship_id' => $roleRelationshipId,
                     'class_subject_id' => $this->mathSubject->id,
-                    'job_status' => $this->faker->randomElement($this->jobStatuses()),
+                    'job_status_id' => $this->faker->randomElement($this->jobStatuses()),
                     'job_status_date' => Carbon::now()->subYears($this->faker->numberBetween(1, 5)),
                     'decree_number' => 'DEC-' . date('Y') . '-' . str_pad($this->faker->numberBetween(1, 999), 3, '0', STR_PAD_LEFT),
                     'degree_title' => $this->faker->randomElement([

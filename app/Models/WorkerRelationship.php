@@ -14,7 +14,7 @@ class WorkerRelationship extends Model
     protected $fillable = [
         'role_relationship_id',
         'class_subject_id',
-        'job_status',
+        'job_status_id',
         'job_status_date',
         'decree_number',
         'decree_file_id',
@@ -26,13 +26,6 @@ class WorkerRelationship extends Model
         'job_status_date' => 'date',
         'schedule' => 'array',
     ];
-
-
-    // Job status constants
-    const JOB_STATUS_SUBSTITUTE = 'substitute';
-    const JOB_STATUS_INTERIM = 'interim';
-    const JOB_STATUS_PERMANENT = 'permanent';
-
 
     /**
      * Get the role relationship that owns this teacher relationship.
@@ -51,27 +44,18 @@ class WorkerRelationship extends Model
     }
 
     /**
+     * Get the class subject that this teacher teaches.
+     */
+    public function jobStatus(): BelongsTo
+    {
+        return $this->belongsTo(JobStatus::class);
+    }
+
+    /**
      * Get the decree file associated with this teacher relationship.
      */
     public function decreeFile(): BelongsTo
     {
         return $this->belongsTo(File::class, 'decree_file_id');
-    }
-
-
-    /**
-     * Get all job statuses.
-     */
-    public static function jobStatuses(): array
-    {
-        $map = [
-            self::JOB_STATUS_SUBSTITUTE => 'Suplente',
-            self::JOB_STATUS_INTERIM  => 'Interino',
-            self::JOB_STATUS_PERMANENT => 'Titular'
-        ];
-
-        return collect(self::getFilteredConstants())
-            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
-            ->toArray();
     }
 }

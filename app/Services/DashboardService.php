@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\JobStatus;
 use App\Services\UserService;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\School;
+use App\Models\SchoolLevel;
+use App\Models\SchoolShift;
 
 class DashboardService
 {
@@ -102,8 +105,21 @@ class DashboardService
      */
     protected function schoolTeacher(array $roleRel): array
     {
-        // dd($roleRel['worker_relationship']);
-        return [];
+
+        $dataToPanel = [];
+        // dd(SchoolShift::optionsByCode());
+        // dd(SchoolShift::getNameById(2));
+        // dd(SchoolShift::getNameByCode(SchoolShift::MORNING));
+        $dataToPanel['job_status'] = JobStatus::getNameById($roleRel['worker_relationship']['job_status_id']);
+        $dataToPanel['job_status_date'] = $roleRel['worker_relationship']['job_status_date'];
+        $dataToPanel['decree_number'] = $roleRel['worker_relationship']['decree_number'];
+        $dataToPanel['schedule'] = $roleRel['worker_relationship']['schedule'];
+        $dataToPanel['degree_title'] = $roleRel['worker_relationship']['degree_title'];
+        $dataToPanel['class_name'] = $roleRel['worker_relationship']['class_subject']['name'];
+        $dataToPanel['school_level'] =  SchoolLevel::getNameById($roleRel['worker_relationship']['class_subject']['school_level_id']);
+        //
+        dd($dataToPanel, $roleRel['worker_relationship']);
+        return $dataToPanel;
     }
 
     /**

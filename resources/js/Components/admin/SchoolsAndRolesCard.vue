@@ -48,7 +48,7 @@
                     <div class="grid grid-cols-2 gap-4">
                       <div>
                         <span class="text-xs text-gray-500">Estado:</span>
-                        <p class="text-sm font-medium">{{ relationship.job_status }}</p>
+                        <p class="text-sm font-medium">{{ relationship.job_status FIXjob_xtatus }}</p>
                       </div>
                       <div>
                         <span class="text-xs text-gray-500">Título:</span>

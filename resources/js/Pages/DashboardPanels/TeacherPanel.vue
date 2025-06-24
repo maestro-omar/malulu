@@ -7,5 +7,17 @@
 </template>
 
 <script setup>
-// Any script specific to Teacher Panel
-</script> 
+
+const props = defineProps({
+    data: {
+        type: Object,
+    },
+    schools: {
+        type: Object,
+    },
+    combinationCount: {
+        type: Number,
+    },
+});
+console.log('TEACHERADMIN', props);
+</script>

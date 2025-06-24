@@ -254,7 +254,7 @@ class UserService
             if (Role::isWorker($roleCode)) {
                 if (!empty($details['worker_details'])) {
                     $roleRelationship->workerRelationship()->create([
-                        'job_status' => $details['worker_details']['job_status'] ?? null,
+                        'job_status_id' => $details['worker_details']['job_status_id'] ?? null,
                         'job_status_date' => $details['worker_details']['job_status_date'] ?? null,
                         'decree_number' => $details['worker_details']['decree_number'] ?? null,
                         'degree_title' => $details['worker_details']['degree_title'] ?? null,
@@ -397,7 +397,7 @@ class UserService
                         'name' => $relationship->classSubject->name,
                         'short_name' => $relationship->classSubject->short_name
                     ] : null,
-                    'job_status' => $relationship->job_status,
+                    'job_status_id' => $relationship->job_status_id,
                     'job_status_date' => $relationship->job_status_date,
                     'decree_number' => $relationship->decree_number,
                     'decree_file_id' => $relationship->decree_file_id,
