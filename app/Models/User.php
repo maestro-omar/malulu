@@ -99,6 +99,26 @@ class User extends Authenticatable
     }
 
 
+    public function allRolesAcrossTeamsParsed()
+    {
+        $rolesWithPivot = $this->allRolesAcrossTeams->toArray();
+        if (empty($rolesWithPivot)) return [];
+        $retWithSchool = [];
+        $info = [];
+        foreach ($rolesWithPivot as $role) {
+            $info['role_id'] = $role['id'];
+            $info['role_code'] = $role['code'];
+            $info['role_short'] = $role['short'];
+            $info['role_name'] = $role['name'];
+            $info['school_id'] = $role['pivot']['team_id'] ?? '';
+
+            $newKey = $role['id'] . '-' . $info['school_id'];
+            $retWithSchool[$newKey] = $info;
+        }
+        return $retWithSchool;
+    }
+
+
     /**
      * Get the role relationships for the user.
      */
@@ -254,10 +274,10 @@ class User extends Authenticatable
         }
 
         // 1. Get all roles for this user with their associated team_id (school)
-        $userRoleTeams = $this->roles()->withPivot('team_id')->get();
-
         // 2. Group roles by team_id (school)
-        $rolesByTeam = $userRoleTeams->groupBy(fn($role) => $role->pivot->team_id);
+        // for some reason, $this->roles() doesn't work as expected: $userRoleTeams = $this->roles()->withPivot('team_id')->get();
+        $rolesAndSchools = $this->allRolesAcrossTeamsParsed();
+
 
         // dd($this, $userRoleTeams, $rolesByTeam);
         // 3. Get all permissions in the system (id => name)
@@ -282,14 +302,13 @@ class User extends Authenticatable
             $matrix[$permName] = [];
 
             // Check role-based permissions
-            foreach ($rolesByTeam as $teamId => $roles) {
-                foreach ($roles as $role) {
-                    $permissions = $rolePermissions->get($role->id);
+            foreach ($rolesAndSchools as $info) {
+                $permissions = $rolePermissions->get($info['role_id']);
 
-                    if ($permissions && $permissions->pluck('permission_id')->contains($permId)) {
-                        $matrix[$permName][] = $teamId;
-                        break; // Avoid duplicate team_id entries
-                    }
+                if ($permissions && $permissions->pluck('permission_id')->contains($permId)) {
+                    $matrix[$permName][] = $info['school_id'];
+                    break; // Avoid duplicate team_id entries
+
                 }
             }
 
