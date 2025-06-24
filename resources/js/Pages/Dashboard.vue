@@ -4,7 +4,23 @@
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Panel de inicio</h2>
+            <div v-if="firstSchool" class="flex items-center space-x-2">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    {{ firstSchool.name }}
+                </h2>
+                <Link :href="route('schools.show', { school: firstSchool.cue })"
+                      class="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out"
+                      :title="`Ver ${firstSchool.short}`">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    <span class="sr-only">Ver {{ firstSchool.short }}</span>
+                </Link>
+            </div>
+            <h2 v-else class="font-semibold text-xl text-gray-800 leading-tight">
+                Dashboard
+            </h2>
         </template>
 
         <div class="py-12">
@@ -12,13 +28,20 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <GlobalAdminPanel v-if="isGlobalAdmin" data="" />
-                        <SchoolAdminPanel v-if="isSchoolAdmin" :data="isSchoolAdmin" />
-                        <TeacherPanel v-if="isTeacher" :data="isTeacher" />
-                        <StudentPanel v-if="isStudent" :data="isStudent" />
-                        <ParentPanel v-if="isGuardian" :data="isGuardian" />
-                        <CooperativePanel v-if="isCooperative" :data="isCooperative" />
-                        <OtherWorkerPanel v-if="isOtherWorker" :data="isOtherWorker" />
-                        <FormerStudentPanel v-if="isFormerStudent" :data="isFormerStudent" />
+                        <SchoolAdminPanel v-if="isSchoolAdmin" :data="isSchoolAdmin" :schools="schools"
+                            :combinationCount="combinationCount" />
+                        <TeacherPanel v-if="isTeacher" :data="isTeacher" :schools="schools"
+                            :combinationCount="combinationCount" />
+                        <StudentPanel v-if="isStudent" :data="isStudent" :schools="schools"
+                            :combinationCount="combinationCount" />
+                        <ParentPanel v-if="isGuardian" :data="isGuardian" :schools="schools"
+                            :combinationCount="combinationCount" />
+                        <CooperativePanel v-if="isCooperative" :data="isCooperative" :schools="schools"
+                            :combinationCount="combinationCount" />
+                        <OtherWorkerPanel v-if="isOtherWorker" :data="isOtherWorker" :schools="schools"
+                            :combinationCount="combinationCount" />
+                        <FormerStudentPanel v-if="isFormerStudent" :data="isFormerStudent" :schools="schools"
+                            :combinationCount="combinationCount" />
                         <DefaultPanel />
                     </div>
                 </div>
@@ -30,7 +53,7 @@
 
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, usePage, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 // Import panel components
@@ -45,6 +68,8 @@ import FormerStudentPanel from '@/Pages/DashboardPanels/FormerStudentPanel.vue';
 import DefaultPanel from '@/Pages/DashboardPanels/DefaultPanel.vue';
 
 const page = usePage();
+const schools = page.props.schools;
+const combinationCount = page.props.count;
 const isGlobalAdmin = computed(() => page.props.rolesCardsFlags.isGlobalAdmin);
 
 const isSchoolAdmin = computed(() => {
@@ -81,4 +106,6 @@ const isOtherWorker = computed(() => {
     const data = page.props.rolesCardsFlags.isOtherWorker;
     return typeof data === 'object' && data !== null && Object.keys(data).length > 0 ? data : false;
 });
+
+const firstSchool = combinationCount === 1 ? Object.values(schools)[0] : false;
 </script>

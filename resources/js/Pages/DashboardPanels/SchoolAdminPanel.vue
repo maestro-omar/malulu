@@ -12,6 +12,12 @@ const props = defineProps({
     data: {
         type: Object,
     },
+    schools: {
+        type: Object,
+    },
+    combinationCount: {
+        type: Number,
+    },
 });
-console.log('wwwww', props.data);
+console.log('aaaa', props);
 </script>

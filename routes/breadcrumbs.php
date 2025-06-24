@@ -51,12 +51,20 @@ Breadcrumbs::for('schools.create', function (Trail $trail) {
 });
 
 Breadcrumbs::for('schools.edit', function (Trail $trail, $school) {
-    $trail->parent('schools.index');
+    $user = auth()->user();
+    if ($user->isSuperadmin())
+        $trail->parent('schools.index');
+    else
+        $trail->parent('dashboard');
     $trail->push("Editar {$school->short}");
 });
 
 Breadcrumbs::for('schools.show', function (Trail $trail, $school) {
-    $trail->parent('schools.index');
+    $user = auth()->user();
+    if ($user->isSuperadmin())
+        $trail->parent('schools.index');
+    else
+        $trail->parent('dashboard');
     $trail->push($school->short, route('schools.show', $school));
 });
 

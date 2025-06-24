@@ -14,7 +14,8 @@
         label: 'Eliminar'
       }">
         <template #additional-buttons>
-          <Link :href="route('schools.index')"
+          <Link v-if="hasPermission($page.props, 'superadmin', null)"
+            :href="route('schools.index')"
             class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
           Volver a Escuelas
           </Link>

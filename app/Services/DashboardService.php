@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\UserService;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\School;
 
 class DashboardService
 {
@@ -26,9 +27,9 @@ class DashboardService
             'loggedUserData' => $this->userData
         ];
     }
+
     private function getFlagsForCards()
     {
-
         $isGlobalAdmin =  $this->user->isSuperadmin();
         $flags = [
             'isGlobalAdmin' => $isGlobalAdmin,
@@ -41,33 +42,42 @@ class DashboardService
             'isFormerStudent'  => [],
             'isCooperative'  => [],
         ];
-        $schools = [];
+
+        $schoolIds = [];
+        $count = $isGlobalAdmin ? 1 : 0;
+
         if (!$isGlobalAdmin) {
-            $rolesAndSchools = $this->userData['all_roles_across_teams'];
-            $roleRelationships = $this->user->roleRelationships;
-            dd($rolesAndSchools,$roleRelationships->toArray());
-            foreach ($rolesAndSchools as $roleData) {
-                $roleCode = $roleData['code'];
-                $schoolId = $roleData['pivot']['team_id'];
+            $rolesAndSchools = $this->user->allRolesAcrossTeamsParsed();
+            $roleRelationships = $this->user->roleRelationships->toArray();
+            foreach ($roleRelationships as $roleRel) {
+                $count++;
+                $schoolId = $roleRel['school_id'];
+                $roleData = $rolesAndSchools[$roleRel['role_id'] . '-' . $schoolId] ?? null;
+                if (empty($roleData))
+                    dd('ERROR INESPERADO: role no encontrado', $roleRel, $rolesAndSchools);
+                $roleCode = $roleData['role_code'];
 
                 if ($roleCode === Role::ADMIN) {
-                    $flags['isSchoolAdmin'][$schoolId] = $this->schoolAdmin($roleData);
+                    $flags['isSchoolAdmin'][$schoolId] = $this->schoolAdmin($roleRel);
                 } elseif (Role::isTeacher($roleCode)) {
-                    $flags['isTeacher'][$schoolId] = $this->schoolTeacher($roleData);
+                    $flags['isTeacher'][$schoolId] = $this->schoolTeacher($roleRel);
                 } elseif ($roleCode === Role::STUDENT) {
-                    $flags['isStudent'][$schoolId] = $this->schoolStudent($roleData);
+                    $flags['isStudent'][$schoolId] = $this->schoolStudent($roleRel);
                 } elseif ($roleCode === Role::GUARDIAN) {
-                    $flags['isGuardian'][$schoolId] = $this->schoolGuardian($roleData);
+                    $flags['isGuardian'][$schoolId] = $this->schoolGuardian($roleRel);
                 } elseif ($roleCode === Role::FORMER_STUDENT) {
-                    $flags['isFormerStudent'][$schoolId] = $this->schoolFormerStudent($roleData);
+                    $flags['isFormerStudent'][$schoolId] = $this->schoolFormerStudent($roleRel);
                 } elseif ($roleCode === Role::COOPERATIVE) {
-                    $flags['isCooperative'][$schoolId] = $this->schoolCooperative($roleData);
+                    $flags['isCooperative'][$schoolId] = $this->schoolCooperative($roleRel);
                 } elseif (Role::isWorker($roleCode) && !Role::isTeacher($roleCode)) {
-                    $flags['isOtherWorker'][$schoolId] = $this->schoolWorker($roleData);
+                    $flags['isOtherWorker'][$schoolId] = $this->schoolWorker($roleRel);
                 }
+                if (!in_array($schoolId, $schoolIds))
+                    $schoolIds[] = $schoolId;
             }
         }
-        return ['rolesCardsFlags' => $flags, 'schools' => $schools];
+        $schools = School::select('cue', 'id', 'name', 'short')->find($schoolIds)->keyBy('id')->toArray();
+        return ['rolesCardsFlags' => $flags, 'schools' => $schools, 'count' => $count];
     }
 
     /**
@@ -77,7 +87,7 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolAdmin(array $roleData): array
+    protected function schoolAdmin(array $roleRel): array
     {
         $data = ['news' => ['Novedad1', 'Novedad DOS']];
         return $data;
@@ -90,9 +100,9 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolTeacher(array $roleData): array
+    protected function schoolTeacher(array $roleRel): array
     {
-        dd($roleData);
+        // dd($roleRel['worker_relationship']);
         return [];
     }
 
@@ -103,8 +113,9 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolStudent(array $roleData): array
+    protected function schoolStudent(array $roleRel): array
     {
+        dd($roleRel['student_relationship']);
         return [];
     }
 
@@ -115,9 +126,10 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolGuardian(array $roleData): array
+    protected function schoolGuardian(array $roleRel): array
     {
-        return [];
+        // dd($roleRel['guardian_relationship']);
+        return $roleRel['guardian_relationship'];
     }
 
     /**
@@ -127,7 +139,7 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolFormerStudent(array $roleData): array
+    protected function schoolFormerStudent(array $roleRel): array
     {
         return [];
     }
@@ -139,7 +151,7 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolCooperative(array $roleData): array
+    protected function schoolCooperative(array $roleRel): array
     {
         return [];
     }
@@ -151,7 +163,7 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolWorker(array $roleData): array
+    protected function schoolWorker(array $roleRel): array
     {
         return [];
     }
