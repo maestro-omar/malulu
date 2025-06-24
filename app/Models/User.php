@@ -244,7 +244,7 @@ class User extends Authenticatable
     public function isSuperadmin(): bool
     {
         $adminRoleId = DB::table('roles')
-            ->where('code', Role::ADMIN)
+            ->where('code', Role::SUPERADMIN)
             ->value('id');
         $globalSchoolId = School::specialGlobalId();
         return DB::table('model_has_roles')

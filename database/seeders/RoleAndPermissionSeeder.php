@@ -27,9 +27,10 @@ class RoleAndPermissionSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create permissions with default guard
-        $permissions = [
+        $allPermissions = [
             // Superadmin permission
             'superadmin',
+            'admin',
 
             // User permissions
             'view users',
@@ -114,7 +115,7 @@ class RoleAndPermissionSeeder extends Seeder
             'edit own historical data',
         ];
 
-        foreach ($permissions as $permission) {
+        foreach ($allPermissions as $permission) {
             Permission::firstOrCreate([
                 'name' => $permission,
                 'guard_name' => 'web' // Default guard for permissions
@@ -123,180 +124,40 @@ class RoleAndPermissionSeeder extends Seeder
 
         // Create roles and assign permissions
         $roles = [
+            Role::SUPERADMIN => [
+                'name' => 'Super administrador',
+                'code' => Role::SUPERADMIN,
+                'description' => 'Administrador general del sistema',
+                'short' => 'Super',
+                'permissions' => $allPermissions
+            ],
             Role::ADMIN => [
                 'name' => 'Administrador',
                 'code' => Role::ADMIN,
-                'description' => 'Administrador del sistema con acceso total',
+                'description' => 'Administrador de la escuela',
                 'short' => 'Admin',
-                'permissions' => [
-                    'superadmin',
-                    'view users',
-                    'create users',
-                    'edit users',
-                    'delete users',
-                    'view own profile',
-                    'edit own profile',
-                    'view other profiles',
-                    'edit other profiles',
-                    'view roles',
-                    'view schools',
-                    'edit schools',
-                    'view assigned schools',
-                    'edit assigned schools',
-                    'view academic',
-                    'create academic',
-                    'edit academic',
-                    'delete academic',
-                    'view assigned academic',
-                    'edit assigned academic',
-                    'view students',
-                    'create students',
-                    'edit students',
-                    'delete students',
-                    'view guardians',
-                    'create guardians',
-                    'edit guardians',
-                    'delete guardians',
-                    'view teachers',
-                    'create teachers',
-                    'edit teachers',
-                    'delete teachers',
-                    'view cooperative',
-                    'create cooperative',
-                    'edit cooperative',
-                    'delete cooperative',
-                    'view library',
-                    'create library',
-                    'edit library',
-                    'delete library',
-                    'view historical data',
-                    'create historical data',
-                    'edit historical data',
-                    'delete historical data',
-                ],
+                'permissions' => array_diff($allPermissions, ['superadmin'])
             ],
             Role::DIRECTOR => [
                 'name' => 'Director',
                 'code' => Role::DIRECTOR,
                 'description' => 'Director de la institución',
                 'short' => 'Dir',
-                'permissions' => [
-                    'view users',
-                    'create users',
-                    'edit users',
-                    'delete users',
-                    'view own profile',
-                    'edit own profile',
-                    'view other profiles',
-                    'edit other profiles',
-                    'view roles',
-                    'view schools',
-                    'edit schools',
-                    'view assigned schools',
-                    'edit assigned schools',
-                    'view academic',
-                    'create academic',
-                    'edit academic',
-                    'delete academic',
-                    'view assigned academic',
-                    'edit assigned academic',
-                    'view students',
-                    'create students',
-                    'edit students',
-                    'delete students',
-                    'view guardians',
-                    'create guardians',
-                    'edit guardians',
-                    'delete guardians',
-                    'view teachers',
-                    'create teachers',
-                    'edit teachers',
-                    'delete teachers',
-                    'view cooperative',
-                    'create cooperative',
-                    'edit cooperative',
-                    'delete cooperative',
-                    'view library',
-                    'create library',
-                    'edit library',
-                    'delete library',
-                    'view historical data',
-                    'create historical data',
-                    'edit historical data',
-                    'delete historical data',
-                ],
+                'permissions' => array_diff($allPermissions, ['superadmin', 'admin'])
             ],
             Role::REGENT => [
                 'name' => 'Regente',
                 'code' => Role::REGENT,
                 'description' => 'Regente de la institución',
                 'short' => 'Reg',
-                'permissions' => [
-                    'view users',
-                    'create users',
-                    'edit users',
-                    'view own profile',
-                    'edit own profile',
-                    'view other profiles',
-                    'edit other profiles',
-                    'view roles',
-                    'view schools',
-                    'view assigned schools',
-                    'edit assigned schools',
-                    'view academic',
-                    'create academic',
-                    'edit academic',
-                    'view assigned academic',
-                    'edit assigned academic',
-                    'view students',
-                    'create students',
-                    'edit students',
-                    'view guardians',
-                    'create guardians',
-                    'edit guardians',
-                    'view teachers',
-                    'create teachers',
-                    'edit teachers',
-                    'view cooperative',
-                    'view library',
-                    'view historical data',
-                ],
+                'permissions' => array_diff($allPermissions, ['superadmin', 'admin'])
             ],
             Role::SECRETARY => [
                 'name' => 'Secretario',
                 'code' => Role::SECRETARY,
                 'description' => 'Secretario de la institución',
                 'short' => 'Sec',
-                'permissions' => [
-                    'view users',
-                    'create users',
-                    'edit users',
-                    'view own profile',
-                    'edit own profile',
-                    'view other profiles',
-                    'edit other profiles',
-                    'view roles',
-                    'view schools',
-                    'view assigned schools',
-                    'edit assigned schools',
-                    'view academic',
-                    'create academic',
-                    'edit academic',
-                    'view assigned academic',
-                    'edit assigned academic',
-                    'view students',
-                    'create students',
-                    'edit students',
-                    'view guardians',
-                    'create guardians',
-                    'edit guardians',
-                    'view teachers',
-                    'create teachers',
-                    'edit teachers',
-                    'view cooperative',
-                    'view library',
-                    'view historical data',
-                ],
+                'permissions' => array_diff($allPermissions, ['superadmin', 'admin'])
             ],
             Role::PROFESSOR => [
                 'name' => 'Profesor',
@@ -500,7 +361,7 @@ class RoleAndPermissionSeeder extends Seeder
             ],
         ];
 
-        $adminRole = null;
+        $superadminRole = null;
         foreach ($roles as $roleCode => $roleData) {
             $role = Role::firstOrCreate([
                 'name' => $roleData['name'],
@@ -518,15 +379,15 @@ class RoleAndPermissionSeeder extends Seeder
                 ->get();
             $role->syncPermissions($rolePermissions);
 
-            if ($roleCode === 'admin') {
-                $adminRole = $role;
+            if ($roleCode === Role::SUPERADMIN) {
+                $superadminRole = $role;
             }
         }
 
         // Assign admin role to the first user (if exists)
         $user = User::first();
-        if ($user && $adminRole) {
-            $user->assignRoleForSchool($adminRole, $globalSchoolId);
+        if ($user && $superadminRole) {
+            $user->assignRoleForSchool($superadminRole, $globalSchoolId);
         }
     }
 }

@@ -22,7 +22,7 @@ class AssignAdminRole extends Command
             return 1;
         }
 
-        $adminRole = Role::where('code', Role::ADMIN)->first();
+        $adminRole = Role::where('code', Role::SUPERADMIN)->first();
         if (!$adminRole) {
             $this->error('Admin role not found! Please run RoleAndPermissionSeeder first.');
             return 1;
@@ -47,4 +47,4 @@ class AssignAdminRole extends Command
 
         return 0;
     }
-} 
+}

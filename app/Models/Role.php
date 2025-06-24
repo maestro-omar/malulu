@@ -26,21 +26,22 @@ class Role extends SpatieRole
     /**
      * Role code constants
      */
-    const ADMIN = 'admin';
+    const SUPERADMIN = 'superadmin';
+    const ADMIN = 'administrador';
     const DIRECTOR = 'director';
-    const REGENT = 'regent';
-    const SECRETARY = 'secretary';
-    const GRADE_TEACHER = 'grade_teacher';
-    const ASSISTANT_TEACHER = 'assistant_teacher'; //auxiliar docente, primaria/inicial
-    const CURRICULAR_TEACHER = 'curricular_teacher';
-    const SPECIAL_TEACHER = 'special_teacher';
-    const PROFESSOR = 'professor';
-    const CLASS_ASSISTANT = 'class_assistant'; //preceptor
-    const LIBRARIAN = 'librarian';
-    const GUARDIAN = 'guardian';
-    const STUDENT = 'student';
-    const COOPERATIVE = 'cooperative';
-    const FORMER_STUDENT = 'former_student';
+    const REGENT = 'regente';
+    const SECRETARY = 'secretaria';
+    const GRADE_TEACHER = 'maestra';
+    const ASSISTANT_TEACHER = 'auxiliar';
+    const CURRICULAR_TEACHER = 'docente_curricular';
+    const SPECIAL_TEACHER = 'docente_especial';
+    const PROFESSOR = 'profesor';
+    const CLASS_ASSISTANT = 'preceptor';
+    const LIBRARIAN = 'bibliotecario';
+    const GUARDIAN = 'tutor';
+    const STUDENT = 'estudiante';
+    const COOPERATIVE = 'cooperador';
+    const FORMER_STUDENT = 'ex_alumno';
 
     /**
      * Get role pairs for select
@@ -63,6 +64,7 @@ class Role extends SpatieRole
     public static function allCodes(): array
     {
         return [
+            self::SUPERADMIN,
             self::ADMIN,
             self::DIRECTOR,
             self::REGENT,
@@ -89,6 +91,7 @@ class Role extends SpatieRole
     public static function rolesWithoutExtraData(): array
     {
         return [
+            self::SUPERADMIN,
             self::ADMIN,
             self::DIRECTOR,
             self::REGENT,
@@ -200,6 +203,7 @@ class Role extends SpatieRole
     public static function vueOptions(): array
     {
         $map = [
+            self::SUPERADMIN => ['label' => 'Superadmin', 'color' => 'black'],
             self::ADMIN => ['label' => 'Administrador', 'color' => 'purple'],
             self::DIRECTOR => ['label' => 'Director/a', 'color' => 'blue'],
             self::REGENT => ['label' => 'Regente', 'color' => 'green'],

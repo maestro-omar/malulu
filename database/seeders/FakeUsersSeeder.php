@@ -105,33 +105,36 @@ class FakeUsersSeeder extends Seeder
         if (empty($adminRoleId)) dd("Sin role ADMIN");
         $this->assignRoleWithRelationship($admin, $adminRoleId, $defaultSchool, null, Role::ADMIN);
 
+        // Create random users
+        $usersToCreate = [
+            Role::DIRECTOR => 1,
+            Role::REGENT => 2,
+            Role::SECRETARY => self::FAST_TEST ? 1 : 3,
+            Role::GRADE_TEACHER => self::FAST_TEST ? 2 : 30,
+            Role::ASSISTANT_TEACHER => self::FAST_TEST ? 2 : 20,
+            Role::CURRICULAR_TEACHER => self::FAST_TEST ? 2 : 20,
+            Role::SPECIAL_TEACHER => self::FAST_TEST ? 2 : 4,
+            Role::PROFESSOR => self::FAST_TEST ? 2 : 20,
+            Role::CLASS_ASSISTANT => self::FAST_TEST ? 2 : 6,
+            Role::LIBRARIAN => 2,
+            Role::GUARDIAN => self::FAST_TEST ? 20 : 200,
+            Role::STUDENT => self::FAST_TEST ? 40 : 1000,
+            Role::COOPERATIVE => self::FAST_TEST ? 2 : 10,
+            Role::FORMER_STUDENT => self::FAST_TEST ? 2 : 20,
+        ];
+
         // Create users with specific counts
-        $this->createUsersForSchool($defaultSchool, [
-            'director' => 1,
-            'regent' => 2,
-            'secretary' => self::FAST_TEST ? 1 : 3,
-            'grade_teacher' => self::FAST_TEST ? 2 : 30,
-            'assistant_teacher' => self::FAST_TEST ? 2 : 20,
-            'curricular_teacher' => self::FAST_TEST ? 2 : 20,
-            'special_teacher' => self::FAST_TEST ? 2 : 4,
-            'professor' => self::FAST_TEST ? 2 : 20,
-            'class_assistant' => self::FAST_TEST ? 2 : 6,
-            'librarian' => 2,
-            'guardian' => self::FAST_TEST ? 20 : 200,
-            'student' => self::FAST_TEST ? 40 : 1000,
-            'cooperative' => self::FAST_TEST ? 2 : 10,
-            'former_student' => self::FAST_TEST ? 2 : 20,
-        ], $province, $country);
+        $this->createUsersForSchool($defaultSchool, $usersToCreate, $province, $country);
 
         // Create a teacher who is also a guardian in the same school
         $teacherGuardian = User::whereHas('roles', function ($query) {
-            $query->where('code', 'grade_teacher');
+            $query->where('code', Role::GRADE_TEACHER);
         })->first();
 
         if ($teacherGuardian) {
             // Find a student in the same school
             $student = User::whereHas('roles', function ($query) {
-                $query->where('code', 'student');
+                $query->where('code', Role::STUDENT);
             })->whereHas('roleRelationships', function ($query) use ($defaultSchool) {
                 $query->where('school_id', $defaultSchool->id);
             })->first();
@@ -175,7 +178,7 @@ class FakeUsersSeeder extends Seeder
 
         // Make cooperative members also guardians
         $cooperativeUsers = User::whereHas('roles', function ($query) {
-            $query->where('code', 'cooperative');
+            $query->where('code', Role::COOPERATIVE);
         })->get();
 
         foreach ($cooperativeUsers as $user) {
@@ -184,7 +187,7 @@ class FakeUsersSeeder extends Seeder
 
         // Make 3 grade teachers also guardians
         $gradeTeachers = User::whereHas('roles', function ($query) {
-            $query->where('code', 'grade_teacher');
+            $query->where('code', Role::GRADE_TEACHER);
         })->take(3)->get();
         foreach ($gradeTeachers as $i => $user) {
             $this->assignRoleWithRelationship($user, $guardianRoleId, $defaultSchool, null, Role::GUARDIAN, 'Teacher and guardian '  . $i);
@@ -192,7 +195,7 @@ class FakeUsersSeeder extends Seeder
 
         // Make one teacher from default school also be a guardian in another school
         $teacherFromDefaultSchool = User::whereHas('roles', function ($query) {
-            $query->where('code', 'grade_teacher');
+            $query->where('code', Role::GRADE_TEACHER);
         })->first();
 
         if ($teacherFromDefaultSchool) {
@@ -206,7 +209,7 @@ class FakeUsersSeeder extends Seeder
 
         // Create users for other schools
         $otherSchools = School::where('code', '!=', self::DEFAULT_CUE)->limit(self::OTHER_SCHOOLS_LIMIT)->get();
-        $availableRoles = array_diff(Role::allCodes(), [Role::ADMIN]);
+        $availableRoles = array_diff(Role::allCodes(), [Role::SUPERADMIN, Role::ADMIN]);
 
 
         foreach ($otherSchools as $school) {
@@ -352,7 +355,7 @@ class FakeUsersSeeder extends Seeder
                 if (empty($roleId)) dd("Sin role $roleCode");
                 // Determine if this role should have a school level
                 $schoolLevelId = null;
-                if (in_array($roleCode, ['grade_teacher', 'assistant_teacher', 'curricular_teacher', 'special_teacher', 'professor', 'student'])) {
+                if (in_array($roleCode, [Role::GRADE_TEACHER, Role::ASSISTANT_TEACHER, Role::CURRICULAR_TEACHER, Role::SPECIAL_TEACHER, Role::PROFESSOR, Role::STUDENT])) {
                     // Get school levels for this school
                     $schoolLevels = $school->schoolLevels;
                     if ($schoolLevels->isNotEmpty()) {
@@ -371,14 +374,13 @@ class FakeUsersSeeder extends Seeder
     private function getBirthdateForRole(string $roleCode): \DateTime
     {
         return match ($roleCode) {
-            'student' => $this->faker->dateTimeBetween('-18 years', '-5 years'),
-            'former_student' => $this->faker->dateTimeBetween('-30 years', '-19 years'),
-            'guardian' => $this->faker->dateTimeBetween('-60 years', '-25 years'),
-            'grade_teacher', 'assistant_teacher', 'curricular_teacher', 'special_teacher', 'professor' =>
-            $this->faker->dateTimeBetween('-65 years', '-25 years'),
-            'class_assistant' => $this->faker->dateTimeBetween('-50 years', '-20 years'),
-            'librarian' => $this->faker->dateTimeBetween('-65 years', '-30 years'),
-            'cooperative' => $this->faker->dateTimeBetween('-70 years', '-30 years'),
+            Role::STUDENT => $this->faker->dateTimeBetween('-18 years', '-5 years'),
+            Role::FORMER_STUDENT => $this->faker->dateTimeBetween('-30 years', '-19 years'),
+            Role::GUARDIAN => $this->faker->dateTimeBetween('-60 years', '-25 years'),
+            Role::GRADE_TEACHER, Role::ASSISTANT_TEACHER, Role::CURRICULAR_TEACHER, Role::SPECIAL_TEACHER, Role::PROFESSOR => $this->faker->dateTimeBetween('-65 years', '-25 years'),
+            Role::CLASS_ASSISTANT => $this->faker->dateTimeBetween('-50 years', '-20 years'),
+            Role::LIBRARIAN => $this->faker->dateTimeBetween('-65 years', '-30 years'),
+            Role::COOPERATIVE => $this->faker->dateTimeBetween('-70 years', '-30 years'),
             default => $this->faker->dateTimeBetween('-70 years', '-30 years'), // For director, regent, secretary
         };
     }
@@ -426,11 +428,11 @@ class FakeUsersSeeder extends Seeder
 
         // Create specific relationship based on role type
         switch ($roleCode) {
-            case 'grade_teacher':
-            case 'assistant_teacher':
-            case 'curricular_teacher':
-            case 'special_teacher':
-            case 'professor':
+            case Role::GRADE_TEACHER:
+            case Role::ASSISTANT_TEACHER:
+            case Role::CURRICULAR_TEACHER:
+            case Role::SPECIAL_TEACHER:
+            case Role::PROFESSOR:
                 DB::table('worker_relationships')->insert([
                     'role_relationship_id' => $roleRelationshipId,
                     'class_subject_id' => $this->mathSubject->id,
@@ -448,7 +450,7 @@ class FakeUsersSeeder extends Seeder
                 ]);
                 break;
 
-            case 'student':
+            case Role::STUDENT:
                 DB::table('student_relationships')->insert([
                     'role_relationship_id' => $roleRelationshipId,
                     'current_course_id' => $this->course->id,
@@ -457,10 +459,10 @@ class FakeUsersSeeder extends Seeder
                 ]);
                 break;
 
-            case 'guardian':
+            case Role::GUARDIAN:
                 // Find a random student to link this guardian to
                 $student = User::whereHas('roles', function ($query) {
-                    $query->where('code', 'student');
+                    $query->where('code', Role::STUDENT);
                 })->inRandomOrder()->first();
 
                 if ($student) {
@@ -479,7 +481,7 @@ class FakeUsersSeeder extends Seeder
                     // 30% chance to add a second student relationship
                     if ($this->faker->boolean(30)) {
                         $secondStudent = User::whereHas('roles', function ($query) {
-                            $query->where('code', 'student');
+                            $query->where('code', Role::STUDENT);
                         })->where('id', '!=', $student->id)->inRandomOrder()->first();
 
                         if ($secondStudent) {
