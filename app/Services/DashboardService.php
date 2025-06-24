@@ -44,6 +44,8 @@ class DashboardService
         $schools = [];
         if (!$isGlobalAdmin) {
             $rolesAndSchools = $this->userData['all_roles_across_teams'];
+            $roleRelationships = $this->user->roleRelationships;
+            dd($rolesAndSchools,$roleRelationships->toArray());
             foreach ($rolesAndSchools as $roleData) {
                 $roleCode = $roleData['code'];
                 $schoolId = $roleData['pivot']['team_id'];
