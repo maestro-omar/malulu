@@ -57,4 +57,4 @@ php artisan migrate --seed
 
 # Frontend
 npm install
-npm run dev -- --host
+npm run dev --hosts
