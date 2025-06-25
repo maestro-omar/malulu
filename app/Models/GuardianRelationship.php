@@ -10,8 +10,9 @@ use App\Traits\FilterConstants;
 
 class GuardianRelationship extends Model
 {
-    use SoftDeletes;
-    use FilterConstants;
+    use SoftDeletes, FilterConstants;
+
+    protected $table = 'guardian_relationships';
 
     protected $fillable = [
         'role_relationship_id',
@@ -56,7 +57,7 @@ class GuardianRelationship extends Model
      * Get all available relationship types.
      */
     public static function relationshipTypes(): array
-     {
+    {
         $map = [
             self::RELATIONSHIP_PADRE => 'Padre',
             self::RELATIONSHIP_MADRE => 'Madre',

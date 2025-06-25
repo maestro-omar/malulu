@@ -117,6 +117,7 @@ class DashboardService
         $dataToPanel['degree_title'] = $roleRel['worker_relationship']['degree_title'];
         $dataToPanel['class_name'] = $roleRel['worker_relationship']['class_subject']['name'];
         $dataToPanel['school_level'] =  SchoolLevel::getNameById($roleRel['worker_relationship']['class_subject']['school_level_id']);
+        $dataToPanel['courses'] = null; //WIP
         //
         dd($dataToPanel, $roleRel['worker_relationship']);
         return $dataToPanel;

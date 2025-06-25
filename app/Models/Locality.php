@@ -9,6 +9,8 @@ class Locality extends Model
 {
     use HasFactory;
 
+    protected $table = 'localities';
+
     protected $fillable = [
         'name',
         'order',

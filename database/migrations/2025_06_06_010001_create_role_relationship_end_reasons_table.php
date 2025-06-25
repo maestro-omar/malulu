@@ -18,9 +18,6 @@ return new class extends Migration
             $table->text('description')->nullable(); // Detailed description
             $table->json('applicable_roles'); // Array of role IDs this reason applies to
             $table->boolean('is_active')->default(true); // Whether this reason is currently active
-            $table->text('notes')->nullable(); // Additional notes or context
-            $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -31,4 +28,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('role_relationship_end_reasons');
     }
-}; 
+};

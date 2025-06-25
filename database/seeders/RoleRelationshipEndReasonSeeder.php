@@ -17,24 +17,21 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                 'name' => 'Graduado',
                 'description' => 'El estudiante ha completado sus estudios y se ha graduado',
                 'applicable_roles' => [Role::STUDENT],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
             [
                 'code' => RoleRelationshipEndReason::CODE_TRANSFERRED,
                 'name' => 'Transferido',
                 'description' => 'El estudiante se ha transferido a otra institución',
                 'applicable_roles' => [Role::STUDENT],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
             [
                 'code' => RoleRelationshipEndReason::CODE_WITHDRAWN,
                 'name' => 'Retirado',
                 'description' => 'El estudiante se ha retirado voluntariamente',
                 'applicable_roles' => [Role::STUDENT],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
 
             // Employment reasons
@@ -54,8 +51,7 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                     Role::REGENT,
                     Role::SECRETARY
                 ],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
             [
                 'code' => RoleRelationshipEndReason::CODE_CONTRACT_ENDED,
@@ -73,8 +69,7 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                     Role::REGENT,
                     Role::SECRETARY
                 ],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
             [
                 'code' => RoleRelationshipEndReason::CODE_TERMINATED,
@@ -92,8 +87,7 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                     Role::REGENT,
                     Role::SECRETARY
                 ],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
 
             // Guardian reasons
@@ -102,24 +96,21 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                 'name' => 'Estudiante Graduado',
                 'description' => 'El estudiante se ha graduado',
                 'applicable_roles' => [Role::GUARDIAN],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
             [
                 'code' => RoleRelationshipEndReason::CODE_STUDENT_TRANSFERRED,
                 'name' => 'Estudiante Transferido',
                 'description' => 'El estudiante se ha transferido a otra institución',
                 'applicable_roles' => [Role::GUARDIAN],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
             [
                 'code' => RoleRelationshipEndReason::CODE_STUDENT_WITHDRAWN,
                 'name' => 'Estudiante Retirado',
                 'description' => 'El estudiante se ha retirado de la institución',
                 'applicable_roles' => [Role::GUARDIAN],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
 
             // Cooperative reasons
@@ -128,24 +119,21 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                 'name' => 'Membresía Finalizada',
                 'description' => 'La membresía ha llegado a su fin',
                 'applicable_roles' => [Role::COOPERATIVE],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
             [
                 'code' => RoleRelationshipEndReason::CODE_VOLUNTARY_WITHDRAWAL,
                 'name' => 'Retiro Voluntario',
                 'description' => 'El miembro se ha retirado voluntariamente',
                 'applicable_roles' => [Role::COOPERATIVE],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
             [
                 'code' => RoleRelationshipEndReason::CODE_EXPELLED,
                 'name' => 'Expulsado',
                 'description' => 'El miembro ha sido expulsado de la cooperativa',
                 'applicable_roles' => [Role::COOPERATIVE],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
 
             // Common reasons
@@ -168,8 +156,7 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                     Role::GUARDIAN,
                     Role::COOPERATIVE
                 ],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
             [
                 'code' => RoleRelationshipEndReason::CODE_OTHER,
@@ -190,8 +177,7 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                     Role::GUARDIAN,
                     Role::COOPERATIVE
                 ],
-                'is_active' => true,
-                'notes' => null,
+                'is_active' => true
             ],
         ];
 
@@ -199,4 +185,4 @@ class RoleRelationshipEndReasonSeeder extends Seeder
             RoleRelationshipEndReason::create($reason);
         }
     }
-} 
+}

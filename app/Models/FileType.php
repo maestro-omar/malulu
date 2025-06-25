@@ -22,6 +22,9 @@ class FileType extends Model
     const RELATE_WITH_STUDENT = 'student';
     const RELATE_WITH_USER = 'user';
 
+
+    protected $table = 'file_types';
+
     /**
      * The attributes that are mass assignable.
      *

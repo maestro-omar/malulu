@@ -15,6 +15,7 @@ class SchoolManagementType extends Model
     const SELF_MANAGED = 'autogestionada';
     const GENERATIVE = 'generativa';
 
+    protected $table = 'school_management_types';
 
     protected $fillable = ['name', 'code'];
 

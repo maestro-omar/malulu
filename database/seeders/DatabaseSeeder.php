@@ -5,8 +5,6 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\Role;
-use App\Models\School;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Province;
 use App\Models\Country;
@@ -39,6 +37,9 @@ class DatabaseSeeder extends Seeder
             SchoolSeeder::class,
             ClassSubjectSeeder::class,
             CourseSeeder::class,
+
+            StudentCourseEndReasonSeeder::class,
+            RoleRelationshipEndReasonSeeder::class,
         ]);
 
         // Create initial admin user with explicit password

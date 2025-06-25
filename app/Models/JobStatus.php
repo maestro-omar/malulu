@@ -13,6 +13,8 @@ class JobStatus extends Model
     const INTERIM = 'interino';
     const PERMANENT = 'titular';
 
+    protected $table = 'job_statuses';
+
     protected $fillable = ['name', 'code'];
 
     /**

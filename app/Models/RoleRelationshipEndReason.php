@@ -2,12 +2,38 @@
 
 namespace App\Models;
 
-use App\Models\BaseModel as Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\BaseCatalogModel as Model;
+use App\Traits\FilterConstants;
 
 class RoleRelationshipEndReason extends Model
 {
-    use SoftDeletes;
+    use FilterConstants;
+
+    // Academic reasons
+    const CODE_GRADUATED = 'graduado';
+    const CODE_TRANSFERRED = 'transferido';
+    const CODE_WITHDRAWN = 'retirado';
+
+    // Employment reasons
+    const CODE_RESIGNED = 'renuncia';
+    const CODE_CONTRACT_ENDED = 'contrato_finalizado';
+    const CODE_TERMINATED = 'despedido';
+
+    // Guardian reasons
+    const CODE_STUDENT_GRADUATED = 'estudiante_graduado';
+    const CODE_STUDENT_TRANSFERRED = 'estudiante_transferido';
+    const CODE_STUDENT_WITHDRAWN = 'estudiante_retirado';
+
+    // Cooperative reasons
+    const CODE_MEMBERSHIP_ENDED = 'periodo_finalizado_coope';
+    const CODE_VOLUNTARY_WITHDRAWAL = 'renuncia_coope';
+    const CODE_EXPELLED = 'expulsado_coope';
+
+    // Common reasons
+    const CODE_DECEASED = 'fallecido';
+    const CODE_OTHER = 'otro';
+
+    protected $table = 'role_relationship_end_reasons';
 
     protected $fillable = [
         'code',
@@ -15,7 +41,6 @@ class RoleRelationshipEndReason extends Model
         'description',
         'applicable_roles',
         'is_active',
-        'notes',
     ];
 
     protected $casts = [
@@ -23,29 +48,6 @@ class RoleRelationshipEndReason extends Model
         'is_active' => 'boolean',
     ];
 
-    // Academic reasons
-    const CODE_GRADUATED = 'graduated';
-    const CODE_TRANSFERRED = 'transferred';
-    const CODE_WITHDRAWN = 'withdrawn';
-
-    // Employment reasons
-    const CODE_RESIGNED = 'resigned';
-    const CODE_CONTRACT_ENDED = 'contract_ended';
-    const CODE_TERMINATED = 'terminated';
-
-    // Guardian reasons
-    const CODE_STUDENT_GRADUATED = 'student_graduated';
-    const CODE_STUDENT_TRANSFERRED = 'student_transferred';
-    const CODE_STUDENT_WITHDRAWN = 'student_withdrawn';
-
-    // Cooperative reasons
-    const CODE_MEMBERSHIP_ENDED = 'membership_ended';
-    const CODE_VOLUNTARY_WITHDRAWAL = 'voluntary_withdrawal';
-    const CODE_EXPELLED = 'expelled';
-
-    // Common reasons
-    const CODE_DECEASED = 'deceased';
-    const CODE_OTHER = 'other';
 
     // Relationships
     public function roleRelationships()

@@ -17,6 +17,8 @@ class ClassSubject extends Model
         'is_curricular',
     ];
 
+    protected $table = 'class_subjects';
+
     /**
      * Get the school level that owns the class subject.
      */

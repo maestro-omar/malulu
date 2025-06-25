@@ -11,6 +11,8 @@ class WorkerRelationship extends Model
 {
     use FilterConstants, SoftDeletes;
 
+    protected $table = 'worker_relationships';
+
     protected $fillable = [
         'role_relationship_id',
         'class_subject_id',

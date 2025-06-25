@@ -9,11 +9,14 @@ use App\Traits\FilterConstants;
 class SchoolShift extends Model
 {
     use FilterConstants;
-
     const MORNING = 'manana';
     const AFTERNOON = 'tarde';
     const NIGHT = 'noche';
+
+    protected $table = 'school_shifts';
+
     protected $fillable = ['name', 'code'];
+
 
     public function schools(): BelongsToMany
     {

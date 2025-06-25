@@ -11,6 +11,8 @@ class Province extends Model
 
     const DEFAULT = 'sl';
 
+    protected $table = 'provinces';
+
     /**
      * The attributes that are mass assignable.
      *

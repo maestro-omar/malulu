@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-// use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseCatalogModel as Model;
 use App\Traits\FilterConstants;
 
 class SchoolLevel extends Model
 {
-    // use HasFactory;
     use FilterConstants;
 
     /**
@@ -17,6 +15,8 @@ class SchoolLevel extends Model
     const KINDER = 'inicial';
     const PRIMARY = 'primaria';
     const SECONDARY = 'secundaria';
+
+    protected $table = 'school_levels';
 
     /**
      * The attributes that are mass assignable.

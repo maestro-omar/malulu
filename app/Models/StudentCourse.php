@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\BaseModel as Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class StudentCourse extends Model
+{
+    use HasFactory, SoftDeletes;
+
+    protected $table = 'student_courses';
+
+    protected $fillable = [
+        'role_relationship_id', // student
+        'course_id',
+        'start_date',
+        'end_date',
+        'status',
+        'notes',
+        'created_by',
+        'updated_by',
+        'deleted_by'
+    ];
+
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'custom_fields' => 'array',
+    ];
+
+    public function roleRelationship()
+    {
+        return $this->belongsTo(RoleRelationship::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function endReason()
+    {
+        return $this->belongsTo(StudentCourseEndReason::class, 'end_reason_id');
+    }
+}

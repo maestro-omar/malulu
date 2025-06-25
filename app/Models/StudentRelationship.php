@@ -10,6 +10,8 @@ class StudentRelationship extends Model
 {
     use SoftDeletes;
 
+    protected $table = 'student_relationships';
+
     protected $fillable = [
         'role_relationship_id',
         'current_course_id',
