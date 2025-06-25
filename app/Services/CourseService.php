@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use App\Models\StudentCourse;
+use Illuminate\Support\Facades\DB;
 
 class CourseService
 {
@@ -162,5 +164,56 @@ class CourseService
             ->orderBy('number')
             ->orderBy('letter')
             ->get();
+    }
+
+    /**
+     * Enroll a student to a course.
+     *
+     * @param int $roleRelationshipId
+     * @param int $courseId
+     * @param array $data (optional: start_date, end_reason_id, notes, etc.)
+     * @return StudentCourse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function enrollStudentToCourse(int $roleRelationshipId, int $courseId, array $data = [])
+    {
+        // Validate input
+        $rules = [
+            'start_date' => ['required', 'date'],
+            'end_reason_id' => ['nullable', 'exists:student_course_end_reasons,id'],
+            'notes' => ['nullable', 'string'],
+        ];
+
+        $data = array_merge([
+            'start_date' => now()->toDateString(),
+        ], $data);
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        // Check if already enrolled (active)
+        $existing = StudentCourse::where('role_relationship_id', $roleRelationshipId)
+            ->where('course_id', $courseId)
+            ->whereNull('end_date')
+            ->first();
+
+        if ($existing) {
+            throw ValidationException::withMessages([
+                'enrollment' => ['El estudiante ya se encontraba vinculado al curso.'],
+            ]);
+        }
+
+        // Create enrollment
+        return StudentCourse::create([
+            'role_relationship_id' => $roleRelationshipId,
+            'course_id' => $courseId,
+            'start_date' => $data['start_date'],
+            'end_reason_id' => $data['end_reason_id'] ?? null,
+            'notes' => $data['notes'] ?? null,
+            'created_by' => $data['created_by'] ?? null,
+        ]);
     }
 }

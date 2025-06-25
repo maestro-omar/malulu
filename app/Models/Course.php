@@ -78,4 +78,12 @@ class Course extends Model
     {
         return $this->hasMany(Course::class, 'previous_course_id');
     }
+
+    /**
+     * Get the student courses (enrollments) for this course.
+     */
+    public function studentCourses(): HasMany
+    {
+        return $this->hasMany(StudentCourse::class);
+    }
 }

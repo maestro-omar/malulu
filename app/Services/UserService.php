@@ -14,6 +14,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\PermissionRegistrar;
 use Illuminate\Support\Facades\Auth;
+use App\Services\CourseService;
 
 class UserService
 {
@@ -274,9 +275,24 @@ class UserService
                 }
             } elseif ($roleCode === Role::STUDENT) {
                 if (!empty($details['student_details'])) {
-                    $roleRelationship->studentRelationship()->create([
+                    $studentRelationship = $roleRelationship->studentRelationship()->create([
                         'current_course_id' => $details['student_details']['current_course_id'] ?? null,
                     ]);
+
+                    // Enroll the student to the course if current_course_id is provided
+                    if (!empty($details['student_details']['current_course_id'])) {
+                        // You can inject CourseService via constructor or instantiate here
+                        $courseService = app(CourseService::class);
+                        $courseService->enrollStudentToCourse(
+                            $roleRelationship->id,
+                            $details['student_details']['current_course_id'],
+                            [
+                                'start_date' => $details['student_details']['start_date'] ?? now()->toDateString(),
+                                'created_by' => $creator->id,
+                                // Add other fields if needed
+                            ]
+                        );
+                    }
                 }
             }
 

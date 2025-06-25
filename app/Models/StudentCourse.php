@@ -19,7 +19,7 @@ class StudentCourse extends Model
         'course_id',
         'start_date',
         'end_date',
-        'status',
+        'end_reason_id',
         'notes',
         'created_by',
         'updated_by',
