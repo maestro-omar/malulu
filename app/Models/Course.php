@@ -86,4 +86,12 @@ class Course extends Model
     {
         return $this->hasMany(StudentCourse::class);
     }
+
+    /**
+     * Get the teacher courses (assignments) for this course.
+     */
+    public function teacherCourses(): HasMany
+    {
+        return $this->hasMany(\App\Models\TeacherCourse::class);
+    }
 }

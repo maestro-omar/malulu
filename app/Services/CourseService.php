@@ -149,8 +149,8 @@ class CourseService
     public function getCoursesForSchool(?int $schoolId, ?int $levelId, ?int $shiftId, ?bool $active)
     {
         return Course::when($schoolId !== null, function ($query) use ($schoolId) {
-                $query->where('school_id', $schoolId);
-            })
+            $query->where('school_id', $schoolId);
+        })
             ->when($levelId !== null, function ($query) use ($levelId) {
                 $query->where('school_level_id', $levelId);
             })
@@ -180,6 +180,7 @@ class CourseService
         // Validate input
         $rules = [
             'start_date' => ['required', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'end_reason_id' => ['nullable', 'exists:student_course_end_reasons,id'],
             'notes' => ['nullable', 'string'],
         ];
@@ -212,6 +213,59 @@ class CourseService
             'course_id' => $courseId,
             'start_date' => $data['start_date'],
             'end_reason_id' => $data['end_reason_id'] ?? null,
+            'notes' => $data['notes'] ?? null,
+            'created_by' => $data['created_by'] ?? null,
+        ]);
+    }
+
+    /**
+     * Assign a course to a teacher.
+     *
+     * @param int $roleRelationshipId
+     * @param int $courseId
+     * @param array $data (optional: start_date, end_date, in_charge, notes, etc.)
+     * @return TeacherCourse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function assignCourseToTeacher(int $roleRelationshipId, int $courseId, array $data = [])
+    {
+        // Validate input
+        $rules = [
+            'start_date' => ['required', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'in_charge' => ['nullable', 'boolean'],
+            'notes' => ['nullable', 'string'],
+        ];
+
+        $data = array_merge([
+            'start_date' => now()->toDateString(),
+        ], $data);
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        // Check if already assigned (active)
+        $existing = \App\Models\TeacherCourse::where('role_relationship_id', $roleRelationshipId)
+            ->where('course_id', $courseId)
+            ->whereNull('end_date')
+            ->first();
+
+        if ($existing) {
+            throw ValidationException::withMessages([
+                'assignment' => ['El docente ya se encontraba asignado a este curso.'],
+            ]);
+        }
+
+        // Create assignment
+        return \App\Models\TeacherCourse::create([
+            'role_relationship_id' => $roleRelationshipId,
+            'course_id' => $courseId,
+            'start_date' => $data['start_date'],
+            'end_date' => $data['end_date'] ?? null,
+            'in_charge' => $data['in_charge'] ?? false,
             'notes' => $data['notes'] ?? null,
             'created_by' => $data['created_by'] ?? null,
         ]);

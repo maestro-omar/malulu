@@ -4,13 +4,13 @@
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold text-gray-900">{{ title || 'Escuelas y Roles' }}</h3>
         <Link v-if="canAddRoles" :href="route('users.add-role', userId)"
-            class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-sm">
+          class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-sm">
         NUEVO ROL
         </Link>
       </div>
 
       <div class="space-y-6">
-        <div v-for="school in schools" :key="school.id" class="border-b border-gray-200 last:border-b-0 pb-6 last:pb-0">
+        <div v-for="(school, idx) in schools" :key="school.id" :class="[idx % 2 === 0 ? 'bg-white' : 'bg-gray-50', 'border-b border-gray-200 last:border-b-0 pb-6 last:pb-0']">
           <!-- School Header -->
           <div class="flex items-center justify-between mb-4">
             <div>
@@ -48,7 +48,7 @@
                     <div class="grid grid-cols-2 gap-4">
                       <div>
                         <span class="text-xs text-gray-500">Estado:</span>
-                        <p class="text-sm font-medium">{{ relationship.job_status FIXjob_xtatus }}</p>
+                        <p class="text-sm font-medium">{{ relationship.job_status }}</p>
                       </div>
                       <div>
                         <span class="text-xs text-gray-500">Título:</span>
@@ -74,7 +74,8 @@
                         <span class="text-xs text-gray-500">Fecha:</span>
                         <p class="text-sm font-medium">{{ formatDate(relationship.job_status_date) }}</p>
                       </div>
-                      <div v-if="hasTeacherRelationshipsForRole(role.id, school.id) && relationship.class_subject" class="col-span-2">
+                      <div v-if="hasTeacherRelationshipsForRole(role.id, school.id) && relationship.class_subject"
+                        class="col-span-2">
                         <span class="text-xs text-gray-500">Asignatura:</span>
                         <div class="mt-1 space-y-1">
                           <p class="text-sm font-medium">{{ relationship.class_subject.name }}</p>

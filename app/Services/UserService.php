@@ -262,6 +262,23 @@ class UserService
                         'schedule' => $details['worker_details']['schedule'] ?? null,
                         'class_subject_id' => Role::isTeacher($roleCode) ? ($details['worker_details']['class_subject_id'] ?? null) : null,
                     ]);
+
+                    // If is also a teacher, assign courses
+                    if (Role::isTeacher($roleCode) && !empty($details['worker_details']['courses']) && is_array($details['worker_details']['courses'])) {
+                        $courseService = app(CourseService::class);
+                        foreach ($details['worker_details']['courses'] as $courseId) {
+                            $courseService->assignCourseToTeacher(
+                                $roleRelationship->id,
+                                $courseId,
+                                [
+                                    'start_date' => $details['worker_details']['start_date'] ?? now()->toDateString(),
+                                    'in_charge' => $details['worker_details']['in_charge'] ?? false,
+                                    'notes' => $details['worker_details']['notes'] ?? null,
+                                    'created_by' => $creator->id,
+                                ]
+                            );
+                        }
+                    }
                 }
             } elseif ($roleCode === Role::GUARDIAN) {
                 if (!empty($details['guardian_details'])) {
@@ -281,7 +298,6 @@ class UserService
 
                     // Enroll the student to the course if current_course_id is provided
                     if (!empty($details['student_details']['current_course_id'])) {
-                        // You can inject CourseService via constructor or instantiate here
                         $courseService = app(CourseService::class);
                         $courseService->enrollStudentToCourse(
                             $roleRelationship->id,

@@ -157,4 +157,9 @@ class RoleRelationship extends Model
     {
         return $this->belongsTo(SchoolLevel::class);
     }
+
+    public function teacherCourses()
+    {
+        return $this->hasMany(\App\Models\TeacherCourse::class);
+    }
 }

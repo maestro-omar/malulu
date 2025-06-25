@@ -86,11 +86,11 @@
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <Link v-if="hasPermission($page.props, 'view schools')"
-                          :href="route('super.schools.show', school.cue)" class="text-blue-600 hover:text-blue-900 mr-3">
+                          :href="route('schools.show', school.cue)" class="text-blue-600 hover:text-blue-900 mr-3">
                         Ver
                         </Link>
                         <Link v-if="hasPermission($page.props, 'edit schools')"
-                          :href="route('super.schools.edit', school.cue)" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                          :href="route('schools.edit', school.cue)" class="text-indigo-600 hover:text-indigo-900 mr-3">
                         Editar
                         </Link>
                         <Link v-if="hasPermission($page.props, 'delete schools')"
