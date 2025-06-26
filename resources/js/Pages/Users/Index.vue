@@ -7,6 +7,7 @@ import { ref, computed, watch } from 'vue';
 import noImage from '@images/no-image-person.png';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
+import EmailField from '@/Components/admin/EmailField.vue';
 
 const props = defineProps({
     users: Object,
@@ -174,7 +175,7 @@ const getUniqueRoles = (roles) => {
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-500">{{ user.email }}</div>
+                                            <EmailField :email="user.email" />
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-500">

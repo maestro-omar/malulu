@@ -37,8 +37,4 @@ class StudentCourseEndReason extends Model
     {
         return $query->where('is_active', true);
     }
-    public function studentCourses()
-    {
-        return $this->hasMany(StudentCourse::class, 'end_reason_id');
-    }
 }

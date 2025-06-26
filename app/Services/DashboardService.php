@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\JobStatus;
 use App\Services\UserService;
+use App\Services\CourseService;
 use App\Models\Role;
+use App\Models\RoleRelationship;
 use App\Models\User;
 use App\Models\School;
 use App\Models\SchoolLevel;
@@ -13,12 +15,14 @@ use App\Models\SchoolShift;
 class DashboardService
 {
     private Userservice $userService;
+    private CourseService $courseService;
     private User $user;
     private $userData;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, CourseService $courseService)
     {
         $this->userService = $userService;
+        $this->courseService = $courseService;
     }
 
     public function getData($request, User $loggedUser)
@@ -51,11 +55,11 @@ class DashboardService
 
         if (!$isGlobalAdmin) {
             $rolesAndSchools = $this->user->allRolesAcrossTeamsParsed();
-            $roleRelationships = $this->user->roleRelationships->toArray();
+            $roleRelationships = $this->user->roleRelationships->all();
             foreach ($roleRelationships as $roleRel) {
                 $count++;
-                $schoolId = $roleRel['school_id'];
-                $roleData = $rolesAndSchools[$roleRel['role_id'] . '-' . $schoolId] ?? null;
+                $schoolId = $roleRel->school_id;
+                $roleData = $rolesAndSchools[$roleRel->role_id . '-' . $schoolId] ?? null;
                 if (empty($roleData))
                     dd('ERROR INESPERADO: role no encontrado', $roleRel, $rolesAndSchools);
                 $roleCode = $roleData['role_code'];
@@ -90,7 +94,7 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolAdmin(array $roleRel): array
+    protected function schoolAdmin(RoleRelationship $roleRel): array
     {
         $data = ['news' => ['Novedad1', 'Novedad DOS']];
         return $data;
@@ -103,23 +107,23 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolTeacher(array $roleRel): array
+    protected function schoolTeacher(RoleRelationship $roleRel): array
     {
-
         $dataToPanel = [];
         // dd(SchoolShift::optionsByCode());
         // dd(SchoolShift::getNameById(2));
         // dd(SchoolShift::getNameByCode(SchoolShift::MORNING));
-        $dataToPanel['job_status'] = JobStatus::getNameById($roleRel['worker_relationship']['job_status_id']);
-        $dataToPanel['job_status_date'] = $roleRel['worker_relationship']['job_status_date'];
-        $dataToPanel['decree_number'] = $roleRel['worker_relationship']['decree_number'];
-        $dataToPanel['schedule'] = $roleRel['worker_relationship']['schedule'];
-        $dataToPanel['degree_title'] = $roleRel['worker_relationship']['degree_title'];
-        $dataToPanel['class_name'] = $roleRel['worker_relationship']['class_subject']['name'];
-        $dataToPanel['school_level'] =  SchoolLevel::getNameById($roleRel['worker_relationship']['class_subject']['school_level_id']);
-        $dataToPanel['courses'] = null; //WIP
+        // dd($roleRel);
+        $dataToPanel['job_status'] = JobStatus::getNameById($roleRel->workerRelationship->job_status_id);
+        $dataToPanel['job_status_date'] = $roleRel->workerRelationship->job_status_date;
+        $dataToPanel['decree_number'] = $roleRel->workerRelationship->decree_number;
+        $dataToPanel['schedule'] = $roleRel->workerRelationship->schedule;
+        $dataToPanel['degree_title'] = $roleRel->workerRelationship->degree_title;
+        $dataToPanel['class_name'] = $roleRel->workerRelationship->classSubject->name;
+        $dataToPanel['school_level'] =  SchoolLevel::getNameById($roleRel->workerRelationship->classSubject->school_level_id);
+        $dataToPanel['courses'] = $this->courseService->parseTeacherCourses($roleRel->teacherCourses);
         //
-        dd($dataToPanel, $roleRel['worker_relationship']);
+        dd($dataToPanel, $roleRel->workerRelationship);
         return $dataToPanel;
     }
 
@@ -130,9 +134,9 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolStudent(array $roleRel): array
+    protected function schoolStudent(RoleRelationship $roleRel): array
     {
-        dd($roleRel['student_relationship']);
+        dd($roleRel->studentRelationship);
         return [];
     }
 
@@ -143,10 +147,10 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolGuardian(array $roleRel): array
+    protected function schoolGuardian(RoleRelationship $roleRel): array
     {
-        // dd($roleRel['guardian_relationship']);
-        return $roleRel['guardian_relationship'];
+        // dd($roleRel->guardian_relationship);
+        return $roleRel->guardianRelationship;
     }
 
     /**
@@ -156,7 +160,7 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolFormerStudent(array $roleRel): array
+    protected function schoolFormerStudent(RoleRelationship $roleRel): array
     {
         return [];
     }
@@ -168,7 +172,7 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolCooperative(array $roleRel): array
+    protected function schoolCooperative(RoleRelationship $roleRel): array
     {
         return [];
     }
@@ -180,7 +184,7 @@ class DashboardService
      * @param  array  $roleData
      * @return array
      */
-    protected function schoolWorker(array $roleRel): array
+    protected function schoolWorker(RoleRelationship $roleRel): array
     {
         return [];
     }

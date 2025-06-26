@@ -80,9 +80,9 @@ class Course extends Model
     }
 
     /**
-     * Get the student courses (enrollments) for this course.
+     * Get the student enrollments for this course.
      */
-    public function studentCourses(): HasMany
+    public function courseStudents(): HasMany
     {
         return $this->hasMany(StudentCourse::class);
     }
@@ -93,5 +93,17 @@ class Course extends Model
     public function teacherCourses(): HasMany
     {
         return $this->hasMany(\App\Models\TeacherCourse::class);
+    }
+
+    /**
+     * Get all students (users) enrolled in this course (active, not deleted).
+     */
+    public function activeStudents()
+    {
+        return $this->courseStudents()
+            ->whereNull('deleted_by')
+            ->whereNull('end_date')
+            ->with(['roleRelationship.user', 'roleRelationship.studentRelationship'])
+            ->get();
     }
 }

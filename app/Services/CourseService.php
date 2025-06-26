@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use App\Models\StudentCourse;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class CourseService
@@ -269,5 +270,14 @@ class CourseService
             'notes' => $data['notes'] ?? null,
             'created_by' => $data['created_by'] ?? null,
         ]);
+    }
+
+    public function parseTeacherCourses(Collection|array $teacherCourses)
+    {
+        if (!is_array($teacherCourses))
+            $teacherCourses = $teacherCourses->all();
+        foreach ($teacherCourses as $teacherCourse) {
+            dd($teacherCourse->course);
+        }
     }
 }
