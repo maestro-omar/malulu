@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\District;
+use App\Models\Catalogs\District;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

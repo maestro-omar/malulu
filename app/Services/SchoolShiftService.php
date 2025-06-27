@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\SchoolShift;
+use App\Models\Catalogs\SchoolShift;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;

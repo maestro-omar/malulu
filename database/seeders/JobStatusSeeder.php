@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\JobStatus;
+use App\Models\Catalogs\JobStatus;
 use Illuminate\Database\Seeder;
 
 class JobStatusSeeder extends Seeder

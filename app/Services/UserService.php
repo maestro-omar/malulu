@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use App\Models\Role;
+use App\Models\Entities\School;
+use App\Models\Entities\User;
+use App\Models\Catalogs\Role;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -43,7 +44,7 @@ class UserService
                 ->toArray();
 
             // Get schools for these IDs
-            $schools = \App\Models\School::whereIn('id', $schoolIds)->get();
+            $schools = School::whereIn('id', $schoolIds)->get();
 
             $user['roles'] = collect($user['all_roles_across_teams'])->map(function ($role) {
                 return [
@@ -365,7 +366,7 @@ class UserService
             ->toArray();
 
         // Get schools for these IDs
-        $schools = \App\Models\School::whereIn('id', $schoolIds)->get();
+        $schools = School::whereIn('id', $schoolIds)->get();
 
         $transformedUser['roles'] = $allRolesAcrossTeams->map(function ($role) {
             return [
@@ -508,7 +509,7 @@ class UserService
 
     public function hasAccessToSchool(int $schoolId): bool
     {
-        /** @var \App\Models\User $user */
+        /** @var \App\Models\Entities\User $user */
         $user = Auth::user();
 
         if (!$user) {
@@ -561,7 +562,7 @@ class UserService
                 ->toArray();
 
             // Get schools for these IDs
-            $schools = \App\Models\School::whereIn('id', $schoolIds)->get();
+            $schools = School::whereIn('id', $schoolIds)->get();
 
             $user['roles'] = $filteredRoles->map(function ($role) {
                 return [

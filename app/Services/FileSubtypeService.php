@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\FileSubtype;
+use App\Models\Catalogs\FileSubtype;
 
 class FileSubtypeService
 {

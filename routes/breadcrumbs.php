@@ -2,9 +2,9 @@
 
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as Trail;
-use App\Models\School;
-use App\Models\SchoolLevel;
-use App\Models\Course;
+use App\Models\Entities\School;
+use App\Models\Catalogs\SchoolLevel;
+use App\Models\Entities\Course;
 
 
 // 🏠 Dashboard base

@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\School;
-use App\Models\SchoolLevel;
-use App\Models\Locality;
-use App\Models\SchoolManagementType;
-use App\Models\SchoolShift;
+use App\Models\Entities\School;
+use App\Models\Catalogs\SchoolLevel;
+use App\Models\Catalogs\Locality;
+use App\Models\Catalogs\SchoolManagementType;
+use App\Models\Catalogs\SchoolShift;
 use Illuminate\Database\Seeder;
 
 class SchoolSeeder extends Seeder

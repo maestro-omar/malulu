@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\SchoolShift;
+use App\Models\Catalogs\SchoolShift;
 use Illuminate\Database\Seeder;
 
 class SchoolShiftSeeder extends Seeder

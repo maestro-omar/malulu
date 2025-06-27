@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\ClassSubject;
+use App\Models\Catalogs\ClassSubject;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 

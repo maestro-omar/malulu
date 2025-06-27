@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\FileType;
-use App\Models\FileSubtype;
+use App\Models\Catalogs\FileType;
+use App\Models\Catalogs\FileSubtype;
 use Illuminate\Database\Seeder;
 
 class FileSubtypeSeeder extends Seeder

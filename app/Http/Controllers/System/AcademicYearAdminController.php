@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\System;
 
-use App\Models\AcademicYear;
+use App\Models\Entities\AcademicYear;
 use App\Services\AcademicYearService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

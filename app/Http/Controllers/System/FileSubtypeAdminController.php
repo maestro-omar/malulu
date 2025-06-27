@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\System;
 
-use App\Models\FileSubtype;
-use App\Models\FileType;
+use App\Models\Catalogs\FileSubtype;
+use App\Models\Catalogs\FileType;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Services\FileSubtypeService;

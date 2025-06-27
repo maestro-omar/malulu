@@ -3,7 +3,7 @@
 // namespace App\Http\Controllers\Api;
 
 // use App\Http\Controllers\Controller;
-// use App\Models\School;
+// use App\Models\Entities\School;
 // use App\Services\SchoolService;
 // use Illuminate\Http\Request;
 // use Illuminate\Validation\ValidationException;

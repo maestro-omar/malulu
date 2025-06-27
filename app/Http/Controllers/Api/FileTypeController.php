@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\FileTypeService;
-use App\Models\FileType;
+use App\Models\Catalogs\FileType;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 

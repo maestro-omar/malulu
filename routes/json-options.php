@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\SchoolManagementType;
-use App\Models\SchoolShift;
-use App\Models\SchoolLevel;
-use App\Models\Role;
+use App\Models\Catalogs\SchoolManagementType;
+use App\Models\Catalogs\SchoolShift;
+use App\Models\Catalogs\SchoolLevel;
+use App\Models\Catalogs\Role;
 use Illuminate\Support\Facades\Route;
 // use Inertia\Inertia;
 

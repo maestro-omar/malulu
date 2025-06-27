@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\System;
 
-use App\Models\FileType;
+use App\Models\Catalogs\FileType;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Services\FileTypeService;

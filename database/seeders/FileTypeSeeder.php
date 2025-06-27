@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\FileType;
+use App\Models\Catalogs\FileType;
 
 class FileTypeSeeder extends Seeder
 {

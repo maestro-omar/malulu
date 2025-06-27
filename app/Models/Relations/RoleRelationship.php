@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Relations;
 
-use App\Models\BaseModel as Model;
-use App\Models\User;
+use App\Models\Base\BaseModel as Model;
+use App\Models\Entities\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Traits\FilterConstants;
+use App\Models\Relations\TeacherCourse;
+use App\Models\Catalogs\SchoolLevel;
 
 class RoleRelationship extends Model
 {
@@ -160,6 +162,6 @@ class RoleRelationship extends Model
 
     public function teacherCourses()
     {
-        return $this->hasMany(\App\Models\TeacherCourse::class);
+        return $this->hasMany(TeacherCourse::class);
     }
 }

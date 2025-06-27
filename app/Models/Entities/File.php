@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Entities;
 
-use App\Models\BaseModel as Model;
-use App\Models\User;
+use App\Models\Base\BaseModel as Model;
+use App\Models\Entities\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;

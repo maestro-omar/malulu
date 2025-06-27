@@ -6,9 +6,9 @@ use Illuminate\Database\Seeder;
 // use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
-use App\Models\User;
-use App\Models\School;
-use App\Models\Role;
+use App\Models\Entities\User;
+use App\Models\Entities\School;
+use App\Models\Catalogs\Role;
 
 class RoleAndPermissionSeeder extends Seeder
 {

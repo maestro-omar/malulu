@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Relations;
 
-use App\Models\BaseModel as Model;
+use App\Models\Base\BaseModel as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Relations;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\BaseModel as Model;
+use App\Models\Base\BaseModel as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;

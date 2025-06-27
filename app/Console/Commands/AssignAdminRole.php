@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\User;
-use App\Models\School;
-use App\Models\Role;
+use App\Models\Entities\User;
+use App\Models\Entities\School;
+use App\Models\Catalogs\Role;
 
 class AssignAdminRole extends Command
 {

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\SchoolLevel;
+use App\Models\Catalogs\SchoolLevel;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

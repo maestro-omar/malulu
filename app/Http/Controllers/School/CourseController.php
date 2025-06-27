@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\School;
 
 use App\Http\Controllers\School\SchoolBaseController;
-use App\Models\Course;
+use App\Models\Entities\Course;
 use App\Services\CourseService;
 use App\Services\SchoolService;
 use App\Services\SchoolLevelService;
@@ -11,8 +11,8 @@ use App\Services\SchoolShiftService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\ValidationException;
-use App\Models\School;
-use App\Models\SchoolLevel;
+use App\Models\Entities\School;
+use App\Models\Catalogs\SchoolLevel;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
 class CourseController extends SchoolBaseController

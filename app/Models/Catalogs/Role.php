@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Catalogs;
 
 use Spatie\Permission\Models\Role as SpatieRole;
 use App\Traits\FilterConstants;

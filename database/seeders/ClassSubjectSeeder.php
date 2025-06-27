@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\ClassSubject;
-use App\Models\SchoolLevel;
+use App\Models\Catalogs\ClassSubject;
+use App\Models\Catalogs\SchoolLevel;
 use Illuminate\Database\Seeder;
 
 class ClassSubjectSeeder extends Seeder

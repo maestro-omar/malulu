@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use App\Models\School;
-use App\Models\Role;
+use App\Models\Entities\School;
+use App\Models\Catalogs\Role;
 use Spatie\Permission\Models\Permission;
 
 class HandleInertiaRequests extends Middleware

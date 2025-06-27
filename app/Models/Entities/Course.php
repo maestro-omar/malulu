@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Entities;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\BaseModel as Model;
+use App\Models\Base\BaseModel as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Relations\TeacherCourse;
+use App\Models\Relations\StudentCourse;
 
 class Course extends Model
 {
@@ -92,7 +94,7 @@ class Course extends Model
      */
     public function teacherCourses(): HasMany
     {
-        return $this->hasMany(\App\Models\TeacherCourse::class);
+        return $this->hasMany(TeacherCourse::class);
     }
 
     /**

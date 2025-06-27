@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\RoleRelationshipEndReason;
-use App\Models\Role;
+use App\Models\Catalogs\RoleRelationshipEndReason;
+use App\Models\Catalogs\Role;
 
 class RoleRelationshipEndReasonSeeder extends Seeder
 {

@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\StudentCourseEndReason;
+use App\Models\Catalogs\StudentCourseEndReason;
 
 class StudentCourseEndReasonSeeder extends Seeder
 {

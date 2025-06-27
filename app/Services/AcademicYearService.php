@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\AcademicYear;
+use App\Models\Entities\AcademicYear;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;

@@ -2,15 +2,15 @@
 
 namespace App\Services;
 
-use App\Models\JobStatus;
+use App\Models\Catalogs\JobStatus;
 use App\Services\UserService;
 use App\Services\CourseService;
-use App\Models\Role;
-use App\Models\RoleRelationship;
-use App\Models\User;
-use App\Models\School;
-use App\Models\SchoolLevel;
-use App\Models\SchoolShift;
+use App\Models\Catalogs\Role;
+use App\Models\Relations\RoleRelationship;
+use App\Models\Entities\User;
+use App\Models\Entities\School;
+use App\Models\Catalogs\SchoolLevel;
+use App\Models\Catalogs\SchoolShift;
 
 class DashboardService
 {
@@ -90,7 +90,7 @@ class DashboardService
     /**
      * Get dashboard data for a school administrator.
      *
-     * @param  \App\Models\User  $loggedUser
+     * @param  \App\Models\Entities\User  $loggedUser
      * @param  array  $roleData
      * @return array
      */
@@ -103,7 +103,7 @@ class DashboardService
     /**
      * Get dashboard data for a teacher in a school.
      *
-     * @param  \App\Models\User  $loggedUser
+     * @param  \App\Models\Entities\User  $loggedUser
      * @param  array  $roleData
      * @return array
      */
@@ -130,7 +130,7 @@ class DashboardService
     /**
      * Get dashboard data for a student in a school.
      *
-     * @param  \App\Models\User  $loggedUser
+     * @param  \App\Models\Entities\User  $loggedUser
      * @param  array  $roleData
      * @return array
      */
@@ -143,7 +143,7 @@ class DashboardService
     /**
      * Get dashboard data for a guardian in a school.
      *
-     * @param  \App\Models\User  $loggedUser
+     * @param  \App\Models\Entities\User  $loggedUser
      * @param  array  $roleData
      * @return array
      */
@@ -156,7 +156,7 @@ class DashboardService
     /**
      * Get dashboard data for a former student in a school.
      *
-     * @param  \App\Models\User  $loggedUser
+     * @param  \App\Models\Entities\User  $loggedUser
      * @param  array  $roleData
      * @return array
      */
@@ -168,7 +168,7 @@ class DashboardService
     /**
      * Get dashboard data for a cooperative member in a school.
      *
-     * @param  \App\Models\User  $loggedUser
+     * @param  \App\Models\Entities\User  $loggedUser
      * @param  array  $roleData
      * @return array
      */
@@ -180,7 +180,7 @@ class DashboardService
     /**
      * Get dashboard data for other workers in a school (not teachers).
      *
-     * @param  \App\Models\User  $loggedUser
+     * @param  \App\Models\Entities\User  $loggedUser
      * @param  array  $roleData
      * @return array
      */

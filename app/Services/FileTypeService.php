@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\FileType;
+use App\Models\Catalogs\FileType;
 
 class FileTypeService
 {

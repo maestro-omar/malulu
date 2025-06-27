@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\System;
 
-use App\Models\User;
+use App\Models\Entities\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -11,12 +11,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\UserService;
 use App\Http\Requests\UserRequest;
-use App\Models\Province;
-use App\Models\Country;
-use App\Models\School;
-use App\Models\RoleRelationship;
-use App\Models\WorkerRelationship;
-use App\Models\GuardianRelationship;
+use App\Models\Catalogs\Province;
+use App\Models\Catalogs\Country;
+use App\Models\Entities\School;
+use App\Models\Relations\RoleRelationship;
+use App\Models\Relations\WorkerRelationship;
+use App\Models\Relations\GuardianRelationship;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -195,7 +195,7 @@ class UserAdminController extends SystemBaseController
 
         return Inertia::render('Users/AddRole', [
             'user' => $userData,
-            'allSchools' => \App\Models\School::with('schoolLevels')->get(),
+            'allSchools' => \App\Models\Entities\School::with('schoolLevels')->get(),
             'assignedSchools' => $userData['schools'],
             'availableRoles' => \Spatie\Permission\Models\Role::all(),
             'roleRelationships' => $userData['roleRelationships'],

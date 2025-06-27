@@ -4,9 +4,9 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Contracts\PermissionsTeamResolver;
-use App\Models\Role;
-use App\Models\User;
-use App\Models\School;
+use App\Models\Catalogs\Role;
+use App\Models\Entities\User;
+use App\Models\Entities\School;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\AcademicYear;
+use App\Models\Entities\AcademicYear;
 use App\Services\AcademicYearService;
 use Illuminate\Http\Request;
 

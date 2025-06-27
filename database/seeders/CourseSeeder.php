@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Course;
-use App\Models\SchoolLevel;
-use App\Models\School;
-use App\Models\SchoolShift;
+use App\Models\Entities\Course;
+use App\Models\Catalogs\SchoolLevel;
+use App\Models\Entities\School;
+use App\Models\Catalogs\SchoolShift;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;

@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Models\Course;
+use App\Models\Entities\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use App\Models\StudentCourse;
+use App\Models\Relations\StudentCourse;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -249,7 +249,7 @@ class CourseService
         }
 
         // Check if already assigned (active)
-        $existing = \App\Models\TeacherCourse::where('role_relationship_id', $roleRelationshipId)
+        $existing = \App\Models\Relations\TeacherCourse::where('role_relationship_id', $roleRelationshipId)
             ->where('course_id', $courseId)
             ->whereNull('end_date')
             ->first();
@@ -261,7 +261,7 @@ class CourseService
         }
 
         // Create assignment
-        return \App\Models\TeacherCourse::create([
+        return \App\Models\Relations\TeacherCourse::create([
             'role_relationship_id' => $roleRelationshipId,
             'course_id' => $courseId,
             'start_date' => $data['start_date'],

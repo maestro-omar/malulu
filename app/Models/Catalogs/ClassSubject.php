@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Catalogs;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\BaseModel as Model;
+use App\Models\Base\BaseModel as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ClassSubject extends Model

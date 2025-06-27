@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Catalogs;
 
-use App\Models\BaseCatalogModel as Model;
+use App\Models\Base\BaseCatalogModel as Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Role;
+use App\Models\Catalogs\Role;
 
 class FileType extends Model
 {

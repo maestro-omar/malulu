@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\School;
+use App\Models\Entities\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;

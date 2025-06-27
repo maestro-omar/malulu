@@ -2,24 +2,24 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\School;
-use App\Models\JobStatus;
-use App\Models\Role;
+use App\Models\Entities\User;
+use App\Models\Entities\School;
+use App\Models\Catalogs\JobStatus;
+use App\Models\Catalogs\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Faker\Factory as Faker;
 use Spatie\Permission\PermissionRegistrar;
-use App\Models\Province;
-use App\Models\Country;
-use App\Models\ClassSubject;
-use App\Models\Course;
-use App\Models\GuardianRelationship;
-use App\Models\WorkerRelationship;
-use App\Models\RoleRelationship;
+use App\Models\Catalogs\Province;
+use App\Models\Catalogs\Country;
+use App\Models\Catalogs\ClassSubject;
+use App\Models\Entities\Course;
+use App\Models\Relations\GuardianRelationship;
+use App\Models\Relations\WorkerRelationship;
+use App\Models\Relations\RoleRelationship;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use App\Models\SchoolLevel;
+use App\Models\Catalogs\SchoolLevel;
 use App\Services\UserService;
 
 class FakeUsersSeeder extends Seeder
@@ -283,24 +283,24 @@ class FakeUsersSeeder extends Seeder
             for ($i = 1; $i <= $count; $i++) {
                 // Assign gender based on random choice, using User constants
                 $genderOptions = [
-                    \App\Models\User::GENDER_MALE,
-                    \App\Models\User::GENDER_FEMALE,
-                    \App\Models\User::GENDER_TRANS,
-                    \App\Models\User::GENDER_FLUID,
-                    \App\Models\User::GENDER_NOBINARY,
-                    \App\Models\User::GENDER_OTHER,
+                    \App\Models\Entities\User::GENDER_MALE,
+                    \App\Models\Entities\User::GENDER_FEMALE,
+                    \App\Models\Entities\User::GENDER_TRANS,
+                    \App\Models\Entities\User::GENDER_FLUID,
+                    \App\Models\Entities\User::GENDER_NOBINARY,
+                    \App\Models\Entities\User::GENDER_OTHER,
                 ];
                 // 80% masc/fem, 20% other
                 $gender = $this->faker->randomElement(
                     $this->faker->boolean(80)
-                        ? [\App\Models\User::GENDER_MALE, \App\Models\User::GENDER_FEMALE]
+                        ? [\App\Models\Entities\User::GENDER_MALE, \App\Models\Entities\User::GENDER_FEMALE]
                         : array_slice($genderOptions, 2)
                 );
 
                 // Pick firstname based on gender
-                if ($gender === \App\Models\User::GENDER_MALE) {
+                if ($gender === \App\Models\Entities\User::GENDER_MALE) {
                     $firstName = $this->faker->firstNameMale();
-                } elseif ($gender === \App\Models\User::GENDER_FEMALE) {
+                } elseif ($gender === \App\Models\Entities\User::GENDER_FEMALE) {
                     $firstName = $this->faker->firstNameFemale();
                 } else {
                     // For other genders, pick randomly from male or female names
@@ -467,32 +467,32 @@ class FakeUsersSeeder extends Seeder
     private function deleteAllUsersExceptAdmin()
     {
         // Delete related data first to avoid foreign key issues
-        $userIds = \App\Models\User::where('id', '!=', 1)->pluck('id');
+        $userIds = \App\Models\Entities\User::where('id', '!=', 1)->pluck('id');
 
         // Delete teacher_courses and student_courses (force delete)
-        \App\Models\TeacherCourse::whereIn('role_relationship_id', function ($q) use ($userIds) {
+        \App\Models\Relations\TeacherCourse::whereIn('role_relationship_id', function ($q) use ($userIds) {
             $q->select('id')->from('role_relationships')->whereIn('user_id', $userIds);
         })->withTrashed()->forceDelete();
-        \App\Models\StudentCourse::whereIn('role_relationship_id', function ($q) use ($userIds) {
+        \App\Models\Relations\StudentCourse::whereIn('role_relationship_id', function ($q) use ($userIds) {
             $q->select('id')->from('role_relationships')->whereIn('user_id', $userIds);
         })->withTrashed()->forceDelete();
 
         // Delete worker, student, guardian relationships (no soft deletes, normal delete)
-        \App\Models\WorkerRelationship::whereIn('role_relationship_id', function ($q) use ($userIds) {
+        \App\Models\Relations\WorkerRelationship::whereIn('role_relationship_id', function ($q) use ($userIds) {
             $q->select('id')->from('role_relationships')->whereIn('user_id', $userIds);
         })->delete();
-        \App\Models\StudentRelationship::whereIn('role_relationship_id', function ($q) use ($userIds) {
+        \App\Models\Relations\StudentRelationship::whereIn('role_relationship_id', function ($q) use ($userIds) {
             $q->select('id')->from('role_relationships')->whereIn('user_id', $userIds);
         })->delete();
-        \App\Models\GuardianRelationship::whereIn('role_relationship_id', function ($q) use ($userIds) {
+        \App\Models\Relations\GuardianRelationship::whereIn('role_relationship_id', function ($q) use ($userIds) {
             $q->select('id')->from('role_relationships')->whereIn('user_id', $userIds);
         })->delete();
 
         // Delete role relationships (force delete)
-        \App\Models\RoleRelationship::whereIn('user_id', $userIds)->withTrashed()->forceDelete();
+        \App\Models\Relations\RoleRelationship::whereIn('user_id', $userIds)->withTrashed()->forceDelete();
 
         // Finally, force delete users (except admin)
-        \App\Models\User::where('id', '!=', 1)->withTrashed()->forceDelete();
+        \App\Models\Entities\User::where('id', '!=', 1)->withTrashed()->forceDelete();
 
         echo "Deleting users with IDs: ", implode(", ", $userIds->toArray()), "\n";
     }
