@@ -26,6 +26,89 @@ class RoleAndPermissionSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
+        /*
+        -¿ver listado y datos de cualquier escuela? ¿es algo público general, sin acceso?
+
+        ex-estudiante:
+        -ver datos de escuelas en las que estuvo
+        -ver propios datos
+        -cambiar propios teléfono/email?
+        -ver propios historial académico
+        -ver propios mensajes
+        -¿enviar mensajes a autoridades? (para pedir certificados??)
+
+        estudiante (¿cambia por nivel o por edad?  ¿puede gestionar permisos sus tutores, por ejemplo, para cambiar o no su email, su foto? ¿o  autoridades/admin/docente  pueden habilitar ciertos permisos?)
+        -ver datos de escuelas en las que está (¿incluye documentos... escuela+nivel, escuela, distrito, ministerio... que sean "públicos")
+        -ver propios datos
+        -editar propios algunos datos???
+        -ver propios historial académico
+        -ver propios mensajes
+        -enviar mensajes (¿a quiénes?)
+        -(gestión libros prestados a futuro)
+
+        tutores
+        -ver datos de escuelas en las que está hijes (incluye documentos... escuela+nivel, escuela, distrito, ministerio... que sean "públicos")
+        -ver propios datos
+        -editar propios algunos datos???
+        -editar hijes algunos datos
+        -subir hijes documentacion
+        -ver hijes historial académico
+        -ver propios mensajes
+        -enviar mensajes (¿a quiénes?)
+        -ver hijes info cursos ¿ver listado compas? ¿info tutores compas? ¿info docentes?
+        -(gestión libros prestados hijes a futuro)
+        
+        coope
+        -ver datos de escuelas en las que está hijes
+        -ver propios datos
+        -editar propios algunos datos???
+        -ver info coope
+        -publicar info coope
+
+        bibliotecarie
+        -ver datos de escuelas en las que trabaja
+        -ver propios datos (personales y de trabajo)
+        -editar propios datos (personales y de trabajo)
+        -ver docu adminis/pedago de instituciòn
+        -subir documentos escuela?
+        -(gestión libros a futuro)
+
+        precept
+        -ver datos de escuelas en las que trabaja
+        -ver propios datos (personales y de trabajo)
+        -editar propios datos (personales y de trabajo)
+        -ver docu adminis/pedago de instituciòn
+        -subir documentos escuela? (limitado nivel)
+        -ver editar crear alumnes? (limitado nivel, pero cualquier curso para ser flexibles con realidad escolar)
+        -asistencia? (limitado nivel, pero cualquier curso para ser flexibles con realidad escolar)
+        -cargar notas? (limitado nivel, pero cualquier curso para ser flexibles con realidad escolar)
+        -subir docu alumnes? (limitado nivel, pero cualquier curso para ser flexibles con realidad escolar)
+        -gestion cursos: promover curso completo, por alumno, editar status alumno (bajas, cambio de grupo...)
+        -reportes (asistencia, sintesis por alumno....)
+        
+        profes ¿hay diferencia entre la variedad de cargos)
+        -idem precept (sin limitaciones para habilitar flexibilidad)
+        -¿se justifica limitar por ejempo a Especiales NO cargan asistencia ni NOTAS y curriculares solo notas propias y de grado NO notas curriculares? creo mejor NO limitar por ahora para facilitar situaciones excepcionales, flexibilidad
+
+        autoridades (dire, rege, secre)
+        -idem profes++
+        -admin de profes
+        -editar propia escuela
+        -escalas calificaciones
+        -modelos de libretas
+        -CRUD docus escuela y superiores
+        -importacion "masiva" de datos de alumnos
+
+        admin
+        -idem autoridades
+        +crear admin
+
+        superadmin
+        -todo lo anterior++
+        -CRUDs catalogos todos (permisos, motivos baja, niveles, turnos, paises, provincias, calendario escolar...)
+        -cruds escuelas
+        -
+        */
         // Create permissions with default guard
         $allPermissions = [
             // Superadmin permission
