@@ -4,6 +4,8 @@ namespace App\Models\Catalogs;
 
 use App\Models\Base\BaseCatalogModel as Model;
 use App\Traits\FilterConstants;
+use App\Models\Entities\School;
+use App\Models\Relations\RoleRelationship;
 
 class SchoolLevel extends Model
 {

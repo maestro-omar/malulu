@@ -7,6 +7,10 @@ use App\Models\Base\BaseModel as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Catalogs\SchoolLevel;
+use App\Models\Catalogs\SchoolShift;
+use App\Models\Catalogs\SchoolManagementType;
+use App\Models\Catalogs\Locality;
 
 class School extends Model
 {

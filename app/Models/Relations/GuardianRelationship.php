@@ -7,6 +7,7 @@ use App\Models\Entities\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Traits\FilterConstants;
+use App\Models\Relations\RoleRelationship;
 
 class GuardianRelationship extends Model
 {

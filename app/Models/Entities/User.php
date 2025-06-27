@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Catalogs\Role;
 use App\Models\Entities\School;
 use App\Traits\FilterConstants;
+use App\Models\Catalogs\Province;
+use App\Models\Catalogs\Country;
+use App\Models\Relations\RoleRelationship;
+use App\Models\Relations\GuardianRelationship;
+use App\Models\Relations\StudentRelationship;
 
 class User extends Authenticatable
 {

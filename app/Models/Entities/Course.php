@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Relations\TeacherCourse;
 use App\Models\Relations\StudentCourse;
+use App\Models\Entities\School;
+use App\Models\Catalogs\SchoolLevel;
+use App\Models\Catalogs\SchoolShift;
 
 class Course extends Model
 {

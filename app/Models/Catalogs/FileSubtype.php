@@ -4,6 +4,8 @@ namespace App\Models\Catalogs;
 
 use App\Models\Base\BaseCatalogModel as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Catalogs\FileType;
+use App\Models\Entities\File;
 
 class FileSubtype extends Model
 {

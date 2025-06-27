@@ -4,6 +4,7 @@ namespace App\Models\Catalogs;
 
 use App\Models\Base\BaseCatalogModel as Model;
 use App\Traits\FilterConstants;
+use App\Models\Relations\RoleRelationship;
 
 class RoleRelationshipEndReason extends Model
 {

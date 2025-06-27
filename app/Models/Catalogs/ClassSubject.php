@@ -5,6 +5,7 @@ namespace App\Models\Catalogs;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Base\BaseModel as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Catalogs\SchoolLevel;
 
 class ClassSubject extends Model
 {

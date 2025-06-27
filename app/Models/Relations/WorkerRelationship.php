@@ -6,6 +6,10 @@ use App\Models\Base\BaseModel as Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Traits\FilterConstants;
+use App\Models\Relations\RoleRelationship;
+use App\Models\Catalogs\ClassSubject;
+use App\Models\Catalogs\JobStatus;
+use App\Models\Entities\File;
 
 class WorkerRelationship extends Model
 {

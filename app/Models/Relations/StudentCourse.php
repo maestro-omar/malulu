@@ -7,6 +7,9 @@ use App\Models\Base\BaseModel as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Relations\RoleRelationship;
+use App\Models\Entities\Course;
+use App\Models\Catalogs\StudentCourseEndReason;
 
 class StudentCourse extends Model
 {

@@ -9,6 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Traits\FilterConstants;
 use App\Models\Relations\TeacherCourse;
 use App\Models\Catalogs\SchoolLevel;
+use App\Models\Catalogs\Role;
+use App\Models\Entities\School;
+use App\Models\Catalogs\RoleRelationshipEndReason;
+use App\Models\Relations\WorkerRelationship;
+use App\Models\Relations\GuardianRelationship;
+use App\Models\Relations\StudentRelationship;
 
 class RoleRelationship extends Model
 {
