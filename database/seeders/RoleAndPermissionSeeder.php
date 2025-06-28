@@ -205,6 +205,62 @@ class RoleAndPermissionSeeder extends Seeder
             ]);
         }
 
+        $authorityPermissions = array_diff($allPermissions, ['superadmin', 'admin']);
+        $teacherPermissions = [
+            'view own profile',
+            'edit own profile',
+            'view other profiles',
+            'view assigned schools',
+            'view academic',
+            'view assigned academic',
+            'edit assigned academic',
+            'view students',
+            'edit students',
+            'view guardians',
+            'edit guardians',
+            'view own teacher data',
+            'edit own teacher data',
+            'view library',
+        ];
+        $librarianPermissions = [
+            'view own profile',
+            'edit own profile',
+            'view assigned schools',
+            'view students',
+            'view own library data',
+            'edit own library data',
+            'view library',
+            'create library',
+            'edit library',
+            'delete library',
+        ];
+        $coopPermissions = [
+            'view own profile',
+            'edit own profile',
+            'view own cooperative data',
+            'edit own cooperative data',
+        ];
+        $guardianPermissions = [
+            'view own profile',
+            'edit own profile',
+            'view own guardian data',
+            'edit own guardian data',
+            'view children data',
+            'edit children data',
+        ];
+        $studentPermissions = [
+            'view own profile',
+            'edit own profile',
+            'view own student data',
+            'edit own student data',
+        ];
+
+        $formerStudentPermissions = [
+            'view own profile',
+            'edit own profile',
+            'view own historical data',
+            'edit own historical data',
+        ];
         // Create roles and assign permissions
         $roles = [
             Role::SUPERADMIN => [
@@ -226,221 +282,98 @@ class RoleAndPermissionSeeder extends Seeder
                 'code' => Role::DIRECTOR,
                 'description' => 'Director de la institución',
                 'short' => 'Dir',
-                'permissions' => array_diff($allPermissions, ['superadmin', 'admin'])
+                'permissions' => $authorityPermissions
             ],
             Role::REGENT => [
                 'name' => 'Regente',
                 'code' => Role::REGENT,
                 'description' => 'Regente de la institución',
                 'short' => 'Reg',
-                'permissions' => array_diff($allPermissions, ['superadmin', 'admin'])
+                'permissions' => $authorityPermissions
             ],
             Role::SECRETARY => [
                 'name' => 'Secretario',
                 'code' => Role::SECRETARY,
                 'description' => 'Secretario de la institución',
                 'short' => 'Sec',
-                'permissions' => array_diff($allPermissions, ['superadmin', 'admin'])
+                'permissions' => $authorityPermissions
             ],
             Role::PROFESSOR => [
                 'name' => 'Profesor',
                 'code' => Role::PROFESSOR,
                 'description' => 'Profesor de la institución',
                 'short' => 'Prof',
-                'permissions' => [
-                    'view own profile',
-                    'edit own profile',
-                    'view other profiles',
-                    'view assigned schools',
-                    'view academic',
-                    'view assigned academic',
-                    'edit assigned academic',
-                    'view students',
-                    'edit students',
-                    'view guardians',
-                    'edit guardians',
-                    'view own teacher data',
-                    'edit own teacher data',
-                    'view library',
-                ],
+                'permissions' => $teacherPermissions,
             ],
             Role::CLASS_ASSISTANT => [
                 'name' => 'Preceptor',
                 'code' => Role::CLASS_ASSISTANT,
                 'description' => 'Preceptor de nivel secundario',
                 'short' => 'Prec',
-                'permissions' => [
-                    'view own profile',
-                    'edit own profile',
-                    'view other profiles',
-                    'view assigned schools',
-                    'view academic',
-                    'view assigned academic',
-                    'edit assigned academic',
-                    'view students',
-                    'edit students',
-                    'view guardians',
-                    'edit guardians',
-                    'view own teacher data',
-                    'edit own teacher data',
-                    'view library',
-                ],
+                'permissions' => $teacherPermissions,
             ],
             Role::GRADE_TEACHER => [
                 'name' => 'Maestra/o de Grado',
                 'code' => Role::GRADE_TEACHER,
                 'description' => 'Maestra/o de grado',
                 'short' => 'Maes',
-                'permissions' => [
-                    'view own profile',
-                    'edit own profile',
-                    'view other profiles',
-                    'view assigned schools',
-                    'view academic',
-                    'view assigned academic',
-                    'edit assigned academic',
-                    'view students',
-                    'edit students',
-                    'view guardians',
-                    'edit guardians',
-                    'view own teacher data',
-                    'edit own teacher data',
-                    'view library',
-                ],
+                'permissions' => $teacherPermissions,
             ],
             Role::ASSISTANT_TEACHER => [
                 'name' => 'Maestra/o Auxiliar',
                 'code' => Role::ASSISTANT_TEACHER,
                 'description' => 'Maestra/o auxiliar',
                 'short' => 'Auxi',
-                'permissions' => [
-                    'view own profile',
-                    'edit own profile',
-                    'view other profiles',
-                    'view assigned schools',
-                    'view academic',
-                    'view assigned academic',
-                    'edit assigned academic',
-                    'view students',
-                    'edit students',
-                    'view guardians',
-                    'edit guardians',
-                    'view own teacher data',
-                    'edit own teacher data',
-                    'view library',
-                ],
+                'permissions' => $teacherPermissions,
             ],
             Role::CURRICULAR_TEACHER => [
                 'name' => 'Profesor Curricular',
                 'code' => Role::CURRICULAR_TEACHER,
                 'description' => 'Profesor de materias curriculares',
                 'short' => 'Curr',
-                'permissions' => [
-                    'view own profile',
-                    'edit own profile',
-                    'view other profiles',
-                    'view assigned schools',
-                    'view academic',
-                    'view assigned academic',
-                    'edit assigned academic',
-                    'view students',
-                    'edit students',
-                    'view guardians',
-                    'edit guardians',
-                    'view own teacher data',
-                    'edit own teacher data',
-                    'view library',
-                ],
+                'permissions' => $teacherPermissions,
             ],
             Role::SPECIAL_TEACHER => [
                 'name' => 'Profesor/a Especial',
                 'code' => Role::SPECIAL_TEACHER,
                 'description' => 'Profesor/a de educación especial',
                 'short' => 'Esp',
-                'permissions' => [
-                    'view own profile',
-                    'edit own profile',
-                    'view other profiles',
-                    'view assigned schools',
-                    'view academic',
-                    'view assigned academic',
-                    'edit assigned academic',
-                    'view students',
-                    'edit students',
-                    'view guardians',
-                    'edit guardians',
-                    'view own teacher data',
-                    'edit own teacher data',
-                    'view library',
-                ],
+                'permissions' => $teacherPermissions,
             ],
             Role::LIBRARIAN => [
                 'name' => 'Bibliotecario/a',
                 'code' => Role::LIBRARIAN,
                 'description' => 'Responsable de la biblioteca',
                 'short' => 'Biblio',
-                'permissions' => [
-                    'view own profile',
-                    'edit own profile',
-                    'view assigned schools',
-                    'view students',
-                    'view own library data',
-                    'edit own library data',
-                    'view library',
-                    'create library',
-                    'edit library',
-                    'delete library',
-                ],
+                'permissions' => $librarianPermissions
             ],
             Role::GUARDIAN => [
                 'name' => 'Responsable',
                 'code' => Role::GUARDIAN,
                 'description' => 'Adulto responsable legal del estudiante',
                 'short' => 'Tut',
-                'permissions' => [
-                    'view own profile',
-                    'edit own profile',
-                    'view own guardian data',
-                    'edit own guardian data',
-                    'view children data',
-                    'edit children data',
-                ],
+                'permissions' => $guardianPermissions
             ],
             Role::STUDENT => [
                 'name' => 'Estudiante',
                 'code' => Role::STUDENT,
                 'description' => 'Estudiante/alumno/a de la institución',
                 'short' => 'Est',
-                'permissions' => [
-                    'view own profile',
-                    'edit own profile',
-                    'view own student data',
-                    'edit own student data',
-                ],
+                'permissions' => $studentPermissions
             ],
             Role::COOPERATIVE => [
                 'name' => 'Cooperadora',
                 'code' => Role::COOPERATIVE,
                 'description' => 'Miembro de la cooperadora',
                 'short' => 'Coop',
-                'permissions' => [
-                    'view own profile',
-                    'edit own profile',
-                    'view own cooperative data',
-                    'edit own cooperative data',
-                ],
+                'permissions' => $coopPermissions
             ],
             Role::FORMER_STUDENT => [
                 'name' => 'Ex-Estudiante',
                 'code' => Role::FORMER_STUDENT,
                 'description' => 'Ex-estudiante de la institución',
                 'short' => 'Exalum',
-                'permissions' => [
-                    'view own profile',
-                    'edit own profile',
-                    'view own historical data',
-                    'edit own historical data',
-                ],
+                'permissions' => $formerStudentPermissions
             ],
         ];
 
