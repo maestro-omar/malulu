@@ -19,7 +19,7 @@ class SchoolService
     public function getSchools(Request $request)
     {
         $query = School::query()
-            ->with(['locality', 'schoolLevels', 'managementType', 'shifts'])
+            ->with(['locality', 'locality.province', 'schoolLevels', 'managementType', 'shifts'])
             ->when($request->input('search'), function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
@@ -36,6 +36,9 @@ class SchoolService
             ->when($request->input('locality_id'), function ($query, $localityId) {
                 $query->where('locality_id', $localityId);
             })
+            ->when($request->input('province_code'), function ($query, $provinceCode) {
+                $query->where('province.code', $provinceCode);
+            })
             ->where('name', '!=', School::GLOBAL);
 
         return $query->orderBy('name')->paginate(10);
@@ -51,6 +54,9 @@ class SchoolService
             $data['slug'] = Str::slug($data['short']);
         }
 
+        // Reserved words that cannot be used as slugs
+        $reservedWords = ['sistema', 'escuela', 'mi-escuela', 'usuario', 'curso', 'provincia', 'general'];
+
         $rules = [
             'name' => [
                 'required',
@@ -64,7 +70,12 @@ class SchoolService
                 'string',
                 'max:50',
                 Rule::unique('schools', 'slug')->ignore($school?->id),
-                'regex:/^[a-z0-9-]+$/'
+                'regex:/^[a-z0-9-]+$/',
+                function ($attribute, $value, $fail) use ($reservedWords) {
+                    if (in_array($value, $reservedWords)) {
+                        $fail('El slug no puede ser una palabra reservada: ' . implode(', ', $reservedWords));
+                    }
+                }
             ],
             'cue' => [
                 'required',

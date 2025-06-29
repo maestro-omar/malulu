@@ -23,4 +23,12 @@ class Province extends Model
         'name',
         'order'
     ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'code';
+    }
 }
