@@ -83,7 +83,7 @@ class DashboardService
                     $schoolIds[] = $schoolId;
             }
         }
-        $schools = School::select('cue', 'id', 'name', 'short')->find($schoolIds)->keyBy('id')->toArray();
+        $schools = School::select('cue', 'id', 'name', 'short', 'slug')->find($schoolIds)->keyBy('id')->toArray();
         return ['rolesCardsFlags' => $flags, 'schools' => $schools, 'count' => $count];
     }
 

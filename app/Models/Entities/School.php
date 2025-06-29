@@ -33,6 +33,7 @@ class School extends Model
         'code',
         'name',
         'short',
+        'slug',
         'cue',
         'locality_id',
         'management_type_id',
@@ -57,7 +58,7 @@ class School extends Model
      */
     public function getRouteKeyName(): string
     {
-        return 'cue';
+        return 'slug';
     }
 
     /**

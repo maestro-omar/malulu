@@ -255,7 +255,6 @@ class RoleAndPermissionSeeder extends Seeder
         // Define permission groups (sorted from most powerful to least)
         $superAdminPermissions = [
             'superadmin',
-            'school.view-any',
             'user.manage',
             'role.manage',
             'permission.manage',

@@ -5,7 +5,7 @@ use App\Http\Controllers\School\SchoolController;
 use Illuminate\Support\Facades\Route;
 // use Inertia\Inertia;
 
-Route::prefix('sistema/mi-escuela/{school}')->group(function () {
+Route::prefix('sistema/escuela/{school}')->group(function () {
     Route::middleware('auth')->group(function () {
         // School Routes
         Route::get('/', [SchoolController::class, 'show'])->name('schools.show')->middleware('permission:school.view');

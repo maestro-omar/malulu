@@ -23,11 +23,17 @@
                       <InputError :message="form.errors.name" class="mt-2" />
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div>
                         <InputLabel for="short" value="Nombre Corto" />
                         <TextInput id="short" type="text" class="mt-1 block w-full" v-model="form.short" required />
                         <InputError :message="form.errors.short" class="mt-2" />
+                      </div>
+
+                      <div>
+                        <InputLabel for="slug" value="Slug" />
+                        <TextInput id="slug" type="text" class="mt-1 block w-full" v-model="form.slug" required />
+                        <InputError :message="form.errors.slug" class="mt-2" />
                       </div>
 
                       <div>
@@ -184,7 +190,7 @@
               </div>
             </div>
           </div>
-          <ActionButtons button-label="Actualizar Escuela" :cancel-href="route('schools.show', school.cue)"
+          <ActionButtons button-label="Actualizar Escuela" :cancel-href="route('schools.show', school.slug)"
             :disabled="form.processing" class="mt-4" />
         </form>
       </div>
@@ -231,6 +237,7 @@ const currentLocality = computed(() => {
 const form = useForm({
   name: props.school.name,
   short: props.school.short,
+  slug: props.school.slug,
   cue: props.school.cue,
   locality_id: currentLocality.value,
   management_type_id: props.school.management_type_id,
@@ -253,6 +260,12 @@ watch(() => form.locality_id, (newValue) => {
   }
 }, { immediate: true });
 
+const initialSlug = ref(props.school.slug);
+
+function showSlugChangeWarning() {
+  return window.confirm('¡Atención! Cambiar el slug puede afectar cualquier referencia existente a esta escuela. ¿Desea continuar?');
+}
+
 const submit = () => {
   // Ensure locality_id is a number before submitting
   if (form.locality_id && typeof form.locality_id === 'object') {
@@ -270,6 +283,13 @@ const submit = () => {
   // Ensure social is an array
   if (!Array.isArray(form.social)) {
     form.social = [];
+  }
+
+  // If slug changed, show warning
+  if (form.slug !== initialSlug.value) {
+    if (!showSlugChangeWarning()) {
+      return;
+    }
   }
 
   form.put(route('schools.update', props.school.id), {

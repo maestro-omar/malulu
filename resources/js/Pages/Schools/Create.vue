@@ -67,8 +67,22 @@
                   class="mt-1 block w-full"
                   v-model="form.short"
                   required
+                  @blur="handleShortBlur"
                 />
                 <InputError :message="form.errors.short" class="mt-2" />
+              </div>
+
+              <div>
+                <InputLabel for="slug" value="Slug" />
+                <TextInput
+                  id="slug"
+                  type="text"
+                  class="mt-1 block w-full"
+                  v-model="form.slug"
+                  required
+                  @input="manualSlugEdit = true"
+                />
+                <InputError :message="form.errors.slug" class="mt-2" />
               </div>
 
               <div>
@@ -191,6 +205,7 @@ import SearchableDropdown from "@/Components/admin/SearchableDropdown.vue";
 import CancelLink from "@/Components/admin/CancelLink.vue";
 import AdminHeader from "@/Sections/AdminHeader.vue";
 import { hasPermission } from '@/utils/permissions';
+import { ref } from 'vue';
 
 const props = defineProps({
   localities: Array,
@@ -200,9 +215,29 @@ const props = defineProps({
   breadcrumbs: Array,
 });
 
+const manualSlugEdit = ref(false);
+
+function slugify(text) {
+  return text
+    .toString()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '') // Remove accents
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/--+/g, '-');
+}
+
+function handleShortBlur() {
+  if (!manualSlugEdit.value && form.short) {
+    form.slug = slugify(form.short);
+  }
+}
+
 const form = useForm({
   name: "",
   short: "",
+  slug: "",
   cue: "",
   locality_id: "",
   management_type_id: "",

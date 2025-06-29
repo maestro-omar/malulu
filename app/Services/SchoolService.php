@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
 
 class SchoolService
 {
@@ -45,6 +46,11 @@ class SchoolService
      */
     public function validateSchoolData(array $data, ?School $school = null)
     {
+        // If slug is missing, generate from short
+        if (empty($data['slug']) && !empty($data['short'])) {
+            $data['slug'] = Str::slug($data['short']);
+        }
+
         $rules = [
             'name' => [
                 'required',
@@ -53,6 +59,13 @@ class SchoolService
                 Rule::unique('schools', 'name')->ignore($school?->id)
             ],
             'short' => 'required|string|max:50',
+            'slug' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('schools', 'slug')->ignore($school?->id),
+                'regex:/^[a-z0-9-]+$/'
+            ],
             'cue' => [
                 'required',
                 'string',

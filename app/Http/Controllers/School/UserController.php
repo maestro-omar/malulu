@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\School;
 
 use App\Models\Entities\User;
+use App\Models\Entities\School;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -27,10 +28,10 @@ class UserController extends SchoolBaseController
     /**
      * Display a listing of the users.
      */
-    public function index(Request $request, $cue): Response
+    public function index(Request $request, $slug): Response
     {
         // Find the school by CUE
-        $school = \App\Models\Entities\School::where('cue', $cue)->firstOrFail();
+        $school = School::where('slug', $slug)->firstOrFail();
 
         // Validate if the authenticated user has access to this school
         if (!$this->userService->hasAccessToSchool($school->id)) {

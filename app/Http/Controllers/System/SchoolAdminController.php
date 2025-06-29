@@ -6,6 +6,7 @@ use App\Models\Entities\School;
 use App\Models\Catalogs\SchoolLevel;
 use App\Models\Catalogs\SchoolManagementType;
 use App\Models\Catalogs\SchoolShift;
+use App\Models\Catalogs\Locality;
 use App\Services\SchoolService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -32,6 +33,7 @@ class SchoolAdminController extends SystemBaseController
     {
         return Inertia::render('Schools/Index', [
             'schools' => $this->schoolService->getSchools($request),
+            'localities' => Locality::orderBy('order')->get(),
             'search' => $request->search,
             'breadcrumbs' => Breadcrumbs::generate('schools.index'),
         ]);
@@ -41,7 +43,7 @@ class SchoolAdminController extends SystemBaseController
     {
         return Inertia::render('Schools/Create', [
             'breadcrumbs' => Breadcrumbs::generate('schools.create'),
-            'localities' => \App\Models\Catalogs\Locality::orderBy('order')->get(),
+            'localities' => Locality::orderBy('order')->get(),
             'schoolLevels' => SchoolLevel::orderBy('id')->get(),
             'managementTypes' => SchoolManagementType::orderBy('id')->get(),
             'shifts' => SchoolShift::orderBy('id')->get()
@@ -71,7 +73,7 @@ class SchoolAdminController extends SystemBaseController
         return Inertia::render('Schools/Edit', [
             'school' => $school->load(['locality', 'schoolLevels', 'managementType', 'shifts']),
             'breadcrumbs' => Breadcrumbs::generate('schools.edit', $school),
-            'localities' => \App\Models\Catalogs\Locality::orderBy('order')->get(),
+            'localities' => Locality::orderBy('order')->get(),
             'schoolLevels' => SchoolLevel::orderBy('id')->get(),
             'managementTypes' => SchoolManagementType::orderBy('id')->get(),
             'shifts' => SchoolShift::orderBy('id')->get()

@@ -8,6 +8,7 @@ use App\Models\Catalogs\Locality;
 use App\Models\Catalogs\SchoolManagementType;
 use App\Models\Catalogs\SchoolShift;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class SchoolSeeder extends Seeder
 {
@@ -44,7 +45,7 @@ class SchoolSeeder extends Seeder
             [
                 'code' => '740058000',
                 'name' => 'CENTRO EDUCATIVO N° 8 MAESTRAS LUCIO LUCERO',
-                'short' => 'CE N° 8',
+                'short' => 'CE N°8',
                 'locality_id' => $this->localities['San Luis'],
                 'address' => 'RIOBAMBA 630',
                 'zip_code' => 'D5700',
@@ -177,6 +178,9 @@ class SchoolSeeder extends Seeder
             $levels = $school['levels'];
             $shifts = $school['shifts'] ?? [];
             unset($school['levels'], $school['shifts']); // Remove levels and shifts from the school data before creating
+
+            // Add slug field based on short field
+            $school['slug'] = Str::slug($school['short']);
 
             $newSchool = School::create($school);
 

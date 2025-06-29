@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('name');
             $table->string('short')->nullable();
+            $table->string('slug')->unique();
+            $table->string('cue')->nullable()->unique();
             $table->string('logo')->nullable();
             $table->string('picture')->nullable();
             $table->foreignId('locality_id')->constrained();
@@ -24,7 +26,6 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('coordinates')->nullable();
-            $table->string('cue')->nullable();
             $table->foreignId('management_type_id')->nullable()->constrained('school_management_types');
             $table->json('social')->nullable();
             $table->json('extra')->nullable();

@@ -6,7 +6,7 @@
     <template #header>
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles de la Escuela: ${school.short}`" :edit="{
         show: hasPermission($page.props, 'school.edit', school.id),
-        href: route('schools.edit', school.cue),
+        href: route('schools.edit', school.slug),
         label: 'Editar'
       }" :del="{
         show: hasPermission($page.props, 'school.delete', school.id),
@@ -14,18 +14,13 @@
         label: 'Eliminar'
       }">
         <template #additional-buttons>
-          <Link v-if="hasPermission($page.props, 'superadmin', null)"
-            :href="route('schools.trashed')"
-            class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-            Papelera
-          </Link>
-          <Link v-if="hasPermission($page.props, 'school.view', school.id)"
+          <Link v-if="hasPermission($page.props, 'school.view', null)"
             :href="route('schools.index')"
             class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
           Volver a Escuelas
           </Link>
           <Link v-for="level in school.school_levels" :key="level.id"
-            v-if="hasPermission($page.props, 'school.view', school.id)"
+            v-if="hasPermission($page.props, 'course.manage', school.id)"
             :href="route('courses.index', { school: school.cue, schoolLevel: level.code })"
             :class="['font-bold py-2 px-4 rounded', `bg-${levelColors[level.code]?.color}-600 hover:bg-${levelColors[level.code]?.color}-800 text-white`]">
           Cursos ({{ level.name }})
