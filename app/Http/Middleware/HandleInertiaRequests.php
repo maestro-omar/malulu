@@ -81,7 +81,7 @@ class HandleInertiaRequests extends Middleware
         ];
 
         // Add more menu items based on user permissions
-        if ($user->can('view users')) {
+        if ($user->can('user.manage')) {
             $items[] = [
                 'name' => 'Usuarios',
                 'route' => 'users.index',
@@ -89,7 +89,7 @@ class HandleInertiaRequests extends Middleware
             ];
         }
 
-        if ($user->can('view schools')) {
+        if ($user->can('school.view')) {
             $items[] = [
                 'name' => 'Escuelas',
                 'route' => 'schools.index',

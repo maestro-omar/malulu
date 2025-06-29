@@ -85,15 +85,15 @@
                         </div>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <Link v-if="hasPermission($page.props, 'view schools')"
+                        <Link v-if="hasPermission($page.props, 'school.view')"
                           :href="route('schools.show', school.cue)" class="text-blue-600 hover:text-blue-900 mr-3">
                         Ver
                         </Link>
-                        <Link v-if="hasPermission($page.props, 'edit schools')"
+                        <Link v-if="hasPermission($page.props, 'school.edit')"
                           :href="route('schools.edit', school.cue)" class="text-indigo-600 hover:text-indigo-900 mr-3">
                         Editar
                         </Link>
-                        <Link v-if="hasPermission($page.props, 'delete schools')"
+                        <Link v-if="hasPermission($page.props, 'school.delete')"
                           :href="route('schools.destroy', school.cue)" method="delete" as="button"
                           class="text-red-600 hover:text-red-900">
                         Eliminar
@@ -116,15 +116,15 @@
                       <p class="text-sm text-gray-500">{{ school.short }}</p>
                     </div>
                     <div class="flex space-x-2">
-                      <Link v-if="hasPermission($page.props, 'view schools')" :href="route('schools.show', school.cue)"
+                      <Link v-if="hasPermission($page.props, 'school.view')" :href="route('schools.show', school.cue)"
                         class="text-blue-600 hover:text-blue-900">
                       Ver
                       </Link>
-                      <Link v-if="hasPermission($page.props, 'edit schools')" :href="route('schools.edit', school.cue)"
+                      <Link v-if="hasPermission($page.props, 'school.edit')" :href="route('schools.edit', school.cue)"
                         class="text-indigo-600 hover:text-indigo-900">
                       Editar
                       </Link>
-                      <Link v-if="hasPermission($page.props, 'delete schools')"
+                      <Link v-if="hasPermission($page.props, 'school.delete')"
                         :href="route('schools.destroy', school.cue)" method="delete" as="button"
                         class="text-red-600 hover:text-red-900">
                       Eliminar

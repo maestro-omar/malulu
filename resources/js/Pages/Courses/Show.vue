@@ -74,7 +74,7 @@
 
             <div class="mt-6 flex space-x-4">
               <Link
-                v-if="hasPermission($page.props, 'edit assigned schools', school.id)"
+                v-if="hasPermission($page.props, 'school.edit', school.id)"
                 :href="route('courses.edit', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
                 class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
               >

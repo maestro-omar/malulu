@@ -33,11 +33,11 @@ const destroy = () => {
         <template #header>
             <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles del usuario ${user.firstname} ${user.lastname}`"
                 :edit="{
-                    show: hasPermission($page.props, 'edit users'),
+                    show: hasPermission($page.props, 'user.manage'),
                     href: route('users.edit', user.id),
                     label: 'Editar'
                 }" :del="{
-                    show: hasPermission($page.props, 'delete users'),
+                    show: hasPermission($page.props, 'user.manage'),
                     onClick: destroy,
                     label: 'Eliminar'
                 }">

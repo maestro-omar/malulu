@@ -106,18 +106,18 @@ const forceDeleteUser = (id) => {
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <button
-                                                v-if="hasPermission($page.props, 'delete users')"
+                                                v-if="hasPermission($page.props, 'user.manage')"
                                                 @click="restoreUser(user.id)"
-                                                class="text-indigo-600 hover:text-indigo-900 mr-4"
+                                                class="text-green-600 hover:text-green-900 mr-3"
                                             >
                                                 Restaurar
                                             </button>
                                             <button
-                                                v-if="hasPermission($page.props, 'delete users')"
+                                                v-if="hasPermission($page.props, 'user.manage')"
                                                 @click="forceDeleteUser(user.id)"
                                                 class="text-red-600 hover:text-red-900"
                                             >
-                                                Eliminar Permanentemente
+                                                Eliminar permanentemente
                                             </button>
                                         </td>
                                     </tr>
@@ -141,14 +141,14 @@ const forceDeleteUser = (id) => {
                                     </div>
                                     <div class="flex space-x-2">
                                         <button
-                                            v-if="hasPermission($page.props, 'delete users')"
+                                            v-if="hasPermission($page.props, 'user.manage')"
                                             @click="restoreUser(user.id)"
-                                            class="text-indigo-600 hover:text-indigo-900"
+                                            class="text-green-600 hover:text-green-900"
                                         >
                                             Restaurar
                                         </button>
                                         <button
-                                            v-if="hasPermission($page.props, 'delete users')"
+                                            v-if="hasPermission($page.props, 'user.manage')"
                                             @click="forceDeleteUser(user.id)"
                                             class="text-red-600 hover:text-red-900"
                                         >

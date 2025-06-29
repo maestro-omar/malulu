@@ -27,7 +27,7 @@ Route::prefix('sistema')->group(function () {
         // });
 
         // User Management Routes
-        Route::middleware('permission:superadmin')->group(function () {
+        Route::middleware('permission:user.manage')->group(function () {
             Route::get('usuarios/eliminados', [UserAdminController::class, 'trashed'])->name('users.trashed');
             Route::post('usuarios/{id}/restaurar', [UserAdminController::class, 'restore'])->name('users.restore');
             Route::delete('usuarios/{id}/eliminar-permanentemente', [UserAdminController::class, 'forceDelete'])->name('users.force-delete');
@@ -45,7 +45,7 @@ Route::prefix('sistema')->group(function () {
         });
 
         // Schools Routes
-        Route::middleware('permission:superadmin')->group(function () {
+        Route::middleware('permission:school.create|school.edit|school.delete')->group(function () {
             Route::get('escuelas/eliminadas', [SchoolAdminController::class, 'trashed'])->name('schools.trashed');
             Route::post('escuelas/{school}/restaurar', [SchoolAdminController::class, 'restore'])->name('schools.restore');
             Route::delete('escuelas/{school}/eliminar-permanentemente', [SchoolAdminController::class, 'forceDelete'])->name('schools.force-delete');
@@ -60,9 +60,8 @@ Route::prefix('sistema')->group(function () {
             Route::delete('escuelas/{school}', [SchoolAdminController::class, 'destroy'])->name('schools.destroy');
         });
 
-
         // Academic Years Routes
-        Route::middleware('permission:superadmin')->group(function () {
+        Route::middleware('permission:academic-year.manage')->group(function () {
             Route::get('ciclo-escolar/eliminadas', [AcademicYearAdminController::class, 'trashed'])->name('academic-years.trashed');
             Route::post('ciclo-escolar/{academicYear}/restaurar', [AcademicYearAdminController::class, 'restore'])->name('academic-years.restore');
             Route::delete('ciclo-escolar/{academicYear}/eliminar-permanentemente', [AcademicYearAdminController::class, 'forceDelete'])->name('academic-years.force-delete');
@@ -76,21 +75,21 @@ Route::prefix('sistema')->group(function () {
         });
 
         // File Types Routes
-        Route::middleware('permission:superadmin')->group(function () {
+        Route::middleware('permission:file-type.manage')->group(function () {
             Route::get('/tipos-archivo', [FileTypeAdminController::class, 'index'])
                 ->name('file-types.index');
         });
 
         Route::resource('file-types', FileTypeAdminController::class)
-            ->middleware('can:superadmin');
+            ->middleware('permission:file-type.manage');
 
         // File Subtypes Routes
-        Route::middleware('permission:superadmin')->group(function () {
+        Route::middleware('permission:file-subtype.manage')->group(function () {
             Route::get('/subtipos-archivo', [FileSubtypeAdminController::class, 'index'])
                 ->name('file-subtypes.index');
         });
 
         Route::resource('file-subtypes', FileSubtypeAdminController::class)
-            ->middleware('can:superadmin');
+            ->middleware('permission:file-subtype.manage');
     });
 });

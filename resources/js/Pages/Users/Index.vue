@@ -83,11 +83,11 @@ const getUniqueRoles = (roles) => {
     <AuthenticatedLayout>
         <template #header>
             <AdminHeader :breadcrumbs="breadcrumbs" :title="`Listado de usuarios`" :add="{
-                show: hasPermission($page.props, 'create users'),
+                show: hasPermission($page.props, 'user.manage'),
                 href: route('users.create'),
                 label: 'Nuevo usuario'
             }" :trashed="{
-                show: hasPermission($page.props, 'delete users'),
+                show: hasPermission($page.props, 'user.manage'),
                 href: route('users.trashed'),
                 label: 'Eliminados'
             }">
@@ -203,13 +203,13 @@ const getUniqueRoles = (roles) => {
                                             Ver
                                             </Link>
                                             <Link
-                                                v-if="hasPermission($page.props, 'edit users') &&
+                                                v-if="hasPermission($page.props, 'user.manage') &&
                                                     (!isAdmin(user) || (isAdmin(user) && user.id === $page.props.auth.user.id))"
                                                 :href="route('users.edit', user.id)"
                                                 class="text-indigo-600 hover:text-indigo-900 mr-4">
                                             Editar
                                             </Link>
-                                            <button v-if="hasPermission($page.props, 'delete users') &&
+                                            <button v-if="hasPermission($page.props, 'user.manage') &&
                                                 !isAdmin(user) &&
                                                 user.id !== $page.props.auth.user.id" @click="deleteUser(user.id)"
                                                 class="text-red-600 hover:text-red-900">
@@ -243,13 +243,13 @@ const getUniqueRoles = (roles) => {
                                         Ver
                                         </Link>
                                         <Link
-                                            v-if="hasPermission($page.props, 'edit users') &&
+                                            v-if="hasPermission($page.props, 'user.manage') &&
                                                 (!isAdmin(user) || (isAdmin(user) && user.id === $page.props.auth.user.id))"
                                             :href="route('users.edit', user.id)"
                                             class="text-indigo-600 hover:text-indigo-900">
                                         Editar
                                         </Link>
-                                        <button v-if="hasPermission($page.props, 'delete users') &&
+                                        <button v-if="hasPermission($page.props, 'user.manage') &&
                                             !isAdmin(user) &&
                                             user.id !== $page.props.auth.user.id" @click="deleteUser(user.id)"
                                             class="text-red-600 hover:text-red-900">
