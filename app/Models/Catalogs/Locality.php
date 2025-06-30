@@ -4,7 +4,9 @@ namespace App\Models\Catalogs;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Base\BaseModel as Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Catalogs\District;
+use App\Models\Catalogs\Province;
 
 class Locality extends Model
 {
@@ -22,8 +24,16 @@ class Locality extends Model
     /**
      * Get the district that owns the locality.
      */
-    public function district()
+    public function district(): BelongsTo
     {
         return $this->belongsTo(District::class);
+    }
+
+    /**
+     * Get the province through the district relationship.
+     */
+    public function province()
+    {
+        return $this->hasOneThrough(Province::class, District::class);
     }
 }

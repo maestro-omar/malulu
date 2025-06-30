@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('districts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('province_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('long')->nullable();  // Full name/long description
             $table->integer('order')->default(0);

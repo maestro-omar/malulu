@@ -4,6 +4,7 @@ namespace App\Models\Catalogs;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Base\BaseModel as Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Province extends Model
 {
@@ -30,5 +31,13 @@ class Province extends Model
     public function getRouteKeyName(): string
     {
         return 'code';
+    }
+
+    /**
+     * Get the districts for the province.
+     */
+    public function districts(): HasMany
+    {
+        return $this->hasMany(District::class);
     }
 }

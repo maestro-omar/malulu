@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Catalogs\District;
+use App\Models\Catalogs\Province;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,8 +14,10 @@ class DistrictSeeder extends Seeder
      */
     public function run(): void
     {
-        $districts = [
+        // Get San Luis province ID
+        $sanLuisProvince = Province::where('code', Province::DEFAULT)->firstOrFail();
 
+        $districts = [
             [
                 'name' => 'Pueyrredón',
                 'long' => 'Juan Martín de Pueyrredón',
@@ -48,6 +51,7 @@ class DistrictSeeder extends Seeder
         foreach ($districts as $i => $district) {
             $district['order'] = $i;
             $district['long'] = ($district['long'] ?? '') ?: $district['name'];
+            $district['province_id'] = $sanLuisProvince->id;
             District::create($district);
         }
     }
