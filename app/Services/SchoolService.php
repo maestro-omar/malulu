@@ -10,16 +10,19 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use App\Services\PaginationTrait;
 
 class SchoolService
 {
+    use PaginationTrait;
+
     /**
      * Get schools with filters
      */
     public function getSchools(Request $request)
     {
         $query = School::query()
-            ->with(['locality', 'locality.province', 'schoolLevels', 'managementType', 'shifts'])
+            ->with(['locality', 'locality.district', 'locality.district.province', 'schoolLevels', 'managementType', 'shifts'])
             ->when($request->input('search'), function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
@@ -37,11 +40,14 @@ class SchoolService
                 $query->where('locality_id', $localityId);
             })
             ->when($request->input('province_code'), function ($query, $provinceCode) {
-                $query->where('province.code', $provinceCode);
+                $query->whereHas('locality.district.province', function ($query) use ($provinceCode) {
+                    $query->where('code', $provinceCode);
+                });
             })
-            ->where('name', '!=', School::GLOBAL);
+            ->where('name', '!=', School::GLOBAL)
+            ->orderBy('name');
 
-        return $query->orderBy('name')->paginate(10);
+        return $this->handlePagination($query, $request->input('per_page'));
     }
 
     /**
@@ -172,12 +178,18 @@ class SchoolService
     /**
      * Get trashed schools
      */
-    public function getTrashedSchools()
+    public function getTrashedSchools(?Request $request = null)
     {
-        return School::onlyTrashed()
+        $query = School::onlyTrashed()
             ->with(['locality', 'schoolLevels', 'managementType', 'shifts'])
-            ->orderBy('name')
-            ->paginate(10);
+            ->orderBy('name');
+
+        if ($request) {
+            return $this->handlePagination($query, $request->input('per_page'));
+        }
+        
+        // Default behavior if no request provided
+        return $query->paginate(10);
     }
 
     /**
@@ -196,6 +208,89 @@ class SchoolService
     {
         $school = School::onlyTrashed()->findOrFail($id);
         return $school->forceDelete();
+    }
+
+    /**
+     * Get schools by province code
+     */
+    public function getSchoolsByProvince(string $provinceCode)
+    {
+        return School::query()
+            ->with(['locality', 'locality.district', 'locality.district.province', 'schoolLevels', 'managementType', 'shifts'])
+            ->whereHas('locality.district.province', function ($query) use ($provinceCode) {
+                $query->where('code', $provinceCode);
+            })
+            ->where('name', '!=', School::GLOBAL)
+            ->orderBy('name')
+            ->get();
+    }
+
+    /**
+     * Get schools by district ID
+     */
+    public function getSchoolsByDistrict(int $districtId)
+    {
+        return School::query()
+            ->with(['locality', 'locality.district', 'locality.district.province', 'schoolLevels', 'managementType', 'shifts'])
+            ->whereHas('locality.district', function ($query) use ($districtId) {
+                $query->where('id', $districtId);
+            })
+            ->where('name', '!=', School::GLOBAL)
+            ->orderBy('name')
+            ->get();
+    }
+
+    /**
+     * Get schools with advanced filters
+     */
+    public function getSchoolsWithAdvancedFilters(Request $request)
+    {
+        $query = School::query()
+            ->with(['locality', 'locality.district', 'locality.district.province', 'schoolLevels', 'managementType', 'shifts'])
+            ->when($request->input('search'), function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('short', 'like', "%{$search}%")
+                        ->orwhere('code', 'like', "%{$search}%")
+                        ->orWhereHas('locality', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('locality.district', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('locality.district.province', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('schoolLevels', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($request->input('locality_id'), function ($query, $localityId) {
+                $query->where('locality_id', $localityId);
+            })
+            ->when($request->input('district_id'), function ($query, $districtId) {
+                $query->whereHas('locality.district', function ($query) use ($districtId) {
+                    $query->where('id', $districtId);
+                });
+            })
+            ->when($request->input('province_code'), function ($query, $provinceCode) {
+                $query->whereHas('locality.district.province', function ($query) use ($provinceCode) {
+                    $query->where('code', $provinceCode);
+                });
+            })
+            ->when($request->input('school_level_id'), function ($query, $schoolLevelId) {
+                $query->whereHas('schoolLevels', function ($query) use ($schoolLevelId) {
+                    $query->where('school_levels.id', $schoolLevelId);
+                });
+            })
+            ->when($request->input('management_type_id'), function ($query, $managementTypeId) {
+                $query->where('management_type_id', $managementTypeId);
+            })
+            ->where('name', '!=', School::GLOBAL)
+            ->orderBy('name');
+
+        return $this->handlePagination($query, $request->input('per_page'));
     }
 
     // Add other business logic methods...

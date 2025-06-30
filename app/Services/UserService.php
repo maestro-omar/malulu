@@ -16,9 +16,12 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\PermissionRegistrar;
 use Illuminate\Support\Facades\Auth;
 use App\Services\CourseService;
+use App\Services\PaginationTrait;
 
 class UserService
 {
+    use PaginationTrait;
+
     public function getUsers(Request $request)
     {
         $query = User::with('allRolesAcrossTeams');
@@ -30,7 +33,7 @@ class UserService
                     ->orWhere('email', 'like', "%{$search}%");
             });
         }
-        $users = $query->paginate(10);
+        $users = $this->handlePagination($query, $request->input('per_page'));
 
         // Transform the data to include roles in the expected format
         $transformedUsers = json_decode(json_encode($users), true);
@@ -72,9 +75,13 @@ class UserService
         return $transformedUsers;
     }
 
-    public function getTrashedUsers()
+    public function getTrashedUsers(Request $request = null)
     {
-        return User::onlyTrashed()->with('roles')->paginate(10);
+        $query = User::onlyTrashed()->with('roles');
+        if ($request) {
+            return $this->handlePagination($query, $request->input('per_page'));
+        }
+        return $query->paginate(10);
     }
 
     /**

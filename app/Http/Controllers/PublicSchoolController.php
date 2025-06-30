@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Entities\School;
 use App\Models\Catalogs\Locality;
+use App\Models\Catalogs\District;
+use App\Models\Catalogs\Province;
 use App\Models\Catalogs\SchoolLevel;
 use App\Models\Catalogs\SchoolManagementType;
 use App\Models\Catalogs\SchoolShift;
@@ -32,27 +34,57 @@ class PublicSchoolController extends Controller
     {
         return Inertia::render('Schools/Public/Index', [
             'schools' => $this->schoolService->getSchools($request),
-            'localities' => Locality::orderBy('order')->get(),
+            'localities' => Locality::with('district.province')->orderBy('order')->get(),
+            'districts' => District::with('province')->orderBy('order')->get(),
+            'provinces' => Province::orderBy('order')->get(),
             'search' => $request->search,
+            'selectedProvince' => $request->province_code,
+            'selectedDistrict' => $request->district_id,
+            'selectedLocality' => $request->locality_id,
         ]);
     }
 
-    public function byProvince(Request $request)
+    public function byProvince(Request $request, string $provinceCode)
     {
+        // Set the province code in the request for filtering
+        $request->merge(['province_code' => $provinceCode]);
+        
         return Inertia::render('Schools/Public/Index', [
             'schools' => $this->schoolService->getSchools($request),
-            'localities' => Locality::orderBy('order')->get(),
+            'localities' => Locality::with('district.province')->orderBy('order')->get(),
+            'districts' => District::with('province')->orderBy('order')->get(),
+            'provinces' => Province::orderBy('order')->get(),
             'search' => $request->search,
+            'selectedProvince' => $provinceCode,
+            'selectedDistrict' => $request->district_id,
+            'selectedLocality' => $request->locality_id,
+        ]);
+    }
+
+    public function byDistrict(Request $request, int $districtId)
+    {
+        // Set the district ID in the request for filtering
+        $request->merge(['district_id' => $districtId]);
+        
+        return Inertia::render('Schools/Public/Index', [
+            'schools' => $this->schoolService->getSchoolsWithAdvancedFilters($request),
+            'localities' => Locality::with('district.province')->orderBy('order')->get(),
+            'districts' => District::with('province')->orderBy('order')->get(),
+            'provinces' => Province::orderBy('order')->get(),
+            'search' => $request->search,
+            'selectedProvince' => $request->province_code,
+            'selectedDistrict' => $districtId,
+            'selectedLocality' => $request->locality_id,
         ]);
     }
 
     public function show(School $school)
     {
-        // $school->load(['locality', 'schoolLevels', 'managementType', 'shifts']);
+        $school->load(['locality', 'locality.district', 'locality.district.province', 'schoolLevels', 'managementType', 'shifts']);
 
-        // if (is_string($school->extra)) {
-        //     $school->extra = json_decode($school->extra, true);
-        // }
+        if (is_string($school->extra)) {
+            $school->extra = json_decode($school->extra, true);
+        }
 
         return Inertia::render('Schools/Public/Show', [
             'school' => $school,

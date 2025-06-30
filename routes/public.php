@@ -29,6 +29,7 @@ Route::get('/', function () {
 // Schools listing routes
 Route::get('escuelas', [PublicSchoolController::class, 'index'])->name('schools.public.index');
 Route::get('escuelas/{province}', [PublicSchoolController::class, 'byProvince'])->name('schools.public.byProvince');
+Route::get('escuelas/distrito/{district}', [PublicSchoolController::class, 'byDistrict'])->name('schools.public.byDistrict');
 
 // Individual school routes (these should come after the escuelas routes to avoid conflicts)
 Route::prefix('{school}')->group(function () {
