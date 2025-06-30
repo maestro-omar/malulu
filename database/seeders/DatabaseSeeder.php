@@ -66,6 +66,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
+            SchoolPageSeeder::class,
             // Users
             FakeUsersSeeder::class
         ]);

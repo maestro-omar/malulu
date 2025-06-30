@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Base\BaseModel as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Catalogs\SchoolLevel;
 use App\Models\Catalogs\SchoolShift;
@@ -91,6 +92,14 @@ class School extends Model
     public function locality(): BelongsTo
     {
         return $this->belongsTo(Locality::class);
+    }
+
+    /**
+     * Get the pages that belong to the school.
+     */
+    public function pages(): HasMany
+    {
+        return $this->hasMany(SchoolPage::class);
     }
 
     /**

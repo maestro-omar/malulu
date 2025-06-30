@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PublicSchoolController;
+use App\Http\Controllers\PublicSchoolPageController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,13 +26,43 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('escuelas', function () {
-    Route::get('/', [PublicSchoolController::class, 'index'])->name('schools.public.index');
-    Route::get('{province}', [PublicSchoolController::class, 'byProvince'])->name('schools.public.byProvince');
+// Schools listing routes
+Route::get('escuelas', [PublicSchoolController::class, 'index'])->name('schools.public.index');
+Route::get('escuelas/{province}', [PublicSchoolController::class, 'byProvince'])->name('schools.public.byProvince');
+
+// Individual school routes (these should come after the escuelas routes to avoid conflicts)
+Route::prefix('{school}')->group(function () {
+    // School main page (shows school info and navigation) - handled by PublicSchoolPageController
+    Route::get('/', [PublicSchoolPageController::class, 'showSchool'])->name('schools.public.show.pages');
+    
+    // School Pages Routes (direct access without "paginas" slug)
+    Route::get('{slug}', [PublicSchoolPageController::class, 'show'])->name('school-pages.public.show');
 });
 
-Route::prefix('{school}')->group(function () {
-    // School Routes
-    Route::get('/', [PublicSchoolController::class, 'show'])->name('schools.public.show');
-    Route::get('{schoolPage}', [PublicSchoolController::class, 'page'])->name('schools.public.page');
-});
+
+/* Test route for default pages (remove in production)
+Route::get('/test-default-pages/{school}', function ($school) {
+    $school = \App\Models\Entities\School::where('slug', $school)->firstOrFail();
+    $service = new \App\Services\SchoolPageService();
+    
+    echo "<h1>Testing Default Pages for: {$school->name}</h1>";
+    echo "<h2>Default Slugs:</h2>";
+    echo "<ul>";
+    foreach ($service->getDefaultPageSlugs() as $slug) {
+        echo "<li><a href='/{$school->slug}/{$slug}'>{$slug}</a></li>";
+    }
+    echo "</ul>";
+    
+    echo "<h2>All Available Pages:</h2>";
+    $pages = $service->getAllAvailablePagesForSchool($school->id, $school);
+    echo "<ul>";
+    foreach ($pages as $page) {
+        $isDefault = $page['is_default'] ? ' (Default)' : '';
+        echo "<li><a href='/{$school->slug}/{$page['slug']}'>{$page['name']}{$isDefault}</a></li>";
+    }
+    echo "</ul>";
+    
+    echo "<h2>Main School Page:</h2>";
+    echo "<p><a href='/{$school->slug}'>Main School Page</a></p>";
+})->name('test.default.pages');
+*/

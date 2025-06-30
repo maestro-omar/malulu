@@ -48,16 +48,14 @@ class PublicSchoolController extends Controller
 
     public function show(School $school)
     {
-        $school->load(['locality', 'schoolLevels', 'managementType', 'shifts']);
+        // $school->load(['locality', 'schoolLevels', 'managementType', 'shifts']);
 
-        if (is_string($school->extra)) {
-            $school->extra = json_decode($school->extra, true);
-        }
+        // if (is_string($school->extra)) {
+        //     $school->extra = json_decode($school->extra, true);
+        // }
 
         return Inertia::render('Schools/Public/Show', [
             'school' => $school,
         ]);
     }
-
-    public function page(School $school, $page) {}
 }

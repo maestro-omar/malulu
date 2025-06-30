@@ -20,29 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
     // Schools API Routes
-    Route::apiResource('schools', \App\Http\Controllers\Api\SchoolController::class);
-    Route::get('schools/trashed', [\App\Http\Controllers\Api\SchoolController::class, 'trashed']);
-    Route::post('schools/{id}/restore', [\App\Http\Controllers\Api\SchoolController::class, 'restore']);
-    Route::delete('schools/{id}/force-delete', [\App\Http\Controllers\Api\SchoolController::class, 'forceDelete']);
-
-    // Academic Years API Routes
-    Route::apiResource('academic-years', \App\Http\Controllers\Api\AcademicYearController::class);
-    Route::get('academic-years/trashed', [\App\Http\Controllers\Api\AcademicYearController::class, 'trashed']);
-    Route::post('academic-years/{id}/restore', [\App\Http\Controllers\Api\AcademicYearController::class, 'restore']);
-    Route::delete('academic-years/{id}/force-delete', [\App\Http\Controllers\Api\AcademicYearController::class, 'forceDelete']);
-
-    // Users API Routes
-    Route::apiResource('users', \App\Http\Controllers\Api\UserController::class);
-    Route::get('users/trashed', [\App\Http\Controllers\Api\UserController::class, 'trashed']);
-    Route::post('users/{id}/restore', [\App\Http\Controllers\Api\UserController::class, 'restore']);
-    Route::delete('users/{id}/force-delete', [\App\Http\Controllers\Api\UserController::class, 'forceDelete']);
-
-    // Roles API Routes
-    Route::apiResource('roles', \App\Http\Controllers\Api\RoleController::class);
-
-    // File Types API Routes
-    Route::apiResource('file-types', \App\Http\Controllers\Api\FileTypeController::class);
-
-    // File Subtypes API Routes
-    Route::apiResource('file-subtypes', \App\Http\Controllers\Api\FileSubtypeController::class);
-});
+   });
