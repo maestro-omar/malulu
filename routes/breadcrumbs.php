@@ -4,6 +4,9 @@ use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as Trail;
 use App\Models\Entities\School;
 use App\Models\Catalogs\SchoolLevel;
+use App\Models\Catalogs\Province;
+use App\Models\Catalogs\District;
+use App\Models\Catalogs\Locality;
 use App\Models\Entities\Course;
 
 
@@ -117,4 +120,42 @@ Breadcrumbs::for('courses.show', function (Trail $trail, School $school, SchoolL
 Breadcrumbs::for('courses.edit', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
     $trail->parent('courses.show', $school, $schoolLevel, $course);
     $trail->push("Editar {$course->name}");
+});
+
+
+
+
+// 🏫 Escuelas públicas (público general)
+Breadcrumbs::for('public-schools.index', function (Trail $trail) {
+    $trail->push('Escuelas públicas', route('schools.public-index'));
+});
+
+Breadcrumbs::for('public-schools.byProvince', function (Trail $trail, $province) {
+    $trail->parent('public-schools.index');
+    $provinceObj = $province instanceof Province ? $province : Province::where('code', $province)->first();
+    $trail->push($provinceObj ? $provinceObj->name : $province, route('schools.public-byProvince', $province));
+});
+
+Breadcrumbs::for('public-schools.byDistrict', function (Trail $trail, $district) {
+    $districtObj = $district instanceof District ? $district : District::find($district);
+    if ($districtObj && $districtObj->province) {
+        $trail->parent('public-schools.byProvince', $districtObj->province->code);
+        $trail->push($districtObj->long ?? $districtObj->name, route('schools.public-byProvince', [$districtObj->province->code, 'district_id' => $districtObj->id]));
+    } else {
+        $trail->parent('public-schools.index');
+        $trail->push('Departamento', route('schools.public-byProvince', ['province' => null, 'district_id' => $districtObj ? $districtObj->id : $district]));
+    }
+});
+
+// Optionally, for localities:
+Breadcrumbs::for('public-schools.byLocality', function (Trail $trail, $locality) {
+    $localityObj = $locality instanceof Locality ? $locality : Locality::find($locality);
+    if ($localityObj && $localityObj->district && $localityObj->district->province) {
+        $trail->parent('public-schools.byProvince', $localityObj->district->province->code);
+        $trail->push($localityObj->district->long ?? $localityObj->district->name, route('schools.public-byProvince', [$localityObj->district->province->code, 'district_id' => $localityObj->district->id]));
+        $trail->push($localityObj->name, '#');
+    } else {
+        $trail->parent('public-schools.index');
+        $trail->push('Localidad', '#');
+    }
 });

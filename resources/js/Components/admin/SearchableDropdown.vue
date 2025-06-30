@@ -32,7 +32,7 @@
         @click="selectOption(option)"
         class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
       >
-        {{ option.name }}
+        {{ option.long || option.name }}
       </div>
     </div>
   </div>
@@ -70,7 +70,7 @@ onMounted(() => {
   if (props.initialValue) {
     const value = typeof props.initialValue === 'object' ? props.initialValue : props.options.find(opt => opt.id === props.initialValue);
     if (value) {
-      search.value = value.name;
+      search.value = value.long || value.name;
       emit('update:modelValue', value);
     }
   }
@@ -79,7 +79,7 @@ onMounted(() => {
 const filteredOptions = computed(() => {
   if (!search.value) return props.options;
   return props.options.filter(option =>
-    option.name.toLowerCase().includes(search.value.toLowerCase())
+    (option.long || option.name).toLowerCase().includes(search.value.toLowerCase())
   );
 });
 
@@ -89,7 +89,7 @@ const updateSearch = (event) => {
 
 const selectOption = (option) => {
   emit('update:modelValue', option);
-  search.value = option.name;
+  search.value = option.long || option.name;
   showOptions.value = false;
 };
 
@@ -103,7 +103,7 @@ watch(() => props.modelValue, (newValue) => {
   if (newValue) {
     const value = typeof newValue === 'object' ? newValue : props.options.find(opt => opt.id === newValue);
     if (value) {
-      search.value = value.name;
+      search.value = value.long || value.name;
     }
   } else {
     search.value = '';
@@ -115,7 +115,7 @@ watch(() => props.initialValue, (newValue) => {
   if (newValue) {
     const value = typeof newValue === 'object' ? newValue : props.options.find(opt => opt.id === newValue);
     if (value) {
-      search.value = value.name;
+      search.value = value.long || value.name;
       emit('update:modelValue', value);
     }
   }

@@ -1,5 +1,5 @@
 <script setup>
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+import MinimalAuthLayout from '@/Layouts/MinimalAuthLayout.vue';
 import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
@@ -22,7 +22,7 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <MinimalAuthLayout>
         <Head title="Olvidé mi Contraseña" />
 
         <div class="mb-4 text-sm text-gray-600">
@@ -64,5 +64,5 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
-    </GuestLayout>
+    </MinimalAuthLayout>
 </template>

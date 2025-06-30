@@ -5,6 +5,11 @@ use App\Http\Controllers\PublicSchoolPageController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Diglactic\Breadcrumbs\Breadcrumbs;
+use Diglactic\Breadcrumbs\Trail;
+use App\Models\Catalogs\Province;
+use App\Models\Catalogs\District;
+use App\Models\Catalogs\Locality;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,17 +32,16 @@ Route::get('/', function () {
 });
 
 // Schools listing routes
-Route::get('escuelas', [PublicSchoolController::class, 'index'])->name('schools.public.index');
-Route::get('escuelas/{province}', [PublicSchoolController::class, 'byProvince'])->name('schools.public.byProvince');
-Route::get('escuelas/distrito/{district}', [PublicSchoolController::class, 'byDistrict'])->name('schools.public.byDistrict');
+Route::get('escuelas', [PublicSchoolController::class, 'index'])->name('schools.public-index');
+Route::get('escuelas/{province}', [PublicSchoolController::class, 'byProvince'])->name('schools.public-byProvince');
 
 // Individual school routes (these should come after the escuelas routes to avoid conflicts)
 Route::prefix('{school}')->group(function () {
     // School main page (shows school info and navigation) - handled by PublicSchoolPageController
-    Route::get('/', [PublicSchoolPageController::class, 'showSchool'])->name('schools.public.show.pages');
-    
+    Route::get('/', [PublicSchoolPageController::class, 'showSchool'])->name('schools.public-show');
+
     // School Pages Routes (direct access without "paginas" slug)
-    Route::get('{slug}', [PublicSchoolPageController::class, 'show'])->name('school-pages.public.show');
+    Route::get('{slug}', [PublicSchoolPageController::class, 'show'])->name('school.public-page');
 });
 
 

@@ -1,6 +1,6 @@
 <script setup>
 import Checkbox from '@/Components/admin/Checkbox.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+import MinimalAuthLayout from '@/Layouts/MinimalAuthLayout.vue';
 import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
@@ -30,7 +30,7 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <MinimalAuthLayout>
         <Head title="Iniciar sesión" />
 
         <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
@@ -90,5 +90,5 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
-    </GuestLayout>
+    </MinimalAuthLayout>
 </template>

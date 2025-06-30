@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+import MinimalAuthLayout from '@/Layouts/MinimalAuthLayout.vue';
 import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
@@ -20,7 +20,7 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 </script>
 
 <template>
-    <GuestLayout>
+    <MinimalAuthLayout>
         <Head title="Verificación de Email" />
 
         <div class="mb-4 text-sm text-gray-600">
@@ -47,5 +47,5 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
                 >
             </div>
         </form>
-    </GuestLayout>
+    </MinimalAuthLayout>
 </template>

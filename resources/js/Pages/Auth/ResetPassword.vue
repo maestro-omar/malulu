@@ -1,5 +1,5 @@
 <script setup>
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+import MinimalAuthLayout from '@/Layouts/MinimalAuthLayout.vue';
 import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
@@ -32,7 +32,7 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <MinimalAuthLayout>
         <Head title="Restablecer Contraseña" />
 
         <form @submit.prevent="submit">
@@ -88,5 +88,5 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
-    </GuestLayout>
+    </MinimalAuthLayout>
 </template>
