@@ -54,7 +54,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'http://luciolucero.sanluis.edu.ar'),
 
     'asset_url' => env('ASSET_URL', '/'),
 
@@ -108,7 +108,7 @@ return [
     |
     */
 
-    'faker_locale' => 'en_US',
+    'faker_locale' => 'es_AR',
 
     /*
     |--------------------------------------------------------------------------
@@ -121,7 +121,7 @@ return [
     |
     */
 
-    'key' => env('APP_KEY'),
+    'key' => env('APP_KEY', 'base64:rLL70e5VvUoiIAbNmka4B+14yiNyMcs1bYwex+rz18I='),
 
     'cipher' => 'AES-256-CBC',
 
