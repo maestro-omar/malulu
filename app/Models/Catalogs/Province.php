@@ -22,7 +22,12 @@ class Province extends Model
     protected $fillable = [
         'code',
         'name',
-        'order'
+        'order',
+        'logo1',
+        'logo2',
+        'title',
+        'subtitle',
+        'link'
     ];
 
     /**
