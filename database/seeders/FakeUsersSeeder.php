@@ -371,7 +371,18 @@ class FakeUsersSeeder extends Seeder
 
                 echo "Trying to assign role to user_id: {$user->id}, school_id: {$school->id} \n";
 
-                $this->assignRoleWithRelationship($user, $roleId, $school, $schoolLevelId, $roleCode);
+                $role = Role::find($roleId);
+                $existingRoleRelationship = $user->roleRelationships()
+                    ->where('role_id', $roleId)
+                    ->where('school_id', $school->id)
+                    ->first();
+
+                if ($existingRoleRelationship && !in_array($role->code, Role::allowedMutipleOnSameSchool())) {
+                    // Skip or log, do not assign again
+                } else {
+                    // Safe to assign
+                    $this->assignRoleWithRelationship($user, $roleId, $school, $schoolLevelId, $roleCode);
+                }
             }
         }
     }
