@@ -118,7 +118,7 @@ class SchoolPageService
     /**
      * Get all available pages for a school (database + default pages)
      */
-    public function getAllAvailablePagesForSchool(int $schoolId, School $school = null)
+    public function getAllAvailablePagesForSchool(int $schoolId, ?School $school = null)
     {
         $databasePages = $this->getActivePagesForSchool($schoolId);
         
@@ -302,8 +302,8 @@ class SchoolPageService
         
         if ($school->locality) {
             $content .= '<p><strong>Ubicación:</strong> ' . htmlspecialchars($school->locality->name);
-            if ($school->locality->province) {
-                $content .= ', ' . htmlspecialchars($school->locality->province->name);
+            if ($school->locality->district) {
+                $content .= ', ' . htmlspecialchars($school->locality->district->long);
             }
             $content .= '</p>';
         }

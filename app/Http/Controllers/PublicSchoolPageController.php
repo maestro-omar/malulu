@@ -34,7 +34,7 @@ class PublicSchoolPageController extends Controller
         return Inertia::render('Schools/Public/Show', [
             'school' => $school,
             'schoolPages' => $schoolPages,
-            'mainPage' => null,//$mainPage,
+            'mainPage' => null, //$mainPage,
             'isMainPage' => true,
         ]);
     }
@@ -51,8 +51,9 @@ class PublicSchoolPageController extends Controller
     /**
      * Display the specified school page
      */
-    public function show(School $school, string $slug)
+    public function show(School $school, string $slug = '')
     {
+        if (!$slug) $slug = 'inicio';
         // First, try to find the page in the database
         $schoolPage = $this->schoolPageService->getPageBySlug($school->id, $slug);
 
@@ -84,7 +85,6 @@ class PublicSchoolPageController extends Controller
      */
     private function getDefaultPage(School $school, string $slug): ?array
     {
-        dd('aaa');
         $defaultPages = [
             'contacto' => [
                 'name' => 'Contacto',
@@ -227,8 +227,8 @@ class PublicSchoolPageController extends Controller
 
         if ($school->locality) {
             $content .= '<p><strong>Ubicación:</strong> ' . htmlspecialchars($school->locality->name);
-            if ($school->locality->province) {
-                $content .= ', ' . htmlspecialchars($school->locality->province->name);
+            if ($school->locality->district) {
+                $content .= ', ' . htmlspecialchars($school->locality->district->long);
             }
             $content .= '</p>';
         }
