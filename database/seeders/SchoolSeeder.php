@@ -9,6 +9,7 @@ use App\Models\Catalogs\SchoolManagementType;
 use App\Models\Catalogs\SchoolShift;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class SchoolSeeder extends Seeder
 {
@@ -24,18 +25,30 @@ class SchoolSeeder extends Seeder
         $this->initManagementTypes();
         $this->initShifts();
 
+        // Simulate upload for school 740058000
+        $pictureSource = database_path('seeders/images/ce-n8-picture.png');
+        $logoSource = database_path('seeders/images/ce-n8-logo-2025.png');
+        $pictureDest = 'school-logos/740058000/ce-n8-picture.png';
+        $logoDest = 'school-logos/740058000/ce-n8-logo-2025.png';
+        if (file_exists($pictureSource) && !Storage::disk('public')->exists($pictureDest)) {
+            Storage::disk('public')->put($pictureDest, file_get_contents($pictureSource));
+        }
+        if (file_exists($logoSource) && !Storage::disk('public')->exists($logoDest)) {
+            Storage::disk('public')->put($logoDest, file_get_contents($logoSource));
+        }
+
         $schools = [
             [
                 'code' => School::GLOBAL,
-                'name' => 'GLOBAL',
-                'short' => 'GLOBAL',
+                'name' => School::GLOBAL,
+                'short' => School::GLOBAL,
                 'locality_id' => $this->localities['San Luis'],
                 'address' => 'System',
                 'zip_code' => '0000',
                 'phone' => null,
                 'email' => null,
                 'coordinates' => null,
-                'cue' => 'GLOBAL',
+                'cue' => School::GLOBAL,
                 'management_type_id' => $this->managementTypes[SchoolManagementType::PUBLIC],
                 'social' => null,
                 'extra' => null,
@@ -44,10 +57,10 @@ class SchoolSeeder extends Seeder
             ],
             [
                 'code' => '740058000',
-                'name' => 'CENTRO EDUCATIVO N° 8 MAESTRAS LUCIO LUCERO',
-                'short' => 'CE N°8',
+                'name' => 'Centro Educativo n°8 Maestras Lucio Lucero',
+                'short' => 'CE n°8',
                 'locality_id' => $this->localities['San Luis'],
-                'address' => 'RIOBAMBA 630',
+                'address' => 'Riobamba 630',
                 'zip_code' => 'D5700',
                 'phone' => '2664426546',
                 'email' => 'centroeducativo8@gmail.com',
@@ -68,14 +81,16 @@ class SchoolSeeder extends Seeder
                 ],
                 'extra' => null,
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
-                'shifts' => [SchoolShift::MORNING, SchoolShift::AFTERNOON]
+                'shifts' => [SchoolShift::MORNING, SchoolShift::AFTERNOON],
+                'picture' => '/storage/' . $pictureDest,
+                'logo' => '/storage/' . $logoDest,
             ],
             [
                 'code' => '740058100',
-                'name' => 'CENTRO EDUCATIVO N°1 JUAN PASCUAL PRINGLES',
-                'short' => 'CE N°1',
+                'name' => 'Centro Educativo n°1 Juan Pascual Pringles',
+                'short' => 'CE n°1',
                 'locality_id' => $this->localities['San Luis'],
-                'address' => 'AV. ILLIA 445',
+                'address' => 'Av. Illia 445',
                 'zip_code' => 'D5700',
                 'phone' => '2664426546',
                 'email' => '',
@@ -89,10 +104,10 @@ class SchoolSeeder extends Seeder
             ],
             [
                 'code' => '740058050',
-                'name' => 'ESCUELA DE NIVEL INICIAL PATITO FEO',
-                'short' => 'ENI N°6',
+                'name' => 'Escuela de Nivel Inicial Patito Feo',
+                'short' => 'ENI n°6',
                 'locality_id' => $this->localities['Villa Mercedes'],
-                'address' => 'PASEO DEL BOSQUE S/N',
+                'address' => 'Paseo del Bosque S/N',
                 'zip_code' => 'D5730',
                 'phone' => null,
                 'email' => null,
@@ -106,10 +121,10 @@ class SchoolSeeder extends Seeder
             ],
             [
                 'code' => '740058500',
-                'name' => 'CENTRO EDUCATIVO N°5 SENADOR ALFREDO BERTIN',
-                'short' => 'CE N°5',
+                'name' => 'Centro Educativo n°5 Senador Alfredo Bertin',
+                'short' => 'CE n°5',
                 'locality_id' => $this->localities['Merlo'],
-                'address' => 'PASEO DEL BOSQUE S/N',
+                'address' => 'Paseo del Bosque S/N',
                 'zip_code' => 'D5881',
                 'phone' => null,
                 'email' => null,
@@ -123,10 +138,10 @@ class SchoolSeeder extends Seeder
             ],
             [
                 'code' => '740058040',
-                'name' => 'ESCUELA DE NIVEL INICIAL N°5 MARIA EDELMIRA ALRIC DE CASTILLO',
-                'short' => 'ENI N°5',
+                'name' => 'Escuela de Nivel Inicial n°5 Maria Edelmira Alric de Castillo',
+                'short' => 'ENI n°5',
                 'locality_id' => $this->localities['San Luis'],
-                'address' => 'PASEO DEL BOSQUE S/N',
+                'address' => 'Paseo del Bosque S/N',
                 'zip_code' => 'D5700',
                 'phone' => null,
                 'email' => null,
@@ -140,10 +155,10 @@ class SchoolSeeder extends Seeder
             ],
             [
                 'code' => '740058600',
-                'name' => 'ESCUELA PUBLICA DIGITAL BILING NELSON MANDELA',
-                'short' => 'EPD NELSON MANDELA',
+                'name' => 'Escuela Publica Digital Biling Nelson Mandela',
+                'short' => 'EPD Nelson Mandela',
                 'locality_id' => $this->localities['La Punta'],
-                'address' => 'PASEO DEL BOSQUE S/N',
+                'address' => 'Paseo del Bosque S/N',
                 'zip_code' => 'D5717',
                 'phone' => null,
                 'email' => null,
@@ -157,10 +172,10 @@ class SchoolSeeder extends Seeder
             ],
             [
                 'code' => '740058700',
-                'name' => 'CENTRO EDUCATIVO N°27 GOBERNADOR SANTIAGO BESSO',
-                'short' => 'CE N°27',
+                'name' => 'Centro Educativo n°27 Gobernador Santiago Besso',
+                'short' => 'CE n°27',
                 'locality_id' => $this->localities['Juana Koslay'],
-                'address' => 'PASEO DEL BOSQUE S/N',
+                'address' => 'Paseo del Bosque S/N',
                 'zip_code' => 'D5703',
                 'phone' => null,
                 'email' => null,

@@ -10,6 +10,7 @@ Route::prefix('sistema/escuela/{school}')->group(function () {
     Route::middleware('auth')->group(function () {
         // School Routes
         Route::get('/', [SchoolController::class, 'show'])->name('schools.show')->middleware('permission:school.view');
+        Route::get('/', [SchoolController::class, 'show'])->name('schools.show');
         Route::put('/', [SchoolController::class, 'update'])->name('schools.update')->middleware('permission:school.edit');
         Route::get('editar', [SchoolController::class, 'edit'])->name('schools.edit')->middleware('permission:school.edit');
         Route::post('upload-image', [SchoolController::class, 'uploadImage'])->name('schools.upload-image')->middleware('permission:school.edit');

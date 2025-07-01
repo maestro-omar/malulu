@@ -14,17 +14,19 @@
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clave</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Escudo</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     <tr v-for="province in provinces" :key="province.id">
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ province.code }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <img v-if="province.logo1" :src="province.logo1" alt="Escudo" class="h-8 w-8 object-contain" />
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ province.name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ province.logo1 }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ province.title }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <Link :href="route('provinces.show', province.code)" class="text-blue-600 hover:text-blue-900 mr-4">Ver</Link>
                                             <Link :href="route('provinces.edit', province.code)" class="text-indigo-600 hover:text-indigo-900 mr-4">Editar</Link>

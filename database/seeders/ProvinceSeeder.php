@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Catalogs\Province;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class ProvinceSeeder extends Seeder
 {
@@ -13,12 +14,24 @@ class ProvinceSeeder extends Seeder
      */
     public function run(): void
     {
+        // Simulate upload for San Luis
+        $logo1Source = database_path('seeders/images/sl-logo1.png');
+        $logo2Source = database_path('seeders/images/sl-logo2.png');
+        $logo1Dest = 'province-logos/sl/seeded-logo1.png';
+        $logo2Dest = 'province-logos/sl/seeded-logo2.png';
+        // Copy images to storage if not already present
+        if (file_exists($logo1Source) && !Storage::disk('public')->exists($logo1Dest)) {
+            Storage::disk('public')->put($logo1Dest, file_get_contents($logo1Source));
+        }
+        if (file_exists($logo2Source) && !Storage::disk('public')->exists($logo2Dest)) {
+            Storage::disk('public')->put($logo2Dest, file_get_contents($logo2Source));
+        }
         $provinces = [
             [
                 'code' => Province::DEFAULT,
                 'name' => 'San Luis',
-                'logo1' => null,
-                'logo2' => null,
+                'logo1' => '/storage/' . $logo1Dest,
+                'logo2' => '/storage/' . $logo2Dest,
                 'title' => 'Ministerio de Educación',
                 'subtitle' => 'Forjamos el futuro a través de la educación, cimiento sólido para el progreso de la provincia de San Luis.',
                 'link' => 'https://sanluis.gov.ar/educacion/',

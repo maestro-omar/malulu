@@ -2,13 +2,13 @@
 
     <Head title="Panel de inicio" />
 
-    <AuthenticatedLayout>
+    <AuthenticatedLayout :school="firstSchool">
         <template #header>
             <div v-if="firstSchool" class="flex items-center space-x-2">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ firstSchool.name }}
                 </h2>
-                <Link :href="route('schools.show', { school: firstSchool.cue })"
+                <Link :href="route('schools.show', { school: firstSchool.slug })"
                       class="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out"
                       :title="`Ver ${firstSchool.short}`">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -108,4 +108,9 @@ const isOtherWorker = computed(() => {
 });
 
 const firstSchool = combinationCount === 1 ? Object.values(schools)[0] : false;
+
+// Debug firstSchool
+console.log('Dashboard - combinationCount:', combinationCount);
+console.log('Dashboard - schools:', schools);
+console.log('Dashboard - firstSchool:', firstSchool);
 </script>
