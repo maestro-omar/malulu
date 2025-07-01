@@ -91,5 +91,16 @@ Route::prefix('sistema')->group(function () {
 
         Route::resource('file-subtypes', FileSubtypeAdminController::class)
             ->middleware('permission:file-subtype.manage');
+
+        // Province Routes
+        Route::middleware('permission:province.manage')->group(function () {
+            Route::get('/provincias', [\App\Http\Controllers\System\ProvinceAdminController::class, 'index'])->name('provinces.index');
+            Route::get('/provincias/{province}/editar', [\App\Http\Controllers\System\ProvinceAdminController::class, 'edit'])->name('provinces.edit');
+            Route::put('/provincias/{province}', [\App\Http\Controllers\System\ProvinceAdminController::class, 'update'])->name('provinces.update');
+            Route::delete('/provincias/{province}', [\App\Http\Controllers\System\ProvinceAdminController::class, 'destroy'])->name('provinces.destroy');
+            Route::get('/provincias/{province}', [\App\Http\Controllers\System\ProvinceAdminController::class, 'show'])->name('provinces.show');
+            Route::post('/provincias/{province}/upload-image', [\App\Http\Controllers\System\ProvinceAdminController::class, 'uploadImage'])->name('provinces.upload-image');
+            Route::delete('/provincias/{province}/delete-image', [\App\Http\Controllers\System\ProvinceAdminController::class, 'deleteImage'])->name('provinces.delete-image');
+        });
     });
 });

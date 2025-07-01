@@ -119,6 +119,13 @@ class HandleInertiaRequests extends Middleware
                 'icon' => 'calendar',
             ];
 
+            // Add Provinces menu item for superadmin
+            $items[] = [
+                'name' => 'Provincias',
+                'route' => 'provinces.index',
+                'icon' => 'location',
+            ];
+
             // Add File Types menu item for superadmin
             $items[] = [
                 'name' => 'Tipos de Archivo',

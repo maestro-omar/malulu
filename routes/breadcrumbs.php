@@ -87,6 +87,22 @@ Breadcrumbs::for('academic-years.edit', function (Trail $trail, $year) {
     $trail->push("Editar {$year->name}");
 });
 
+Breadcrumbs::for('provinces.index', function (Trail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Provincias', route('provinces.index'));
+});
+
+Breadcrumbs::for('provinces.show', function (Trail $trail, $province) {
+    $trail->parent('provinces.index');
+    $trail->push($province->name, route('provinces.show', $province->code));
+});
+
+Breadcrumbs::for('provinces.edit', function (Trail $trail, $province) {
+    $trail->parent('provinces.show', $province);
+    $trail->push('Editar', route('provinces.edit', $province->code));
+});
+
+
 // 📁 Tipos de archivo
 Breadcrumbs::for('file-types.index', function (Trail $trail) {
     $trail->parent('dashboard');
@@ -95,8 +111,7 @@ Breadcrumbs::for('file-types.index', function (Trail $trail) {
 
 // 📂 Subtipos de archivo
 Breadcrumbs::for('file-subtypes.index', function (Trail $trail) {
-    $trail->parent('dashboard');
-    $trail->push('Tipos de archivo', route('file-types.index'));
+    $trail->parent('file-types.index');
     $trail->push('Subtipos de archivo', route('file-subtypes.index'));
 });
 
