@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->string('subtitle')->nullable();
             $table->string('link')->nullable();
+            $table->json('config')->nullable();
             $table->timestamps();
         });
     }

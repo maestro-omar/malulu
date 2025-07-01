@@ -27,7 +27,8 @@ class Province extends Model
         'logo2',
         'title',
         'subtitle',
-        'link'
+        'link',
+        'config'
     ];
 
     /**

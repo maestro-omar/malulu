@@ -22,6 +22,12 @@ class ProvinceSeeder extends Seeder
                 'title' => 'Ministerio de Educación',
                 'subtitle' => 'Forjamos el futuro a través de la educación, cimiento sólido para el progreso de la provincia de San Luis.',
                 'link' => 'https://sanluis.gov.ar/educacion/',
+                'config' => json_encode([
+                    "header" => [
+                        "background-color" => "#f0dea1",
+                        "color" => "#333"
+                    ]
+                ]),
             ],
             [
                 'code' => 'mza',
@@ -31,6 +37,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'cba',
@@ -40,6 +47,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'sj',
@@ -49,6 +57,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'lr',
@@ -58,6 +67,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'bsas',
@@ -67,6 +77,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'caba',
@@ -76,6 +87,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'cat',
@@ -85,6 +97,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'cha',
@@ -94,6 +107,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'chu',
@@ -103,6 +117,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'cor',
@@ -112,6 +127,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'ent',
@@ -121,6 +137,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'for',
@@ -130,6 +147,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'juj',
@@ -139,6 +157,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'lpa',
@@ -148,6 +167,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'mis',
@@ -157,6 +177,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'neu',
@@ -166,6 +187,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'rng',
@@ -175,6 +197,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'sal',
@@ -184,6 +207,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'sct',
@@ -193,6 +217,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'sfe',
@@ -202,6 +227,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'sde',
@@ -211,6 +237,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'tfu',
@@ -220,6 +247,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
             [
                 'code' => 'tuc',
@@ -229,6 +257,7 @@ class ProvinceSeeder extends Seeder
                 'title' => null,
                 'subtitle' => null,
                 'link' => null,
+                'config' => null,
             ],
         ];
 
