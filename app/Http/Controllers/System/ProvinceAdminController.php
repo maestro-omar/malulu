@@ -10,6 +10,7 @@ use App\Http\Controllers\System\SystemBaseController;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class ProvinceAdminController extends SystemBaseController
 {
@@ -41,34 +42,12 @@ class ProvinceAdminController extends SystemBaseController
     public function update(Request $request, Province $province)
     {
         try {
-            $validated = $request->validate([
-                'code' => 'required|string|unique:provinces,code,' . $province->id,
-                'name' => 'required|string',
-                'order' => 'nullable|integer',
-                'logo1' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
-                'logo2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
-                'title' => 'nullable|string',
-                'subtitle' => 'nullable|string',
-                'link' => 'nullable|string',
-            ]);
-
-            // Handle file uploads
-            if ($request->hasFile('logo1')) {
-                $logo1Path = $request->file('logo1')->store('province-logos', 'public');
-                $validated['logo1'] = '/storage/' . $logo1Path;
-            } else {
-                $validated['logo1'] = $province->logo1;
-            }
-            if ($request->hasFile('logo2')) {
-                $logo2Path = $request->file('logo2')->store('province-logos', 'public');
-                $validated['logo2'] = '/storage/' . $logo2Path;
-            } else {
-                $validated['logo2'] = $province->logo2;
-            }
-
-            $this->provinceService->updateProvince($province, $validated);
-            return redirect()->route('provinces.index')
-                ->with('success', 'Provincia actualizada correctamente.');
+            $this->provinceService->updateProvince($province, $request->all());
+            return redirect()->route('provinces.show', $province)->with('success', 'Provincia actualizado.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withErrors(['error' => $e->getMessage()])

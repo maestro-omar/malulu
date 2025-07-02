@@ -92,7 +92,7 @@ class UserService
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'firstname' => ['nullable', 'string', 'max:255'],
-            'lastname' => ['nullable', 'string', 'max:255'],
+            'lastname' => ['required', 'string', 'max:255'],
             'id_number' => ['nullable', 'string', 'max:50'],
             'gender' => ['nullable', 'string', 'max:50'],
             'birthdate' => ['nullable', 'date'],

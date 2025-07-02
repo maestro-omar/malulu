@@ -42,7 +42,7 @@ class FileTypeController extends Controller
             ], 201);
         } catch (ValidationException $e) {
             return response()->json([
-                'message' => 'Validation failed',
+                'message' => 'Error en algún campo',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
@@ -70,7 +70,7 @@ class FileTypeController extends Controller
             ]);
         } catch (ValidationException $e) {
             return response()->json([
-                'message' => 'Validation failed',
+                'message' => 'Error en algún campo',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {

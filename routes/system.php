@@ -6,6 +6,7 @@ use App\Http\Controllers\System\SchoolAdminController;
 use App\Http\Controllers\System\AcademicYearAdminController;
 use App\Http\Controllers\System\FileTypeAdminController;
 use App\Http\Controllers\System\FileSubtypeAdminController;
+use App\Http\Controllers\System\ProvinceAdminController;
 use Illuminate\Support\Facades\Route;
 // use Inertia\Inertia;
 
@@ -76,7 +77,7 @@ Route::prefix('sistema')->group(function () {
 
         // File Types Routes
         Route::middleware('permission:file-type.manage')->group(function () {
-            Route::get('/tipos-archivo', [FileTypeAdminController::class, 'index'])
+            Route::get('tipos-archivo', [FileTypeAdminController::class, 'index'])
                 ->name('file-types.index');
         });
 
@@ -85,7 +86,7 @@ Route::prefix('sistema')->group(function () {
 
         // File Subtypes Routes
         Route::middleware('permission:file-subtype.manage')->group(function () {
-            Route::get('/subtipos-archivo', [FileSubtypeAdminController::class, 'index'])
+            Route::get('subtipos-archivo', [FileSubtypeAdminController::class, 'index'])
                 ->name('file-subtypes.index');
         });
 
@@ -94,13 +95,13 @@ Route::prefix('sistema')->group(function () {
 
         // Province Routes
         Route::middleware('permission:province.manage')->group(function () {
-            Route::get('/provincias', [\App\Http\Controllers\System\ProvinceAdminController::class, 'index'])->name('provinces.index');
-            Route::get('/provincias/{province}/editar', [\App\Http\Controllers\System\ProvinceAdminController::class, 'edit'])->name('provinces.edit');
-            Route::put('/provincias/{province}', [\App\Http\Controllers\System\ProvinceAdminController::class, 'update'])->name('provinces.update');
-            Route::delete('/provincias/{province}', [\App\Http\Controllers\System\ProvinceAdminController::class, 'destroy'])->name('provinces.destroy');
-            Route::get('/provincias/{province}', [\App\Http\Controllers\System\ProvinceAdminController::class, 'show'])->name('provinces.show');
-            Route::post('/provincias/{province}/upload-image', [\App\Http\Controllers\System\ProvinceAdminController::class, 'uploadImage'])->name('provinces.upload-image');
-            Route::delete('/provincias/{province}/delete-image', [\App\Http\Controllers\System\ProvinceAdminController::class, 'deleteImage'])->name('provinces.delete-image');
+            Route::get('provincias', [ProvinceAdminController::class, 'index'])->name('provinces.index');
+            Route::get('provincias/{province}/editar', [ProvinceAdminController::class, 'edit'])->name('provinces.edit');
+            Route::put('provincias/{province}', [ProvinceAdminController::class, 'update'])->name('provinces.update');
+            Route::delete('/provincias/{province}', [ProvinceAdminController::class, 'destroy'])->name('provinces.destroy');
+            Route::get('provincias/{province}', [ProvinceAdminController::class, 'show'])->name('provinces.show');
+            Route::post('provincias/{province}/upload-image', [ProvinceAdminController::class, 'uploadImage'])->name('provinces.upload-image');
+            Route::delete('provincias/{province}/delete-image', [ProvinceAdminController::class, 'deleteImage'])->name('provinces.delete-image');
         });
     });
 });

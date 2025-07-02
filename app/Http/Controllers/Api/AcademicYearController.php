@@ -32,7 +32,7 @@ class AcademicYearController extends Controller
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Validation failed',
+                'message' => 'Error en algún campo',
                 'errors' => $e->errors()
             ], 422);
         }
@@ -48,7 +48,7 @@ class AcademicYearController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Validation failed',
+                'message' => 'Error en algún campo',
                 'errors' => $e->errors()
             ], 422);
         }

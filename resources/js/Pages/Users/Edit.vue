@@ -6,7 +6,6 @@ import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
 import ActionButtons from '@/Components/admin/ActionButtons.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
-import { hasPermission } from '@/utils/permissions';
 
 const props = defineProps({
     user: Object,
@@ -35,9 +34,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.put(route('users.update', props.user.id), {
-        preserveScroll: true,
-    });
+    form.put(route('users.update', props.user.id));
 };
 </script>
 
@@ -170,7 +167,7 @@ const submit = () => {
                         </div>
                     </div>
 
-                    <ActionButtons 
+                    <ActionButtons
                         button-label="Guardar Cambios"
                         :cancel-href="route('users.show', props.user.id)"
                         :disabled="form.processing"
