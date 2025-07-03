@@ -16,6 +16,8 @@ class ProvinceAdminController extends SystemBaseController
 {
     protected $provinceService;
 
+    const PICTURE_PATH = 'provincia-imagenes';
+
     public function __construct(ProvinceService $provinceService)
     {
         $this->provinceService = $provinceService;
@@ -100,7 +102,7 @@ class ProvinceAdminController extends SystemBaseController
             $newFilename = $timestamp . '_' . $sluggedName . '.' . $extension;
 
             // Store new image with custom filename
-            $path = $image->storeAs('province-logos/' . $province->code, $newFilename, 'public');
+            $path = $image->storeAs(self::PICTURE_PATH . '/' . $province->code, $newFilename, 'public');
 
             // Get the full URL for the stored image using the asset helper
             $url = asset('storage/' . $path);

@@ -64,4 +64,9 @@ class WorkerRelationship extends Model
     {
         return $this->belongsTo(File::class, 'decree_file_id');
     }
+
+    public static function jobStatuses()
+    {
+        return JobStatus::all()->pluck('name', 'id')->toArray();
+    }
 }

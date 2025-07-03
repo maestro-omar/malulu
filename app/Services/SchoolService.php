@@ -60,6 +60,11 @@ class SchoolService
             $data['slug'] = Str::slug($data['short']);
         }
 
+        // Extract locality_id if it's an object from the frontend
+        if (isset($data['locality_id']) && is_array($data['locality_id']) && isset($data['locality_id']['id'])) {
+            $data['locality_id'] = $data['locality_id']['id'];
+        }
+
         // Reserved words that cannot be used as slugs
         $reservedWords = ['sistema', 'escuela', 'mi-escuela', 'usuario', 'curso', 'provincia', 'general'];
 
@@ -187,7 +192,7 @@ class SchoolService
         if ($request) {
             return $this->handlePagination($query, $request->input('per_page'));
         }
-        
+
         // Default behavior if no request provided
         return $query->paginate(10);
     }

@@ -41,18 +41,14 @@
                                                 delete-route="provinces.delete-image"
                                                 delete-confirm-message="¿Está seguro que desea eliminar el escudo 2?" />
                                         </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-400">Código</label>
-                                        <p class="mt-1 text-sm text-gray-900">{{ province.code }}</p>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-400">Nombre</label>
-                                        <p class="mt-1 text-sm text-gray-900">{{ province.name }}</p>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-400">Orden</label>
-                                        <p class="mt-1 text-sm text-gray-900">{{ province.order }}</p>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-400">Código</label>
+                                            <p class="mt-1 text-sm text-gray-900">{{ province.code }}</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-400">Nombre</label>
+                                            <p class="mt-1 text-sm text-gray-900">{{ province.name }}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -96,9 +92,9 @@ const props = defineProps({
 
 
 const destroy = () => {
-  if (confirm('¿Está seguro que desea eliminar esta provincia?')) {
-    router.delete(route('provinces.destroy', props.province.code));
-  }
+    if (confirm('¿Está seguro que desea eliminar esta provincia?')) {
+        router.delete(route('provinces.destroy', props.province.code));
+    }
 };
 
 </script>

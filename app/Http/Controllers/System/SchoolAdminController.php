@@ -59,7 +59,7 @@ class SchoolAdminController extends SystemBaseController
                 ->with('success', 'School created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->withErrors($e->errors() ?? ['error' => $e->getMessage()])
+                ->withErrors(['error' => $e->getMessage()])
                 ->withInput();
         }
     }

@@ -22,6 +22,16 @@ class JobStatus extends Model
      *
      * @return array
      */
+    public static function alll()
+    {
+        return self::getFilteredConstants();
+    }
+
+    /**
+     * Returns an array of job status options formatted for Vue components.
+     *
+     * @return array
+     */
     public static function vueOptions(): array
     {
         $map = [
