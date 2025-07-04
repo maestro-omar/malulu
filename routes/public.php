@@ -32,8 +32,8 @@ Route::get('/', function () {
 });
 
 // Schools listing routes
-Route::get('escuelas', [PublicSchoolController::class, 'index'])->name('schools.public-index');
-Route::get('escuelas/{province}', [PublicSchoolController::class, 'byProvince'])->name('schools.public-byProvince');
+Route::get(__('routes.schools'), [PublicSchoolController::class, 'index'])->name('schools.public-index');
+Route::get(__('routes.schools') . '/{province}', [PublicSchoolController::class, 'byProvince'])->name('schools.public-byProvince');
 
 // Individual school routes (these should come after the escuelas routes to avoid conflicts)
 Route::prefix('{school}')->group(function () {
@@ -49,7 +49,7 @@ Route::prefix('{school}')->group(function () {
 Route::get('/test-default-pages/{school}', function ($school) {
     $school = \App\Models\Entities\School::where('slug', $school)->firstOrFail();
     $service = new \App\Services\SchoolPageService();
-    
+
     echo "<h1>Testing Default Pages for: {$school->name}</h1>";
     echo "<h2>Default Slugs:</h2>";
     echo "<ul>";
@@ -57,7 +57,7 @@ Route::get('/test-default-pages/{school}', function ($school) {
         echo "<li><a href='/{$school->slug}/{$slug}'>{$slug}</a></li>";
     }
     echo "</ul>";
-    
+
     echo "<h2>All Available Pages:</h2>";
     $pages = $service->getAllAvailablePagesForSchool($school->id, $school);
     echo "<ul>";
@@ -66,7 +66,7 @@ Route::get('/test-default-pages/{school}', function ($school) {
         echo "<li><a href='/{$school->slug}/{$page['slug']}'>{$page['name']}{$isDefault}</a></li>";
     }
     echo "</ul>";
-    
+
     echo "<h2>Main School Page:</h2>";
     echo "<p><a href='/{$school->slug}'>Main School Page</a></p>";
 })->name('test.default.pages');
