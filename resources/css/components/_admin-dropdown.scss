@@ -22,8 +22,7 @@
     
     &:focus {
       outline: none;
-      ring: 2px;
-      ring-color: $color-brand;
+      box-shadow: 0 0 0 2px $color-brand;
     }
   }
   
@@ -106,8 +105,7 @@
       &:focus {
         outline: none;
         border-color: transparent;
-        ring: 2px;
-        ring-color: $color-brand;
+        box-shadow: 0 0 0 2px $color-brand;
       }
     }
     

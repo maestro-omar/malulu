@@ -91,9 +91,10 @@
                 <InputError class="mt-2" :message="form.errors.end_date" />
               </div>
 
-              <div class="mb-4 flex items-center">
-                <Checkbox id="active" v-model:checked="form.active" />
-                <InputLabel for="active" value="Activo" class="ml-2" />
+              <div class="mb-4">
+                <CheckboxWithLabel id="active" v-model="form.active">
+                  Activo
+                </CheckboxWithLabel>
                 <InputError class="mt-2" :message="form.errors.active" />
               </div>
 
@@ -120,7 +121,7 @@ import PrimaryButton from '@/Components/admin/PrimaryButton.vue'
 import TextInput from '@/Components/admin/TextInput.vue'
 import SelectInput from '@/Components/admin/SelectInput.vue'
 import CancelLink from '@/Components/admin/CancelLink.vue'
-import Checkbox from '@/Components/admin/Checkbox.vue'
+import CheckboxWithLabel from '@/Components/admin/CheckboxWithLabel.vue'
 import { formatDateForInput } from '@/utils/date'
 import AdminHeader from '@/Sections/AdminHeader.vue';
 

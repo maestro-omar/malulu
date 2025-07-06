@@ -1,5 +1,5 @@
 <script setup>
-import Checkbox from '@/Components/admin/Checkbox.vue';
+import CheckboxWithLabel from '@/Components/admin/CheckboxWithLabel.vue';
 import MinimalAuthLayout from '@/Layouts/MinimalAuthLayout.vue';
 import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
@@ -70,22 +70,21 @@ const submit = () => {
             </div>
 
             <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600">Recordarme</span>
-                </label>
+                <CheckboxWithLabel name="remember" v-model="form.remember">
+                    Recordarme
+                </CheckboxWithLabel>
             </div>
 
             <div class="flex items-center justify-end mt-4">
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    class=""
                 >
                     ¿Olvidaste tu contraseña?
                 </Link>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton :processing="form.processing">
                     Iniciar sesión
                 </PrimaryButton>
             </div>

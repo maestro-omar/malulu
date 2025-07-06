@@ -1,14 +1,161 @@
+// Role Colors (based on Tailwind color palette)
+// --------------------------------
+$color-black: #000000;
+$color-purple: #7c3aed;
+$color-blue: #010101;
+$color-green: #16a34a;
+$color-yellow: #ca8a04;
+$color-indigo: #4f46e5;
+$color-pink: #ec4899;
+$color-orange: #ea580c;
+$color-teal: #0d9488;
+$color-cyan: #0891b2;
+$color-emerald: #059669;
+$color-rose: #e11d48;
+$color-sky: #0284c7;
+$color-amber: #d97706;
+$color-slate: #475569;
+$color-gray: #6b7280;
+
 // Colors
 // --------------------------------
 $color-brand: #00379B;
 $color-secondary: #BD0037;
-$color-terciary: #36383B;
+$color-terciary: $color-gray;
 $color-grey: #F5F5F5; //gris claro
-$color-grey-dark: #55575B; //noche
+$color-grey-dark: $color-slate; //noche
 $color-text: #222221; //negro
+$color-ok: $color-green;
+$color-ko: $color-rose;
 
-$color-ok: #52FF52;
-$color-ko: #FF5252;
+
+// Role Badge Colors (Background and Text)
+// --------------------------------
+// Superadmin
+$color-role-superadmin-bg: #f3f4f6; // gray-100
+$color-role-superadmin-text: #1f2937; // gray-800
+
+// Administrador
+$color-role-admin-bg: #faf5ff; // purple-100
+$color-role-admin-text: #5b21b6; // purple-800
+
+// Director/a
+$color-role-director-bg: #eff6ff; // blue-100
+$color-role-director-text: #1e40af; // blue-800
+
+// Regente
+$color-role-regent-bg: #dcfce7; // green-100
+$color-role-regent-text: #166534; // green-800
+
+// Secretario/a
+$color-role-secretary-bg: #fefce8; // yellow-100
+$color-role-secretary-text: #92400e; // yellow-800
+
+// Profesor/a
+$color-role-professor-bg: #eef2ff; // indigo-100
+$color-role-professor-text: #3730a3; // indigo-800
+
+// Maestro/a de Grado
+$color-role-grade-teacher-bg: #fdf2f8; // pink-100
+$color-role-grade-teacher-text: #9d174d; // pink-800
+
+// Auxiliar Docente
+$color-role-assistant-teacher-bg: #fff7ed; // orange-100
+$color-role-assistant-teacher-text: #9a3412; // orange-800
+
+// Maestro/a Curricular
+$color-role-curricular-teacher-bg: #ccfbf1; // teal-100
+$color-role-curricular-teacher-text: #134e4a; // teal-800
+
+// Maestro/a Especial
+$color-role-special-teacher-bg: #cffafe; // cyan-100
+$color-role-special-teacher-text: #155e75; // cyan-800
+
+// Preceptor/a
+$color-role-class-assistant-bg: #d1fae5; // emerald-100
+$color-role-class-assistant-text: #065f46; // emerald-800
+
+// Bibliotecario/a
+$color-role-librarian-bg: #f3e8ff; // violet-100
+$color-role-librarian-text: #5b21b6; // violet-800
+
+// Tutor/a
+$color-role-guardian-bg: #ffe4e6; // rose-100
+$color-role-guardian-text: #be123c; // rose-800
+
+// Alumno/a
+$color-role-student-bg: #e0f2fe; // sky-100
+$color-role-student-text: #0c4a6e; // sky-800
+
+// Cooperadora
+$color-role-cooperative-bg: #fef3c7; // amber-100
+$color-role-cooperative-text: #92400e; // amber-800
+
+// Ex-alumno/a
+$color-role-former-student-bg: #f1f5f9; // slate-100
+$color-role-former-student-text: #1e293b; // slate-800
+
+// Default
+$color-role-default-bg: #f3f4f6; // gray-100
+$color-role-default-text: #374151; // gray-800
+
+// School Shift Colors (Background and Text)
+// --------------------------------
+// Mañana
+$color-shift-morning-bg: #dcfce7; // green-100
+$color-shift-morning-text: #166534; // green-800
+
+// Tarde
+$color-shift-afternoon-bg: #fff7ed; // orange-100
+$color-shift-afternoon-text: #9a3412; // orange-800
+
+// Noche
+$color-shift-night-bg: #eef2ff; // indigo-100
+$color-shift-night-text: #3730a3; // indigo-800
+
+// Default
+$color-shift-default-bg: #f3f4f6; // gray-100
+$color-shift-default-text: #374151; // gray-800
+
+// School Management Type Colors (Background and Text)
+// --------------------------------
+// Pública
+$color-management-public-bg: #e0f2fe; // sky-100
+$color-management-public-text: #0c4a6e; // sky-800
+
+// Privada
+$color-management-private-bg: #faf5ff; // purple-100
+$color-management-private-text: #5b21b6; // purple-800
+
+// Generativa
+$color-management-generative-bg: #d1fae5; // emerald-100
+$color-management-generative-text: #065f46; // emerald-800
+
+// Autogestionada
+$color-management-self-managed-bg: #fdf2f8; // pink-100
+$color-management-self-managed-text: #9d174d; // pink-800
+
+// Default
+$color-management-default-bg: #f3f4f6; // gray-100
+$color-management-default-text: #374151; // gray-800
+
+// School Level Colors (Background and Text)
+// --------------------------------
+// Inicial
+$color-level-initial-bg: #ffe4e6; // rose-100
+$color-level-initial-text: #be123c; // rose-800
+
+// Primaria
+$color-level-primary-bg: #fef3c7; // amber-100
+$color-level-primary-text: #92400e; // amber-800
+
+// Secundaria
+$color-level-secondary-bg: #f3e8ff; // violet-100
+$color-level-secondary-text: #5b21b6; // violet-800
+
+// Default
+$color-level-default-bg: #f3f4f6; // gray-100
+$color-level-default-text: #374151; // gray-800
 
 // Min and max breakpoints
 $screen-iphone6: 375px;
@@ -41,6 +188,7 @@ $padding-x-lg: 84px;
 $padding-x-md: 64px;
 $padding-x-sm: 48px;
 $padding-x-xs: 16px;
+$padding-input: 8px;
 
 
 // header

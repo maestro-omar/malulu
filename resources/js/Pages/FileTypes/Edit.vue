@@ -53,10 +53,9 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="flex items-center">
-                                    <Checkbox v-model:checked="form.active" />
-                                    <span class="ml-2">Activo</span>
-                                </label>
+                                <CheckboxWithLabel v-model="form.active">
+                                    Activo
+                                </CheckboxWithLabel>
                             </div>
 
                             <ActionButtons 
@@ -78,7 +77,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
 import InputError from '@/Components/admin/InputError.vue';
-import Checkbox from '@/Components/admin/Checkbox.vue';
+import CheckboxWithLabel from '@/Components/admin/CheckboxWithLabel.vue';
 import ActionButtons from '@/Components/admin/ActionButtons.vue';
 
 const props = defineProps({

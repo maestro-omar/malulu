@@ -15,8 +15,7 @@
   
   &:focus {
     outline: none;
-    ring: 2px;
-    ring-offset: 2px;
+    box-shadow: 0 0 0 2px $color-brand;
   }
   
   &--primary {
@@ -29,11 +28,16 @@
     
     &:focus {
       background-color: darken($color-brand, 10%);
-      ring-color: lighten($color-brand, 20%);
+      box-shadow: 0 0 0 2px lighten($color-brand, 20%);
     }
     
     &:active {
       background-color: darken($color-brand, 20%);
+    }
+    
+    &--processing {
+      opacity: 0.25;
+      cursor: not-allowed;
     }
   }
   
@@ -46,7 +50,7 @@
     }
     
     &:focus {
-      ring-color: lighten($color-ko, 20%);
+      box-shadow: 0 0 0 2px lighten($color-ko, 20%);
     }
     
     &:active {
@@ -65,7 +69,7 @@
     }
     
     &:focus {
-      ring-color: $color-brand;
+      box-shadow: 0 0 0 2px $color-brand;
     }
     
     &:disabled {

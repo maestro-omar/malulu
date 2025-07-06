@@ -65,24 +65,21 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="flex items-center">
-                                    <Checkbox v-model:checked="form.new_overwrites" />
-                                    <span class="ml-2">Sobrescribe archivos existentes</span>
-                                </label>
+                                <CheckboxWithLabel v-model="form.new_overwrites">
+                                    Sobrescribe archivos existentes
+                                </CheckboxWithLabel>
                             </div>
 
                             <div class="mb-4">
-                                <label class="flex items-center">
-                                    <Checkbox v-model:checked="form.hidden_for_familiy" />
-                                    <span class="ml-2">Oculto para la familia</span>
-                                </label>
+                                <CheckboxWithLabel v-model="form.hidden_for_familiy">
+                                    Oculto para la familia
+                                </CheckboxWithLabel>
                             </div>
 
                             <div class="mb-4">
-                                <label class="flex items-center">
-                                    <Checkbox v-model:checked="form.upload_by_familiy" />
-                                    <span class="ml-2">Puede ser subido por la familia</span>
-                                </label>
+                                <CheckboxWithLabel v-model="form.upload_by_familiy">
+                                    Puede ser subido por la familia
+                                </CheckboxWithLabel>
                             </div>
 
                             <div class="mb-4">
@@ -119,7 +116,7 @@ import InputLabel from "@/Components/admin/InputLabel.vue";
 import TextInput from "@/Components/admin/TextInput.vue";
 import InputError from "@/Components/admin/InputError.vue";
 import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
-import Checkbox from "@/Components/admin/Checkbox.vue";
+import CheckboxWithLabel from "@/Components/admin/CheckboxWithLabel.vue";
 import CancelLink from "@/Components/admin/CancelLink.vue";
 
 defineProps({

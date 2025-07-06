@@ -8,12 +8,11 @@
     
     &:focus {
       border-color: $color-brand;
-      ring: 2px;
-      ring-color: $color-brand;
+      box-shadow: 0 0 0 2px $color-brand;
     }
     
     &--full-width {
-      width: 100%;
+      width: calc(100% - $padding-input * 2);
     }
   }
   
@@ -22,6 +21,7 @@
     font-weight: 500;
     font-size: 0.875rem;
     color: $color-text;
+    margin: 10px 0 8px;
   }
   
   &__error {
@@ -37,8 +37,7 @@
     
     &:focus {
       border-color: $color-brand;
-      ring: 2px;
-      ring-color: $color-brand;
+      box-shadow: 0 0 0 2px $color-brand;
     }
   }
   
@@ -48,8 +47,7 @@
     color: $color-brand;
     
     &:focus {
-      ring: 2px;
-      ring-color: $color-brand;
+      box-shadow: 0 0 0 2px $color-brand;
     }
   }
 } 
