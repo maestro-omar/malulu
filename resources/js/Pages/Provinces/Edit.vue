@@ -48,33 +48,33 @@ const submit = () => {
                 <div class="grid grid-cols-2 gap-4 mb-4">
                   <div>
                     <InputLabel for="code" value="Clave" />
-                    <TextInput id="code" v-model="form.code" type="text" class="mt-1 block w-full" required autofocus />
+                    <TextInput id="code" v-model="form.code" type="text" class="mt-1 block form__input--full-width" required autofocus />
                     <InputError :message="form.errors.code" class="mt-2" />
                   </div>
                   <div>
                     <InputLabel for="order" value="Orden" />
-                    <TextInput id="order" v-model="form.order" type="number" class="mt-1 block w-full" />
+                    <TextInput id="order" v-model="form.order" type="number" class="mt-1 block form__input--full-width" />
                     <InputError :message="form.errors.order" class="mt-2" />
                   </div>
                 </div>
                 <div class="mb-4">
                   <InputLabel for="name" value="Nombre" />
-                  <TextInput id="name" v-model="form.name" type="text" class="mt-1 block w-full" required />
+                  <TextInput id="name" v-model="form.name" type="text" class="mt-1 block form__input--full-width" required />
                   <InputError :message="form.errors.name" class="mt-2" />
                 </div>
                 <div class="mb-4">
                   <InputLabel for="title" value="Título" />
-                  <TextInput id="title" v-model="form.title" type="text" class="mt-1 block w-full" />
+                  <TextInput id="title" v-model="form.title" type="text" class="mt-1 block form__input--full-width" />
                   <InputError :message="form.errors.title" class="mt-2" />
                 </div>
                 <div class="mb-4">
                   <InputLabel for="subtitle" value="Subtítulo" />
-                  <TextInput id="subtitle" v-model="form.subtitle" type="text" class="mt-1 block w-full" />
+                  <TextInput id="subtitle" v-model="form.subtitle" type="text" class="mt-1 block form__input--full-width" />
                   <InputError :message="form.errors.subtitle" class="mt-2" />
                 </div>
                 <div class="mb-4">
                   <InputLabel for="link" value="Enlace" />
-                  <TextInput id="link" v-model="form.link" type="text" class="mt-1 block w-full" />
+                  <TextInput id="link" v-model="form.link" type="text" class="mt-1 block form__input--full-width" />
                   <InputError :message="form.errors.link" class="mt-2" />
                 </div>
                 <div class="mb-4">

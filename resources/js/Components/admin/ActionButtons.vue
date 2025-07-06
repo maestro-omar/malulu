@@ -1,6 +1,6 @@
 <template>
-    <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-        <div class="flex items-center justify-between">
+    <div class="action-buttons__container">
+        <div class="action-buttons">
             <PrimaryButton :disabled="disabled" :type="type" :class="buttonClass">
                 {{ buttonLabel }}
             </PrimaryButton>

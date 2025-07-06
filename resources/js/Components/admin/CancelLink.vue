@@ -1,7 +1,7 @@
 <template>
   <Link
     :href="href"
-    class="text-red-600 hover:text-red-800 font-medium"
+    class="nav-cancel"
   >
     Cancelar
   </Link>

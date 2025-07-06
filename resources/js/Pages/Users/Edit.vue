@@ -56,7 +56,7 @@ const submit = () => {
                         <div class="space-y-6">
                             <div>
                                 <InputLabel for="name" value="Nombre de usuario" />
-                                <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name"
+                                <TextInput id="name" type="text" class="mt-1 block form__input--full-width" v-model="form.name"
                                     required />
                                 <InputError class="mt-2" :message="form.errors.name" />
                             </div>
@@ -64,14 +64,14 @@ const submit = () => {
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <InputLabel for="firstname" value="Nombre" />
-                                    <TextInput id="firstname" type="text" class="mt-1 block w-full"
+                                    <TextInput id="firstname" type="text" class="mt-1 block form__input--full-width"
                                         v-model="form.firstname" />
                                     <InputError class="mt-2" :message="form.errors.firstname" />
                                 </div>
 
                                 <div>
                                     <InputLabel for="lastname" value="Apellido" />
-                                    <TextInput id="lastname" type="text" class="mt-1 block w-full"
+                                    <TextInput id="lastname" type="text" class="mt-1 block form__input--full-width"
                                         v-model="form.lastname" />
                                     <InputError class="mt-2" :message="form.errors.lastname" />
                                 </div>
@@ -80,21 +80,21 @@ const submit = () => {
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <InputLabel for="id_number" value="DNI" />
-                                    <TextInput id="id_number" type="text" class="mt-1 block w-full"
+                                    <TextInput id="id_number" type="text" class="mt-1 block form__input--full-width"
                                         v-model="form.id_number" />
                                     <InputError class="mt-2" :message="form.errors.id_number" />
                                 </div>
 
                                 <div>
                                     <InputLabel for="birthdate" value="Fecha de Nacimiento" />
-                                    <TextInput id="birthdate" type="date" class="mt-1 block w-full"
+                                    <TextInput id="birthdate" type="date" class="mt-1 block form__input--full-width"
                                         v-model="form.birthdate" />
                                     <InputError class="mt-2" :message="form.errors.birthdate" />
                                 </div>
 
                                 <div>
                                     <InputLabel for="nationality" value="Nacionalidad" />
-                                    <TextInput id="nationality" type="text" class="mt-1 block w-full"
+                                    <TextInput id="nationality" type="text" class="mt-1 block form__input--full-width"
                                         v-model="form.nationality" />
                                     <InputError class="mt-2" :message="form.errors.nationality" />
                                 </div>
@@ -109,14 +109,14 @@ const submit = () => {
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <InputLabel for="email" value="Correo electrónico" />
-                                    <TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email"
+                                    <TextInput id="email" type="email" class="mt-1 block form__input--full-width" v-model="form.email"
                                         required />
                                     <InputError class="mt-2" :message="form.errors.email" />
                                 </div>
 
                                 <div>
                                     <InputLabel for="phone" value="Teléfono" />
-                                    <TextInput id="phone" type="text" class="mt-1 block w-full" v-model="form.phone" />
+                                    <TextInput id="phone" type="text" class="mt-1 block form__input--full-width" v-model="form.phone" />
                                     <InputError class="mt-2" :message="form.errors.phone" />
                                 </div>
                             </div>
@@ -124,14 +124,14 @@ const submit = () => {
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <InputLabel for="address" value="Dirección" />
-                                    <TextInput id="address" type="text" class="mt-1 block w-full"
+                                    <TextInput id="address" type="text" class="mt-1 block form__input--full-width"
                                         v-model="form.address" />
                                     <InputError class="mt-2" :message="form.errors.address" />
                                 </div>
 
                                 <div>
                                     <InputLabel for="locality" value="Localidad" />
-                                    <TextInput id="locality" type="text" class="mt-1 block w-full"
+                                    <TextInput id="locality" type="text" class="mt-1 block form__input--full-width"
                                         v-model="form.locality" />
                                     <InputError class="mt-2" :message="form.errors.locality" />
                                 </div>

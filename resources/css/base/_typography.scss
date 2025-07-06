@@ -1,0 +1,162 @@
+// Headings
+// -------------------------
+
+h1, .h1{
+	font-weight: $font-bold-weight;
+	margin: 0 0 12px 0;
+	@include fz(3.6);
+	@include lh(4.2);
+
+	@include mq(md){
+		@include fz(4.5);
+		@include lh(5.5);
+	}
+
+	@include mq(lg){
+		@include fz(5.6);
+		@include lh(6.5);
+	}
+}
+
+h2, .h2{
+	@include fz(2.4);
+	@include lh(2.8);
+	font-weight: $font-bold-weight;
+	margin: 0 0 24px 0;
+
+	@include mq(md) {
+		@include fz(3);
+		@include lh(3.6);
+	}
+
+	@include mq(lg) {
+		@include fz(3.6);
+		@include lh(4.2);
+	}
+}
+
+h3, h4, h5, h6,
+.h3, .h4, .h5, .h6 {
+	font-weight: $font-normal-weight;
+	margin: 0 0 12px 0;
+
+	@include mq(md) {
+		margin: 0 0 18px 0;
+	}
+
+	@include mq(lg) {
+		margin: 0 0 24px 0;
+	}
+}
+
+h3, .h3 {
+	@include fz(2);
+	@include lh(2.4);
+
+	@include mq(md) {
+		@include fz(2.2);
+		@include lh(2.6);
+	}
+
+	@include mq(lg) {
+		@include fz(2.4);
+		@include lh(2.8);
+	}
+}
+
+h4, .h4 {
+	@include fz(1.8);
+	@include lh(2.2);
+
+	@include mq(md) {
+		@include fz(2.2);
+		@include lh(2.6);
+	}
+
+	@include mq(lg) {
+		@include fz(2.4);
+		@include lh(2.8);
+	}
+}
+
+h5, .h5 {
+	@include fz(1.6);
+	@include lh(2);
+
+	@include mq(md) {
+		@include fz(2);
+		@include lh(2.4);
+	}
+
+	@include mq(lg) {
+		@include fz(2.4);
+		@include lh(2.8);
+	}
+}
+
+h6, .h6 {
+	@include fz(1.6);
+	@include lh(2);
+
+	@include mq(md) {
+		@include fz(1.8);
+		@include lh(2.2);
+	}
+
+	@include mq(lg) {
+		@include fz(2);
+		@include lh(2.4);
+	}
+}
+
+
+// Body text
+// -------------------------
+p, li{
+	margin: 0 0 12px 0;
+
+	@include mq(md){
+		margin: 0 0 20px 0;
+	}
+
+	@include mq(lg){
+		margin: 0 0 24px 0;
+	}
+
+	&:last-child{
+		margin-bottom: 0;
+	}
+}
+
+a{
+	color: $color-secondary;
+	transition: color .3s;
+	text-decoration: none;
+
+	@include on-event {
+		color: $color-grey-dark;
+		text-decoration: underline;
+	}
+
+	&.underlined{
+		text-decoration: underline;
+	}
+}
+
+
+// Lists
+// -------------------------
+
+// Unordered and Ordered lists
+ul,
+ol {
+	margin-top: 0;
+	margin-bottom:  32px;
+	padding-left: 24px;
+
+	ul,
+	ol {
+		margin-top: 32px;
+		margin-bottom: 0;
+	}
+}

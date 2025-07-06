@@ -1,17 +1,15 @@
 <template>
-  <nav aria-label="breadcrumb" class="text-sm text-gray-600 mb-0">
-    <ol class="list-reset flex">
-      <li v-for="(crumb, index) in breadcrumbs" :key="index" class="flex items-center">
+  <nav aria-label="breadcrumb" class="nav-breadcrumbs">
+    <ol class="nav-breadcrumbs__list">
+      <li v-for="(crumb, index) in breadcrumbs" :key="index" class="nav-breadcrumbs__item">
         <template v-if="crumb.url && index !== breadcrumbs.length - 1">
-          <Link :href="crumb.url" class="text-blue-600 hover:underline">
+          <Link :href="crumb.url" class="nav-breadcrumbs__link">
           {{ crumb.title }}
           </Link>
         </template>
         <template v-else>
-          <span class="text-gray-500">{{ crumb.title }}</span>
+          <span class="nav-breadcrumbs__text">{{ crumb.title }}</span>
         </template>
-
-        <span v-if="index !== breadcrumbs.length - 1" class="mx-2">/</span>
       </li>
     </ol>
   </nav>

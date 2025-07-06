@@ -1,0 +1,115 @@
+// Normalize form controls
+
+// Remove inner shadow from inputs on mobile iOS
+textarea,
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+select {
+    box-shadow: none !important;
+    -webkit-appearance: none;
+}
+
+// Override content-box in Normalize (* isn't specific enough)
+input[type="search"] {
+    box-sizing: border-box;
+}
+
+// Position radios and checkboxes better
+input[type="radio"],
+input[type="checkbox"] {
+    margin: 4px 0 0;
+    margin-top: 1px \9; // IE8-9
+    line-height: normal;
+}
+
+input[type="file"] {
+    display: block;
+}
+
+// Make range inputs behave like textual form controls
+input[type="range"] {
+    display: block;
+    width: 100%;
+}
+
+// Make multiple select elements height not fixed
+select[multiple],
+select[size] {
+    height: auto;
+}
+
+// Focus for file, radio, and checkbox
+input[type="file"]:focus,
+input[type="radio"]:focus,
+input[type="checkbox"]:focus {
+    // Default
+    outline: thin dotted;
+    // WebKit
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+
+// Search inputs in iOS
+//
+// This overrides the extra rounded corners on search inputs in iOS so that our
+// `.form-control` class can properly style them. Note that this cannot simply
+// be added to `.form-control` as it's not specific enough. For details, see
+// https://github.com/twbs/bootstrap/issues/11586.
+
+input[type="search"] {
+    -webkit-appearance: none;
+}
+
+
+// Special styles for iOS temporal inputs
+//
+// In Mobile Safari, setting `display: block` on temporal inputs causes the
+// text within the input to become vertically misaligned. As a workaround, we
+// set a pixel line-height that matches the given height of the input, but only
+// for Safari. See https://bugs.webkit.org/show_bug.cgi?id=139848
+//
+// Note that as of 8.3, iOS doesn't support `datetime` or `week`.
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    input[type="date"],
+    input[type="time"],
+    input[type="datetime-local"],
+    input[type="month"] {
+
+        &.form__control {
+            line-height: $height-form-control;
+        }
+    }
+}
+
+
+  /* ---------Range -----------*/
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    width: 100%;
+    background: linear-gradient(to right, $color-brand 0%, $color-brand 50%, rgba(112, 122, 127, 0.12) 50%, rgba(112, 122, 127, 0.12) 100%);
+  }
+  input[type="range"]:focus {
+  outline: none;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track{
+    background-color: rgba(112, 122, 127, 0.12);
+    height: 4px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+   -webkit-appearance: none;
+    appearance: none;
+    margin-top: -6px;
+    background-color: #fff;
+    border: 4px solid $color-brand;
+    border-radius: 50%;
+    height: 16px;
+    width: 16px;
+  }

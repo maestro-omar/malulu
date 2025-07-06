@@ -1,0 +1,55 @@
+// Admin Form Components
+
+.form {
+  &__input {
+    border: 1px solid $color-grey-dark;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    
+    &:focus {
+      border-color: $color-brand;
+      ring: 2px;
+      ring-color: $color-brand;
+    }
+    
+    &--full-width {
+      width: 100%;
+    }
+  }
+  
+  &__label {
+    display: block;
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: $color-text;
+  }
+  
+  &__error {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: $color-ko;
+  }
+  
+  &__select {
+    border: 1px solid $color-grey-dark;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    
+    &:focus {
+      border-color: $color-brand;
+      ring: 2px;
+      ring-color: $color-brand;
+    }
+  }
+  
+  &__checkbox {
+    border: 1px solid $color-grey-dark;
+    border-radius: 0.25rem;
+    color: $color-brand;
+    
+    &:focus {
+      ring: 2px;
+      ring-color: $color-brand;
+    }
+  }
+} 

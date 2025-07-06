@@ -1,0 +1,177 @@
+// Admin Misc Components
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  
+  &__container {
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    
+    @media (min-width: 640px) {
+      padding: 2rem;
+    }
+  }
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  
+  &__avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  &__details {
+    &__name {
+      font-weight: 500;
+      color: $color-text;
+    }
+    
+    &__email {
+      font-size: 0.875rem;
+      color: $color-grey-dark;
+    }
+  }
+}
+
+.editable-image {
+  position: relative;
+  display: inline-block;
+  
+  &__preview {
+    border-radius: 0.375rem;
+    object-fit: cover;
+  }
+  
+  &__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out;
+    border-radius: 0.375rem;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+  
+  &__input {
+    display: none;
+  }
+}
+
+.shift-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  
+  &--morning {
+    background-color: lighten($color-brand, 45%);
+    color: darken($color-brand, 20%);
+  }
+  
+  &--afternoon {
+    background-color: lighten($color-secondary, 45%);
+    color: darken($color-secondary, 20%);
+  }
+  
+  &--evening {
+    background-color: lighten($color-terciary, 45%);
+    color: darken($color-terciary, 20%);
+  }
+}
+
+.app-logo {
+  height: 2rem;
+  width: auto;
+}
+
+.language-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  &__button {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid $color-grey-dark;
+    border-radius: 0.25rem;
+    background: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    
+    &:hover {
+      background-color: $color-grey;
+    }
+    
+    &--active {
+      background-color: $color-brand;
+      color: white;
+      border-color: $color-brand;
+    }
+  }
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  
+  &__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid $color-grey-dark;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    color: $color-text;
+    text-decoration: none;
+    transition: all 0.15s ease-in-out;
+    
+    &:hover {
+      background-color: $color-grey;
+      color: $color-text;
+    }
+    
+    &--active {
+      background-color: $color-brand;
+      color: white;
+      border-color: $color-brand;
+    }
+    
+    &--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      
+      &:hover {
+        background-color: transparent;
+        color: $color-text;
+      }
+    }
+  }
+  
+  &__info {
+    font-size: 0.875rem;
+    color: $color-grey-dark;
+  }
+} 

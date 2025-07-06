@@ -1,0 +1,132 @@
+// Admin Dropdown Components
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  
+  &__trigger {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: white;
+    border: 1px solid $color-grey-dark;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    color: $color-text;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    
+    &:hover {
+      background-color: $color-grey;
+    }
+    
+    &:focus {
+      outline: none;
+      ring: 2px;
+      ring-color: $color-brand;
+    }
+  }
+  
+  &__menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 50;
+    min-width: 12rem;
+    margin-top: 0.25rem;
+    background-color: white;
+    border: 1px solid $color-grey-dark;
+    border-radius: 0.375rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.5rem);
+    transition: all 0.15s ease-in-out;
+    
+    &--open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    
+    &--search {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      width: 100%;
+      margin-top: 0.25rem;
+      background-color: white;
+      border: 1px solid $color-grey-dark;
+      border-radius: 0.375rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      max-height: 15rem;
+      overflow: auto;
+    }
+  }
+  
+  &__link {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: $color-text;
+    text-decoration: none;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    
+    &:hover {
+      background-color: $color-grey;
+      color: $color-text;
+    }
+    
+    &--danger {
+      color: $color-ko;
+      
+      &:hover {
+        background-color: lighten($color-ko, 45%);
+        color: darken($color-ko, 20%);
+      }
+    }
+  }
+  
+  &__search {
+    position: relative;
+    
+    &-input {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border: 1px solid $color-grey-dark;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      
+      &:focus {
+        outline: none;
+        border-color: transparent;
+        ring: 2px;
+        ring-color: $color-brand;
+      }
+    }
+    
+    &-clear {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      
+      &-button {
+        background: none;
+        border: none;
+        color: $color-grey-dark;
+        cursor: pointer;
+        
+        &:hover {
+          color: $color-text;
+        }
+      }
+    }
+  }
+} 

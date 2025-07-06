@@ -14,8 +14,8 @@ const props = defineProps({
 
 const classes = computed(() =>
     props.active
-        ? 'block w-full ps-3 pe-4 py-2 text-start text-base font-medium text-gray-400 underline focus:outline-none transition duration-150 ease-in-out'
-        : 'block w-full ps-3 pe-4 py-2 text-start text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 focus:outline-none focus:text-gray-800 focus:bg-gray-50 transition duration-150 ease-in-out'
+        ? 'nav-link nav-link--active'
+        : 'nav-link'
 );
 </script>
 
