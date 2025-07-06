@@ -1,0 +1,60 @@
+// Minimal Auth Layout
+
+.minimal-auth-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 1.5rem; // pt-6
+  background-color: $color-grey;
+  
+  @media (min-width: 640px) {
+    padding-top: 0; // sm:pt-0
+  }
+  
+  &__logo {
+    display: block;
+    height: 5rem; // w-20 h-20
+    width: 5rem;
+    fill: currentColor;
+    color: $color-grey-dark;
+  }
+  
+  &__container {
+    width: 100%;
+    max-width: 28rem; // sm:max-w-md
+    margin-top: 1.5rem; // mt-6
+    padding: 1.5rem; // px-6 py-4
+    background-color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); // shadow-md
+    overflow: hidden;
+    
+    @media (min-width: 640px) {
+      border-radius: 0.5rem; // sm:rounded-lg
+    }
+  }
+  
+  &__header {
+    background-color: white;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    
+    &-container {
+      max-width: 80rem; // max-w-7xl
+      margin: 0 auto;
+      padding: 1.5rem 1rem; // py-6 px-4
+      
+      @media (min-width: 640px) {
+        padding: 1.5rem 1.5rem; // py-6 px-6
+      }
+      
+      @media (min-width: 1024px) {
+        padding: 1.5rem 2rem; // py-6 px-8
+      }
+    }
+  }
+  
+  &__main {
+    // Main content area
+  }
+} 

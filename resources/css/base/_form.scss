@@ -1,0 +1,163 @@
+
+.hbspt-form{
+  .form-columns-2, .form-columns-1, .hs-form-field{
+    width: 100%!important;
+  }
+
+  .hs-form-field{
+    margin-bottom: 16px;
+
+    @include mq(md){
+      margin-bottom: 24px;
+    }
+  }
+
+  .hs-fieldtype-text, .hs-fieldtype-phonenumber, .hs-fieldtype-textarea, .hs-fieldtype-select, .hs-form-field{
+    label, legend{
+      display: none!important;
+
+      &.hs-error-msg{
+        display: block!important;
+        padding-top: 6px;
+        padding-left: 12px;
+
+        @include fz(1);
+        @include lh(1.2);
+        color: $color-ko;
+
+        @include mq(md){
+          padding-top: 8px;
+          @include fz(1.2);
+          @include lh(1.4);
+        }
+      }
+    }
+  }
+
+  ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  ::placeholder {
+    color: $color-text;
+    opacity: 1; /* Firefox */
+  }
+
+  ::-ms-input-placeholder { /* Edge 12 -18 */
+    color: $color-text;
+  }
+
+  .hs-input:not([type=checkbox]):not([type=file]) {
+    display: block;
+
+    width: 100%!important;
+    height: $height-form-control;
+
+    padding: 0 12px 6px 12px;
+    border: none;
+    border-bottom: 2px solid $color-grey;
+    border-radius: 0;
+
+    color: $color-text;
+    font-family: $font-family;
+    font-weight: $font-normal-weight;
+    background-color:#fff;
+    background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+    outline: none;
+
+    @include fz(1.4);
+    @include lh(1.8);
+
+    @include mq(md){
+      @include fz(1.6);
+      @include lh(2.4);
+    }
+
+    // Disabled and read-only inputs
+    &[disabled],
+    &[readonly] {
+      color: $color-text;
+      opacity: 0.6;
+    }
+
+    &[disabled] {
+      cursor: not-allowed;
+    }
+
+    &.error{
+      border-color: $color-ko;
+    }
+
+    // Reset height for `textarea`s
+    &.hs-fieldtype-textarea {
+      height: 100px;
+    }
+
+    &:is(select) {
+      cursor: pointer;
+
+      @supports ((-webkit-appearance: none) or (-moz-appearance: none) or (appearance: none)) or (-webkit-appearance: none) {
+        padding-right: 44px;
+        background-image: url("../../images/interface/chevron-down.svg");
+        background-position: right 16px top 10px;
+        background-repeat: no-repeat;
+        background-size: 12px 12px;
+        appearance: none;
+      }
+
+      option{
+        color: $color-text!important;
+      }
+    }
+  }
+
+  .hs-richtext{
+    @include fz(1.2);
+    @include lh(1.4);
+    color: $color-grey-dark;
+    margin: 12px 0;
+
+    @include mq(md){
+      @include fz(1.4);
+      @include lh(1.6);
+    }
+  }
+
+  .hs-form-booleancheckbox{
+    margin: 12px 0;
+    .hs-input{
+      width: 16px!important;
+      height: 16px;
+    }
+    label{
+      display: block!important;
+    }
+  }
+
+  .hs-button{
+    margin-top: 16px;
+    width: 100%;
+
+    @include mq(md){
+      width: auto;
+    }
+  }
+
+  .hs_error_rollup{
+    display: none;
+  }
+
+  a{
+    color: $color-text;
+    text-decoration: underline;
+  }
+}
+
+button{
+  font-family: $font-family;
+  font-weight: $font-normal-weight;
+  border: none;
+  box-shadow: none;
+}

@@ -18,7 +18,7 @@
                   <div class="space-y-4">
                     <div>
                       <InputLabel for="name" value="Nombre" />
-                      <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required
+                      <TextInput id="name" type="text" class="mt-1 block form__input--full-width" v-model="form.name" required
                         autofocus />
                       <InputError :message="form.errors.name" class="mt-2" />
                     </div>
@@ -26,19 +26,19 @@
                     <div class="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div>
                         <InputLabel for="short" value="Nombre Corto" />
-                        <TextInput id="short" type="text" class="mt-1 block w-full" v-model="form.short" required />
+                        <TextInput id="short" type="text" class="mt-1 block form__input--full-width" v-model="form.short" required />
                         <InputError :message="form.errors.short" class="mt-2" />
                       </div>
 
                       <div>
                         <InputLabel for="slug" value="Slug" />
-                        <TextInput id="slug" type="text" class="mt-1 block w-full" v-model="form.slug" required />
+                        <TextInput id="slug" type="text" class="mt-1 block form__input--full-width" v-model="form.slug" required />
                         <InputError :message="form.errors.slug" class="mt-2" />
                       </div>
 
                       <div>
                         <InputLabel for="cue" value="CUE" />
-                        <TextInput id="cue" type="text" class="mt-1 block w-full" v-model="form.cue" required />
+                        <TextInput id="cue" type="text" class="mt-1 block form__input--full-width" v-model="form.cue" required />
                         <InputError :message="form.errors.cue" class="mt-2" />
                       </div>
                     </div>
@@ -101,20 +101,20 @@
 
                     <div>
                       <InputLabel for="address" value="Dirección" />
-                      <TextInput id="address" type="text" class="mt-1 block w-full" v-model="form.address" />
+                      <TextInput id="address" type="text" class="mt-1 block form__input--full-width" v-model="form.address" />
                       <InputError :message="form.errors.address" class="mt-2" />
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                       <div>
                         <InputLabel for="zip_code" value="Código Postal" />
-                        <TextInput id="zip_code" type="text" class="mt-1 block w-full" v-model="form.zip_code" />
+                        <TextInput id="zip_code" type="text" class="mt-1 block form__input--full-width" v-model="form.zip_code" />
                         <InputError :message="form.errors.zip_code" class="mt-2" />
                       </div>
 
                       <div>
                         <InputLabel for="coordinates" value="Coordenadas" />
-                        <TextInput id="coordinates" type="text" class="mt-1 block w-full" v-model="form.coordinates"
+                        <TextInput id="coordinates" type="text" class="mt-1 block form__input--full-width" v-model="form.coordinates"
                           placeholder="Ej: -33.3017,-66.3378" />
                         <InputError :message="form.errors.coordinates" class="mt-2" />
                       </div>
@@ -123,13 +123,13 @@
                     <div class="grid grid-cols-2 gap-4">
                       <div>
                         <InputLabel for="phone" value="Teléfono" />
-                        <TextInput id="phone" type="text" class="mt-1 block w-full" v-model="form.phone" />
+                        <TextInput id="phone" type="text" class="mt-1 block form__input--full-width" v-model="form.phone" />
                         <InputError :message="form.errors.phone" class="mt-2" />
                       </div>
 
                       <div>
                         <InputLabel for="email" value="Email" />
-                        <TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" />
+                        <TextInput id="email" type="email" class="mt-1 block form__input--full-width" v-model="form.email" />
                         <InputError :message="form.errors.email" class="mt-2" />
                       </div>
                     </div>
@@ -155,12 +155,12 @@
                     </div>
                     <div class="col-span-3">
                       <InputLabel :value="'Etiqueta'" />
-                      <TextInput type="text" class="mt-1 block w-full" v-model="social.label"
+                      <TextInput type="text" class="mt-1 block form__input--full-width" v-model="social.label"
                         :placeholder="social.type === 'other' ? 'Nombre de la red' : ''" />
                     </div>
                     <div class="col-span-5">
                       <InputLabel :value="'Enlace'" />
-                      <TextInput type="url" class="mt-1 block w-full" v-model="social.link" placeholder="https://..." />
+                      <TextInput type="url" class="mt-1 block form__input--full-width" v-model="social.link" placeholder="https://..." />
                     </div>
                     <div class="col-span-1">
                       <button type="button" @click="removeSocial(index)"

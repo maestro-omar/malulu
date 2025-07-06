@@ -1,18 +1,18 @@
 <template>
-  <div class="relative">
-    <div class="relative">
+  <div class="dropdown">
+    <div class="dropdown__search">
       <input
         type="text"
         :value="search"
         @input="updateSearch"
         @focus="showOptions = true"
         :placeholder="placeholder"
-        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        class="dropdown__search-input"
       />
-      <div v-if="search" class="absolute right-3 top-2.5">
+      <div v-if="search" class="dropdown__search-clear">
         <button
           @click="clearSearch"
-          class="text-gray-400 hover:text-gray-600"
+          class="dropdown__search-clear-button"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -24,13 +24,13 @@
     <!-- Dropdown Options -->
     <div
       v-if="showOptions && filteredOptions.length > 0"
-      class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+      class="dropdown__menu dropdown__menu--search"
     >
       <div
         v-for="option in filteredOptions"
         :key="option.id"
         @click="selectOption(option)"
-        class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+        class="dropdown__link"
       >
         {{ option.long || option.name }}
       </div>

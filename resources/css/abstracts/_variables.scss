@@ -1,0 +1,66 @@
+// Colors
+// --------------------------------
+$color-brand: #00379B;
+$color-secondary: #BD0037;
+$color-terciary: #36383B;
+$color-grey: #F5F5F5; //gris claro
+$color-grey-dark: #55575B; //noche
+$color-text: #222221; //negro
+
+$color-ok: #52FF52;
+$color-ko: #FF5252;
+
+// Min and max breakpoints
+$screen-iphone6: 375px;
+$screen-iphone6p: 414px;
+$screen-xs: 480px;
+$screen-sm: 768px;
+$screen-md: 1024px;
+$screen-lg: 1280px;
+$screen-xlg: 1536px;
+$screen-xxlg: 1920px;
+$screen-iphone6-max: ($screen-iphone6 - 1);
+$screen-iphone6p-max: ($screen-iphone6p - 1);
+$screen-xs-max: ($screen-sm - 1);
+$screen-sm-max: ($screen-md - 1);
+$screen-md-max: ($screen-lg - 1);
+$screen-lg-max: ($screen-xlg - 1);
+
+// inputs
+$height-form-control: 38px;
+
+// containers
+$padding-content-mobile: 16px;
+$padding-content-desktop: 36px;
+$content-max-width-desktop: $screen-xlg;
+$padding-vert-content-desktop: 104px;
+$padding-vert-content-mobile: 64px;
+
+$padding-x-xl: 104px;
+$padding-x-lg: 84px;
+$padding-x-md: 64px;
+$padding-x-sm: 48px;
+$padding-x-xs: 16px;
+
+
+// header
+$header-height-mobile: 124px;
+$header-height-desktop: 158px;
+
+$person-img-size: 136px;
+
+// Typography
+$font-family: "Fira Sans", sans-serif;
+$font-family-title: "Source Serif 4", serif;
+$font-family-monospace: Menlo, Monaco, Consolas, "Courier New", monospace;
+$font-size-base: 16;
+$font-size-base-rem: 1.6;
+$font-size-small: $font-size-base * 0.85;
+$font-size-small: $font-size-base * 0.85;
+$font-normal-weight: 400;
+$font-bold-weight: 700;
+
+//** Unit-less `line-height` for use in components like buttons.
+$line-height-base: 2;
+//** Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc.
+$line-height-computed: $font-size-base * $line-height-base * 1px; // ~20px

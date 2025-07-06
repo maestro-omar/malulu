@@ -14,36 +14,37 @@ defineProps({
 </script>
 
 <template>
-    <div>
-        <div class="min-h-screen bg-gray-100">
+    <div class="guest-layout">
+        <div class="guest-layout__container">
             <!-- Page Heading -->
-            <header class="bg-white shadow" v-if="$slots.header">
-                <div>
-                    <Link href="/">
-                    <ApplicationLogo class="w-20 h-20 fill-current text-gray-500" />
-                    </Link>
-                </div>
-                <slot name="header" />
-                <div v-if="canLogin" class="sm:fixed sm:top-0 sm:right-0 p-6 text-end">
-                    <Link v-if="$page.props.auth.user" :href="route('dashboard')"
-                        class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
-                    Inicio</Link>
+            <header class="guest-layout__header" v-if="$slots.header">
+                <div class="guest-layout__header-container">
+                    <div>
+                        <Link href="/">
+                        <ApplicationLogo class="guest-layout__header-logo" />
+                        </Link>
+                    </div>
+                    <slot name="header" />
+                    <div v-if="canLogin" class="guest-layout__header-nav">
+                        <Link v-if="$page.props.auth.user" :href="route('dashboard')"
+                            class="guest-layout__header-nav-link">
+                        Inicio</Link>
 
-                    <template v-else>
-                        <Link :href="route('login')"
-                            class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
-                        Acceso</Link>
+                        <template v-else>
+                            <Link :href="route('login')"
+                                class="guest-layout__header-nav-link">
+                            Acceso</Link>
 
-                        <Link v-if="canRegister" :href="route('register')"
-                            class="ms-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
-                        Register</Link>
-                    </template>
+                            <Link v-if="canRegister" :href="route('register')"
+                                class="guest-layout__header-nav-link guest-layout__header-nav-separator">
+                            Register</Link>
+                        </template>
+                    </div>
                 </div>
             </header>
 
-
             <!-- Page Content -->
-            <main>
+            <main class="guest-layout__main">
                 <slot />
             </main>
         </div>

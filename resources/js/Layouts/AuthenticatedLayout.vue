@@ -72,20 +72,20 @@ onMounted(() => {
 </script>
 
 <template>
-    <div>
-        <div class="min-h-screen bg-gray-100">
-            <nav :class="['border-b border-gray-100', headerStyles.background]">
+    <div class="authenticated-layout">
+        <div class="authenticated-layout__container">
+            <nav class="authenticated-layout__nav" :class="headerStyles.background">
                 <!-- Primary Navigation Menu -->
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between h-16">
-                        <div class="flex">
+                <div class="authenticated-layout__nav-container">
+                    <div class="authenticated-layout__nav-content">
+                        <div class="authenticated-layout__nav-left">
                             <!-- Logo -->
-                            <div class="shrink-0 flex items-center">
+                            <div class="authenticated-layout__nav-logo">
                                 <Link :href="route('dashboard')">
                                     <component 
                                         v-if="logoComponent" 
                                         :is="logoComponent" 
-                                        class="block h-9 w-auto fill-current" 
+                                        class="authenticated-layout__nav-logo-image" 
                                         :class="headerStyles.textColor" 
                                     />
                                     <img 
@@ -93,13 +93,13 @@ onMounted(() => {
                                         :src="school.logo" 
                                         :alt="school.name" 
                                         :title="school.name"
-                                        class="block h-9 w-auto object-contain"
+                                        class="authenticated-layout__nav-logo-image"
                                     />
                                 </Link>
                             </div>
 
                             <!-- Navigation Links -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div class="authenticated-layout__nav-links">
                                 <template v-for="item in $page.props.menu.items" :key="item.route">
                                     <NavLink 
                                         :href="route(item.route)" 
@@ -112,14 +112,14 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div class="hidden sm:flex sm:items-center sm:ms-6">
+                        <div class="authenticated-layout__nav-right">
                             <!-- Settings Dropdown -->
-                            <div class="ms-3 relative">
+                            <div class="authenticated-layout__nav-dropdown">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
-                                        <span class="inline-flex rounded-md">
+                                        <span class="authenticated-layout__nav-dropdown-trigger">
                                             <button type="button"
-                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md focus:outline-none transition ease-in-out duration-150"
+                                                class="authenticated-layout__nav-dropdown-trigger-button"
                                                 :class="[headerStyles.textColor, headerStyles.hoverColor]">
                                                 {{ $page.props.auth.user.name }}
 
@@ -152,10 +152,10 @@ onMounted(() => {
                         </div>
 
                         <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
+                        <div class="authenticated-layout__nav-hamburger">
                             <button @click="showingNavigationDropdown = !showingNavigationDropdown"
-                                class="inline-flex items-center justify-center p-2 rounded-md focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
-                                :class="[headerStyles.textColor, headerStyles.hoverColor, 'hover:bg-gray-100']">
+                                class="authenticated-layout__nav-hamburger-button"
+                                :class="[headerStyles.textColor, headerStyles.hoverColor]">
                                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path :class="{
                                         hidden: showingNavigationDropdown,
@@ -175,8 +175,8 @@ onMounted(() => {
 
                 <!-- Responsive Navigation Menu -->
                 <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
-                    class="sm:hidden">
-                    <div class="pt-2 pb-3 space-y-1">
+                    class="authenticated-layout__responsive">
+                    <div class="authenticated-layout__responsive-menu">
                         <template v-for="item in $page.props.menu.items" :key="item.route">
                             <ResponsiveNavLink 
                                 :href="route(item.route)" 
@@ -189,15 +189,15 @@ onMounted(() => {
                     </div>
 
                     <!-- Responsive Settings Options -->
-                    <div class="pt-4 pb-1 border-t border-gray-200">
-                        <div class="px-4">
-                            <div class="font-medium text-base" :class="headerStyles.textColor">
+                    <div class="authenticated-layout__responsive-settings">
+                        <div class="authenticated-layout__responsive-settings-user">
+                            <div class="authenticated-layout__responsive-settings-user-name" :class="headerStyles.textColor">
                                 {{ $page.props.auth.user.name }}
                             </div>
-                            <div class="font-medium text-sm text-gray-200">{{ $page.props.auth.user.email }}</div>
+                            <div class="authenticated-layout__responsive-settings-user-email">{{ $page.props.auth.user.email }}</div>
                         </div>
 
-                        <div class="mt-3 space-y-1">
+                        <div class="authenticated-layout__responsive-settings-links">
                             <template v-for="item in $page.props.menu.userItems" :key="item.route || 'separator'">
                                 <template v-if="item.type === 'separator'">
                                     <div class="border-t border-gray-200 my-1"></div>
@@ -216,14 +216,14 @@ onMounted(() => {
             </nav>
 
             <!-- Page Heading -->
-            <header class="bg-white shadow" v-if="$slots.header">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <header class="authenticated-layout__header" v-if="$slots.header">
+                <div class="authenticated-layout__header-container">
                     <slot name="header" />
                 </div>
             </header>
 
             <!-- Page Content -->
-            <main>
+            <main class="authenticated-layout__main">
                 <slot />
             </main>
         </div>
