@@ -560,24 +560,33 @@ const filteredAvailableRoles = computed(() => {
   let roles = [];
   if (age >= 0 && age <= 10) {
     roles = props.availableRoles.filter((role) =>
-      ["student", "former_student"].includes(role.code)
+      ["estudiante", "ex_alumno"].includes(role.code)
     );
   } else if (age >= 11 && age <= 16) {
     roles = props.availableRoles.filter((role) =>
-      ["student", "former_student", "guardian"].includes(role.code)
+      ["estudiante", "ex_alumno", "tutor"].includes(role.code)
     );
   } else if (age >= 17) {
     roles = [...props.availableRoles]; // All roles for users 17 and above
   }
 
-  // Then filter by school levels
+  // --- NEW LOGIC FOR GLOBAL SCHOOL ---
   if (selectedSchool.value) {
+    if (selectedSchool.value.code === "GLOBAL") {
+      return roles.filter((role) => role.code === "superadmin");
+    } else {
+      // Exclude superadmin for non-GLOBAL schools
+      roles = roles.filter((role) => role.code !== "superadmin");
+    }
+  }
+  // --- END NEW LOGIC ---
+
+  // Then filter by school levels (only if not a GLOBAL school, as GLOBAL only allows superadmin)
+  if (selectedSchool.value && selectedSchool.value.code !== "GLOBAL") {
     const schoolLevels = selectedSchool.value.school_levels || [];
     const hasKinder = schoolLevels.some((level) => level.code === "inicial");
     const hasPrimary = schoolLevels.some((level) => level.code === "primaria");
-    const hasSecondary = schoolLevels.some(
-      (level) => level.code === "secundaria"
-    );
+    const hasSecondary = schoolLevels.some((level) => level.code === "secundaria");
 
     // If a specific level is selected, filter roles based on that level
     if (selectedLevel.value) {
@@ -585,19 +594,19 @@ const filteredAvailableRoles = computed(() => {
 
       if (selectedLevelCode === "inicial") {
         roles = roles.filter(
-          (role) => !["professor", "class_assistant"].includes(role.code)
+          (role) => !["profesor", "preceptor"].includes(role.code)
         );
       } else if (selectedLevelCode === "primaria") {
         roles = roles.filter(
-          (role) => !["professor", "class_assistant"].includes(role.code)
+          (role) => !["profesor", "preceptor"].includes(role.code)
         );
       } else if (selectedLevelCode === "secundaria") {
         roles = roles.filter(
           (role) =>
             ![
-              "grade_teacher",
-              "assistant_teacher",
-              "curricular_teacher",
+              "maestra",
+              "auxiliar",
+              "docente_curricular",
             ].includes(role.code)
         );
       }
@@ -608,15 +617,15 @@ const filteredAvailableRoles = computed(() => {
       roles = roles.filter(
         (role) =>
           ![
-            "grade_teacher",
-            "assistant_teacher",
-            "curricular_teacher",
+            "maestra",
+            "auxiliar",
+            "docente_curricular",
           ].includes(role.code)
       );
     } else if ((hasKinder || hasPrimary) && !hasSecondary) {
       // Only inicial/primaria school
       roles = roles.filter(
-        (role) => !["professor", "class_assistant"].includes(role.code)
+        (role) => !["profesor", "preceptor"].includes(role.code)
       );
     }
     // If school has all levels or mixed levels, all roles are available when unspecified is selected
@@ -627,6 +636,11 @@ const filteredAvailableRoles = computed(() => {
 
 const availableLevels = computed(() => {
   if (!selectedSchool.value) return [];
+
+  // If the selected school is GLOBAL, no levels are available for selection
+  if (selectedSchool.value.code === "GLOBAL") {
+    return [];
+  }
 
   // Debug the selected school
   console.log("Selected School:", selectedSchool.value);
@@ -667,7 +681,13 @@ const form = useForm({
 watch(selectedSchool, (newSchool) => {
   console.log("School changed:", newSchool);
   form.school_id = newSchool ? newSchool.id : null;
-  selectedLevel.value = null; // Always reset to null when school changes
+  // Always reset to null when school changes, especially for GLOBAL
+  selectedLevel.value = null;
+
+  // If the selected school is GLOBAL, enforce no school level
+  if (newSchool?.code === "GLOBAL") {
+    selectedLevel.value = null; // Ensure "Sin especificar" is selected
+  }
 
   // If we have a school ID but no levels, we need to fetch them
   if (newSchool?.id && !newSchool.school_levels) {
@@ -736,15 +756,15 @@ const selectedRoleCode = computed(() => {
 const showWorkerFields = computed(() => {
   const workerRoles = [
     "director",
-    "regent",
-    "secretary",
-    "professor",
-    "grade_teacher",
-    "assistant_teacher",
-    "curricular_teacher",
-    "special_teacher",
-    "class_assistant",
-    "librarian",
+    "regente",
+    "secretaria",
+    "profesor",
+    "maestra",
+    "auxiliar",
+    "docente_curricular",
+    "docente_especial",
+    "preceptor",
+    "bibliotecario",
   ];
   return workerRoles.includes(selectedRoleCode.value);
 });
@@ -752,21 +772,21 @@ const showWorkerFields = computed(() => {
 // Computed properties for conditional display of specific role fields
 const showTeacherFields = computed(() => {
   const teacherRoles = [
-    "professor",
-    "grade_teacher",
-    "assistant_teacher",
-    "curricular_teacher",
-    "special_teacher",
+    "profesor",
+    "maestra",
+    "auxiliar",
+    "docente_curricular",
+    "docente_especial",
   ];
   return teacherRoles.includes(selectedRoleCode.value);
 });
 
 const showGuardianFields = computed(() => {
-  return selectedRoleCode.value === "guardian";
+  return selectedRoleCode.value === "tutor";
 });
 
 const showStudentFields = computed(() => {
-  return selectedRoleCode.value === "student";
+  return selectedRoleCode.value === "estudiante";
 });
 
 // New computed property to check if the role is already assigned

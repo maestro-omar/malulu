@@ -12,7 +12,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\School\DashboardController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('sistema')->group(function () {
+Route::prefix(__('routes.system'))->group(function () {
     Route::get('/', function () {
         if (auth()->check()) {
             return redirect()->route('dashboard');
@@ -20,7 +20,7 @@ Route::prefix('sistema')->group(function () {
         return redirect()->route('login');
     });
 
-    Route::get('/inicio', [DashboardController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+    Route::get('/' . __('routes.home'), [DashboardController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
     Route::middleware('guest')->group(function () {
         // Route::get('registro', [RegisteredUserController::class, 'create'])
@@ -28,46 +28,46 @@ Route::prefix('sistema')->group(function () {
 
         // Route::post('registro', [RegisteredUserController::class, 'store']);
 
-        Route::get('acceso', [AuthenticatedSessionController::class, 'create'])
+        Route::get(__('routes.access'), [AuthenticatedSessionController::class, 'create'])
                     ->name('login');
 
-        Route::post('acceso', [AuthenticatedSessionController::class, 'store']);
+        Route::post(__('routes.access'), [AuthenticatedSessionController::class, 'store']);
 
-        Route::get('olvido-contrasena', [PasswordResetLinkController::class, 'create'])
+        Route::get(__('routes.forgot-password'), [PasswordResetLinkController::class, 'create'])
                     ->name('password.request');
 
-        Route::post('olvido-contrasena', [PasswordResetLinkController::class, 'store'])
+        Route::post(__('routes.forgot-password'), [PasswordResetLinkController::class, 'store'])
                     ->name('password.email');
 
-        Route::get('restablecer-contrasena/{token}', [NewPasswordController::class, 'create'])
+        Route::get(__('routes.reset-password') . '/{token}', [NewPasswordController::class, 'create'])
                     ->name('password.reset');
 
-        Route::post('restablecer-contrasena', [NewPasswordController::class, 'store'])
+        Route::post(__('routes.reset-password'), [NewPasswordController::class, 'store'])
                     ->name('password.store');
     });
 
     Route::middleware('auth')->group(function () {
-        Route::get('verificar-email', EmailVerificationPromptController::class)
+        Route::get(__('routes.verify-email'), EmailVerificationPromptController::class)
                     ->name('verification.notice');
 
-        Route::get('verificar-email/{id}/{hash}', VerifyEmailController::class)
+        Route::get(__('routes.verify-email') . '/{id}/{hash}', VerifyEmailController::class)
                     ->middleware(['signed', 'throttle:6,1'])
                     ->name('verification.verify');
 
-        Route::post('email/notificacion-verificacion', [EmailVerificationNotificationController::class, 'store'])
+        Route::post(__('routes.email/verification-notification'), [EmailVerificationNotificationController::class, 'store'])
                     ->middleware('throttle:6,1')
                     ->name('verification.send');
 
-        Route::get('confirmar-contrasena', [ConfirmablePasswordController::class, 'show'])
+        Route::get(__('routes.confirm-password'), [ConfirmablePasswordController::class, 'show'])
                     ->name('password.confirm');
 
-        Route::post('confirmar-contrasena', [ConfirmablePasswordController::class, 'store']);
+        Route::post(__('routes.confirm-password'), [ConfirmablePasswordController::class, 'store']);
 
-        Route::put('contrasena', [PasswordController::class, 'update'])->name('password.update');
+        Route::put(__('routes.password'), [PasswordController::class, 'update'])->name('password.update');
 
-        Route::post('salir', [AuthenticatedSessionController::class, 'destroy'])
+        Route::post(__('routes.logout'), [AuthenticatedSessionController::class, 'destroy'])
                     ->name('logout');
-        Route::get('salir', [AuthenticatedSessionController::class, 'destroy'])
+        Route::get(__('routes.logout'), [AuthenticatedSessionController::class, 'destroy'])
                     ->name('logout.get');
     });
 });
