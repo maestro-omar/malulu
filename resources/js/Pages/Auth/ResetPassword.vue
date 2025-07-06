@@ -35,55 +35,55 @@ const submit = () => {
     <MinimalAuthLayout>
         <Head title="Restablecer Contraseña" />
 
-        <form @submit.prevent="submit">
-            <div>
+        <form @submit.prevent="submit" class="auth__form">
+            <div class="auth__field">
                 <InputLabel for="email" value="Correo electrónico" />
 
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block form__input--full-width"
+                    class="form__input--full-width"
                     v-model="form.email"
                     required
                     autofocus
                     autocomplete="username"
                 />
 
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="password" value="Contraseña" />
 
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-1 block form__input--full-width"
+                    class="form__input--full-width"
                     v-model="form.password"
                     required
                     autocomplete="new-password"
                 />
 
-                <InputError class="mt-2" :message="form.errors.password" />
+                <InputError :message="form.errors.password" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="password_confirmation" value="Confirmar Contraseña" />
 
                 <TextInput
                     id="password_confirmation"
                     type="password"
-                    class="mt-1 block form__input--full-width"
+                    class="form__input--full-width"
                     v-model="form.password_confirmation"
                     required
                     autocomplete="new-password"
                 />
 
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                <InputError :message="form.errors.password_confirmation" />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <div class="auth__actions">
+                <PrimaryButton :processing="form.processing">
                     Restablecer Contraseña
                 </PrimaryButton>
             </div>

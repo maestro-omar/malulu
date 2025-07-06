@@ -25,41 +25,41 @@ const submit = () => {
     <MinimalAuthLayout>
         <Head title="Olvidé mi Contraseña" />
 
-        <div class="mb-4 text-sm text-gray-600">
+        <div class="auth__description">
             ¿Olvidaste tu contraseña? No hay problema. Solo dinos tu dirección de correo electrónico y te enviaremos un enlace
             para restablecer tu contraseña que te permitirá elegir una nueva.
         </div>
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+        <div v-if="status" class="auth__status">
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
+        <form @submit.prevent="submit" class="auth__form">
+            <div class="auth__field">
                 <InputLabel for="email" value="Correo electrónico" />
 
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block form__input--full-width"
+                    class="form__input--full-width"
                     v-model="form.email"
                     required
                     autofocus
                     autocomplete="username"
                 />
 
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError :message="form.errors.email" />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
+            <div class="auth__actions">
                 <Link
                     :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    class="auth__link"
                 >
                     ¿Recuerdas tu contraseña?
                 </Link>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton :processing="form.processing">
                     Enviar
                 </PrimaryButton>
             </div>

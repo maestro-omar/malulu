@@ -46,138 +46,138 @@ const submit = () => {
     <MinimalAuthLayout>
         <Head title="Register" />
 
-        <form @submit.prevent="submit">
-            <div>
+        <form @submit.prevent="submit" class="auth__form">
+            <div class="auth__field">
                 <InputLabel for="name" value="Nombre Completo" />
                 <TextInput
                     id="name"
                     type="text"
                     name="name"
                     v-model="form.name"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                     autofocus
                     autocomplete="name"
                 />
-                <InputError class="mt-2" :message="form.errors.name" />
+                <InputError :message="form.errors.name" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="firstname" value="Nombre" />
                 <TextInput
                     id="firstname"
                     type="text"
                     name="firstname"
                     v-model="form.firstname"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                     autocomplete="given-name"
                 />
-                <InputError class="mt-2" :message="form.errors.firstname" />
+                <InputError :message="form.errors.firstname" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="lastname" value="Apellido" />
                 <TextInput
                     id="lastname"
                     type="text"
                     name="lastname"
                     v-model="form.lastname"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                     autocomplete="family-name"
                 />
-                <InputError class="mt-2" :message="form.errors.lastname" />
+                <InputError :message="form.errors.lastname" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="id_number" value="DNI" />
                 <TextInput
                     id="id_number"
                     type="text"
                     name="id_number"
                     v-model="form.id_number"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.id_number" />
+                <InputError :message="form.errors.id_number" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="birthdate" value="Fecha de Nacimiento" />
                 <TextInput
                     id="birthdate"
                     type="date"
                     name="birthdate"
                     v-model="form.birthdate"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.birthdate" />
+                <InputError :message="form.errors.birthdate" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="email" value="Email" />
                 <TextInput
                     id="email"
                     type="email"
                     name="email"
                     v-model="form.email"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                     autocomplete="username"
                 />
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="phone" value="Teléfono" />
                 <TextInput
                     id="phone"
                     type="tel"
                     name="phone"
                     v-model="form.phone"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                     autocomplete="tel"
                 />
-                <InputError class="mt-2" :message="form.errors.phone" />
+                <InputError :message="form.errors.phone" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="address" value="Dirección" />
                 <TextInput
                     id="address"
                     type="text"
                     name="address"
                     v-model="form.address"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                     autocomplete="street-address"
                 />
-                <InputError class="mt-2" :message="form.errors.address" />
+                <InputError :message="form.errors.address" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="locality" value="Localidad" />
                 <TextInput
                     id="locality"
                     type="text"
                     name="locality"
                     v-model="form.locality"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.locality" />
+                <InputError :message="form.errors.locality" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="province_id" value="Provincia" />
                 <SelectInput
                     id="province_id"
                     name="province_id"
                     v-model="form.province_id"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                 >
                     <option value="">Seleccione una provincia</option>
@@ -185,16 +185,16 @@ const submit = () => {
                         {{ province.name }}
                     </option>
                 </SelectInput>
-                <InputError class="mt-2" :message="form.errors.province_id" />
+                <InputError :message="form.errors.province_id" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="country_id" value="País" />
                 <SelectInput
                     id="country_id"
                     name="country_id"
                     v-model="form.country_id"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                 >
                     <option value="">Seleccione un país</option>
@@ -202,59 +202,59 @@ const submit = () => {
                         {{ country.name }}
                     </option>
                 </SelectInput>
-                <InputError class="mt-2" :message="form.errors.country_id" />
+                <InputError :message="form.errors.country_id" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="nationality" value="Nacionalidad" />
                 <TextInput
                     id="nationality"
                     type="text"
                     name="nationality"
                     v-model="form.nationality"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.nationality" />
+                <InputError :message="form.errors.nationality" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="password" value="Contraseña" />
                 <TextInput
                     id="password"
                     type="password"
                     name="password"
                     v-model="form.password"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                     autocomplete="new-password"
                 />
-                <InputError class="mt-2" :message="form.errors.password" />
+                <InputError :message="form.errors.password" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="password_confirmation" value="Confirmar Contraseña" />
                 <TextInput
                     id="password_confirmation"
                     type="password"
                     name="password_confirmation"
                     v-model="form.password_confirmation"
-                    class="mt-1 block w-full"
+                    class="form__input--full-width"
                     required
                     autocomplete="new-password"
                 />
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                <InputError :message="form.errors.password_confirmation" />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
+            <div class="auth__actions">
                 <Link
                     :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    class="auth__link"
                 >
                     ¿Ya está registrado?
                 </Link>
 
-                <PrimaryButton class="ml-4" :disabled="form.processing">
+                <PrimaryButton :processing="form.processing">
                     Registrarse
                 </PrimaryButton>
             </div>

@@ -33,53 +33,53 @@ const submit = () => {
     <MinimalAuthLayout>
         <Head title="Iniciar sesión" />
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+        <div v-if="status" class="auth__status">
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
+        <form @submit.prevent="submit" class="auth__form">
+            <div class="auth__field">
                 <InputLabel for="email" value="Correo electrónico" />
 
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block form__input--full-width"
+                    class="form__input--full-width"
                     v-model="form.email"
                     required
                     autofocus
                     autocomplete="username"
                 />
 
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
+            <div class="auth__field">
                 <InputLabel for="password" value="Contraseña" />
 
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-1 block form__input--full-width"
+                    class="form__input--full-width"
                     v-model="form.password"
                     required
                     autocomplete="current-password"
                 />
 
-                <InputError class="mt-2" :message="form.errors.password" />
+                <InputError :message="form.errors.password" />
             </div>
 
-            <div class="block mt-4">
+            <div class="auth__field">
                 <CheckboxWithLabel name="remember" v-model="form.remember">
                     Recordarme
                 </CheckboxWithLabel>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
+            <div class="auth__actions">
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class=""
+                    class="auth__link"
                 >
                     ¿Olvidaste tu contraseña?
                 </Link>

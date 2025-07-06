@@ -1,1 +1,36 @@
-// Auth page 
+// Auth page styles
+
+.auth {
+  &__description {
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    color: $color-grey-dark;
+  }
+
+  &__status {
+    margin-bottom: 1rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: $color-green;
+  }
+
+  &__form {
+    // Form container styles
+  }
+
+    &__field {
+        margin-bottom: 1rem;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 1rem;
+        gap: 1rem;
+    }
+}
