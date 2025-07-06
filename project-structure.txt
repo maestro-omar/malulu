@@ -8,6 +8,11 @@ malulu-vite/
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── Api/
+│   │   │   │   ├── AcademicYearController.php
+│   │   │   │   ├── FileSubtypeController.php
+│   │   │   │   ├── FileTypeController.php
+│   │   │   │   ├── RoleController.php
+│   │   │   │   ├── SchoolController.php
 │   │   │   │   └── UserController.php
 │   │   │   ├── Auth/
 │   │   │   │   ├── AuthenticatedSessionController.php
@@ -20,11 +25,14 @@ malulu-vite/
 │   │   │   │   ├── RegisteredUserController.php
 │   │   │   │   └── VerifyEmailController.php
 │   │   │   ├── Controller.php
+│   │   │   ├── PublicSchoolController.php
+│   │   │   ├── PublicSchoolPageController.php
 │   │   │   ├── School/
 │   │   │   │   ├── CourseController.php
 │   │   │   │   ├── DashboardController.php
 │   │   │   │   ├── SchoolBaseController.php
 │   │   │   │   ├── SchoolController.php
+│   │   │   │   ├── SchoolPageController.php
 │   │   │   │   └── UserController.php
 │   │   │   └── System/
 │   │   │       ├── AcademicYearAdminController.php
@@ -32,6 +40,7 @@ malulu-vite/
 │   │   │       ├── FileSubtypeAdminController.php
 │   │   │       ├── FileTypeAdminController.php
 │   │   │       ├── ProfileAdminController.php
+│   │   │       ├── ProvinceAdminController.php
 │   │   │       ├── RoleAdminController.php
 │   │   │       ├── SchoolAdminController.php
 │   │   │       ├── SystemBaseController.php
@@ -39,6 +48,7 @@ malulu-vite/
 │   │   ├── Kernel.php
 │   │   ├── Middleware/
 │   │   │   ├── Authenticate.php
+│   │   │   ├── CheckAppKey.php
 │   │   │   ├── EncryptCookies.php
 │   │   │   ├── HandleInertiaRequests.php
 │   │   │   ├── PreventRequestsDuringMaintenance.php
@@ -53,32 +63,38 @@ malulu-vite/
 │   │       │   └── LoginRequest.php
 │   │       └── ProfileUpdateRequest.php
 │   ├── Models/
-│   │   ├── AcademicYear.php
-│   │   ├── BaseCatalogModel.php
-│   │   ├── BaseModel.php
-│   │   ├── ClassSubject.php
-│   │   ├── Country.php
-│   │   ├── Course.php
-│   │   ├── District.php
-│   │   ├── File.php
-│   │   ├── FileSubtype.php
-│   │   ├── FileType.php
-│   │   ├── GuardianRelationship.php
-│   │   ├── JobStatus.php
-│   │   ├── Locality.php
-│   │   ├── Province.php
-│   │   ├── Role.php
-│   │   ├── RoleRelationship.php
-│   │   ├── RoleRelationshipEndReason.php
-│   │   ├── School.php
-│   │   ├── SchoolLevel.php
-│   │   ├── SchoolManagementType.php
-│   │   ├── SchoolShift.php
-│   │   ├── StudentCourse.php
-│   │   ├── StudentCourseEndReason.php
-│   │   ├── StudentRelationship.php
-│   │   ├── TeacherCourse.php
-│   │   └── User.php
+│   │   ├── Base/
+│   │   │   ├── BaseCatalogModel.php
+│   │   │   └── BaseModel.php
+│   │   ├── Catalogs/
+│   │   │   ├── ClassSubject.php
+│   │   │   ├── Country.php
+│   │   │   ├── District.php
+│   │   │   ├── FileSubtype.php
+│   │   │   ├── FileType.php
+│   │   │   ├── JobStatus.php
+│   │   │   ├── Locality.php
+│   │   │   ├── Province.php
+│   │   │   ├── Role.php
+│   │   │   ├── RoleRelationshipEndReason.php
+│   │   │   ├── SchoolLevel.php
+│   │   │   ├── SchoolManagementType.php
+│   │   │   ├── SchoolShift.php
+│   │   │   ├── StudentCourseEndReason.php
+│   │   ├── Entities/
+│   │   │   ├── AcademicYear.php
+│   │   │   ├── Course.php
+│   │   │   ├── File.php
+│   │   │   ├── School.php
+│   │   │   ├── SchoolPage.php
+│   │   │   └── User.php
+│   │   └── Relations/
+│   │       ├── GuardianRelationship.php
+│   │       ├── RoleRelationship.php
+│   │       ├── StudentCourse.php
+│   │       ├── StudentRelationship.php
+│   │       ├── TeacherCourse.php
+│   │       └── WorkerRelationship.php
 │   ├── Providers/
 │   │   ├── AppServiceProvider.php
 │   │   ├── AuthServiceProvider.php
@@ -92,8 +108,11 @@ malulu-vite/
 │   │   ├── DashboardService.php
 │   │   ├── FileSubtypeService.php
 │   │   ├── FileTypeService.php
+│   │   ├── PaginationTrait.php
+│   │   ├── ProvinceService.php
 │   │   ├── RoleService.php
 │   │   ├── SchoolLevelService.php
+│   │   ├── SchoolPageService.php
 │   │   ├── SchoolService.php
 │   │   ├── SchoolShiftService.php
 │   │   ├── SchoolTeamResolver.php
@@ -101,6 +120,7 @@ malulu-vite/
 │   └── Traits/
 │       ├── FilterConstants.php
 │       └── HasCatalogAttributes.php
+├── artisan
 ├── bootstrap/
 │   ├── app.php
 │   └── cache/
@@ -125,7 +145,9 @@ malulu-vite/
 │   └── view.php
 ├── database/
 │   ├── factories/
-│   │   └── UserFactory.php
+│   │   └── Entities/
+│   │       ├── SchoolPageFactory.php
+│   │       └── UserFactory.php
 │   ├── migrations/
 │   │   ├── 2014_10_12_000000_create_users_table.php
 │   │   ├── 2014_10_12_100000_create_password_reset_tokens_table.php
@@ -156,7 +178,8 @@ malulu-vite/
 │   │   ├── 2025_06_06_010003_create_student_course_end_reasons_table.php
 │   │   ├── 2025_06_06_010004_create_student_courses_table.php
 │   │   ├── 2025_06_06_010005_create_teacher_courses_table.php
-│   │   └── 2025_06_13_121535_add_personal_fields_to_users_table.php
+│   │   ├── 2025_06_13_121535_add_personal_fields_to_users_table.php
+│   │   └── 2025_06_14_000000_create_school_pages_table.php
 │   └── seeders/
 │       ├── AcademicYearSeeder.php
 │       ├── ClassSubjectSeeder.php
@@ -167,6 +190,11 @@ malulu-vite/
 │       ├── FakeUsersSeeder.php
 │       ├── FileSubtypeSeeder.php
 │       ├── FileTypeSeeder.php
+│       ├── images/
+│       │   ├── ce-n8-logo-2025.png
+│       │   ├── ce-n8-picture.png
+│       │   ├── sl-logo1.png
+│       │   └── sl-logo2.png
 │       ├── JobStatusSeeder.php
 │       ├── LocalitySeeder.php
 │       ├── ProvinceSeeder.php
@@ -174,14 +202,23 @@ malulu-vite/
 │       ├── RoleRelationshipEndReasonSeeder.php
 │       ├── SchoolLevelSeeder.php
 │       ├── SchoolManagementTypeSeeder.php
+│       ├── SchoolPageSeeder.php
 │       ├── SchoolSeeder.php
 │       ├── SchoolShiftSeeder.php
 │       └── StudentCourseEndReasonSeeder.php
 ├── jsconfig.json
+├── lang/
+│   └── es/
+│       ├── auth.php
+│       ├── messages.php
+│       ├── pagination.php
+│       └── validation.php
+├── markdown.md
 ├── package-lock.json
 ├── package.json
 ├── phpunit.xml
 ├── postcss.config.js
+├── project-structure.txt
 ├── public/
 │   ├── favicon.ico
 │   ├── index.php
@@ -189,7 +226,34 @@ malulu-vite/
 ├── README.md
 ├── resources/
 │   ├── css/
-│   │   └── app.css
+│   │   ├── abstracts/
+│   │   │   ├── _variables.scss
+│   │   │   ├── _mixins.scss
+│   │   │   └── _functions.scss
+│   │   ├── base/
+│   │   │   ├── _reset.scss
+│   │   │   ├── _typography.scss
+│   │   │   └── _utilities.scss
+│   │   ├── components/
+│   │   │   ├── _admin-buttons.scss
+│   │   │   ├── _admin-forms.scss
+│   │   │   ├── _admin-modals.scss
+│   │   │   ├── _admin-tables.scss
+│   │   │   ├── _badges.scss
+│   │   │   ├── _buttons.scss
+│   │   │   ├── _forms.scss
+│   │   │   └── _layout.scss
+│   │   ├── layout/
+│   │   │   ├── _admin-layout.scss
+│   │   │   ├── _auth-layout.scss
+│   │   │   ├── _footer.scss
+│   │   │   ├── _header.scss
+│   │   │   └── _navigation.scss
+│   │   ├── pages/
+│   │   │   ├── _auth.scss
+│   │   │   ├── _dashboard.scss
+│   │   │   └── _profile.scss
+│   │   └── app.scss
 │   ├── img/
 │   │   ├── logo-malulu.png
 │   │   ├── no-image-person.png
@@ -204,6 +268,7 @@ malulu-vite/
 │   │   │   │   ├── Breadcrumbs.vue
 │   │   │   │   ├── CancelLink.vue
 │   │   │   │   ├── Checkbox.vue
+│   │   │   │   ├── CheckboxWithLabel.vue
 │   │   │   │   ├── DangerButton.vue
 │   │   │   │   ├── Dropdown.vue
 │   │   │   │   ├── DropdownLink.vue
@@ -239,7 +304,8 @@ malulu-vite/
 │   │   │   └── index.js
 │   │   ├── Layouts/
 │   │   │   ├── AuthenticatedLayout.vue
-│   │   │   └── GuestLayout.vue
+│   │   │   ├── GuestLayout.vue
+│   │   │   └── MinimalAuthLayout.vue
 │   │   ├── Pages/
 │   │   │   ├── AcademicYears/
 │   │   │   │   ├── Create.vue
@@ -284,10 +350,18 @@ malulu-vite/
 │   │   │   │       ├── DeleteUserForm.vue
 │   │   │   │       ├── UpdatePasswordForm.vue
 │   │   │   │       └── UpdateProfileInformationForm.vue
+│   │   │   ├── Provinces/
+│   │   │   │   ├── Edit.vue
+│   │   │   │   ├── Index.vue
+│   │   │   │   └── Show.vue
 │   │   │   ├── Schools/
 │   │   │   │   ├── Create.vue
 │   │   │   │   ├── Edit.vue
 │   │   │   │   ├── Index.vue
+│   │   │   │   ├── Public/
+│   │   │   │   │   ├── Index.vue
+│   │   │   │   │   ├── Page.vue
+│   │   │   │   │   └── Show.vue
 │   │   │   │   ├── Show.vue
 │   │   │   │   └── Trashed.vue
 │   │   │   ├── Users/
@@ -299,10 +373,21 @@ malulu-vite/
 │   │   │   │   └── Trashed.vue
 │   │   │   └── Welcome.vue
 │   │   ├── Sections/
-│   │   │   └── AdminHeader.vue
+│   │   │   ├── AdminHeader.vue
+│   │   │   ├── GuestHeader.vue
+│   │   │   └── SchoolDefault/
+│   │   │       ├── Basic.vue
+│   │   │       ├── Contact.vue
+│   │   │       └── Team.vue
 │   │   └── utils/
 │   │       ├── date.js
 │   │       └── permissions.js
+│   ├── lang/
+│   │   └── es/
+│   │       ├── auth.php
+│   │       ├── messages.php
+│   │       ├── pagination.php
+│   │       └── validation.php
 │   └── views/
 │       ├── app.blade.php
 │       └── welcome.blade.php
@@ -313,8 +398,9 @@ malulu-vite/
 │   ├── channels.php
 │   ├── console.php
 │   ├── json-options.php
-│   ├── school-admin.php
-│   ├── system-admin.php
+│   ├── public.php
+│   ├── school.php
+│   ├── system.php
 │   └── web.php
 ├── storage/
 │   ├── app/
@@ -324,5 +410,5 @@ malulu-vite/
 │   │   ├── testing/
 │   │   └── views/
 │   └── logs/
-├── tailwind.config.js
+├── vendor/
 └── vite.config.js 

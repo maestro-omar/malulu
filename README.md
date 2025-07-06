@@ -30,7 +30,7 @@ Este proyecto utiliza:
 - **Vite** (`^4.5`) – Bundler moderno
 - **Vue 3.4** – Framework progresivo y reactivo
 - **Inertia.js** (`^0.6.8`) – Integración Laravel + Vue sin necesidad de API REST
-- **Tailwind CSS 3.2** – Utilidad de estilos moderna
+- **SASS** – Preprocesador CSS con metodología BEM para estilos modulares y mantenibles
 
 ---
 
