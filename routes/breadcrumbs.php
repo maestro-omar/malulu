@@ -109,6 +109,12 @@ Breadcrumbs::for('file-types.index', function (Trail $trail) {
     $trail->push('Tipos de archivo', route('file-types.index'));
 });
 
+// 📁 Tipos de archivo
+Breadcrumbs::for('file-types.edit', function (Trail $trail) {
+    $trail->parent('file-types.index');
+    $trail->push('Tipos de archivo', route('file-types.index'));
+});
+
 // 📂 Subtipos de archivo
 Breadcrumbs::for('file-subtypes.index', function (Trail $trail) {
     $trail->parent('file-types.index');

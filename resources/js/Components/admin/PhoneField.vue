@@ -1,27 +1,26 @@
 <template>
-  <div class="flex items-center space-x-2">
-    <p class="mt-1 text-sm text-gray-900">
+  <div class="phone-field">
+    <p class="phone-field__text">
       <span
         v-if="phone"
         @click="copyToClipboard"
-        class="cursor-pointer hover:text-blue-800"
+        class="phone-field__number"
         role="button"
         tabindex="0"
         title="Copiar teléfono"
       >
         {{ phone }}
       </span>
-      <span v-else>-</span>
+      <span v-else class="phone-field__empty">-</span>
     </p>
     <a
       v-if="phone"
       :href="`tel:${phone.replace(/[^0-9]/g, '')}`"
-      class="text-blue-600 hover:text-blue-800"
+      class="phone-field__link phone-field__link--call"
       title="Llamar"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5 inline mr-1"
         viewBox="0 0 24 24"
         fill="currentColor"
       >
@@ -33,13 +32,12 @@
     <a
       v-if="phone"
       :href="`https://wa.me/${phone.replace(/[^0-9]/g, '')}`"
-      class="ml-2 text-green-600 hover:text-green-800"
+      class="phone-field__link phone-field__link--whatsapp"
       target="_blank"
       title="WhatsApp"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5 inline"
         viewBox="0 0 24 24"
         fill="currentColor"
       >

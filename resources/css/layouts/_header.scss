@@ -1,4 +1,10 @@
 // Header layout 
+// Page subtitle
+.page-subtitle {
+  @include fz(3);
+	@include lh(3);
+	font-weight: 600;
+}
 
 // Admin Header Layout Utilities
 .admin-header {

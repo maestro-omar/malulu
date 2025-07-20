@@ -1,0 +1,53 @@
+// Email Field Component
+
+.email-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &__text {
+    margin: 0;
+    @include fz(1.5);
+    color: $color-blue;
+  }
+
+  &__email {
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+      color: $color-teal;
+    }
+
+    &:focus {
+      outline: none;
+      color: $color-teal;
+    }
+  }
+
+  &__placeholder {
+    color: $color-gray;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: $color-blue;
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+      color: $color-teal;
+    }
+
+    &:focus {
+      outline: none;
+      color: $color-teal;
+    }
+  }
+
+  &__icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}

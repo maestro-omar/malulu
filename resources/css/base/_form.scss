@@ -21,14 +21,14 @@
         padding-top: 6px;
         padding-left: 12px;
 
-        @include fz(1);
-        @include lh(1.2);
+        @include fz(1.8);
+        @include lh(1.8);
         color: $color-ko;
 
         @include mq(md){
           padding-top: 8px;
-          @include fz(1.2);
-          @include lh(1.4);
+          @include fz(2.2);
+          @include lh(2.2);
         }
       }
     }
@@ -67,11 +67,11 @@
     background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
     outline: none;
 
-    @include fz(1.4);
+    @include fz(2.2);
     @include lh(1.8);
 
     @include mq(md){
-      @include fz(1.6);
+      @include fz(2.2);
       @include lh(2.4);
     }
 
@@ -114,14 +114,14 @@
   }
 
   .hs-richtext{
-    @include fz(1.2);
-    @include lh(1.4);
+    @include fz(2.2);
+    @include lh(2.2);
     color: $color-grey-dark;
     margin: 12px 0;
 
     @include mq(md){
-      @include fz(1.4);
-      @include lh(1.6);
+      @include fz(2.2);
+      @include lh(2.2);
     }
   }
 

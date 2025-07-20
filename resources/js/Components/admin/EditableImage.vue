@@ -1,55 +1,61 @@
 <template>
-  <div class="relative group">
-    <img :src="modelValue || noImage" :class="[imageClass]" />
-    <div
-      class="absolute top-0 left-0 flex space-x-2 p-1 opacity-50 group-hover:opacity-100 transition-opacity"
-    >
-      <button
-        v-if="canEdit"
-        @click="openFileInput"
-        class="bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75"
-      >
-        <svg
-          class="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+  <div class="editable-image">
+    <div class="editable-image__container" @click="canEdit ? openFileInput() : null">
+      <img 
+        :src="modelValue || noImage" 
+        :class="[
+          'editable-image__image',
+          getImageClass()
+        ]" 
+      />
+      <div class="editable-image__controls">
+        <button
+          v-if="canEdit"
+          @click.stop="openFileInput"
+          class="editable-image__button"
+          title="Editar imagen"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-          />
-        </svg>
-      </button>
-      <button
-        v-if="canEdit && modelValue"
-        @click="handleDelete"
-        class="bg-red-500 bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75"
-      >
-        <svg
-          class="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+          <svg
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+            />
+          </svg>
+        </button>
+        <button
+          v-if="canEdit && modelValue"
+          @click.stop="handleDelete"
+          class="editable-image__button editable-image__button--danger"
+          title="Eliminar imagen"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-          />
-        </svg>
-      </button>
+          <svg
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+        </button>
+      </div>
+      <input
+        type="file"
+        ref="fileInput"
+        class="editable-image__input"
+        accept="image/*"
+        @change="handleFileChange"
+      />
     </div>
-    <input
-      type="file"
-      ref="fileInput"
-      class="hidden"
-      accept="image/*"
-      @change="handleFileChange"
-    />
   </div>
 </template>
 
@@ -76,7 +82,7 @@ const props = defineProps({
   // Custom image classes
   imageClass: {
     type: String,
-    default: "h-24 w-24 object-cover rounded",
+    default: "",
   },
   // Whether to show the edit and delete buttons
   canEdit: {
@@ -114,6 +120,25 @@ const emit = defineEmits([
 ]);
 
 const fileInput = ref(null);
+
+const getImageClass = () => {
+  // If a custom image class is provided, use it
+  if (props.imageClass) {
+    return props.imageClass;
+  }
+  
+  // Otherwise, use type-based classes
+  switch (props.type) {
+    case 'logo':
+      return 'editable-image__image--logo';
+    case 'picture':
+      return 'editable-image__image--picture';
+    case 'avatar':
+      return 'editable-image__image--avatar';
+    default:
+      return 'editable-image__image--default';
+  }
+};
 
 const openFileInput = () => {
   if (!props.uploadRoute) return;

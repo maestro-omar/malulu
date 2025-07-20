@@ -1,34 +1,34 @@
 <template>
-  <div class="bg-gray-50 p-4 rounded-lg">
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+  <div class="user-information">
+    <div class="user-information__grid">
       <!-- Left Column (20%) -->
-      <div class="col-span-1 text-center">
-        <h3 class="text-lg font-semibold mb-4 text-center">
+      <div class="user-information__profile">
+        <h3 class="user-information__name">
           {{ user.firstname + " " + user.lastname }}
         </h3>
-        <div v-if="showPicture" class="flex justify-center">
+        <div v-if="showPicture" class="user-information__picture">
           <EditableImage
             :model-value="user.picture"
             :default-image="'/images/no-image-person.png'"
             :can-edit="false"
-            class="w-32 h-32 rounded-full object-cover"
+            class="user-information__image"
           />
         </div>
       </div>
 
       <!-- Right Column (80%) -->
-      <div class="col-span-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="user-information__details">
+        <div class="user-information__details-grid">
           <!-- ID Number -->
-          <div class="bg-white p-3 rounded-lg shadow-sm flex items-center">
-            <span class="text-sm font-medium text-gray-700">DNI:</span>
-            <span class="ml-2 text-sm text-gray-900">{{ user.id_number }}</span>
+          <div class="user-information__field">
+            <span class="user-information__field-label">DNI:</span>
+            <span class="user-information__field-value">{{ user.id_number }}</span>
           </div>
 
           <!-- Birthdate -->
-          <div class="bg-white p-3 col-span-2 rounded-lg shadow-sm flex items-center">
-            <span class="text-sm font-medium text-gray-700">Fecha de Nacimiento:</span>
-            <span class="ml-2 text-sm text-gray-900">
+          <div class="user-information__field user-information__field--span-2">
+            <span class="user-information__field-label">Fecha de Nacimiento:</span>
+            <span class="user-information__field-value">
               {{ formatDateShort(user.birthdate) }}
               <template v-if="user.birthdate">
                 &nbsp;({{ calculateAge(user.birthdate) }} años)
@@ -39,17 +39,17 @@
           <!-- Email (if enabled) -->
           <div
             v-if="showContact"
-            class="bg-white p-3 col-span-2 rounded-lg shadow-sm flex items-center"
+            class="user-information__field user-information__field--span-2"
           >
-            <span class="ml-2 text-sm text-gray-900">
-              <EmailField id="userEmail" :email="user.email" class="inline" />
+            <span class="user-information__field-value">
+              <EmailField id="userEmail" :email="user.email" class="user-information__contact-field" />
             </span>
           </div>
 
           <!-- Phone (if enabled) -->
-          <div v-if="showContact" class="bg-white p-3 rounded-lg shadow-sm flex items-center">
-            <span class="ml-2 text-sm text-gray-900">
-              <PhoneField id="userPhone" :phone="user.phone" class="inline" />
+          <div v-if="showContact" class="user-information__field">
+            <span class="user-information__field-value">
+              <PhoneField id="userPhone" :phone="user.phone" class="user-information__contact-field" />
             </span>
           </div>
         </div>
@@ -57,7 +57,7 @@
     </div>
 
     <!-- Roles Section (if enabled) -->
-    <div v-if="showRoles" class="mt-6">
+    <div v-if="showRoles" class="user-information__roles">
       <slot name="roles">
         <SchoolsAndRolesCard
           :title="'Escuelas y roles actuales'"

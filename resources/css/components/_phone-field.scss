@@ -1,0 +1,72 @@
+// Phone Field Component
+
+.phone-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; // space-x-2
+  
+  &__text {
+    margin: 0;
+    @include fz(1.5); // text-sm
+  }
+  
+  &__number {
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+      color: $color-blue; // hover:text-blue-800
+    
+    &:hover {
+      color: $color-teal;
+    }
+    
+    &:focus {
+      outline: none;
+      color: $color-teal;
+    }
+  }
+  
+  &__empty {
+    color: $color-gray; // text-gray-500
+  }
+  
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+    
+    svg {
+      width: 1.25rem; // h-5
+      height: 1.25rem; // w-5
+      display: inline;
+    }
+    
+    &--call {
+      color: $color-blue; // text-blue-600
+      margin-right: 0.25rem; // mr-1
+      
+      &:hover {
+        color: $color-teal // hover:text-blue-800
+      }
+      
+      &:focus {
+        outline: none;
+        color: $color-teal;
+      }
+    }
+    
+    &--whatsapp {
+      color: $color-green; // text-green-600
+      margin-left: 0.5rem; // ml-2
+      
+      &:hover {
+        color: $color-emerald; // hover:text-green-800
+      }
+      
+      &:focus {
+        outline: none;
+        color: $color-emerald;
+      }
+    }
+  }
+} 

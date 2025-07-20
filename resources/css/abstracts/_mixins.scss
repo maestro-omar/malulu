@@ -90,33 +90,33 @@
   
   // Simple desktop first media queries
   @mixin mq-max($canvas) {
-  @if $canvas==xs {
-        @media only screen and (max-width: $screen-xs - 1) {
+    @if $canvas==xs {
+        @media only screen and (max-width: ($screen-xs - 1)) {
             @content;
         }
     }
     @else if $canvas==sm {
-        @media only screen and (max-width: $screen-sm - 1) {
+        @media only screen and (max-width: ($screen-sm - 1)) {
             @content;
         }
     }
     @else if $canvas==md {
-        @media only screen and (max-width: $screen-md - 1) {
+        @media only screen and (max-width: ($screen-md - 1)) {
             @content;
         }
     }
     @else if $canvas==lg {
-        @media only screen and (max-width: $screen-lg - 1) {
+        @media only screen and (max-width: ($screen-lg - 1)) {
             @content;
         }
     }
     @else if $canvas==xlg {
-        @media only screen and (max-width: $screen-xlg - 1) {
+        @media only screen and (max-width: ($screen-xlg - 1)) {
             @content;
         }
     }
     @else if $canvas==xxlg {
-        @media only screen and (max-width: $screen-xxlg - 1) {
+        @media only screen and (max-width: ($screen-xxlg - 1)) {
             @content;
         }
     }

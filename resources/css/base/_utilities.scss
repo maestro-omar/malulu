@@ -30,14 +30,14 @@
 .container {
   max-width: $screen-lg;
   margin: 0 auto; // mx-auto
-  padding: $padding-x-sm $padding-content-mobile;
+  padding: 3rem $padding-content-mobile; // py-12 equivalent
   
   @media (min-width: 640px) {
-    padding: $padding-x-sm $padding-content-desktop;
+    padding: 3rem $padding-content-desktop;
   }
   
   @media (min-width: 1024px) {
-    padding: $padding-x-sm $padding-x-sm;
+    padding: 3rem $padding-x-sm;
   }
   
   // Variants
