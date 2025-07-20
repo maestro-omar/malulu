@@ -35,7 +35,7 @@
   &__card-title {
     @include fz(2.2); // text-lg
     font-weight: $font-normal-weight; // font-medium
-    color: #111827; // text-gray-900
+    color: $color-black-text; // text-gray-900
     margin-bottom: 1rem; // mb-4
   }
   
@@ -238,7 +238,7 @@
     }
     
     &--secondary {
-      background-color: #6366f1; // bg-indigo-600
+      background-color: $color-indigo; // bg-indigo-600
       color: white;
       box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       
@@ -256,12 +256,12 @@
     &--danger {
       padding: 0.5rem; // p-2
       border-radius: 9999px; // rounded-full
-      background-color: #dc2626; // bg-red-600
+      background-color: $color-rose; // bg-red-600
       color: white;
       box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       
       &:hover {
-        background-color: #b91c1c; // hover:bg-red-700
+        background-color: $color-rose; // hover:bg-red-700
       }
       
       svg {

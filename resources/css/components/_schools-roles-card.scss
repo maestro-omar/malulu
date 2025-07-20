@@ -20,7 +20,7 @@
   &__title {
     @include fz(2.2); // text-lg
     font-weight: 600; // font-semibold
-    color: #111827; // text-gray-900
+    color: $color-black-text; // text-gray-900
   }
   
   &__schools {
@@ -39,7 +39,7 @@
     }
     
     &--alternate {
-      background-color: #f9fafb; // bg-gray-50
+      background-color: $color-grey; // bg-gray-50
     }
   }
   
@@ -53,7 +53,7 @@
   &__school-name {
     @include fz(1.8); // text-base
     font-weight: $font-normal-weight; // font-medium
-    color: #111827; // text-gray-900
+    color: $color-black-text; // text-gray-900
   }
   
   &__school-short {
@@ -75,18 +75,18 @@
   }
   
   &__toggle-btn {
-    color: #4f46e5; // text-indigo-600
+    color: $color-indigo; // text-indigo-600
     @include fz(1.5); // text-sm
     font-weight: $font-normal-weight; // font-medium
     transition: color 0.2s ease-in-out;
     
     &:hover {
-      color: #3730a3; // hover:text-indigo-900
+      color: $color-indigo; // hover:text-indigo-900
     }
     
     &:focus {
       outline: none;
-      color: #3730a3;
+      color: $color-indigo;
     }
   }
   
@@ -179,7 +179,7 @@
   &__section-title {
     @include fz(1.5); // text-sm
     font-weight: $font-normal-weight; // font-medium
-    color: #111827; // text-gray-900
+    color: $color-black-text; // text-gray-900
     margin-bottom: 0.75rem; // mb-3
   }
   
@@ -226,7 +226,7 @@
   &__field-value {
     @include fz(1.5); // text-sm
     font-weight: $font-normal-weight; // font-medium
-    color: #111827; // text-gray-900
+    color: $color-black-text; // text-gray-900
     
     &--pre-wrap {
       white-space: pre-wrap; // whitespace-pre-wrap
@@ -250,7 +250,7 @@
     @include fz(1.2); // text-xs
     color: #4b5563; // text-gray-600
     white-space: pre-wrap; // whitespace-pre-wrap
-    background-color: #f9fafb; // bg-gray-50
+    background-color: $color-grey; // bg-gray-50
     padding: 0.5rem; // p-2
     border-radius: 0.25rem; // rounded
     border: 1px solid #e5e7eb; // border border-gray-200

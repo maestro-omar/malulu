@@ -54,7 +54,7 @@ $color-role-secretary-text: #92400e; // yellow-800
 
 // Profesor/a
 $color-role-professor-bg: #eef2ff; // indigo-100
-$color-role-professor-text: #3730a3; // indigo-800
+$color-role-professor-text: $color-indigo; // indigo-800
 
 // Maestro/a de Grado
 $color-role-grade-teacher-bg: #fdf2f8; // pink-100
@@ -98,7 +98,7 @@ $color-role-former-student-text: #1e293b; // slate-800
 
 // Default
 $color-role-default-bg: #f3f4f6; // gray-100
-$color-role-default-text: #374151; // gray-800
+$color-role-default-text: $color-text; // gray-800
 
 // School Shift Colors (Background and Text)
 // --------------------------------
@@ -112,11 +112,11 @@ $color-shift-afternoon-text: #9a3412; // orange-800
 
 // Noche
 $color-shift-night-bg: #eef2ff; // indigo-100
-$color-shift-night-text: #3730a3; // indigo-800
+$color-shift-night-text: $color-indigo; // indigo-800
 
 // Default
 $color-shift-default-bg: #f3f4f6; // gray-100
-$color-shift-default-text: #374151; // gray-800
+$color-shift-default-text: $color-text; // gray-800
 
 // School Management Type Colors (Background and Text)
 // --------------------------------
@@ -138,7 +138,7 @@ $color-management-self-managed-text: #9d174d; // pink-800
 
 // Default
 $color-management-default-bg: #f3f4f6; // gray-100
-$color-management-default-text: #374151; // gray-800
+$color-management-default-text: $color-text; // gray-800
 
 // School Level Colors (Background and Text)
 // --------------------------------
@@ -156,7 +156,7 @@ $color-level-secondary-text: #5b21b6; // violet-800
 
 // Default
 $color-level-default-bg: #f3f4f6; // gray-100
-$color-level-default-text: #374151; // gray-800
+$color-level-default-text: $color-text; // gray-800
 
 // Min and max breakpoints
 $screen-iphone6: 375px;

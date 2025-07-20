@@ -170,8 +170,8 @@
       }
       
       &:focus {
-        border-color: #6366f1; // focus:border-indigo-500
-        color: #6366f1; // focus:text-indigo-500
+        border-color: $color-indigo; // focus:border-indigo-500
+        color: $color-indigo; // focus:text-indigo-500
         outline: none;
       }
     }

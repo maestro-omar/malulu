@@ -1,1 +1,160 @@
 // Buttons component 
+
+// Button base class with BEM modifiers
+.btn {
+    color: white;
+    font-weight: 500; // font-bold
+    @include fz(1.5);
+    @include lh(2);
+    padding: 10px 15px;
+    border-radius: 0.25rem; // rounded
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+    text-decoration: none;
+    display: inline-block;
+    
+    &:focus {
+      outline: none;
+    }
+    
+    // Indigo button (bg-indigo-500 hover:bg-indigo-700)
+    &--indigo {
+      background-color: $color-indigo; // bg-indigo-500
+      
+      &:hover {
+        background-color: lighten($color-indigo, 5%); // hover:bg-indigo-700
+      }
+      
+      &:focus {
+        box-shadow: 0 0 0 2px rgba($color-indigo, 0.5);
+      }
+      
+      &:active {
+        background-color: $color-indigo;
+      }
+    }
+    
+    // Gray button (bg-gray-500 hover:bg-gray-700)
+    &--gray {
+      background-color: $color-gray; // bg-gray-500
+      
+      &:hover {
+        background-color: $color-text; // hover:bg-gray-700
+      }
+      
+      &:focus {
+        box-shadow: 0 0 0 2px rgba($color-gray, 0.5);
+      }
+      
+      &:active {
+        background-color: darken($color-text, 10%);
+      }
+    }
+    
+    // Blue button (bg-blue-500 hover:bg-blue-700)
+    &--blue {
+      background-color: $color-sky; // bg-blue-500
+      
+      &:hover {
+        background-color: $color-brand; // hover:bg-blue-700
+      }
+      
+      &:focus {
+        box-shadow: 0 0 0 2px rgba($color-sky, 0.5);
+      }
+      
+      &:active {
+        background-color: darken($color-brand, 10%);
+      }
+    }
+    
+    // Red button (bg-red-500 hover:bg-red-700)
+    &--red {
+      background-color: $color-rose; // bg-red-500
+      
+      &:hover {
+        background-color: darken($color-rose, 10%); // hover:bg-red-700
+      }
+      
+      &:focus {
+        box-shadow: 0 0 0 2px rgba($color-rose, 0.5);
+      }
+      
+      &:active {
+        background-color: darken($color-rose, 20%);
+      }
+    }
+    
+    // Small button variant
+    &--sm {
+      padding: 0.25rem 0.75rem; // py-1 px-3
+      @include fz(1.2); // text-sm
+      border-radius: 50%; // rounded-full
+    }
+    
+    // Green button variants
+    &--green {
+      background-color: $color-green; // bg-green-600
+      
+      &:hover {
+        background-color: darken($color-green, 10%); // hover:bg-green-700
+      }
+      
+      &:focus {
+        box-shadow: 0 0 0 2px rgba($color-green, 0.5);
+      }
+    }
+    
+    &--green-light {
+      background-color: $color-role-regent-bg; // bg-green-100
+      color: $color-role-regent-text; // text-green-800
+      
+      &:hover {
+        background-color: lighten($color-green, 45%); // hover:bg-green-200
+      }
+    }
+    
+    // Orange button variants
+    &--orange {
+      background-color: $color-orange; // bg-orange-600
+      
+      &:hover {
+        background-color: darken($color-orange, 10%); // hover:bg-orange-700
+      }
+      
+      &:focus {
+        box-shadow: 0 0 0 2px rgba($color-orange, 0.5);
+      }
+    }
+    
+    &--orange-light {
+      background-color: $color-role-assistant-teacher-bg; // bg-orange-100
+      color: $color-role-assistant-teacher-text; // text-orange-800
+      
+      &:hover {
+        background-color: lighten($color-orange, 40%); // hover:bg-orange-200
+      }
+    }
+    
+    // Indigo light variant
+    &--indigo-light {
+      background-color: $color-role-professor-bg; // bg-indigo-100
+      color: $color-role-professor-text; // text-indigo-800
+      
+      &:hover {
+        background-color: lighten($color-indigo, 45%); // hover:bg-indigo-200
+      }
+    }
+    
+    // Gray light variant
+    &--gray-light {
+      background-color: $color-role-default-bg; // bg-gray-200
+      color: $color-role-default-text; // text-gray-800
+      
+      &:hover {
+        background-color: lighten($color-gray, 40%); // hover:bg-gray-300
+      }
+    }
+  } 
+  

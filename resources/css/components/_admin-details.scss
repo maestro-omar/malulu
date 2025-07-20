@@ -24,7 +24,7 @@
   
   &__content {
     padding: 1.5rem; // p-6
-    color: #111827; // text-gray-900
+    color: $color-black-text; // text-gray-900
   }
   
   &__grid {
@@ -56,7 +56,7 @@
     @include fz(2.2); // text-lg
     font-weight: 600; // font-semibold
     margin-bottom: 1rem; // mb-4
-    color: #111827; // text-gray-900
+    color: $color-black-text; // text-gray-900
   }
   
   &__field {
@@ -109,7 +109,7 @@
   &__value {
     margin-top: 0.25rem; // mt-1
     @include fz(1.5); // text-sm
-    color: #111827; // text-gray-900
+    color: $color-black-text; // text-gray-900
   }
   
   &__info-layout {
@@ -189,7 +189,7 @@
   }
   
   &__map-link {
-    color: #2563eb; // text-blue-600
+    color: $color-brand; // text-blue-600
     
     &:hover {
       color: #1e40af; // hover:text-blue-800
@@ -224,10 +224,10 @@
   &__social-link {
     margin-top: 0.25rem; // mt-1
     @include fz(1.5); // text-sm
-    color: #6366f1; // text-indigo-600
+    color: $color-indigo; // text-indigo-600
     
     &:hover {
-      color: #3730a3; // hover:text-indigo-900
+      color: $color-indigo; // hover:text-indigo-900
     }
   }
 } 
