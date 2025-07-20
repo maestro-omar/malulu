@@ -7,135 +7,220 @@
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Cursos de ${school.short} - ${selectedLevel.name}`">
         <template #additional-buttons>
           <Link :href="route('courses.create', { school: school.cue, schoolLevel: selectedLevel.code })"
-            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+            class="btn btn--blue">
           Agregar Nuevo Curso
           </Link>
         </template>
       </AdminHeader>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div class="p-6 text-gray-900">
-            <!-- Filter Section -->
-            <div class="mb-4 p-4 border rounded-lg bg-gray-50">
-              <h3 class="text-lg font-semibold mb-2">Filtros</h3>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Year Filter -->
-                <div>
-                  <label for="year-filter" class="block text-sm font-medium text-gray-700">Año</label>
-                  <input type="number" id="year-filter" v-model.number="selectedYear" @input="triggerFilter"
-                    class="text-sm py-1 w-24 mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                </div>
+    <div class="container">
+      <!-- Flash Messages -->
+      <div v-if="flash?.error" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <span class="block sm:inline">{{ flash.error }}</span>
+      </div>
+      <div v-if="flash?.success" class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+        <span class="block sm:inline">{{ flash.success }}</span>
+      </div>
 
-                <!-- Active Status Filter -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700">Estado</label>
-                  <div class="mt-1 flex items-center">
-                    <label class="inline-flex items-center mr-4">
-                      <input type="radio" class="form-radio" name="active-status" :value="true" v-model="activeStatus"
-                        @change="triggerFilter">
-                      <span class="ml-2">Activo</span>
-                    </label>
-                    <label class="inline-flex items-center mr-4">
-                      <input type="radio" class="form-radio" name="active-status" :value="false" v-model="activeStatus"
-                        @change="triggerFilter">
-                      <span class="ml-2">Inactivo</span>
-                    </label>
-                    <label class="inline-flex items-center">
-                      <input type="radio" class="form-radio" name="active-status" :value="null" v-model="activeStatus"
-                        @change="triggerFilter">
-                      <span class="ml-2">Todos</span>
-                    </label>
-                  </div>
-                </div>
+      <div class="table__wrapper">
+        <div class="table__container">
+          <!-- Filter Section -->
+          <div class="table__filters">
+            <h3 class="table__filters-title">Filtros</h3>
+            <div class="table__filters-grid">
+              <!-- Year Filter -->
+              <div class="table__filter-group">
+                <label for="year-filter" class="table__filter-label">Año</label>
+                <input 
+                  type="number" 
+                  id="year-filter" 
+                  v-model.number="selectedYear" 
+                  @input="triggerFilter"
+                  class="table__filter-input"
+                />
+              </div>
 
-                <!-- Shift Filter -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700">Turno</label>
-                  <div class="mt-1 flex flex-wrap gap-2">
-                    <template v-for="([code, shiftData]) in filteredShiftOptions" :key="code">
-                      <button @click="selectedShift = code; triggerFilter();"
-                        :class="getShiftButtonClasses(shiftData, selectedShift === code)">
-                        {{ shiftData.label }}
-                      </button>
-                    </template>
-                    <button @click="selectedShift = null; triggerFilter();" :class="{
-                      'px-3 py-1 rounded-full text-sm font-medium': true,
-                      'bg-blue-600 text-white': selectedShift === null,
-                      'bg-gray-200 text-gray-700 hover:bg-gray-300': selectedShift !== null,
-                    }">
-                      Todos
+              <!-- Active Status Filter -->
+              <div class="table__filter-group">
+                <label class="table__filter-label">Estado</label>
+                <div class="table__filter-radio-group">
+                  <label class="table__filter-radio">
+                    <input type="radio" name="active-status" :value="true" v-model="activeStatus" @change="triggerFilter">
+                    <span>Activo</span>
+                  </label>
+                  <label class="table__filter-radio">
+                    <input type="radio" name="active-status" :value="false" v-model="activeStatus" @change="triggerFilter">
+                    <span>Inactivo</span>
+                  </label>
+                  <label class="table__filter-radio">
+                    <input type="radio" name="active-status" :value="null" v-model="activeStatus" @change="triggerFilter">
+                    <span>Todos</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Shift Filter -->
+              <div class="table__filter-group">
+                <label class="table__filter-label">Turno</label>
+                <div class="table__filter-buttons">
+                  <template v-for="([code, shiftData]) in filteredShiftOptions" :key="code">
+                    <button 
+                      @click="selectedShift = code; triggerFilter();"
+                      :class="getShiftButtonClasses(shiftData, selectedShift === code)"
+                    >
+                      {{ shiftData.label }}
                     </button>
-                  </div>
+                  </template>
+                  <button 
+                    @click="selectedShift = null; triggerFilter();" 
+                    :class="getShiftButtonClasses({ color: 'blue' }, selectedShift === null)"
+                  >
+                    Todos
+                  </button>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Curso
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Turno
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Curso
-                      Anterior
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de
-                      Inicio</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de
-                      Fin
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Activo
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="course in courses.data" :key="course.id">
-                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ course.number + ' º ' + course.letter }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                      <SchoolShiftBadge :shift="course.school_shift" />
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                      <Link v-if="course.previous_course"
-                        :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
-                        class="text-blue-600 hover:text-blue-900">
+          <!-- Desktop Table View -->
+          <div class="table__desktop">
+            <table class="table__table">
+              <thead class="table__thead">
+                <tr>
+                  <th class="table__th table__th--center">Curso</th>
+                  <th class="table__th table__th--center">Turno</th>
+                  <th class="table__th table__th--center">Curso Anterior</th>
+                  <th class="table__th">Fecha de Inicio</th>
+                  <th class="table__th">Fecha de Fin</th>
+                  <th class="table__th table__th--center">Activo</th>
+                  <th class="table__th">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="table__tbody">
+                <tr 
+                  v-for="(course, index) in courses.data" 
+                  :key="course.id"
+                  :class="{
+                    'table__tr--even': index % 2 === 0,
+                    'table__tr--odd': index % 2 === 1
+                  }"
+                >
+                  <td class="table__td table__td--center">{{ course.number + ' º ' + course.letter }}</td>
+                  <td class="table__td table__td--center">
+                    <SchoolShiftBadge :shift="course.school_shift" />
+                  </td>
+                  <td class="table__td table__td--center">
+                    <Link 
+                      v-if="course.previous_course"
+                      :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
+                      class="table__link"
+                    >
                       {{ course.previous_course.number }} º {{ course.previous_course.letter }}
-                      </Link>
-                      <span v-else>-</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(course.start_date) }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ course.end_date ? formatDate(course.end_date) : '-' }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                      <span :class="{
-                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
-                        'bg-green-100 text-green-800': course.active,
-                        'bg-red-100 text-red-800': !course.active,
-                      }">
-                        {{ course.active ? 'Sí' : 'No' }}
-                      </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <Link
-                        :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
-                        class="text-blue-600 hover:text-blue-900 mr-3">
+                    </Link>
+                    <span v-else>-</span>
+                  </td>
+                  <td class="table__td">{{ formatDate(course.start_date) }}</td>
+                  <td class="table__td">{{ course.end_date ? formatDate(course.end_date) : '-' }}</td>
+                  <td class="table__td table__td--center">
+                    <span :class="{
+                      'table__status': true,
+                      'table__status--active': course.active,
+                      'table__status--inactive': !course.active,
+                    }">
+                      {{ course.active ? 'Sí' : 'No' }}
+                    </span>
+                  </td>
+                  <td class="table__td table__actions">
+                    <Link
+                      :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
+                    >
                       Ver
-                      </Link>
-                      <Link
-                        :href="route('courses.edit', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
-                        class="text-indigo-600 hover:text-indigo-900 mr-4">
+                    </Link>
+                    <Link
+                      :href="route('courses.edit', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
+                    >
                       Editar
-                      </Link>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                    </Link>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Card View -->
+          <div class="table__mobile">
+            <div 
+              v-for="(course, index) in courses.data" 
+              :key="course.id"
+              :class="{
+                'table__card--even': index % 2 === 0,
+                'table__card--odd': index % 2 === 1
+              }" 
+              class="table__card"
+            >
+              <div class="table__card-header">
+                <div class="table__card-user">
+                  <div class="table__card-info">
+                    <h3>{{ course.number + ' º ' + course.letter }}</h3>
+                    <p>
+                      <SchoolShiftBadge :shift="course.school_shift" />
+                    </p>
+                  </div>
+                </div>
+                <div class="table__card-actions">
+                  <Link
+                    :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
+                  >
+                    Ver
+                  </Link>
+                  <Link
+                    :href="route('courses.edit', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
+                  >
+                    Editar
+                  </Link>
+                </div>
+              </div>
+              <div class="table__card-section">
+                <div class="table__card-label">Curso Anterior:</div>
+                <div class="table__card-content">
+                  <Link 
+                    v-if="course.previous_course"
+                    :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
+                    class="table__link"
+                  >
+                    {{ course.previous_course.number }} º {{ course.previous_course.letter }}
+                  </Link>
+                  <span v-else>-</span>
+                </div>
+              </div>
+              <div class="table__card-section">
+                <div class="table__card-label">Fecha de Inicio:</div>
+                <div class="table__card-content">{{ formatDate(course.start_date) }}</div>
+              </div>
+              <div class="table__card-section">
+                <div class="table__card-label">Fecha de Fin:</div>
+                <div class="table__card-content">{{ course.end_date ? formatDate(course.end_date) : '-' }}</div>
+              </div>
+              <div class="table__card-section">
+                <div class="table__card-label">Estado:</div>
+                <div class="table__card-content">
+                  <span :class="{
+                    'table__status': true,
+                    'table__status--active': course.active,
+                    'table__status--inactive': !course.active,
+                  }">
+                    {{ course.active ? 'Sí' : 'No' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="table__pagination">
+            <div class="table__pagination-info">
+              Mostrando {{ courses.from }} a {{ courses.to }} de {{ courses.total }} resultados
             </div>
             <Pagination :links="courses.links" />
           </div>
@@ -225,24 +310,24 @@ const triggerFilter = () => {
 };
 
 const getShiftButtonClasses = (shiftData, isActive) => {
-  const baseClasses = 'px-3 py-1 rounded-full text-sm font-medium';
+  const baseClasses = 'btn btn--sm';
   const colorMap = {
     green: {
-      active: 'bg-green-600 text-white',
-      inactive: 'bg-green-100 text-green-800 hover:bg-green-200',
+      active: 'btn--green',
+      inactive: 'btn--green-light',
     },
     orange: {
-      active: 'bg-orange-600 text-white',
-      inactive: 'bg-orange-100 text-orange-800 hover:bg-orange-200',
+      active: 'btn--orange',
+      inactive: 'btn--orange-light',
     },
     indigo: {
-      active: 'bg-indigo-600 text-white',
-      inactive: 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
+      active: 'btn--indigo',
+      inactive: 'btn--indigo-light',
     },
     // Add more colors if needed based on your API response
     gray: {
-      active: 'bg-gray-600 text-white',
-      inactive: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
+      active: 'btn--gray',
+      inactive: 'btn--gray-light',
     },
   };
 

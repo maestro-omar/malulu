@@ -5,17 +5,17 @@
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Curso para ${school.name} (Nivel: ${selectedLevel.name})`"></AdminHeader>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <form @submit.prevent="submit">
-          <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900">
+    <div class="container">
+      <div class="form__wrapper">
+        <form @submit.prevent="submit" class="form__container">
+          <div class="form__card">
+            <div class="form__card-content">
               <!-- Hidden School ID Field -->
               <input type="hidden" v-model="form.school_id" />
               <!-- Hidden School Level ID Field -->
               <input type="hidden" v-model="form.school_level_id" />
 
-              <div class="mb-4">
+              <div class="form__field">
                 <InputLabel for="school_shift_id" value="Turno Escolar" />
                 <SelectInput
                   id="school_shift_id"
@@ -23,13 +23,13 @@
                   :options="schoolShifts"
                   option-value="id"
                   option-label="name"
-                  class="mt-1 block w-full"
+                  class="form__input"
                   required
                 />
-                <InputError class="mt-2" :message="form.errors.school_shift_id" />
+                <InputError class="form__error" :message="form.errors.school_shift_id" />
               </div>
 
-              <div class="mb-4">
+              <div class="form__field">
                 <InputLabel for="previous_course_id" value="Curso Anterior" />
                 <SelectInput
                   id="previous_course_id"
@@ -39,69 +39,69 @@
                   option-label="full_name"
                   :show-default-option="true"
                   default-option-label="Ninguno"
-                  class="mt-1 block w-full"
+                  class="form__input"
                 />
-                <InputError class="mt-2" :message="form.errors.previous_course_id" />
+                <InputError class="form__error" :message="form.errors.previous_course_id" />
               </div>
 
-              <div class="mb-4">
+              <div class="form__field">
                 <InputLabel for="number" value="Número" />
                 <TextInput
                   id="number"
                   type="number"
                   v-model="form.number"
-                  class="mt-1 block w-full"
+                  class="form__input"
                   required
                 />
-                <InputError class="mt-2" :message="form.errors.number" />
+                <InputError class="form__error" :message="form.errors.number" />
               </div>
 
-              <div class="mb-4">
+              <div class="form__field">
                 <InputLabel for="letter" value="Letra" />
                 <TextInput
                   id="letter"
                   type="text"
                   v-model="form.letter"
-                  class="mt-1 block w-full"
+                  class="form__input"
                   required
                 />
-                <InputError class="mt-2" :message="form.errors.letter" />
+                <InputError class="form__error" :message="form.errors.letter" />
               </div>
 
-              <div class="mb-4">
+              <div class="form__field">
                 <InputLabel for="start_date" value="Fecha de Inicio" />
                 <TextInput
                   id="start_date"
                   type="date"
                   v-model="form.start_date"
-                  class="mt-1 block w-full"
+                  class="form__input"
                   required
                 />
-                <InputError class="mt-2" :message="form.errors.start_date" />
+                <InputError class="form__error" :message="form.errors.start_date" />
               </div>
 
-              <div class="mb-4">
+              <div class="form__field">
                 <InputLabel for="end_date" value="Fecha de Fin" />
                 <TextInput
                   id="end_date"
                   type="date"
                   v-model="form.end_date"
-                  class="mt-1 block w-full"
+                  class="form__input"
                 />
-                <InputError class="mt-2" :message="form.errors.end_date" />
+                <InputError class="form__error" :message="form.errors.end_date" />
               </div>
 
-              <div class="mb-4">
+              <div class="form__field">
                 <CheckboxWithLabel id="active" v-model="form.active">
                   Activo
                 </CheckboxWithLabel>
-                <InputError class="mt-2" :message="form.errors.active" />
+                <InputError class="form__error" :message="form.errors.active" />
               </div>
             </div>
           </div>
 
           <ActionButtons button-label="Guardar Cambios" :cancel-href="route('courses.index', {school: school.cue, schoolLevel: selectedLevel.code})"
-            :disabled="form.processing" class="mt-4" />
+            :disabled="form.processing" />
         </form>
       </div>
     </div>

@@ -7,17 +7,17 @@
             </h2>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <form @submit.prevent="submit">
-                            <div class="mb-4">
+        <div class="container">
+            <div class="form__wrapper">
+                <form @submit.prevent="submit" class="form__container">
+                    <div class="form__card">
+                        <div class="form__card-content">
+                            <div class="form__field">
                                 <InputLabel for="file_type_id" value="Tipo de Archivo" />
                                 <select
                                     id="file_type_id"
                                     v-model="form.file_type_id"
-                                    class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                    class="form__select"
                                     required
                                 >
                                     <option value="">Seleccione un tipo</option>
@@ -25,73 +25,73 @@
                                         {{ fileType.name }}
                                     </option>
                                 </select>
-                                <InputError :message="form.errors.file_type_id" class="mt-2" />
+                                <InputError :message="form.errors.file_type_id" class="form__error" />
                             </div>
 
-                            <div class="mb-4">
+                            <div class="form__field">
                                 <InputLabel for="code" value="Clave" />
                                 <TextInput
                                     id="code"
                                     v-model="form.code"
                                     type="text"
-                                    class="mt-1 block w-full"
+                                    class="form__input"
                                     required
                                     autofocus
                                 />
-                                <InputError :message="form.errors.code" class="mt-2" />
+                                <InputError :message="form.errors.code" class="form__error" />
                             </div>
 
-                            <div class="mb-4">
+                            <div class="form__field">
                                 <InputLabel for="name" value="Nombre" />
                                 <TextInput
                                     id="name"
                                     v-model="form.name"
                                     type="text"
-                                    class="mt-1 block w-full"
+                                    class="form__input"
                                     required
                                 />
-                                <InputError :message="form.errors.name" class="mt-2" />
+                                <InputError :message="form.errors.name" class="form__error" />
                             </div>
 
-                            <div class="mb-4">
+                            <div class="form__field">
                                 <InputLabel for="description" value="Descripción" />
                                 <textarea
                                     id="description"
                                     v-model="form.description"
-                                    class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                    class="form__textarea"
                                     rows="3"
                                 ></textarea>
-                                <InputError :message="form.errors.description" class="mt-2" />
+                                <InputError :message="form.errors.description" class="form__error" />
                             </div>
 
-                            <div class="mb-4">
+                            <div class="form__field">
                                 <CheckboxWithLabel v-model="form.new_overwrites">
                                     Sobrescribe archivos existentes
                                 </CheckboxWithLabel>
                             </div>
 
-                            <div class="mb-4">
+                            <div class="form__field">
                                 <CheckboxWithLabel v-model="form.hidden_for_familiy">
                                     Oculto para la familia
                                 </CheckboxWithLabel>
                             </div>
 
-                            <div class="mb-4">
+                            <div class="form__field">
                                 <CheckboxWithLabel v-model="form.upload_by_familiy">
                                     Puede ser subido por la familia
                                 </CheckboxWithLabel>
                             </div>
 
-                            <div class="mb-4">
+                            <div class="form__field">
                                 <InputLabel for="order" value="Orden" />
                                 <TextInput
                                     id="order"
                                     v-model="form.order"
                                     type="number"
-                                    class="mt-1 block w-full"
+                                    class="form__input"
                                     required
                                 />
-                                <InputError :message="form.errors.order" class="mt-2" />
+                                <InputError :message="form.errors.order" class="form__error" />
                             </div>
 
                             <ActionButtons 
@@ -99,9 +99,9 @@
                                 :cancel-href="route('file-subtypes.index')"
                                 :disabled="form.processing"
                             />
-                        </form>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </AuthenticatedLayout>

@@ -12,51 +12,90 @@
             </AdminHeader>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Tipo</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Nombre</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Descripción</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Orden</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr v-for="fileSubtype in fileSubtypes" :key="fileSubtype.id">
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ fileSubtype.file_type }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ fileSubtype.name }}</td>
-                                        <td class="px-6 py-4">{{ fileSubtype.description }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ fileSubtype.order }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <Link :href="route('file-subtypes.edit', fileSubtype.id)"
-                                                class="text-indigo-600 hover:text-indigo-900 mr-4">
+        <div class="container">
+            <!-- Flash Messages -->
+            <div v-if="flash?.error" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ flash.error }}</span>
+            </div>
+            <div v-if="flash?.success" class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ flash.success }}</span>
+            </div>
+
+            <div class="table__wrapper">
+                <div class="table__container">
+                    <!-- Desktop Table View -->
+                    <div class="table__desktop">
+                        <table class="table__table">
+                            <thead class="table__thead">
+                                <tr>
+                                    <th class="table__th">Tipo</th>
+                                    <th class="table__th">Nombre</th>
+                                    <th class="table__th">Descripción</th>
+                                    <th class="table__th">Orden</th>
+                                    <th class="table__th">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table__tbody">
+                                <tr 
+                                    v-for="(fileSubtype, index) in fileSubtypes" 
+                                    :key="fileSubtype.id"
+                                    :class="{
+                                        'table__tr--even': index % 2 === 0,
+                                        'table__tr--odd': index % 2 === 1
+                                    }"
+                                >
+                                    <td class="table__td table__type">{{ fileSubtype.file_type }}</td>
+                                    <td class="table__td table__name">{{ fileSubtype.name }}</td>
+                                    <td class="table__td table__description">{{ fileSubtype.description }}</td>
+                                    <td class="table__td table__order">{{ fileSubtype.order }}</td>
+                                    <td class="table__td table__actions">
+                                        <Link :href="route('file-subtypes.edit', fileSubtype.id)">
                                             Editar
-                                            </Link>
-                                            <button v-if="fileSubtype.can_delete"
-                                                @click="deleteFileSubtype(fileSubtype.id)"
-                                                class="text-red-600 hover:text-red-900">
-                                                Eliminar
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                        </Link>
+                                        <button v-if="fileSubtype.can_delete" @click="deleteFileSubtype(fileSubtype.id)">
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile Card View -->
+                    <div class="table__mobile">
+                        <div 
+                            v-for="(fileSubtype, index) in fileSubtypes" 
+                            :key="fileSubtype.id"
+                            :class="{
+                                'table__card--even': index % 2 === 0,
+                                'table__card--odd': index % 2 === 1
+                            }" 
+                            class="table__card"
+                        >
+                            <div class="table__card-header">
+                                <div class="table__card-user">
+                                    <div class="table__card-info">
+                                        <h3>{{ fileSubtype.name }}</h3>
+                                        <p>{{ fileSubtype.file_type }}</p>
+                                    </div>
+                                </div>
+                                <div class="table__card-actions">
+                                    <Link :href="route('file-subtypes.edit', fileSubtype.id)">
+                                        Editar
+                                    </Link>
+                                    <button v-if="fileSubtype.can_delete" @click="deleteFileSubtype(fileSubtype.id)">
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table__card-section">
+                                <div class="table__card-label">Descripción:</div>
+                                <div class="table__card-content">{{ fileSubtype.description }}</div>
+                            </div>
+                            <div class="table__card-section">
+                                <div class="table__card-label">Orden:</div>
+                                <div class="table__card-content">{{ fileSubtype.order }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>

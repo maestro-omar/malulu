@@ -56,7 +56,7 @@ Breadcrumbs::for('schools.create', function (Trail $trail) {
 Breadcrumbs::for('schools.edit', function (Trail $trail, $school) {
     $user = auth()->user();
     if ($user->isSuperadmin())
-        $trail->parent('schools.index');
+        $trail->parent('schools.show', $school);
     else
         $trail->parent('dashboard');
     $trail->push("Editar {$school->short}");

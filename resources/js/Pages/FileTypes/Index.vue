@@ -12,54 +12,106 @@
             </AdminHeader>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Clave</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Nombre</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Relacionado Con</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Estado</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr v-for="fileType in fileTypes" :key="fileType.id">
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ fileType.code }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ fileType.name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ fileType.relate_with }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span :class="fileType.active ? 'text-green-600' : 'text-red-600'">
-                                                {{ fileType.active ? 'Activo' : 'Inactivo' }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <Link :href="route('file-types.edit', fileType.id)"
-                                                class="text-indigo-600 hover:text-indigo-900 mr-4">
+        <div class="container">
+            <!-- Flash Messages -->
+            <div v-if="flash?.error" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ flash.error }}</span>
+            </div>
+            <div v-if="flash?.success" class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ flash.success }}</span>
+            </div>
+
+            <div class="table__wrapper">
+                <div class="table__container">
+                    <!-- Desktop Table View -->
+                    <div class="table__desktop">
+                        <table class="table__table">
+                            <thead class="table__thead">
+                                <tr>
+                                    <th class="table__th">Clave</th>
+                                    <th class="table__th">Nombre</th>
+                                    <th class="table__th">Relacionado Con</th>
+                                    <th class="table__th">Estado</th>
+                                    <th class="table__th">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table__tbody">
+                                <tr 
+                                    v-for="(fileType, index) in fileTypes" 
+                                    :key="fileType.id"
+                                    :class="{
+                                        'table__tr--even': index % 2 === 0,
+                                        'table__tr--odd': index % 2 === 1
+                                    }"
+                                >
+                                    <td class="table__td">{{ fileType.code }}</td>
+                                    <td class="table__td">{{ fileType.name }}</td>
+                                    <td class="table__td">{{ fileType.relate_with }}</td>
+                                    <td class="table__td">
+                                        <span :class="{
+                                            'table__status': true,
+                                            'table__status--active': fileType.active,
+                                            'table__status--inactive': !fileType.active,
+                                        }">
+                                            {{ fileType.active ? 'Activo' : 'Inactivo' }}
+                                        </span>
+                                    </td>
+                                    <td class="table__td table__actions">
+                                        <Link :href="route('file-types.edit', fileType.id)">
                                             Editar
-                                            </Link>
-                                            <button v-if="fileType.can_delete" @click="deleteFileType(fileType.id)"
-                                                class="text-red-600 hover:text-red-900">
-                                                Eliminar
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                        </Link>
+                                        <button v-if="fileType.can_delete" @click="deleteFileType(fileType.id)">
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile Card View -->
+                    <div class="table__mobile">
+                        <div 
+                            v-for="(fileType, index) in fileTypes" 
+                            :key="fileType.id"
+                            :class="{
+                                'table__card--even': index % 2 === 0,
+                                'table__card--odd': index % 2 === 1
+                            }" 
+                            class="table__card"
+                        >
+                            <div class="table__card-header">
+                                <div class="table__card-user">
+                                    <div class="table__card-info">
+                                        <h3>{{ fileType.name }}</h3>
+                                        <p>{{ fileType.code }}</p>
+                                    </div>
+                                </div>
+                                <div class="table__card-actions">
+                                    <Link :href="route('file-types.edit', fileType.id)">
+                                        Editar
+                                    </Link>
+                                    <button v-if="fileType.can_delete" @click="deleteFileType(fileType.id)">
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table__card-section">
+                                <div class="table__card-label">Relacionado Con:</div>
+                                <div class="table__card-content">{{ fileType.relate_with }}</div>
+                            </div>
+                            <div class="table__card-section">
+                                <div class="table__card-label">Estado:</div>
+                                <div class="table__card-content">
+                                    <span :class="{
+                                        'table__status': true,
+                                        'table__status--active': fileType.active,
+                                        'table__status--inactive': !fileType.active,
+                                    }">
+                                        {{ fileType.active ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

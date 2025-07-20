@@ -7,76 +7,48 @@
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Ciclo Lectivo ${props.academicYear.year}`"></AdminHeader>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <form @submit.prevent="submit">
-          <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900">
-              <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="year">
-                  Año
-                </label>
-                <input type="number" id="year" v-model="form.year"
-                  class="shadow appearance-none border rounded w-32 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  disabled />
+    <div class="container">
+      <div class="form__wrapper">
+        <form @submit.prevent="submit" class="form__container">
+          <div class="form__card">
+            <div class="form__card-content">
+              <div class="form__field">
+                <InputLabel for="year" value="Año" />
+                <TextInput type="number" id="year" v-model="form.year" class="form__input form__input--disabled" disabled />
               </div>
 
-              <div class="mb-4">
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="start_date">
-                      Fecha de Inicio
-                    </label>
-                    <input type="date" id="start_date" v-model="form.start_date"
-                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-                    <div v-if="form.errors.start_date" class="text-red-500 text-xs mt-1">
-                      {{ form.errors.start_date }}
-                    </div>
-                  </div>
+              <div class="form__grid form__grid--2">
+                <div class="form__field">
+                  <InputLabel for="start_date" value="Fecha de Inicio" />
+                  <TextInput type="date" id="start_date" v-model="form.start_date" class="form__input" />
+                  <InputError class="form__error" :message="form.errors.start_date" />
+                </div>
 
-                  <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="end_date">
-                      Fecha de Fin
-                    </label>
-                    <input type="date" id="end_date" v-model="form.end_date"
-                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-                    <div v-if="form.errors.end_date" class="text-red-500 text-xs mt-1">
-                      {{ form.errors.end_date }}
-                    </div>
-                  </div>
+                <div class="form__field">
+                  <InputLabel for="end_date" value="Fecha de Fin" />
+                  <TextInput type="date" id="end_date" v-model="form.end_date" class="form__input" />
+                  <InputError class="form__error" :message="form.errors.end_date" />
                 </div>
               </div>
 
-              <div class="mb-6">
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="winter_break_start">
-                      Inicio de Vacaciones de Invierno
-                    </label>
-                    <input type="date" id="winter_break_start" v-model="form.winter_break_start"
-                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-                    <div v-if="form.errors.winter_break_start" class="text-red-500 text-xs mt-1">
-                      {{ form.errors.winter_break_start }}
-                    </div>
-                  </div>
+              <div class="form__grid form__grid--2">
+                <div class="form__field">
+                  <InputLabel for="winter_break_start" value="Inicio de Vacaciones de Invierno" />
+                  <TextInput type="date" id="winter_break_start" v-model="form.winter_break_start" class="form__input" />
+                  <InputError class="form__error" :message="form.errors.winter_break_start" />
+                </div>
 
-                  <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="winter_break_end">
-                      Fin de Vacaciones de Invierno
-                    </label>
-                    <input type="date" id="winter_break_end" v-model="form.winter_break_end"
-                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-                    <div v-if="form.errors.winter_break_end" class="text-red-500 text-xs mt-1">
-                      {{ form.errors.winter_break_end }}
-                    </div>
-                  </div>
+                <div class="form__field">
+                  <InputLabel for="winter_break_end" value="Fin de Vacaciones de Invierno" />
+                  <TextInput type="date" id="winter_break_end" v-model="form.winter_break_end" class="form__input" />
+                  <InputError class="form__error" :message="form.errors.winter_break_end" />
                 </div>
               </div>
             </div>
           </div>
 
           <ActionButtons button-label="Guardar Cambios" :cancel-href="route('academic-years.index')"
-            :disabled="form.processing" class="mt-4" />
+            :disabled="form.processing" />
         </form>
       </div>
     </div>
@@ -87,12 +59,17 @@
 import { useForm, Head } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import ActionButtons from '@/Components/admin/ActionButtons.vue'
+import InputLabel from '@/Components/admin/InputLabel.vue'
+import TextInput from '@/Components/admin/TextInput.vue'
+import InputError from '@/Components/admin/InputError.vue'
+import AdminHeader from '@/Sections/AdminHeader.vue'
 
 const props = defineProps({
   academicYear: {
     type: Object,
     required: true
-  }
+  },
+  breadcrumbs: Array
 })
 
 const formatDate = (date) => {
