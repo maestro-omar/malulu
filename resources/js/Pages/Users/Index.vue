@@ -82,137 +82,114 @@ const getUniqueRoles = (roles) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Listado de usuarios`" :add="{
-                show: hasPermission($page.props, 'user.manage'),
-                href: route('users.create'),
-                label: 'Nuevo usuario'
-            }" :trashed="{
-                show: hasPermission($page.props, 'user.manage'),
-                href: route('users.trashed'),
-                label: 'Eliminados'
-            }">
-            </AdminHeader>
+            <AdminHeader 
+                :breadcrumbs="breadcrumbs" 
+                :title="`Listado de usuarios`" 
+                :add="{
+                    show: hasPermission($page.props, 'user.manage'),
+                    href: route('users.create'),
+                    label: 'Nuevo usuario'
+                }" 
+                :trashed="{
+                    show: hasPermission($page.props, 'user.manage'),
+                    href: route('users.trashed'),
+                    label: 'Eliminados'
+                }"
+            />
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-
+        <div class="container">
                 <!-- Flash Messages -->
-                <div v-if="flash?.error"
-                    class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <div v-if="flash?.error" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                     <span class="block sm:inline">{{ flash.error }}</span>
                 </div>
-                <div v-if="flash?.success"
-                    class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
-                    role="alert">
+                <div v-if="flash?.success" class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                     <span class="block sm:inline">{{ flash.success }}</span>
                 </div>
 
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
+                <div class="table__wrapper">
+                    <div class="table__container">
                         <!-- Search Filter -->
-                        <div class="mb-6 max-w-md">
-                            <div class="relative">
-                                <input type="text" v-model="search" @input="handleSearch"
-                                    placeholder="Buscar usuarios..."
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                                <div v-if="search" class="absolute right-3 top-2.5">
-                                    <button @click="clearSearch" class="text-gray-400 hover:text-gray-600">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
+                        <div class="table__search">
+                            <input 
+                                type="text" 
+                                v-model="search" 
+                                @input="handleSearch"
+                                placeholder="Buscar usuarios..."
+                            />
+                            <button v-if="search" @click="clearSearch" class="table__search-clear">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                         </div>
 
                         <!-- Desktop Table View -->
-                        <div class="hidden md:block">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="">
+                        <div class="table__desktop">
+                            <table class="table__table">
+                                <thead class="table__thead">
                                     <tr>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Foto
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Nombre
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Email
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Escuelas
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Roles
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Acciones
-                                        </th>
+                                        <th class="table__th">Foto</th>
+                                        <th class="table__th">Nombre</th>
+                                        <th class="table__th">Email</th>
+                                        <th class="table__th">Escuelas</th>
+                                        <th class="table__th">Roles</th>
+                                        <th class="table__th">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr v-for="(user, index) in users.data" :key="user.id" :class="{
-                                        'bg-indigo-50': user.id === $page.props.auth.user.id,
-                                        'bg-gray-50': user.id !== $page.props.auth.user.id && index % 2 === 0,
-                                        'bg-white': user.id !== $page.props.auth.user.id && index % 2 === 1
-                                    }">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <img :src="user.picture || noImage" :alt="user.name"
-                                                class="h-10 w-10 rounded-full object-cover" />
+                                <tbody class="table__tbody">
+                                    <tr 
+                                        v-for="(user, index) in users.data" 
+                                        :key="user.id" 
+                                        :class="{
+                                            'table__tr--highlighted': user.id === $page.props.auth.user.id,
+                                            'table__tr--even': user.id !== $page.props.auth.user.id && index % 2 === 0,
+                                            'table__tr--odd': user.id !== $page.props.auth.user.id && index % 2 === 1
+                                        }"
+                                    >
+                                        <td class="table__td table__photo">
+                                            <img :src="user.picture || noImage" :alt="user.name" />
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900">
-                                                {{ user.name }}
-                                            </div>
+                                        <td class="table__td table__name">
+                                            {{ user.name }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="table__td table__email">
                                             <EmailField :email="user.email" />
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-500">
-                                                <span v-for="(school, index) in user.schools" :key="school.id"
-                                                    class="inline-block mr-2">
-                                                    <span
-                                                        class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800"
-                                                        :title="school.name">
-                                                        {{ school.short }}
-                                                    </span>
-                                                </span>
-                                            </div>
+                                        <td class="table__td table__schools">
+                                            <span 
+                                                v-for="school in user.schools" 
+                                                :key="school.id"
+                                                class="table__badge"
+                                                :title="school.name"
+                                            >
+                                                {{ school.short }}
+                                            </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-500">
-                                                <div class="flex flex-wrap gap-1">
-                                                    <RoleBadge v-for="role in getUniqueRoles(user.roles)" :key="role.id"
-                                                        :role="role" />
-                                                </div>
-                                            </div>
+                                        <td class="table__td table__roles">
+                                            <RoleBadge 
+                                                v-for="role in getUniqueRoles(user.roles)" 
+                                                :key="role.id"
+                                                :role="role" 
+                                            />
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <Link :href="route('users.show', user.id)"
-                                                class="text-indigo-600 hover:text-indigo-900 mr-4">
-                                            Ver
+                                        <td class="table__td table__actions">
+                                            <Link :href="route('users.show', user.id)">
+                                                Ver
                                             </Link>
                                             <Link
                                                 v-if="hasPermission($page.props, 'user.manage') &&
                                                     (!isAdmin(user) || (isAdmin(user) && user.id === $page.props.auth.user.id))"
                                                 :href="route('users.edit', user.id)"
-                                                class="text-indigo-600 hover:text-indigo-900 mr-4">
-                                            Editar
+                                            >
+                                                Editar
                                             </Link>
-                                            <button v-if="hasPermission($page.props, 'user.manage') &&
-                                                !isAdmin(user) &&
-                                                user.id !== $page.props.auth.user.id" @click="deleteUser(user.id)"
-                                                class="text-red-600 hover:text-red-900">
+                                            <button 
+                                                v-if="hasPermission($page.props, 'user.manage') &&
+                                                    !isAdmin(user) &&
+                                                    user.id !== $page.props.auth.user.id" 
+                                                @click="deleteUser(user.id)"
+                                            >
                                                 Eliminar
                                             </button>
                                         </td>
@@ -222,73 +199,81 @@ const getUniqueRoles = (roles) => {
                         </div>
 
                         <!-- Mobile Card View -->
-                        <div class="md:hidden space-y-4">
-                            <div v-for="(user, index) in users.data" :key="user.id" :class="{
-                                'bg-indigo-50': user.id === $page.props.auth.user.id,
-                                'bg-gray-50': user.id !== $page.props.auth.user.id && index % 2 === 0,
-                                'bg-white': user.id !== $page.props.auth.user.id && index % 2 === 1
-                            }" class="rounded-lg shadow p-4">
-                                <div class="flex justify-between items-start mb-2">
-                                    <div class="flex items-center space-x-3">
-                                        <img :src="user.picture || noImage" :alt="user.name"
-                                            class="h-10 w-10 rounded-full object-cover" />
-                                        <div>
-                                            <h3 class="text-sm font-medium text-gray-900">{{ user.name }}</h3>
-                                            <p class="text-sm text-gray-500">{{ user.email }}</p>
+                        <div class="table__mobile">
+                            <div 
+                                v-for="(user, index) in users.data" 
+                                :key="user.id" 
+                                :class="{
+                                    'table__card--highlighted': user.id === $page.props.auth.user.id,
+                                    'table__card--even': user.id !== $page.props.auth.user.id && index % 2 === 0,
+                                    'table__card--odd': user.id !== $page.props.auth.user.id && index % 2 === 1
+                                }" 
+                                class="table__card"
+                            >
+                                <div class="table__card-header">
+                                    <div class="table__card-user">
+                                        <img :src="user.picture || noImage" :alt="user.name" />
+                                        <div class="table__card-info">
+                                            <h3>{{ user.name }}</h3>
+                                            <p>{{ user.email }}</p>
                                         </div>
                                     </div>
-                                    <div class="flex space-x-2">
-                                        <Link :href="route('users.show', user.id)"
-                                            class="text-indigo-600 hover:text-indigo-900">
-                                        Ver
+                                    <div class="table__card-actions">
+                                        <Link :href="route('users.show', user.id)">
+                                            Ver
                                         </Link>
                                         <Link
                                             v-if="hasPermission($page.props, 'user.manage') &&
                                                 (!isAdmin(user) || (isAdmin(user) && user.id === $page.props.auth.user.id))"
                                             :href="route('users.edit', user.id)"
-                                            class="text-indigo-600 hover:text-indigo-900">
-                                        Editar
+                                        >
+                                            Editar
                                         </Link>
-                                        <button v-if="hasPermission($page.props, 'user.manage') &&
-                                            !isAdmin(user) &&
-                                            user.id !== $page.props.auth.user.id" @click="deleteUser(user.id)"
-                                            class="text-red-600 hover:text-red-900">
+                                        <button 
+                                            v-if="hasPermission($page.props, 'user.manage') &&
+                                                !isAdmin(user) &&
+                                                user.id !== $page.props.auth.user.id" 
+                                            @click="deleteUser(user.id)"
+                                        >
                                             Eliminar
                                         </button>
                                     </div>
                                 </div>
-                                <div class="mt-2">
-                                    <div class="text-xs font-medium text-gray-500 mb-1">Escuelas:</div>
-                                    <div class="flex flex-wrap gap-2">
-                                        <span v-for="school in user.schools" :key="school.id"
-                                            class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800"
-                                            :title="school.name">
+                                <div class="table__card-section">
+                                    <div class="table__card-label">Escuelas:</div>
+                                    <div class="table__card-content">
+                                        <span 
+                                            v-for="school in user.schools" 
+                                            :key="school.id"
+                                            class="table__badge"
+                                            :title="school.name"
+                                        >
                                             {{ school.short }}
                                         </span>
                                     </div>
                                 </div>
-                                <div class="mt-2">
-                                    <div class="text-xs font-medium text-gray-500 mb-1">Roles:</div>
-                                    <div class="flex flex-wrap gap-1">
-                                        <RoleBadge v-for="role in getUniqueRoles(user.roles)" :key="role.id"
-                                            :role="role" />
+                                <div class="table__card-section">
+                                    <div class="table__card-label">Roles:</div>
+                                    <div class="table__card-content">
+                                        <RoleBadge 
+                                            v-for="role in getUniqueRoles(user.roles)" 
+                                            :key="role.id"
+                                            :role="role" 
+                                        />
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Pagination -->
-                        <div class="mt-4">
-                            <div class="flex justify-between items-center">
-                                <div class="text-sm text-gray-700">
-                                    Mostrando {{ users.from }} a {{ users.to }} de {{ users.total }} resultados
-                                </div>
-                                <Pagination :links="users.links" />
+                        <div class="table__pagination">
+                            <div class="table__pagination-info">
+                                Mostrando {{ users.from }} a {{ users.to }} de {{ users.total }} resultados
                             </div>
+                            <Pagination :links="users.links" />
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
     </AuthenticatedLayout>
 </template>

@@ -1,1 +1,31 @@
 // Header layout 
+
+// Admin Header Layout Utilities
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  &__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; // space-y-2
+    
+    @media (min-width: 768px) { // md: breakpoint
+      flex-direction: row;
+      gap: 1rem; // md:space-x-4
+      
+      // Reset vertical spacing on md+
+      > * {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+  }
+} 

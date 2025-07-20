@@ -76,4 +76,89 @@
       opacity: 0.25;
     }
   }
+}
+
+// Button base class with BEM modifiers
+.btn {
+  color: white;
+  font-weight: 700; // font-bold
+  padding: 0.5rem 1rem; // py-2 px-4
+  border-radius: 0.25rem; // rounded
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+  text-decoration: none;
+  display: inline-block;
+  
+  &:focus {
+    outline: none;
+  }
+  
+  // Indigo button (bg-indigo-500 hover:bg-indigo-700)
+  &--indigo {
+    background-color: #6366f1; // bg-indigo-500
+    
+    &:hover {
+      background-color: #4338ca; // hover:bg-indigo-700
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+    }
+    
+    &:active {
+      background-color: #3730a3;
+    }
+  }
+  
+  // Gray button (bg-gray-500 hover:bg-gray-700)
+  &--gray {
+    background-color: #6b7280; // bg-gray-500
+    
+    &:hover {
+      background-color: #374151; // hover:bg-gray-700
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.5);
+    }
+    
+    &:active {
+      background-color: #1f2937;
+    }
+  }
+  
+  // Blue button (bg-blue-500 hover:bg-blue-700)
+  &--blue {
+    background-color: #3b82f6; // bg-blue-500
+    
+    &:hover {
+      background-color: #1d4ed8; // hover:bg-blue-700
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    }
+    
+    &:active {
+      background-color: #1e40af;
+    }
+  }
+  
+  // Red button (bg-red-500 hover:bg-red-700)
+  &--red {
+    background-color: #ef4444; // bg-red-500
+    
+    &:hover {
+      background-color: #b91c1c; // hover:bg-red-700
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
+    }
+    
+    &:active {
+      background-color: #991b1b;
+    }
+  }
 } 

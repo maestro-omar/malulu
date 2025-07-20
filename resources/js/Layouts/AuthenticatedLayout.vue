@@ -123,7 +123,7 @@ onMounted(() => {
                                                 :class="[headerStyles.textColor, headerStyles.hoverColor]">
                                                 {{ $page.props.auth.user.name }}
 
-                                                <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                                <svg xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd"
                                                         d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
@@ -137,7 +137,7 @@ onMounted(() => {
                                         <template v-for="item in $page.props.menu.userItems"
                                             :key="item.route || 'separator'">
                                             <template v-if="item.type === 'separator'">
-                                                <div class="border-t border-gray-200 my-1"></div>
+                                                <div class="authenticated-layout__responsive-settings-separator"></div>
                                             </template>
                                             <template v-else>
                                                 <DropdownLink :href="route(item.route)"
@@ -156,7 +156,7 @@ onMounted(() => {
                             <button @click="showingNavigationDropdown = !showingNavigationDropdown"
                                 class="authenticated-layout__nav-hamburger-button"
                                 :class="[headerStyles.textColor, headerStyles.hoverColor]">
-                                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                <svg stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path :class="{
                                         hidden: showingNavigationDropdown,
                                         'inline-flex': !showingNavigationDropdown,
@@ -200,7 +200,7 @@ onMounted(() => {
                         <div class="authenticated-layout__responsive-settings-links">
                             <template v-for="item in $page.props.menu.userItems" :key="item.route || 'separator'">
                                 <template v-if="item.type === 'separator'">
-                                    <div class="border-t border-gray-200 my-1"></div>
+                                    <div class="authenticated-layout__responsive-settings-separator"></div>
                                 </template>
                                 <template v-else>
                                     <ResponsiveNavLink :href="route(item.route)"

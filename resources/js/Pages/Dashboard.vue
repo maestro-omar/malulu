@@ -5,7 +5,7 @@
     <AuthenticatedLayout :school="firstSchool">
         <template #header>
             <div v-if="firstSchool" class="flex items-center space-x-2">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="page-subtitle">
                     {{ firstSchool.name }}
                 </h2>
                 <Link :href="route('schools.show', { school: firstSchool.slug })"
@@ -18,13 +18,12 @@
                     <span class="sr-only">Ver {{ firstSchool.short }}</span>
                 </Link>
             </div>
-            <h2 v-else class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 v-else class="page-subtitle">
                 Dashboard
             </h2>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="container">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <GlobalAdminPanel v-if="isGlobalAdmin" data="" />
@@ -45,7 +44,6 @@
                         <DefaultPanel />
                     </div>
                 </div>
-            </div>
         </div>
     </AuthenticatedLayout>
 </template>

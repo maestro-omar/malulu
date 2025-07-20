@@ -64,8 +64,7 @@ const open = ref(false);
             <div
                 v-show="open"
                 class="dropdown__menu"
-                :class="[widthClass, alignmentClasses]"
-                style="display: none"
+                :class="[widthClass, alignmentClasses, { 'dropdown__menu--open': open }]"
                 @click="open = false"
             >
                 <div class="dropdown__content" :class="contentClasses">

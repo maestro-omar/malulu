@@ -2,7 +2,7 @@
 // --------------------------------
 $color-black: #000000;
 $color-purple: #7c3aed;
-$color-blue: #010101;
+$color-blue: #010161;
 $color-green: #16a34a;
 $color-yellow: #ca8a04;
 $color-indigo: #4f46e5;
@@ -22,9 +22,10 @@ $color-gray: #6b7280;
 $color-brand: #00379B;
 $color-secondary: #BD0037;
 $color-terciary: $color-gray;
-$color-grey: #F5F5F5; //gris claro
-$color-grey-dark: $color-slate; //noche
-$color-text: #222221; //negro
+$color-grey: #F5F5F5; 
+$color-grey-dark: $color-gray; 
+$color-text: $color-slate; 
+$color-black-text: #222221;
 $color-ok: $color-green;
 $color-ko: $color-rose;
 

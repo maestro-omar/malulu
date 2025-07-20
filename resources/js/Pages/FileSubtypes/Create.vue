@@ -2,7 +2,7 @@
     <AuthenticatedLayout>
         <Head title="Crear Subtipo de Archivo" />
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="page-subtitle">
                 Crear Subtipo de Archivo
             </h2>
         </template>

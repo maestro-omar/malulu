@@ -1,38 +1,38 @@
 <template>
-  <div class="flex justify-between items-center">
-    <div class="flex flex-col flex-1">
+  <div class="admin-header">
+    <div class="admin-header__content">
       <Breadcrumb v-if="breadcrumbs" :breadcrumbs="breadcrumbs" />
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+      <h2 class="page-subtitle">
         {{ title }}
       </h2>
     </div>
-    <div class="flex flex-col space-y-2 md:flex-row md:space-x-4 md:space-y-0">
+    <div class="admin-header__actions">
       <slot name="additional-buttons"></slot>
       <Link
         v-if="add && add.show"
         :href="add.href"
-        class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
+        class="btn btn--indigo"
       >
         {{ add.label || 'Nuevo' }}
       </Link>
       <Link
         v-if="trashed && trashed.show"
         :href="trashed.href"
-        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+        class="btn btn--gray"
       >
         {{ trashed.label || 'Eliminados' }}
       </Link>
       <Link
         v-if="edit && edit.show"
         :href="edit.href"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        class="btn btn--blue"
       >
         {{ edit.label || 'Editar' }}
       </Link>
       <button
         v-if="del && del.show"
         @click="del.onClick"
-        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+        class="btn btn--red"
       >
         {{ del.label || 'Eliminar' }}
       </button>

@@ -2,7 +2,7 @@
   <div class="flex justify-between items-center">
     <div class="flex flex-col flex-1">
       <Breadcrumb v-if="breadcrumbs" :breadcrumbs="breadcrumbs" />
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+      <h2 class="page-subtitle">
         {{ title }}
       </h2>
     </div>

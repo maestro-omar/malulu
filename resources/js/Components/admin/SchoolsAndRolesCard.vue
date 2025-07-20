@@ -4,7 +4,7 @@
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold text-gray-900">{{ title || 'Escuelas y Roles' }}</h3>
         <Link v-if="canAddRoles" :href="route('users.add-role', userId)"
-          class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-sm">
+          class="btn-indigo">
         NUEVO ROL
         </Link>
       </div>

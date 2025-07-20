@@ -4,6 +4,16 @@
   position: relative;
   display: inline-block;
   
+  &__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    background-color: transparent;
+  }
+  
   &__trigger {
     display: flex;
     align-items: center;

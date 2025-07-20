@@ -24,8 +24,8 @@
   &__container {
     width: 100%;
     max-width: 28rem; // sm:max-w-md
-    margin-top: 1.5rem; // mt-6
-    padding: 1.5rem; // px-6 py-4
+    margin-top: $padding-content-mobile;
+    padding: $padding-content-mobile;
     background-color: white;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); // shadow-md
     overflow: hidden;
@@ -40,16 +40,16 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
     
     &-container {
-      max-width: 80rem; // max-w-7xl
+      max-width: $screen-lg;
       margin: 0 auto;
-      padding: 1.5rem 1rem; // py-6 px-4
+      padding: $padding-content-mobile $padding-content-mobile;
       
       @media (min-width: 640px) {
-        padding: 1.5rem 1.5rem; // py-6 px-6
+        padding: $padding-content-mobile $padding-content-desktop;
       }
       
       @media (min-width: 1024px) {
-        padding: 1.5rem 2rem; // py-6 px-8
+        padding: $padding-content-mobile $padding-x-sm;
       }
     }
   }

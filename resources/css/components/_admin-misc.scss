@@ -132,9 +132,52 @@
 
 .pagination {
   display: flex;
-  align-items: center;
-  gap: 0.25rem;
+  flex-wrap: wrap;
+  margin-bottom: -0.25rem; // -mb-1
   
+  &__container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: -0.25rem; // -mb-1
+  }
+  
+  &__item {
+    margin-right: 0.25rem; // mr-1
+    margin-bottom: 0.25rem; // mb-1
+    padding: 0.75rem 1rem; // py-3 px-4
+    font-size: 0.875rem; // text-sm
+    line-height: 1; // leading-4
+    border: 1px solid #d1d5db; // border
+    border-radius: 0.25rem; // rounded
+    text-decoration: none;
+    transition: all 0.15s ease-in-out;
+    
+    // Disabled state (text-gray-400)
+    &--disabled {
+      color: #9ca3af; // text-gray-400
+      cursor: not-allowed;
+    }
+    
+    // Active state (bg-indigo-50)
+    &--active {
+      background-color: #eef2ff; // bg-indigo-50
+    }
+    
+    // Hover and focus states for enabled links
+    &:not(&--disabled) {
+      &:hover {
+        background-color: white; // hover:bg-white
+      }
+      
+      &:focus {
+        border-color: #6366f1; // focus:border-indigo-500
+        color: #6366f1; // focus:text-indigo-500
+        outline: none;
+      }
+    }
+  }
+  
+  // Legacy pagination styles (keeping for backward compatibility)
   &__link {
     display: flex;
     align-items: center;
@@ -173,5 +216,46 @@
   &__info {
     font-size: 0.875rem;
     color: $color-grey-dark;
+  }
+}
+
+.email-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  &__text {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: $color-text;
+    margin: 0;
+  }
+  
+  &__email {
+    cursor: pointer;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: darken($color-brand, 20%);
+    }
+  }
+  
+  &__placeholder {
+    color: $color-grey-dark;
+  }
+  
+  &__link {
+    color: $color-brand;
+    transition: color 0.2s ease;
+    line-height: 0;
+    
+    &:hover {
+      color: darken($color-brand, 20%);
+    }
+  }
+  
+  &__icon {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 } 

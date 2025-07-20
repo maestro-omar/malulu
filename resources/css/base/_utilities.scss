@@ -1,1 +1,79 @@
 // Utilities file 
+
+// Container classes
+// --------------------------------
+// These BEM classes replace the common Tailwind pattern:
+// <div class="py-12">
+//   <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+//     <!-- content -->
+//   </div>
+// </div>
+//
+// Usage:
+// <div class="container">
+//   <!-- content -->
+// </div>
+//
+// Variants:
+// - container--compact: Less padding (py-6 instead of py-12)
+// - container--spacious: More padding (py-16 instead of py-12)
+// - container--narrow: Smaller max-width (max-w-4xl instead of max-w-7xl)
+// - container--wide: Larger max-width (max-w-8xl instead of max-w-7xl)
+// - container--full: No max-width constraint
+//
+// Examples:
+// <div class="container">Default container</div>
+// <div class="container container--compact">Compact container</div>
+// <div class="container container--narrow">Narrow container</div>
+// <div class="container container--spacious container--wide">Spacious wide container</div>
+
+.container {
+  max-width: $screen-lg;
+  margin: 0 auto; // mx-auto
+  padding: $padding-x-sm $padding-content-mobile;
+  
+  @media (min-width: 640px) {
+    padding: $padding-x-sm $padding-content-desktop;
+  }
+  
+  @media (min-width: 1024px) {
+    padding: $padding-x-sm $padding-x-sm;
+  }
+  
+  // Variants
+  &--compact {
+    padding: $padding-content-mobile $padding-content-mobile;
+    
+    @media (min-width: 640px) {
+      padding: $padding-content-mobile $padding-content-desktop;
+    }
+    
+    @media (min-width: 1024px) {
+      padding: $padding-content-mobile $padding-x-sm;
+    }
+  }
+  
+  &--spacious {
+    padding: $padding-x-md $padding-content-mobile;
+    
+    @media (min-width: 640px) {
+      padding: $padding-x-md $padding-content-desktop;
+    }
+    
+    @media (min-width: 1024px) {
+      padding: $padding-x-md $padding-x-sm;
+    }
+  }
+  
+  &--narrow {
+    max-width: $screen-md;
+  }
+  
+  &--wide {
+    max-width: $screen-xlg;
+  }
+  
+  &--full {
+    max-width: none; // No max-width constraint
+  }
+} 

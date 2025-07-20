@@ -2,7 +2,7 @@
     <AuthenticatedLayout>
         <Head title="Editar Tipo de Archivo" />
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="page-subtitle">
                 Editar Tipo de Archivo
             </h2>
         </template>
