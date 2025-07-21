@@ -7,12 +7,10 @@
     @include fz(1.5);
     @include lh(2);
     padding: 10px 15px;
-    border-radius: 0.25rem; // rounded
-    border: none;
-    cursor: pointer;
     transition: background-color 0.15s ease-in-out;
     text-decoration: none;
     display: inline-block;
+    cursor: pointer;
     
     &:focus {
       outline: none;

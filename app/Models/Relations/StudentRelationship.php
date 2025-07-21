@@ -3,6 +3,7 @@
 namespace App\Models\Relations;
 
 use App\Models\Base\BaseModel as Model;
+use App\Models\Entities\Course;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

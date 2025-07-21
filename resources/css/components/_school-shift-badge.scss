@@ -1,0 +1,30 @@
+// School Shift Badge
+.school-shift-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+  user-select: none;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+
+  &--manana {
+    background: $color-shift-morning-bg;
+    color: $color-shift-morning-text;
+  }
+  &--tarde {
+    background: $color-shift-afternoon-bg;
+    color: $color-shift-afternoon-text;
+  }
+  &--noche {
+    background: $color-shift-night-bg;
+    color: $color-shift-night-text;
+  }
+  &--default {
+    background: $color-shift-default-bg;
+    color: $color-shift-default-text;
+  }
+} 

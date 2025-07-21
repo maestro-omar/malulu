@@ -174,8 +174,7 @@ onMounted(() => {
                 </div>
 
                 <!-- Responsive Navigation Menu -->
-                <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
-                    class="authenticated-layout__responsive">
+                <div :class="['authenticated-layout__responsive', { 'authenticated-layout__responsive--visible': showingNavigationDropdown }]">
                     <div class="authenticated-layout__responsive-menu">
                         <template v-for="item in $page.props.menu.items" :key="item.route">
                             <ResponsiveNavLink 

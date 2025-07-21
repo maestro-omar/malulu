@@ -1,0 +1,30 @@
+// School Level Badge
+.school-level-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+  user-select: none;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+
+  &--inicial {
+    background: $color-level-initial-bg;
+    color: $color-level-initial-text;
+  }
+  &--primaria {
+    background: $color-level-primary-bg;
+    color: $color-level-primary-text;
+  }
+  &--secundaria {
+    background: $color-level-secondary-bg;
+    color: $color-level-secondary-text;
+  }
+  &--default {
+    background: $color-level-default-bg;
+    color: $color-level-default-text;
+  }
+} 

@@ -90,8 +90,8 @@
   }
   
   &--afternoon {
-    background-color: lighten($color-secondary, 45%);
-    color: darken($color-secondary, 20%);
+    background-color: lighten($color-purple, 45%);
+    color: darken($color-purple, 20%);
   }
   
   &--evening {
@@ -147,20 +147,22 @@
     padding: 0.75rem 1rem; // py-3 px-4
     @include fz(1.5); // text-sm
     @include lh(1.5); // leading-4
-    border: 1px solid #d1d5db; // border
+    border: 1px solid $color-grey-dark; // border
     border-radius: 0.25rem; // rounded
     text-decoration: none;
     transition: all 0.15s ease-in-out;
+    color: $color-teal; // bg-indigo-50
+
     
     // Disabled state (text-gray-400)
     &--disabled {
-      color: #9ca3af; // text-gray-400
+      color: $color-grey-dark; // text-gray-400
       cursor: not-allowed;
     }
     
     // Active state (bg-indigo-50)
     &--active {
-      background-color: #eef2ff; // bg-indigo-50
+      background-color: $color-teal; // bg-indigo-50
     }
     
     // Hover and focus states for enabled links

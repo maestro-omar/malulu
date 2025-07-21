@@ -160,7 +160,7 @@ const destroy = () => {
                     :user-id="user.id" 
                 />
                 
-                <div class="detail__card">
+                <div class="detail__card detail__card--mt">
                     <div class="detail__content">
                         <div class="detail__grid">
                             <!-- System Information -->

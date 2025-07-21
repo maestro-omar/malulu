@@ -1,0 +1,82 @@
+// Role Badge
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem; // px-2.5 py-0.5
+  border-radius: 9999px; // rounded-full
+  font-size: 0.75rem; // text-xs
+  font-weight: 500; // font-medium
+  line-height: 1.2;
+  user-select: none;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+
+  &--superadmin {
+    background: $color-role-superadmin-bg;
+    color: $color-role-superadmin-text;
+  }
+  &--administrador {
+    background: $color-role-admin-bg;
+    color: $color-role-admin-text;
+  }
+  &--director {
+    background: $color-role-director-bg;
+    color: $color-role-director-text;
+  }
+  &--regente {
+    background: $color-role-regent-bg;
+    color: $color-role-regent-text;
+  }
+  &--secretaria {
+    background: $color-role-secretary-bg;
+    color: $color-role-secretary-text;
+  }
+  &--profesor {
+    background: $color-role-professor-bg;
+    color: $color-role-professor-text;
+  }
+  &--maestra {
+    background: $color-role-grade-teacher-bg;
+    color: $color-role-grade-teacher-text;
+  }
+  &--auxiliar {
+    background: $color-role-assistant-teacher-bg;
+    color: $color-role-assistant-teacher-text;
+  }
+  &--docente_curricular {
+    background: $color-role-curricular-teacher-bg;
+    color: $color-role-curricular-teacher-text;
+  }
+  &--docente_especial {
+    background: $color-role-special-teacher-bg;
+    color: $color-role-special-teacher-text;
+  }
+  &--preceptor {
+    background: $color-role-class-assistant-bg;
+    color: $color-role-class-assistant-text;
+  }
+  &--bibliotecario {
+    background: $color-role-librarian-bg;
+    color: $color-role-librarian-text;
+  }
+  &--tutor {
+    background: $color-role-guardian-bg;
+    color: $color-role-guardian-text;
+  }
+  &--estudiante {
+    background: $color-role-student-bg;
+    color: $color-role-student-text;
+  }
+  &--cooperador {
+    background: $color-role-cooperative-bg;
+    color: $color-role-cooperative-text;
+  }
+  &--ex_alumno {
+    background: $color-role-former-student-bg;
+    color: $color-role-former-student-text;
+  }
+  &--default {
+    background: $color-role-default-bg;
+    color: $color-role-default-text;
+  }
+} 

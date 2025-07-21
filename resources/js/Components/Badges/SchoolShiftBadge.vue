@@ -1,7 +1,6 @@
 <template>
-  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-    :class="'bg-' + basecolor + '-100 text-' + basecolor + '-800'">
-    {{ label }}
+  <span :class="['school-shift-badge', 'school-shift-badge--' + (shift.code || 'default')]"><!--
+    -->{{ label }}
   </span>
 </template>
 
@@ -18,6 +17,5 @@ const props = defineProps({
 
 const { options } = schoolShiftOptions()
 
-const basecolor = computed(() => options.value[props.shift.code]?.color ?? 'gray')
 const label = computed(() => options.value[props.shift.code]?.label ?? props.shift.name)
 </script>
