@@ -1,3 +1,5 @@
+@use "../abstracts/variables";
+
 // Utilities file 
 
 // Container classes
@@ -28,49 +30,49 @@
 // <div class="container container--spacious container--wide">Spacious wide container</div>
 
 .container {
-  max-width: $screen-lg;
+  max-width: variables.$screen-lg;
   margin: 0 auto; // mx-auto
-  padding: 3rem $padding-content-mobile; // py-12 equivalent
+  padding: 3rem variables.$padding-content-mobile; // py-12 equivalent
   
   @media (min-width: 640px) {
-    padding: 3rem $padding-content-desktop;
+    padding: 3rem variables.$padding-content-desktop;
   }
   
   @media (min-width: 1024px) {
-    padding: 3rem $padding-x-sm;
+    padding: 3rem variables.$padding-x-sm;
   }
   
   // Variants
   &--compact {
-    padding: $padding-content-mobile $padding-content-mobile;
+    padding: variables.$padding-content-mobile variables.$padding-content-mobile;
     
     @media (min-width: 640px) {
-      padding: $padding-content-mobile $padding-content-desktop;
+      padding: variables.$padding-content-mobile variables.$padding-content-desktop;
     }
     
     @media (min-width: 1024px) {
-      padding: $padding-content-mobile $padding-x-sm;
+      padding: variables.$padding-content-mobile variables.$padding-x-sm;
     }
   }
   
   &--spacious {
-    padding: $padding-x-md $padding-content-mobile;
+    padding: variables.$padding-x-md variables.$padding-content-mobile;
     
     @media (min-width: 640px) {
-      padding: $padding-x-md $padding-content-desktop;
+      padding: variables.$padding-x-md variables.$padding-content-desktop;
     }
     
     @media (min-width: 1024px) {
-      padding: $padding-x-md $padding-x-sm;
+      padding: variables.$padding-x-md variables.$padding-x-sm;
     }
   }
   
   &--narrow {
-    max-width: $screen-md;
+    max-width: variables.$screen-md;
   }
   
   &--wide {
-    max-width: $screen-xlg;
+    max-width: variables.$screen-xlg;
   }
   
   &--full {

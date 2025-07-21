@@ -1,3 +1,6 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
 // Email Field Component
 
 .email-field {
@@ -7,8 +10,8 @@
 
   &__text {
     margin: 0;
-    @include fz(1.5);
-    color: $color-blue;
+    @include mixins.fz(1.5);
+    color: variables.$color-blue;
   }
 
   &__email {
@@ -16,33 +19,33 @@
     transition: color 0.2s ease-in-out;
 
     &:hover {
-      color: $color-teal;
+      color: variables.$color-teal;
     }
 
     &:focus {
       outline: none;
-      color: $color-teal;
+      color: variables.$color-teal;
     }
   }
 
   &__placeholder {
-    color: $color-gray;
+    color: variables.$color-gray;
   }
 
   &__link {
     display: inline-flex;
     align-items: center;
     text-decoration: none;
-    color: $color-blue;
+    color: variables.$color-blue;
     transition: color 0.2s ease-in-out;
 
     &:hover {
-      color: $color-teal;
+      color: variables.$color-teal;
     }
 
     &:focus {
       outline: none;
-      color: $color-teal;
+      color: variables.$color-teal;
     }
   }
 

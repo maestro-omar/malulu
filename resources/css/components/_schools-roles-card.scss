@@ -1,3 +1,6 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
 // Schools and Roles Card Component
 
 .schools-roles-card {
@@ -19,9 +22,9 @@
   }
   
   &__title {
-    @include fz(2.2); // text-lg
+    @include mixins.fz(2.2); // text-lg
     font-weight: 600; // font-semibold
-    color: $color-black-text; // text-gray-900
+    color: variables.$color-black-text; // text-gray-900
   }
   
   &__schools {
@@ -40,7 +43,7 @@
     }
     
     &--alternate {
-      background-color: $color-grey; // bg-gray-50
+      background-color: variables.$color-grey; // bg-gray-50
     }
   }
   
@@ -52,13 +55,13 @@
   }
   
   &__school-name {
-    @include fz(1.8); // text-base
-    font-weight: $font-normal-weight; // font-medium
-    color: $color-black-text; // text-gray-900
+    @include mixins.fz(1.8); // text-base
+    font-weight: variables.$font-normal-weight; // font-medium
+    color: variables.$color-black-text; // text-gray-900
   }
   
   &__school-short {
-    @include fz(1.5); // text-sm
+    @include mixins.fz(1.5); // text-sm
     color: #6b7280; // text-gray-500
   }
   
@@ -76,18 +79,18 @@
   }
   
   &__toggle-btn {
-    color: $color-indigo; // text-indigo-600
-    @include fz(1.5); // text-sm
-    font-weight: $font-normal-weight; // font-medium
+    color: variables.$color-indigo; // text-indigo-600
+    @include mixins.fz(1.5); // text-sm
+    font-weight: variables.$font-normal-weight; // font-medium
     transition: color 0.2s ease-in-out;
     
     &:hover {
-      color: $color-indigo; // hover:text-indigo-900
+      color: variables.$color-indigo; // hover:text-indigo-900
     }
     
     &:focus {
       outline: none;
-      color: $color-indigo;
+      color: variables.$color-indigo;
     }
   }
   
@@ -178,9 +181,9 @@
   }
   
   &__section-title {
-    @include fz(1.5); // text-sm
-    font-weight: $font-normal-weight; // font-medium
-    color: $color-black-text; // text-gray-900
+    @include mixins.fz(1.5); // text-sm
+    font-weight: variables.$font-normal-weight; // font-medium
+    color: variables.$color-black-text; // text-gray-900
     margin-bottom: 0.75rem; // mb-3
   }
   
@@ -219,15 +222,15 @@
   }
   
   &__field-label {
-    @include fz(1.2); // text-xs
+    @include mixins.fz(1.2); // text-xs
     color: #6b7280; // text-gray-500
     margin-bottom: 0.25rem; // mb-1
   }
   
   &__field-value {
-    @include fz(1.5); // text-sm
-    font-weight: $font-normal-weight; // font-medium
-    color: $color-black-text; // text-gray-900
+    @include mixins.fz(1.5); // text-sm
+    font-weight: variables.$font-normal-weight; // font-medium
+    color: variables.$color-black-text; // text-gray-900
     
     &--pre-wrap {
       white-space: pre-wrap; // whitespace-pre-wrap
@@ -242,16 +245,16 @@
   }
   
   &__field-subtitle {
-    @include fz(1.2); // text-xs
+    @include mixins.fz(1.2); // text-xs
     color: #6b7280; // text-gray-600
   }
   
   &__field-pre {
     margin-top: 0.25rem; // mt-1
-    @include fz(1.2); // text-xs
+    @include mixins.fz(1.2); // text-xs
     color: #4b5563; // text-gray-600
     white-space: pre-wrap; // whitespace-pre-wrap
-    background-color: $color-grey; // bg-gray-50
+    background-color: variables.$color-grey; // bg-gray-50
     padding: 0.5rem; // p-2
     border-radius: 0.25rem; // rounded
     border: 1px solid #e5e7eb; // border border-gray-200

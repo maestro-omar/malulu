@@ -1,3 +1,6 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
 .table {
     &__wrapper {
       background: white;
@@ -14,13 +17,13 @@
       input {
         width: 100%;
         padding: 0.5rem 1rem;
-        border: 1px solid $color-grey-dark;
+        border: 1px solid variables.$color-grey-dark;
         border-radius: 0.375rem;
         outline: none;
         transition: border-color 0.2s;
         
         &:focus {
-          border-color: $color-brand;
+          border-color: variables.$color-brand;
           box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
       }
@@ -31,11 +34,11 @@
         top: 0.625rem;
         background: none;
         border: none;
-        color: $color-grey-dark;
+        color: variables.$color-grey-dark;
         cursor: pointer;
         
         &:hover {
-          color: $color-text;
+          color: variables.$color-text;
         }
         
         svg {
@@ -52,15 +55,15 @@
     &__filters {
       margin-bottom: 1.5rem;
       padding: 1rem;
-      border: 1px solid $color-grey-dark;
+      border: 1px solid variables.$color-grey-dark;
       border-radius: 0.5rem;
-      background: $color-grey;
+      background: variables.$color-grey;
       
       &-title {
-        @include fz(2.2);
+        @include mixins.fz(2.2);
         font-weight: 600;
         margin-bottom: 0.5rem;
-        color: $color-text;
+        color: variables.$color-text;
       }
       
       &-grid {
@@ -80,22 +83,22 @@
     }
     
     &__filter-label {
-      @include fz(1.5);
-      font-weight: $font-normal-weight;
-      color: $color-text;
+      @include mixins.fz(1.5);
+      font-weight: variables.$font-normal-weight;
+      color: variables.$color-text;
       margin-bottom: 0.25rem;
     }
     
     &__filter-input {
       padding: 0.25rem 0.5rem;
-      border: 1px solid $color-grey-dark;
+      border: 1px solid variables.$color-grey-dark;
       border-radius: 0.375rem;
-      @include fz(1.5);
+      @include mixins.fz(1.5);
       width: 6rem;
       
       &:focus {
         outline: none;
-        border-color: $color-brand;
+        border-color: variables.$color-brand;
         box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
       }
     }
@@ -109,8 +112,8 @@
     &__filter-radio {
       display: inline-flex;
       align-items: center;
-      @include fz(1.5);
-      color: $color-text;
+      @include mixins.fz(1.5);
+      color: variables.$color-text;
       cursor: pointer;
       
       input[type="radio"] {
@@ -134,13 +137,13 @@
     }
   
     &__thead {
-      background: $color-grey;
+      background: variables.$color-grey;
     }
   
     &__th {
       padding: 0.75rem 1.5rem;
       text-align: left;
-      @include fz(1.2);
+      @include mixins.fz(1.2);
       font-weight: 600;
       color: #6b7280;
       text-transform: uppercase;
@@ -157,7 +160,7 @@
       transition: background-color 0.2s;
   
       &:hover {
-        background: $color-grey;
+        background: variables.$color-grey;
       }
   
       &--highlighted {
@@ -169,7 +172,7 @@
       }
   
       &--even {
-        background: $color-grey;
+        background: variables.$color-grey;
         
         &:hover {
           background: #f3f4f6;
@@ -180,7 +183,7 @@
         background: #fff;
         
         &:hover {
-          background: $color-grey;
+          background: variables.$color-grey;
         }
       }
     }
@@ -188,7 +191,7 @@
     &__td {
       padding: 0.25rem 1.5rem;
       text-align: left;
-      @include fz(1.5);
+      @include mixins.fz(1.5);
       vertical-align: middle;
     }
   
@@ -210,8 +213,8 @@
     }
   
     &__name {
-      font-weight: $font-normal-weight;
-      color: $color-black-text;
+      font-weight: variables.$font-normal-weight;
+      color: variables.$color-black-text;
     }
     
     &__title {
@@ -234,8 +237,8 @@
     }
     
     &__year {
-      font-weight: $font-normal-weight;
-      color: $color-black-text;
+      font-weight: variables.$font-normal-weight;
+      color: variables.$color-black-text;
     }
     
     &__date {
@@ -255,10 +258,10 @@
         display: inline-block;
         margin-right: 0.5rem;
         padding: 0.25rem 0.5rem;
-        @include fz(1.2);
+        @include mixins.fz(1.2);
         border-radius: 9999px;
         background: #f3f4f6;
-        color: $color-text;
+        color: variables.$color-text;
       }
     }
   
@@ -272,28 +275,28 @@
       display: flex;
       gap: 1rem;
       align-items: center;
-      @include fz(1.5);
-      font-weight: $font-normal-weight;
+      @include mixins.fz(1.5);
+      font-weight: variables.$font-normal-weight;
   
       a {
-        color: $color-indigo;
+        color: variables.$color-indigo;
         text-decoration: none;
         
         &:hover {
-          color: $color-indigo;
+          color: variables.$color-indigo;
         }
       }
   
       button {
         background: none;
         border: none;
-        color: $color-rose;
+        color: variables.$color-rose;
         cursor: pointer;
-        @include fz(1.5);
-        font-weight: $font-normal-weight;
+        @include mixins.fz(1.5);
+        font-weight: variables.$font-normal-weight;
         
         &:hover {
-          color: $color-rose;
+          color: variables.$color-rose;
         }
       }
     }
@@ -307,13 +310,13 @@
     }
     
     &__name-primary {
-      @include fz(1.5);
-      font-weight: $font-normal-weight;
-      color: $color-black-text;
+      @include mixins.fz(1.5);
+      font-weight: variables.$font-normal-weight;
+      color: variables.$color-black-text;
     }
     
     &__name-secondary {
-      @include fz(1.5);
+      @include mixins.fz(1.5);
       color: #6b7280;
       display: flex;
       flex-wrap: wrap;
@@ -338,18 +341,18 @@
     }
     
     &__link {
-      color: $color-brand;
+      color: variables.$color-brand;
       text-decoration: none;
       
       &:hover {
-        color: $color-brand;
+        color: variables.$color-brand;
       }
     }
     
     &__status {
       display: inline-flex;
       padding: 0.125rem 0.5rem;
-      @include fz(1.2);
+      @include mixins.fz(1.2);
       font-weight: 600;
       border-radius: 9999px;
       
@@ -377,7 +380,7 @@
       align-items: center;
   
       &-info {
-        @include fz(1.5);
+        @include mixins.fz(1.5);
         color: #6b7280;
       }
     }
@@ -408,7 +411,7 @@
         }
   
         &--even {
-          background: $color-grey;
+          background: variables.$color-grey;
         }
   
         &--odd {
@@ -438,14 +441,14 @@
   
       &__card-info {
         h3 {
-          @include fz(1.5);
-          font-weight: $font-normal-weight;
-          color: $color-black-text;
+          @include mixins.fz(1.5);
+          font-weight: variables.$font-normal-weight;
+          color: variables.$color-black-text;
           margin: 0;
         }
   
         p {
-          @include fz(1.5);
+          @include mixins.fz(1.5);
           color: #6b7280;
           margin: 0;
         }
@@ -454,26 +457,26 @@
       &__card-actions {
         display: flex;
         gap: 0.5rem;
-        @include fz(1.5);
-        font-weight: $font-normal-weight;
+        @include mixins.fz(1.5);
+        font-weight: variables.$font-normal-weight;
   
         a {
-          color: $color-indigo;
+          color: variables.$color-indigo;
           text-decoration: none;
           
           &:hover {
-            color: $color-indigo;
+            color: variables.$color-indigo;
           }
         }
   
         button {
           background: none;
           border: none;
-          color: $color-rose;
+          color: variables.$color-rose;
           cursor: pointer;
           
           &:hover {
-            color: $color-rose;
+            color: variables.$color-rose;
           }
         }
       }
@@ -482,8 +485,8 @@
         margin-top: 0.5rem;
   
         .table__card-label {
-          @include fz(0.75);
-          font-weight: $font-normal-weight;
+          @include mixins.fz(0.75);
+          font-weight: variables.$font-normal-weight;
           color: #6b7280;
           margin-bottom: 0.25rem;
         }

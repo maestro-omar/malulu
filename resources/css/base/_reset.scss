@@ -1,3 +1,6 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
 html {
     box-sizing: border-box;
     font-size: 62.5%;
@@ -18,11 +21,11 @@ body {
     padding: 0;
     margin: 0;
     position: relative;
-          @include fz(2.2);
-      @include lh(2.2);
-    font-weight: $font-normal-weight;
-    font-family: $font-family;
-    color: $color-text;
+          @include mixins.fz(2.2);
+      @include mixins.lh(2.2);
+    font-weight: variables.$font-normal-weight;
+    font-family: variables.$font-family;
+    color: variables.$color-text;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-smoothing: antialiased;
@@ -36,9 +39,9 @@ body {
     // user-select: none;
     background-color: #fff;
 
-    @include mq(md) {
-          @include fz(2.2);
-  @include lh(2.4);
+    @include mixins.mq(md) {
+          @include mixins.fz(2.2);
+  @include mixins.lh(2.4);
     }
 }
 
@@ -51,66 +54,66 @@ body {
     border-top: none;
     border-left: none;
     border-right: none;
-    border-bottom: 1px solid rgba($color-black-text, 0.16);
+    border-bottom: 1px solid rgba(variables.$color-black-text, 0.16);
     margin-bottom: 16px;
-    font-family: $font-family;
+    font-family: variables.$font-family;
     font-weight: 300;
 
-            @include fz(2.2);
-      @include lh(2.2);
+            @include mixins.fz(2.2);
+      @include mixins.lh(2.2);
 
-    @include mq(md) {
-        @include fz(2.2);
-        @include lh(2.4);
+    @include mixins.mq(md) {
+        @include mixins.fz(2.2);
+        @include mixins.lh(2.4);
     }
 
-    @include placeholder($color-text, 0);
+    @include mixins.placeholder(variables.$color-text, 0);
 
     &:focus {
         outline: none;
-        border-color: $color-brand;
+        border-color: variables.$color-brand;
     }
 
     &--valid {
-        border-color: $color-brand;
+        border-color: variables.$color-brand;
         padding-right: 48px;
         background-image: url("data:image/svg+xml,%3Csvg width='28' height='23' viewBox='0 0 28 23' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8.90909 17.7045L2.22727 11.0226L0 13.2499L8.90909 22.159L28 3.06809L25.7727 0.84082L8.90909 17.7045Z' fill='%2300379B'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 16px center;
         background-size: 22px 18px;
 
-        @include mq(md) {
+        @include mixins.mq(md) {
             background-size: 28px 23px;
         }
     }
 
     &--error {
-        border-bottom: 4px solid $color-black-text;
+        border-bottom: 4px solid variables.$color-black-text;
     }
 
 }
 
 .main {
-    padding-top: $header-height-mobile;
+    padding-top: variables.$header-height-mobile;
 
-    @include mq(md) {
-        padding-top: $header-height-desktop;
+    @include mixins.mq(md) {
+        padding-top: variables.$header-height-desktop;
     }
 }
 
 .container {
     padding: 0;
-    max-width: $content-max-width-desktop;
+    max-width: variables.$content-max-width-desktop;
     margin-left: auto;
     margin-right: auto;
 
     &--padding {
-        padding-left: $padding-content-mobile;
-        padding-right: $padding-content-mobile;
+        padding-left: variables.$padding-content-mobile;
+        padding-right: variables.$padding-content-mobile;
 
-        @include mq(md) {
-            padding-left: $padding-content-desktop;
-            padding-right: $padding-content-desktop;
+        @include mixins.mq(md) {
+            padding-left: variables.$padding-content-desktop;
+            padding-right: variables.$padding-content-desktop;
         }
     }
 }
@@ -148,7 +151,7 @@ body {
 br.lg {
     display: none;
 
-    @include mq(lg) {
+    @include mixins.mq(lg) {
         display: inline;
     }
 }

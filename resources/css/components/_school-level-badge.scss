@@ -1,3 +1,5 @@
+@use "../abstracts/variables";
+
 // School Level Badge
 .school-level-badge {
   display: inline-flex;
@@ -12,19 +14,19 @@
   transition: background 0.2s, color 0.2s;
 
   &--inicial {
-    background: $color-level-initial-bg;
-    color: $color-level-initial-text;
+    background: variables.$color-level-initial-bg;
+    color: variables.$color-level-initial-text;
   }
   &--primaria {
-    background: $color-level-primary-bg;
-    color: $color-level-primary-text;
+    background: variables.$color-level-primary-bg;
+    color: variables.$color-level-primary-text;
   }
   &--secundaria {
-    background: $color-level-secondary-bg;
-    color: $color-level-secondary-text;
+    background: variables.$color-level-secondary-bg;
+    color: variables.$color-level-secondary-text;
   }
   &--default {
-    background: $color-level-default-bg;
-    color: $color-level-default-text;
+    background: variables.$color-level-default-bg;
+    color: variables.$color-level-default-text;
   }
 } 

@@ -1,3 +1,6 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
 // Admin Checkbox With Label Component
 
 .checkbox-with-label {
@@ -8,7 +11,7 @@
 
   &__text {
     margin-left: 0.5rem;
-    @include fz(1.5);
-    color: $color-text;
+    @include mixins.fz(1.5);
+    color: variables.$color-text;
   }
 }

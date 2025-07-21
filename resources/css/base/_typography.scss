@@ -1,111 +1,114 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
 // Headings
 // -------------------------
 
 h1, .h1{
-	font-weight: $font-bold-weight;
+	font-weight: variables.$font-bold-weight;
 	margin: 0 0 12px 0;
-	@include fz(3.6);
-	@include lh(4.2);
+	@include mixins.fz(3.6);
+	@include mixins.lh(4.2);
 
-	@include mq(md){
-		@include fz(4.5);
-		@include lh(5.5);
+	@include mixins.mq(md){
+		@include mixins.fz(4.5);
+		@include mixins.lh(5.5);
 	}
 
-	@include mq(lg){
-		@include fz(5.6);
-		@include lh(6.5);
+	@include mixins.mq(lg){
+		@include mixins.fz(5.6);
+		@include mixins.lh(6.5);
 	}
 }
 
 h2, .h2{
-	@include fz(2.4);
-	@include lh(2.8);
-	font-weight: $font-bold-weight;
+	@include mixins.fz(2.4);
+	@include mixins.lh(2.8);
+	font-weight: variables.$font-bold-weight;
 	margin: 0 0 24px 0;
 
-	@include mq(md) {
-		@include fz(3);
-		@include lh(3.6);
+	@include mixins.mq(md) {
+		@include mixins.fz(3);
+		@include mixins.lh(3.6);
 	}
 
-	@include mq(lg) {
-		@include fz(3.6);
-		@include lh(4.2);
+	@include mixins.mq(lg) {
+		@include mixins.fz(3.6);
+		@include mixins.lh(4.2);
 	}
 }
 
 h3, h4, h5, h6,
 .h3, .h4, .h5, .h6 {
-	font-weight: $font-normal-weight;
+	font-weight: variables.$font-normal-weight;
 	margin: 0 0 12px 0;
 
-	@include mq(md) {
+	@include mixins.mq(md) {
 		margin: 0 0 18px 0;
 	}
 
-	@include mq(lg) {
+	@include mixins.mq(lg) {
 		margin: 0 0 24px 0;
 	}
 }
 
 h3, .h3 {
-	@include fz(2);
-	@include lh(2.4);
+	@include mixins.fz(2);
+	@include mixins.lh(2.4);
 
-	@include mq(md) {
-		@include fz(2.2);
-		@include lh(2.6);
+	@include mixins.mq(md) {
+		@include mixins.fz(2.2);
+		@include mixins.lh(2.6);
 	}
 
-	@include mq(lg) {
-		@include fz(2.4);
-		@include lh(2.8);
+	@include mixins.mq(lg) {
+		@include mixins.fz(2.4);
+		@include mixins.lh(2.8);
 	}
 }
 
 h4, .h4 {
-	@include fz(1.8);
-	@include lh(2.2);
+	@include mixins.fz(1.8);
+	@include mixins.lh(2.2);
 
-	@include mq(md) {
-		@include fz(2.2);
-		@include lh(2.6);
+	@include mixins.mq(md) {
+		@include mixins.fz(2.2);
+		@include mixins.lh(2.6);
 	}
 
-	@include mq(lg) {
-		@include fz(2.4);
-		@include lh(2.8);
+	@include mixins.mq(lg) {
+		@include mixins.fz(2.4);
+		@include mixins.lh(2.8);
 	}
 }
 
 h5, .h5 {
-	@include fz(1.6);
-	@include lh(2);
+	@include mixins.fz(1.6);
+	@include mixins.lh(2);
 
-	@include mq(md) {
-		@include fz(2);
-		@include lh(2.4);
+	@include mixins.mq(md) {
+		@include mixins.fz(2);
+		@include mixins.lh(2.4);
 	}
 
-	@include mq(lg) {
-		@include fz(2.4);
-		@include lh(2.8);
+	@include mixins.mq(lg) {
+		@include mixins.fz(2.4);
+		@include mixins.lh(2.8);
 	}
 }
 
 h6, .h6 {
-	@include fz(1.6);
-	@include lh(2);
+	@include mixins.fz(1.6);
+	@include mixins.lh(2);
 
-	@include mq(md) {
-		@include fz(1.8);
-		@include lh(2.2);
+	@include mixins.mq(md) {
+		@include mixins.fz(1.8);
+		@include mixins.lh(2.2);
 	}
 
-	@include mq(lg) {
-		@include fz(2);
-		@include lh(2.4);
+	@include mixins.mq(lg) {
+		@include mixins.fz(2);
+		@include mixins.lh(2.4);
 	}
 }
 
@@ -115,11 +118,11 @@ h6, .h6 {
 p, li{
 	margin: 0 0 12px 0;
 
-	@include mq(md){
+	@include mixins.mq(md){
 		margin: 0 0 20px 0;
 	}
 
-	@include mq(lg){
+	@include mixins.mq(lg){
 		margin: 0 0 24px 0;
 	}
 
@@ -129,12 +132,12 @@ p, li{
 }
 
 a{
-	color: $color-secondary;
+	color: variables.$color-secondary;
 	transition: color .3s;
 	text-decoration: none;
 
-	@include on-event {
-		color: $color-grey-dark;
+	@include mixins.on-event {
+		color: variables.$color-grey-dark;
 		text-decoration: underline;
 	}
 

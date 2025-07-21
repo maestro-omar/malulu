@@ -1,3 +1,5 @@
+@use "../abstracts/variables";
+
 // School Shift Badge
 .school-shift-badge {
   display: inline-flex;
@@ -12,19 +14,19 @@
   transition: background 0.2s, color 0.2s;
 
   &--manana {
-    background: $color-shift-morning-bg;
-    color: $color-shift-morning-text;
+    background: variables.$color-shift-morning-bg;
+    color: variables.$color-shift-morning-text;
   }
   &--tarde {
-    background: $color-shift-afternoon-bg;
-    color: $color-shift-afternoon-text;
+    background: variables.$color-shift-afternoon-bg;
+    color: variables.$color-shift-afternoon-text;
   }
   &--noche {
-    background: $color-shift-night-bg;
-    color: $color-shift-night-text;
+    background: variables.$color-shift-night-bg;
+    color: variables.$color-shift-night-text;
   }
   &--default {
-    background: $color-shift-default-bg;
-    color: $color-shift-default-text;
+    background: variables.$color-shift-default-bg;
+    color: variables.$color-shift-default-text;
   }
 } 

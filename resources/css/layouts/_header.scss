@@ -1,8 +1,10 @@
+@use "../abstracts/mixins";
+
 // Header layout 
 // Page subtitle
 .page-subtitle {
-  @include fz(3);
-	@include lh(3);
+  @include mixins.fz(3);
+	@include mixins.lh(3);
 	font-weight: 600;
 }
 

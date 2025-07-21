@@ -1,3 +1,6 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
 @use "sass:color";
 // Admin Dropdown Components
 
@@ -20,20 +23,20 @@
     align-items: center;
     padding: 0.5rem 1rem;
     background-color: white;
-    border: 1px solid $color-grey-dark;
+    border: 1px solid variables.$color-grey-dark;
     border-radius: 0.375rem;
-    @include fz(1.5);
-    color: $color-text;
+    @include mixins.fz(1.5);
+    color: variables.$color-text;
     cursor: pointer;
     transition: all 0.15s ease-in-out;
 
     &:hover {
-      background-color: $color-grey;
+      background-color: variables.$color-grey;
     }
 
     &:focus {
       outline: none;
-      box-shadow: 0 0 0 2px $color-brand;
+      box-shadow: 0 0 0 2px variables.$color-brand;
     }
   }
 
@@ -45,7 +48,7 @@
     min-width: 12rem;
     margin-top: 0.25rem;
     background-color: white;
-    border: 1px solid $color-grey-dark;
+    border: 1px solid variables.$color-grey-dark;
     border-radius: 0.375rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     opacity: 0;
@@ -68,7 +71,7 @@
       width: 100%;
       margin-top: 0.25rem;
       background-color: white;
-      border: 1px solid $color-grey-dark;
+      border: 1px solid variables.$color-grey-dark;
       border-radius: 0.375rem;
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
       max-height: 15rem;
@@ -80,8 +83,8 @@
     display: block;
     width: 100%;
     padding: 0.5rem 1rem;
-    @include fz(1.5);
-    color: $color-text;
+    @include mixins.fz(1.5);
+    color: variables.$color-text;
     text-decoration: none;
     text-align: left;
     background: none;
@@ -89,16 +92,16 @@
     cursor: pointer;
 
     &:hover {
-      background-color: $color-grey;
-      color: $color-text;
+      background-color: variables.$color-grey;
+      color: variables.$color-text;
     }
 
     &--danger {
-      color: $color-ko;
+      color: variables.$color-ko;
 
       &:hover {
-        background-color: color.scale($color-ko, $lightness: 45%);
-        color: color.scale($color-ko, $lightness: -20%);
+        background-color: color.scale(variables.$color-ko, $lightness: 45%);
+        color: color.scale(variables.$color-ko, $lightness: -20%);
       }
     }
   }
@@ -109,14 +112,14 @@
     &-input {
       width: 100%;
       padding: 0.5rem 1rem;
-      border: 1px solid $color-grey-dark;
+      border: 1px solid variables.$color-grey-dark;
       border-radius: 0.375rem;
-      @include fz(1.5);
+      @include mixins.fz(1.5);
 
       &:focus {
         outline: none;
         border-color: transparent;
-        box-shadow: 0 0 0 2px $color-brand;
+        box-shadow: 0 0 0 2px variables.$color-brand;
       }
     }
 
@@ -129,11 +132,11 @@
       &-button {
         background: none;
         border: none;
-        color: $color-grey-dark;
+        color: variables.$color-grey-dark;
         cursor: pointer;
 
         &:hover {
-          color: $color-text;
+          color: variables.$color-text;
         }
       }
     }

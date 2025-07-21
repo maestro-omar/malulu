@@ -1,3 +1,8 @@
+@use "sass:map";
+@use "sass:meta";
+@use "sass:string";
+@use "variables";
+
 //
 //    Mixins
 /////////////////////////////////
@@ -46,42 +51,42 @@
   // Simple mobile first media queries
   @mixin mq($canvas) {
     @if $canvas==iphone6 {
-        @media only screen and (min-width: $screen-iphone6) {
+        @media only screen and (min-width: variables.$screen-iphone6) {
             @content;
         }
     }
     @else if $canvas==iphone6p {
-        @media only screen and (min-width:$screen-iphone6p) {
+        @media only screen and (min-width:variables.$screen-iphone6p) {
             @content;
         }
     }
     @else if $canvas==xs {
-        @media only screen and (min-width: $screen-xs) {
+        @media only screen and (min-width: variables.$screen-xs) {
             @content;
         }
     }
     @else if $canvas==sm {
-        @media only screen and (min-width: $screen-sm) {
+        @media only screen and (min-width: variables.$screen-sm) {
             @content;
         }
     }
     @else if $canvas==md {
-        @media only screen and (min-width: $screen-md) {
+        @media only screen and (min-width: variables.$screen-md) {
             @content;
         }
     }
     @else if $canvas==lg {
-        @media only screen and (min-width: $screen-lg) {
+        @media only screen and (min-width: variables.$screen-lg) {
             @content;
         }
     }
     @else if $canvas==xlg {
-        @media only screen and (min-width: $screen-xlg) {
+        @media only screen and (min-width: variables.$screen-xlg) {
             @content;
         }
     }
     @else if $canvas==xxlg {
-        @media only screen and (min-width: $screen-xxlg) {
+        @media only screen and (min-width: variables.$screen-xxlg) {
             @content;
         }
     }
@@ -91,32 +96,32 @@
   // Simple desktop first media queries
   @mixin mq-max($canvas) {
     @if $canvas==xs {
-        @media only screen and (max-width: ($screen-xs - 1)) {
+        @media only screen and (max-width: (variables.$screen-xs - 1)) {
             @content;
         }
     }
     @else if $canvas==sm {
-        @media only screen and (max-width: ($screen-sm - 1)) {
+        @media only screen and (max-width: (variables.$screen-sm - 1)) {
             @content;
         }
     }
     @else if $canvas==md {
-        @media only screen and (max-width: ($screen-md - 1)) {
+        @media only screen and (max-width: (variables.$screen-md - 1)) {
             @content;
         }
     }
     @else if $canvas==lg {
-        @media only screen and (max-width: ($screen-lg - 1)) {
+        @media only screen and (max-width: (variables.$screen-lg - 1)) {
             @content;
         }
     }
     @else if $canvas==xlg {
-        @media only screen and (max-width: ($screen-xlg - 1)) {
+        @media only screen and (max-width: (variables.$screen-xlg - 1)) {
             @content;
         }
     }
     @else if $canvas==xxlg {
-        @media only screen and (max-width: ($screen-xxlg - 1)) {
+        @media only screen and (max-width: (variables.$screen-xxlg - 1)) {
             @content;
         }
     }
@@ -375,13 +380,13 @@
   /// @requires $breakpoints
   /// @link http://sass-guidelin.es/#breakpoint-manager Sass Guidelines - Breakpoint Manager
   @mixin responsive($breakpoint) {
-    $query: map-get($breakpoints, $breakpoint);
+    $query: map.get($breakpoints, $breakpoint);
   
     @if not $query {
         @error 'No value found for `#{$breakpoint}`. Please make sure it is defined in `$breakpoints` map.';
     }
   
-    @media #{if(type-of($query) == 'string', unquote($query), inspect($query))} {
+    @media #{if(meta.type-of($query) == 'string', string.unquote($query), meta.inspect($query))} {
         @content;
     }
   }
@@ -391,6 +396,6 @@
   /// @author Aarón García
   /// @param {Pixels} $size
   @mixin px-to-em($size) {
-    font-size: ($size/$font-size-base)+em;
+    font-size: ($size/variables.$font-size-base)+em;
   }
   

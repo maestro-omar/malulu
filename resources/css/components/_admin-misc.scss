@@ -1,3 +1,6 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
 @use "sass:color";
 // Admin Misc Components
 
@@ -33,13 +36,13 @@
 
   &__details {
     &__name {
-      font-weight: $font-normal-weight;
-      color: $color-text;
+      font-weight: variables.$font-normal-weight;
+      color: variables.$color-text;
     }
 
     &__email {
-      @include fz(1.5);
-      color: $color-grey-dark;
+      @include mixins.fz(1.5);
+      color: variables.$color-grey-dark;
     }
   }
 }
@@ -81,23 +84,23 @@
   display: inline-flex;
   align-items: center;
   padding: 0.25rem 0.5rem;
-  @include fz(1.2);
-  font-weight: $font-normal-weight;
+  @include mixins.fz(1.2);
+  font-weight: variables.$font-normal-weight;
   border-radius: 0.25rem;
 
   &--morning {
-    background-color: color.scale($color-brand, $lightness: 45%);
-    color: color.scale($color-brand, $lightness: -20%);
+    background-color: color.scale(variables.$color-brand, $lightness: 45%);
+    color: color.scale(variables.$color-brand, $lightness: -20%);
   }
 
   &--afternoon {
-    background-color: color.scale($color-purple, $lightness: 45%);
-    color: color.scale($color-purple, $lightness: -20%);
+    background-color: color.scale(variables.$color-purple, $lightness: 45%);
+    color: color.scale(variables.$color-purple, $lightness: -20%);
   }
 
   &--evening {
-    background-color: color.scale($color-terciary, $lightness: 45%);
-    color: color.scale($color-terciary, $lightness: -20%);
+    background-color: color.scale(variables.$color-terciary, $lightness: 45%);
+    color: color.scale(variables.$color-terciary, $lightness: -20%);
   }
 }
 
@@ -113,20 +116,20 @@
 
   &__button {
     padding: 0.25rem 0.5rem;
-    border: 1px solid $color-grey-dark;
+    border: 1px solid variables.$color-grey-dark;
     border-radius: 0.25rem;
     background: none;
     cursor: pointer;
-    @include fz(1.5);
+    @include mixins.fz(1.5);
 
     &:hover {
-      background-color: $color-grey;
+      background-color: variables.$color-grey;
     }
 
     &--active {
-      background-color: $color-brand;
+      background-color: variables.$color-brand;
       color: white;
-      border-color: $color-brand;
+      border-color: variables.$color-brand;
     }
   }
 }
@@ -146,24 +149,24 @@
     margin-right: 0.25rem; // mr-1
     margin-bottom: 0.25rem; // mb-1
     padding: 0.75rem 1rem; // py-3 px-4
-    @include fz(1.5); // text-sm
-    @include lh(1.5); // leading-4
-    border: 1px solid $color-grey-dark; // border
+    @include mixins.fz(1.5); // text-sm
+    @include mixins.lh(1.5); // leading-4
+    border: 1px solid variables.$color-grey-dark; // border
     border-radius: 0.25rem; // rounded
     text-decoration: none;
     transition: all 0.15s ease-in-out;
-    color: $color-teal; // bg-indigo-50
+    color: variables.$color-teal; // bg-indigo-50
 
 
     // Disabled state (text-gray-400)
     &--disabled {
-      color: $color-grey-dark; // text-gray-400
+      color: variables.$color-grey-dark; // text-gray-400
       cursor: not-allowed;
     }
 
     // Active state (bg-indigo-50)
     &--active {
-      background-color: $color-teal; // bg-indigo-50
+      background-color: variables.$color-teal; // bg-indigo-50
     }
 
     // Hover and focus states for enabled links
@@ -173,8 +176,8 @@
       }
 
       &:focus {
-        border-color: $color-indigo; // focus:border-indigo-500
-        color: $color-indigo; // focus:text-indigo-500
+        border-color: variables.$color-indigo; // focus:border-indigo-500
+        color: variables.$color-indigo; // focus:text-indigo-500
         outline: none;
       }
     }
@@ -187,22 +190,22 @@
     justify-content: center;
     width: 2.5rem;
     height: 2.5rem;
-    border: 1px solid $color-grey-dark;
+    border: 1px solid variables.$color-grey-dark;
     border-radius: 0.375rem;
-    @include fz(1.5);
-    color: $color-text;
+    @include mixins.fz(1.5);
+    color: variables.$color-text;
     text-decoration: none;
     transition: all 0.15s ease-in-out;
 
     &:hover {
-      background-color: $color-grey;
-      color: $color-text;
+      background-color: variables.$color-grey;
+      color: variables.$color-text;
     }
 
     &--active {
-      background-color: $color-brand;
+      background-color: variables.$color-brand;
       color: white;
-      border-color: $color-brand;
+      border-color: variables.$color-brand;
     }
 
     &--disabled {
@@ -211,14 +214,14 @@
 
       &:hover {
         background-color: transparent;
-        color: $color-text;
+        color: variables.$color-text;
       }
     }
   }
 
   &__info {
-    @include fz(1.5);
-    color: $color-grey-dark;
+    @include mixins.fz(1.5);
+    color: variables.$color-grey-dark;
   }
 }
 
@@ -229,8 +232,8 @@
 
   &__text {
     margin-top: 0.25rem;
-    @include fz(1.5);
-    color: $color-text;
+    @include mixins.fz(1.5);
+    color: variables.$color-text;
     margin: 0;
   }
 
@@ -239,21 +242,21 @@
     transition: color 0.2s ease;
 
     &:hover {
-      color: color.scale($color-brand, $lightness: -20%);
+      color: color.scale(variables.$color-brand, $lightness: -20%);
     }
   }
 
   &__placeholder {
-    color: $color-grey-dark;
+    color: variables.$color-grey-dark;
   }
 
   &__link {
-    color: $color-brand;
+    color: variables.$color-brand;
     transition: color 0.2s ease;
-    @include lh(0);
+    @include mixins.lh(0);
 
     &:hover {
-      color: color.scale($color-brand, $lightness: -20%);
+      color: color.scale(variables.$color-brand, $lightness: -20%);
     }
   }
 

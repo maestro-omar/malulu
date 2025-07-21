@@ -1,3 +1,6 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
 // Admin Detail Components
 
 .detail {
@@ -18,7 +21,7 @@
 
   &__content {
     padding: 1.5rem; // p-6
-    color: $color-black-text; // text-gray-900
+    color: variables.$color-black-text; // text-gray-900
   }
 
   &__grid {
@@ -47,10 +50,10 @@
   }
 
   &__section-title {
-    @include fz(2.2); // text-lg
+    @include mixins.fz(2.2); // text-lg
     font-weight: 600; // font-semibold
     margin-bottom: 1rem; // mb-4
-    color: $color-black-text; // text-gray-900
+    color: variables.$color-black-text; // text-gray-900
   }
 
   &__field {
@@ -94,16 +97,16 @@
 
   &__label {
     display: block;
-    @include fz(1.5); // text-sm
-    font-weight: $font-normal-weight; // font-medium
+    @include mixins.fz(1.5); // text-sm
+    font-weight: variables.$font-normal-weight; // font-medium
     color: #9ca3af; // text-gray-400
     margin-bottom: 0.25rem; // mb-1
   }
 
   &__value {
     margin-top: 0.25rem; // mt-1
-    @include fz(1.5); // text-sm
-    color: $color-black-text; // text-gray-900
+    @include mixins.fz(1.5); // text-sm
+    color: variables.$color-black-text; // text-gray-900
   }
 
   &__info-layout {
@@ -183,7 +186,7 @@
   }
 
   &__map-link {
-    color: $color-brand; // text-blue-600
+    color: variables.$color-brand; // text-blue-600
 
     &:hover {
       color: #1e40af; // hover:text-blue-800
@@ -217,11 +220,11 @@
 
   &__social-link {
     margin-top: 0.25rem; // mt-1
-    @include fz(1.5); // text-sm
-    color: $color-indigo; // text-indigo-600
+    @include mixins.fz(1.5); // text-sm
+    color: variables.$color-indigo; // text-indigo-600
 
     &:hover {
-      color: $color-indigo; // hover:text-indigo-900
+      color: variables.$color-indigo; // hover:text-indigo-900
     }
   }
 }

@@ -1,3 +1,6 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
 // Admin Modal Components
 
 .modal {
@@ -26,7 +29,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: $color-grey-dark;
+      background-color: variables.$color-grey-dark;
       opacity: 0.75;
     }
   }
@@ -79,12 +82,12 @@
   
   &__header {
     padding: 1.5rem;
-    border-bottom: 1px solid $color-grey-dark;
+    border-bottom: 1px solid variables.$color-grey-dark;
     
     &__title {
-      @include fz(2.2);
+      @include mixins.fz(2.2);
       font-weight: 600;
-      color: $color-text;
+      color: variables.$color-text;
     }
   }
   
@@ -94,7 +97,7 @@
   
   &__footer {
     padding: 1.5rem;
-    border-top: 1px solid $color-grey-dark;
+    border-top: 1px solid variables.$color-grey-dark;
     display: flex;
     justify-content: flex-end;
     gap: 0.75rem;
@@ -106,12 +109,12 @@
     right: 1rem;
     background: none;
     border: none;
-    @include fz(3);
-    color: $color-grey-dark;
+    @include mixins.fz(3);
+    color: variables.$color-grey-dark;
     cursor: pointer;
     
     &:hover {
-      color: $color-text;
+      color: variables.$color-text;
     }
   }
 } 

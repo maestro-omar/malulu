@@ -1,7 +1,10 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
 // User Information Component
 
 .user-information {
-  background-color: $color-grey; // bg-gray-50
+  background-color: variables.$color-grey; // bg-gray-50
   padding: 1rem; // p-4
   border-radius: 0.5rem; // rounded-lg
   
@@ -24,11 +27,11 @@
   }
   
   &__name {
-    @include fz(2.2); // text-lg
+    @include mixins.fz(2.2); // text-lg
     font-weight: 600; // font-semibold
     margin-bottom: 1rem; // mb-4
     text-align: center; // text-center
-    color: $color-black-text; // text-gray-900
+    color: variables.$color-black-text; // text-gray-900
   }
   
   &__picture {
@@ -75,15 +78,15 @@
   }
   
   &__field-label {
-    @include fz(1.5); // text-sm
-    font-weight: $font-normal-weight; // font-medium
-    color: $color-text; // text-gray-700
+    @include mixins.fz(1.5); // text-sm
+    font-weight: variables.$font-normal-weight; // font-medium
+    color: variables.$color-text; // text-gray-700
   }
   
   &__field-value {
     margin-left: 0.5rem; // ml-2
-    @include fz(1.5); // text-sm
-    color: $color-black-text; // text-gray-900
+    @include mixins.fz(1.5); // text-sm
+    color: variables.$color-black-text; // text-gray-900
   }
   
   &__contact-field {

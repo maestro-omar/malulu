@@ -1,3 +1,6 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
 @use "sass:color";
 // Admin Button Components
 
@@ -8,7 +11,7 @@
   border: 1px solid transparent;
   border-radius: 0.375rem;
   font-weight: 600;
-  @include fz(1.2);
+  @include mixins.fz(1.2);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   transition: all 0.15s ease-in-out;
@@ -16,24 +19,24 @@
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px $color-brand;
+    box-shadow: 0 0 0 2px variables.$color-brand;
   }
 
   &--primary {
-    background-color: $color-brand;
+    background-color: variables.$color-brand;
     color: white;
 
     &:hover {
-      background-color: color.scale($color-brand, $lightness: -10%);
+      background-color: color.scale(variables.$color-brand, $lightness: -10%);
     }
 
     &:focus {
-      background-color: color.scale($color-brand, $lightness: -10%);
-      box-shadow: 0 0 0 2px color.scale($color-brand, $lightness: 20%);
+      background-color: color.scale(variables.$color-brand, $lightness: -10%);
+      box-shadow: 0 0 0 2px color.scale(variables.$color-brand, $lightness: 20%);
     }
 
     &:active {
-      background-color: color.scale($color-brand, $lightness: -20%);
+      background-color: color.scale(variables.$color-brand, $lightness: -20%);
     }
 
     &--processing {
@@ -43,34 +46,34 @@
   }
 
   &--danger {
-    background-color: $color-ko;
+    background-color: variables.$color-ko;
     color: white;
 
     &:hover {
-      background-color: color.scale($color-ko, $lightness: 10%);
+      background-color: color.scale(variables.$color-ko, $lightness: 10%);
     }
 
     &:focus {
-      box-shadow: 0 0 0 2px color.scale($color-ko, $lightness: 20%);
+      box-shadow: 0 0 0 2px color.scale(variables.$color-ko, $lightness: 20%);
     }
 
     &:active {
-      background-color: color.scale($color-ko, $lightness: -20%);
+      background-color: color.scale(variables.$color-ko, $lightness: -20%);
     }
   }
 
   &--secondary {
     background-color: white;
-    border-color: $color-grey-dark;
-    color: $color-text;
+    border-color: variables.$color-grey-dark;
+    color: variables.$color-text;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 
     &:hover {
-      background-color: $color-grey;
+      background-color: variables.$color-grey;
     }
 
     &:focus {
-      box-shadow: 0 0 0 2px $color-brand;
+      box-shadow: 0 0 0 2px variables.$color-brand;
     }
 
     &:disabled {

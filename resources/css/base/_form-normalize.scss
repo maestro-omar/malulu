@@ -1,3 +1,5 @@
+@use "../abstracts/variables";
+
 // Normalize form controls
 
 // Remove inner shadow from inputs on mobile iOS
@@ -9,7 +11,7 @@ input[type="url"],
 input[type="password"],
 input[type="date"],
 select {
-    padding: $padding-input;
+    padding: variables.$padding-input;
     -webkit-appearance: none;
 }
 
@@ -81,7 +83,7 @@ input[type="search"] {
     input[type="month"] {
 
         &.form__control {
-            line-height: $height-form-control;
+            line-height: variables.$height-form-control;
         }
     }
 }
@@ -94,7 +96,7 @@ input[type="search"] {
     background: transparent;
     cursor: pointer;
     width: 100%;
-    background: linear-gradient(to right, $color-brand 0%, $color-brand 50%, rgba(112, 122, 127, 0.12) 50%, rgba(112, 122, 127, 0.12) 100%);
+    background: linear-gradient(to right, variables.$color-brand 0%, variables.$color-brand 50%, rgba(112, 122, 127, 0.12) 50%, rgba(112, 122, 127, 0.12) 100%);
   }
   input[type="range"]:focus {
   outline: none;
@@ -110,7 +112,7 @@ input[type="search"] {
     appearance: none;
     margin-top: -6px;
     background-color: #fff;
-    border: 4px solid $color-brand;
+    border: 4px solid variables.$color-brand;
     border-radius: 50%;
     height: 16px;
     width: 16px;

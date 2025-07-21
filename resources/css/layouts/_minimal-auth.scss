@@ -1,3 +1,5 @@
+@use "../abstracts/variables";
+
 // Minimal Auth Layout
 
 .minimal-auth-layout {
@@ -7,7 +9,7 @@
   justify-content: center;
   align-items: center;
   padding-top: 1.5rem; // pt-6
-  background-color: $color-grey;
+  background-color: variables.$color-grey;
   
   @media (min-width: 640px) {
     padding-top: 0; // sm:pt-0
@@ -18,14 +20,14 @@
     height: 5rem; // w-20 h-20
     width: 5rem;
     fill: currentColor;
-    color: $color-grey-dark;
+    color: variables.$color-grey-dark;
   }
   
   &__container {
     width: 100%;
     max-width: 28rem; // sm:max-w-md
-    margin-top: $padding-content-mobile;
-    padding: $padding-content-mobile;
+    margin-top: variables.$padding-content-mobile;
+    padding: variables.$padding-content-mobile;
     background-color: white;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); // shadow-md
     overflow: hidden;
@@ -40,16 +42,16 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
     
     &-container {
-      max-width: $screen-lg;
+      max-width: variables.$screen-lg;
       margin: 0 auto;
-      padding: $padding-content-mobile $padding-content-mobile;
+      padding: variables.$padding-content-mobile variables.$padding-content-mobile;
       
       @media (min-width: 640px) {
-        padding: $padding-content-mobile $padding-content-desktop;
+        padding: variables.$padding-content-mobile variables.$padding-content-desktop;
       }
       
       @media (min-width: 1024px) {
-        padding: $padding-content-mobile $padding-x-sm;
+        padding: variables.$padding-content-mobile variables.$padding-x-sm;
       }
     }
   }
