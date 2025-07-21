@@ -1,5 +1,5 @@
 <template>
-  <span :class="['inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', 'bg-' + basecolor + '-100 text-' + basecolor + '-800']"
+  <span :class="['management-type-badge', 'management-type-badge--' + (mtype.code || 'default')]"
     :title="mtype.name">
     {{ label }}
   </span>
@@ -18,6 +18,5 @@ const props = defineProps({
 
 const { options } = schoolManagementTypeOptions()
 
-const basecolor = computed(() => options.value[props.mtype.code]?.color ?? 'gray')
 const label = computed(() => options.value[props.mtype.code]?.label ?? props.mtype.name)
 </script>

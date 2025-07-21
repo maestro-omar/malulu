@@ -1,0 +1,36 @@
+@use "../abstracts/variables";
+
+// School Management Type Badge
+.management-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+  user-select: none;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+
+  &--publica {
+    background: variables.$color-management-public-bg;
+    color: variables.$color-management-public-text;
+  }
+  &--privada {
+    background: variables.$color-management-private-bg;
+    color: variables.$color-management-private-text;
+  }
+  &--generativa {
+    background: variables.$color-management-generative-bg;
+    color: variables.$color-management-generative-text;
+  }
+  &--autogestionada {
+    background: variables.$color-management-self-managed-bg;
+    color: variables.$color-management-self-managed-text;
+  }
+  &--default {
+    background: variables.$color-management-default-bg;
+    color: variables.$color-management-default-text;
+  }
+}

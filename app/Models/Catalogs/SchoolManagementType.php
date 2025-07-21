@@ -3,6 +3,7 @@
 namespace App\Models\Catalogs;
 
 use App\Models\Base\BaseCatalogModel as Model;
+use App\Models\Entities\School;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Traits\FilterConstants;
 
