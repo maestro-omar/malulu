@@ -1,3 +1,4 @@
+@use "sass:color";
 // Admin Button Components
 
 .button {
@@ -23,16 +24,16 @@
     color: white;
 
     &:hover {
-      background-color: darken($color-brand, 10%);
+      background-color: color.scale($color-brand, $lightness: -10%);
     }
 
     &:focus {
-      background-color: darken($color-brand, 10%);
-      box-shadow: 0 0 0 2px lighten($color-brand, 20%);
+      background-color: color.scale($color-brand, $lightness: -10%);
+      box-shadow: 0 0 0 2px color.scale($color-brand, $lightness: 20%);
     }
 
     &:active {
-      background-color: darken($color-brand, 20%);
+      background-color: color.scale($color-brand, $lightness: -20%);
     }
 
     &--processing {
@@ -46,15 +47,15 @@
     color: white;
 
     &:hover {
-      background-color: lighten($color-ko, 10%);
+      background-color: color.scale($color-ko, $lightness: 10%);
     }
 
     &:focus {
-      box-shadow: 0 0 0 2px lighten($color-ko, 20%);
+      box-shadow: 0 0 0 2px color.scale($color-ko, $lightness: 20%);
     }
 
     &:active {
-      background-color: darken($color-ko, 20%);
+      background-color: color.scale($color-ko, $lightness: -20%);
     }
   }
 
