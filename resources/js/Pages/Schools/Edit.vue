@@ -225,6 +225,7 @@ const currentLocality = computed(() => {
   return props.localities.find(l => l.id === props.school.locality_id) || null;
 });
 
+
 // Initialize form with proper values
 const form = useForm({
   name: props.school.name,

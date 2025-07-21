@@ -1,485 +1,248 @@
 <template>
+
   <Head :title="`Añadir Rol: ${user.name}`" />
 
   <AuthenticatedLayout>
     <template #header>
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Añadir rol a Usuario`">
         <template #additional-buttons>
-          <Link
-            :href="route('users.show', user.id)"
-            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Volver a Usuario
+          <Link :href="route('users.show', user.id)"
+            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Volver a Usuario
           </Link>
         </template>
       </AdminHeader>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div class="p-6 text-gray-900">
-            <div class="space-y-6">
-              <UserInformation
-                :user="user"
-                :show-picture="true"
-                :show-roles="true"
-                :show-contact="true"
-                :schools="assignedSchools"
-                :role-relationships="roleRelationships"
-                :worker-relationships="workerRelationships"
-                :guardian-relationships="guardianRelationships"
-                :student-relationships="studentRelationships"
-                :roles="roles"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="container container--as-card">
+      <UserInformation :user="user" :show-picture="true" :show-roles="true" :show-contact="true"
+        :schools="assignedSchools" :role-relationships="roleRelationships" :worker-relationships="workerRelationships"
+        :guardian-relationships="guardianRelationships" :student-relationships="studentRelationships" :roles="roles" />
     </div>
 
-    <div class="pb-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div class="p-6 text-gray-900">
-            <!-- Form Section -->
-            <form @submit.prevent="submit" class="space-y-6 mt-6">
-              <div
-                v-if="form.errors.error"
-                class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded"
-              >
-                {{ form.errors.error }}
+    <div class="container">
+      <div class="form">
+        <div class="form__wrapper">
+          <form @submit.prevent="submit" class="form__container">
+            <div v-if="form.errors.error" class="form__error form__error--main">
+              {{ form.errors.error }}
+            </div>
+            <!-- School Selection -->
+            <div class="form__card">
+              <h3 class="form__card-title">
+                Seleccionar la escuela para el nuevo rol
+              </h3>
+              <div class="form__card-content">
+                <div class="form__field">
+                  <InputLabel for="school" value="Escuela" />
+                  <SearchableDropdown id="school" v-model="selectedSchool" :options="allSchools"
+                    placeholder="Buscar y seleccionar una escuela..." />
+                  <InputError class="form__error" :message="form.errors.school_id" />
+                </div>
+                <div v-if="selectedSchool" class="form__info">
+                  <h4 class="form__info-title">
+                    Detalles de la Escuela:
+                  </h4>
+                  <p class="form__info-text">
+                    Nombre: {{ selectedSchool.name }}
+                  </p>
+                  <p class="form__info-text">
+                    Abreviatura: {{ selectedSchool.short }}
+                  </p>
+                </div>
               </div>
-              <div class="space-y-6">
-                <!-- School Selection -->
-                <div class="bg-gray-50 p-4 rounded-lg">
-                  <h3 class="text-lg font-semibold mb-4">
-                    Seleccionar la esscuela para el nuevo rol
-                  </h3>
-                  <div>
-                    <InputLabel for="school" value="Escuela" />
-                    <SearchableDropdown
-                      id="school"
-                      v-model="selectedSchool"
-                      :options="allSchools"
-                      placeholder="Buscar y seleccionar una escuela..."
-                    />
-                    <InputError class="mt-2" :message="form.errors.school_id" />
-                  </div>
-                  <div
-                    v-if="selectedSchool"
-                    class="mt-4 p-3 bg-white rounded-md shadow-sm"
-                  >
-                    <h4 class="text-md font-medium text-gray-900">
-                      Detalles de la Escuela:
-                    </h4>
-                    <p class="text-sm text-gray-700">
-                      Nombre: {{ selectedSchool.name }}
-                    </p>
-                    <p class="text-sm text-gray-700">
-                      Abreviatura: {{ selectedSchool.short }}
-                    </p>
-                  </div>
-                </div>
+            </div>
 
-                <!-- School Level Selection -->
-                <div v-if="selectedSchool" class="bg-gray-50 p-4 rounded-lg">
-                  <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">Nivel Escolar</h3>
-                    <button
-                      v-if="selectedLevel !== null"
-                      type="button"
-                      @click="selectedLevel = null"
-                      class="text-gray-600 hover:text-gray-900"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <!-- Show selected level or selection options -->
-                  <div
-                    v-if="selectedLevel !== null"
-                    class="p-3 bg-white rounded-md shadow-sm"
-                  >
-                    <div
-                      :class="[
-                        getLevelColorClasses(selectedLevel),
-                        'inline-block px-4 py-2 rounded-lg',
-                      ]"
-                    >
-                      {{
-                        selectedLevel ? selectedLevel.name : "Sin especificar"
-                      }}
-                    </div>
-                  </div>
-                  <div
-                    v-else
-                    class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3"
-                  >
-                    <!-- Add "Sin especificar" option first -->
-                    <button
-                      type="button"
-                      @click="selectedLevel = null"
-                      :class="[
-                        getLevelColorClasses({ code: 'unspecified' }),
-                        getLevelSelectedClass(null),
-                      ]"
-                    >
-                      Sin especificar
-                    </button>
-                    <!-- Then show available levels -->
-                    <button
-                      type="button"
-                      v-for="level in availableLevels"
-                      :key="level.id"
-                      @click="selectedLevel = level"
-                      :class="[
-                        getLevelColorClasses(level),
-                        getLevelSelectedClass(level),
-                      ]"
-                    >
-                      {{ level.name }}
-                    </button>
-                  </div>
-                  <InputError
-                    class="mt-2"
-                    :message="form.errors.school_level_id"
-                  />
-                </div>
-
-                <!-- Role Selection -->
-                <div v-if="selectedSchool" class="bg-gray-50 p-4 rounded-lg">
-                  <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">Rol</h3>
-                    <button
-                      v-if="selectedRole !== null"
-                      type="button"
-                      @click="selectedRole = null"
-                      class="text-gray-600 hover:text-gray-900"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <!-- Show selected role or selection options -->
-                  <div
-                    v-if="selectedRole !== null"
-                    class="p-3 bg-white rounded-md shadow-sm"
-                  >
-                    <div
-                      :class="[
-                        getRoleColorClasses(selectedRole),
-                        'inline-block px-4 py-2 rounded-lg',
-                      ]"
-                    >
-                      {{ selectedRole.name }}
-                    </div>
-                  </div>
-                  <div
-                    v-else
-                    class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                  >
-                    <button
-                      type="button"
-                      v-for="role in filteredAvailableRoles"
-                      :key="role.id"
-                      @click="selectedRole = role"
-                      :class="[
-                        getRoleColorClasses(role),
-                        getRoleSelectedClass(role),
-                      ]"
-                    >
-                      {{ role.name }}
-                    </button>
-                  </div>
-                  <InputError class="mt-2" :message="form.errors.role_id" />
-                </div>
-
-                <!-- Generic Role Details (Start Date, Notes) -->
-                <div v-if="selectedRole" class="bg-gray-50 p-4 rounded-lg">
-                  <h3 class="text-lg font-semibold mb-4">Detalles del Rol</h3>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <InputLabel for="startDate" value="Fecha de Inicio" />
-                      <TextInput
-                        id="startDate"
-                        type="date"
-                        class="mt-1 block w-full"
-                        v-model="form.start_date"
-                        required
-                      />
-                      <InputError
-                        class="mt-2"
-                        :message="form.errors.start_date"
-                      />
-                    </div>
-                    <div class="md:col-span-2">
-                      <InputLabel for="notes" value="Notas" />
-                      <textarea
-                        id="notes"
-                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                        v-model="form.notes"
-                      ></textarea>
-                      <InputError class="mt-2" :message="form.errors.notes" />
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Workers Specific Fields -->
-                <div v-if="showWorkerFields" class="bg-blue-50 p-4 rounded-lg">
-                  <h3 class="text-lg font-semibold mb-4">Detalles de cargo</h3>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <InputLabel for="jobStatus" value="Estado de Empleo" />
-                      <SelectInput
-                        id="jobStatus"
-                        class="mt-1 block w-full"
-                        v-model="form.worker_details.job_status_id"
-                      >
-                        <option value="">Seleccionar estado...</option>
-                        <option
-                          v-for="(label, value) in jobStatuses"
-                          :key="value"
-                          :value="value"
-                        >
-                          {{ label }}
-                        </option>
-                      </SelectInput>
-                      <InputError
-                        class="mt-2"
-                        :message="form.errors['worker_details.job_status']"
-                      />
-                    </div>
-                    <div>
-                      <InputLabel
-                        for="jobStatusDate"
-                        value="Fecha de Estado de Empleo"
-                      />
-                      <TextInput
-                        id="jobStatusDate"
-                        type="date"
-                        class="mt-1 block w-full"
-                        v-model="form.worker_details.job_status_date"
-                      />
-                      <InputError
-                        class="mt-2"
-                        :message="form.errors['worker_details.job_status_date']"
-                      />
-                    </div>
-                    <div>
-                      <InputLabel
-                        for="decreeNumber"
-                        value="Número de Decreto"
-                      />
-                      <TextInput
-                        id="decreeNumber"
-                        type="text"
-                        class="mt-1 block w-full"
-                        v-model="form.worker_details.decree_number"
-                      />
-                      <InputError
-                        class="mt-2"
-                        :message="form.errors['worker_details.decree_number']"
-                      />
-                    </div>
-                    <div>
-                      <InputLabel for="degreeTitle" value="Título" />
-                      <TextInput
-                        id="degreeTitle"
-                        type="text"
-                        class="mt-1 block w-full"
-                        v-model="form.worker_details.degree_title"
-                      />
-                      <InputError
-                        class="mt-2"
-                        :message="form.errors['worker_details.degree_title']"
-                      />
-                    </div>
-                    <div v-if="showTeacherFields">
-                      <InputLabel for="classSubject" value="Asignatura (ID)" />
-                      <TextInput
-                        id="classSubject"
-                        type="number"
-                        class="mt-1 block w-full"
-                        v-model="form.worker_details.class_subject_id"
-                        placeholder="ID de la asignatura"
-                      />
-                      <InputError
-                        class="mt-2"
-                        :message="
-                          form.errors['worker_details.class_subject_id']
-                        "
-                      />
-                    </div>
-                    <!-- Schedule will need custom components or further complexity -->
-                  </div>
-                </div>
-
-                <!-- Guardian Specific Fields -->
-                <div
-                  v-if="showGuardianFields"
-                  class="bg-pink-50 p-4 rounded-lg"
-                >
-                  <h3 class="text-lg font-semibold mb-4">Detalles de Tutor</h3>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <InputLabel
-                        for="relationshipType"
-                        value="Tipo de Relación"
-                      />
-                      <SelectInput
-                        id="relationshipType"
-                        class="mt-1 block w-full"
-                        v-model="form.guardian_details.relationship_type"
-                      >
-                        <option value="">Seleccionar relación...</option>
-                        <option
-                          v-for="(label, value) in relationshipTypes"
-                          :key="value"
-                          :value="value"
-                        >
-                          {{ label }}
-                        </option>
-                      </SelectInput>
-                      <InputError
-                        class="mt-2"
-                        :message="
-                          form.errors['guardian_details.relationship_type']
-                        "
-                      />
-                    </div>
-                    <div>
-                      <InputLabel
-                        for="isEmergencyContact"
-                        value="Contacto de Emergencia"
-                      />
-                      <input
-                        type="checkbox"
-                        id="isEmergencyContact"
-                        v-model="form.guardian_details.is_emergency_contact"
-                        class="mt-1 block"
-                      />
-                      <InputError
-                        class="mt-2"
-                        :message="
-                          form.errors['guardian_details.is_emergency_contact']
-                        "
-                      />
-                    </div>
-                    <div v-if="form.guardian_details.is_emergency_contact">
-                      <InputLabel
-                        for="emergencyContactPriority"
-                        value="Prioridad Contacto Emergencia"
-                      />
-                      <TextInput
-                        id="emergencyContactPriority"
-                        type="number"
-                        class="mt-1 block w-full"
-                        v-model="
-                          form.guardian_details.emergency_contact_priority
-                        "
-                      />
-                      <InputError
-                        class="mt-2"
-                        :message="
-                          form.errors[
-                            'guardian_details.emergency_contact_priority'
-                          ]
-                        "
-                      />
-                    </div>
-                    <div>
-                      <InputLabel for="isRestricted" value="Restringido" />
-                      <input
-                        type="checkbox"
-                        id="isRestricted"
-                        v-model="form.guardian_details.is_restricted"
-                        class="mt-1 block"
-                      />
-                      <InputError
-                        class="mt-2"
-                        :message="form.errors['guardian_details.is_restricted']"
-                      />
-                    </div>
-                    <div>
-                      <InputLabel for="studentId" value="ID de Estudiante" />
-                      <TextInput
-                        id="studentId"
-                        type="number"
-                        class="mt-1 block w-full"
-                        v-model="form.guardian_details.student_id"
-                        placeholder="ID de estudiante"
-                      />
-                      <InputError
-                        class="mt-2"
-                        :message="form.errors['guardian_details.student_id']"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Student Specific Fields -->
-                <div v-if="showStudentFields" class="bg-sky-50 p-4 rounded-lg">
-                  <h3 class="text-lg font-semibold mb-4">
-                    Detalles de Estudiante
-                  </h3>
-                  <div class="grid grid-cols-1 gap-4">
-                    <div>
-                      <InputLabel
-                        for="currentCourseId"
-                        value="ID de Curso Actual"
-                      />
-                      <TextInput
-                        id="currentCourseId"
-                        type="number"
-                        class="mt-1 block w-full"
-                        v-model="form.student_details.current_course_id"
-                        placeholder="ID de curso"
-                      />
-                      <InputError
-                        class="mt-2"
-                        :message="
-                          form.errors['student_details.current_course_id']
-                        "
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  v-if="isRoleAlreadyAssigned"
-                  class="text-red-600 mt-4 p-3 bg-red-100 border border-red-400 rounded-md"
-                >
-                  Este rol ya está asignado a este usuario para la escuela
-                  seleccionada.
-                </div>
-
-                <ActionButtons
-                  button-label="Guardar Rol"
-                  :cancel-href="route('users.show', user.id)"
-                  :disabled="form.processing || isRoleAlreadyAssigned"
-                />
+            <!-- School Level Selection -->
+            <div v-if="selectedSchool" class="form__card">
+              <div class="form__card-header">
+                <h3 class="form__card-title">Nivel Escolar</h3>
+                <button v-if="selectedLevel !== null" type="button" @click="selectedLevel = null"
+                  class="form__card-action">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                      d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                </button>
               </div>
-            </form>
-          </div>
+              <div class="form__card-content">
+                <div v-if="selectedLevel !== null" class="form__info">
+                  <div :class="getLevelColorClasses(selectedLevel)">
+                    {{
+                      selectedLevel ? selectedLevel.name : "Sin especificar"
+                    }}
+                  </div>
+                </div>
+                <div v-else class="form__grid form__grid--3">
+                  <button type="button" @click="selectedLevel = null" :class="getLevelColorClasses(null)">
+                    Sin especificar
+                  </button>
+                  <button type="button" v-for="level in availableLevels" :key="level.id" @click="selectedLevel = level"
+                    :class="getLevelColorClasses(level)">
+                    {{ level.name }}
+                  </button>
+                </div>
+                <InputError class="form__error" :message="form.errors.school_level_id" />
+              </div>
+            </div>
+
+            <!-- Role Selection -->
+            <div v-if="selectedSchool" class="form__card">
+              <div class="form__card-header">
+                <h3 class="form__card-title">Rol</h3>
+                <button v-if="selectedRole !== null" type="button" @click="selectedRole = null"
+                  class="form__card-action">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                      d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                </button>
+              </div>
+              <div class="form__card-content">
+                <div v-if="selectedRole !== null" class="form__info">
+                  <div :class="getRoleColorClasses(selectedRole)">
+                    {{ selectedRole.name }}
+                  </div>
+                </div>
+                <div v-else class="form__grid form__grid--4">
+                  <button type="button" v-for="role in filteredAvailableRoles" :key="role.id"
+                    @click="selectedRole = role" :class="getRoleColorClasses(role)">
+                    {{ role.name }}
+                  </button>
+                </div>
+                <InputError class="form__error" :message="form.errors.role_id" />
+              </div>
+            </div>
+
+            <!-- Generic Role Details (Start Date, Notes) -->
+            <div v-if="selectedRole" class="form__card">
+              <h3 class="form__card-title">Detalles del Rol</h3>
+              <div class="form__card-content form__grid form__grid--2">
+                <div class="form__field">
+                  <InputLabel for="startDate" value="Fecha de Inicio" />
+                  <TextInput id="startDate" type="date" class="form__input" v-model="form.start_date" required />
+                  <InputError class="form__error" :message="form.errors.start_date" />
+                </div>
+                <div class="form__field form__field--full">
+                  <InputLabel for="notes" value="Notas" />
+                  <textarea id="notes" class="form__input" v-model="form.notes"></textarea>
+                  <InputError class="form__error" :message="form.errors.notes" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Workers Specific Fields -->
+            <div v-if="showWorkerFields" class="form__card form__card--worker">
+              <h3 class="form__card-title">Detalles de cargo</h3>
+              <div class="form__card-content form__grid form__grid--2">
+                <div>
+                  <InputLabel for="jobStatus" value="Estado de Empleo" />
+                  <SelectInput id="jobStatus" class="form__input" v-model="form.worker_details.job_status_id">
+                    <option value="">Seleccionar estado...</option>
+                    <option v-for="(label, value) in jobStatuses" :key="value" :value="value">
+                      {{ label }}
+                    </option>
+                  </SelectInput>
+                  <InputError class="form__error" :message="form.errors['worker_details.job_status']" />
+                </div>
+                <div>
+                  <InputLabel for="jobStatusDate" value="Fecha de Estado de Empleo" />
+                  <TextInput id="jobStatusDate" type="date" class="form__input"
+                    v-model="form.worker_details.job_status_date" />
+                  <InputError class="form__error" :message="form.errors['worker_details.job_status_date']" />
+                </div>
+                <div>
+                  <InputLabel for="decreeNumber" value="Número de Decreto" />
+                  <TextInput id="decreeNumber" type="text" class="form__input"
+                    v-model="form.worker_details.decree_number" />
+                  <InputError class="form__error" :message="form.errors['worker_details.decree_number']" />
+                </div>
+                <div>
+                  <InputLabel for="degreeTitle" value="Título" />
+                  <TextInput id="degreeTitle" type="text" class="form__input"
+                    v-model="form.worker_details.degree_title" />
+                  <InputError class="form__error" :message="form.errors['worker_details.degree_title']" />
+                </div>
+                <div v-if="showTeacherFields">
+                  <InputLabel for="classSubject" value="Asignatura (ID)" />
+                  <TextInput id="classSubject" type="number" class="form__input"
+                    v-model="form.worker_details.class_subject_id" placeholder="ID de la asignatura" />
+                  <InputError class="form__error" :message="form.errors['worker_details.class_subject_id']
+                    " />
+                </div>
+                <!-- Schedule will need custom components or further complexity -->
+              </div>
+            </div>
+
+            <!-- Guardian Specific Fields -->
+            <div v-if="showGuardianFields" class="form__card form__card--guardian">
+              <h3 class="form__card-title">Detalles de Tutor</h3>
+              <div class="form__card-content form__grid form__grid--2">
+                <div>
+                  <InputLabel for="relationshipType" value="Tipo de Relación" />
+                  <SelectInput id="relationshipType" class="form__input"
+                    v-model="form.guardian_details.relationship_type">
+                    <option value="">Seleccionar relación...</option>
+                    <option v-for="(label, value) in relationshipTypes" :key="value" :value="value">
+                      {{ label }}
+                    </option>
+                  </SelectInput>
+                  <InputError class="form__error" :message="form.errors['guardian_details.relationship_type']
+                    " />
+                </div>
+                <div>
+                  <InputLabel for="isEmergencyContact" value="Contacto de Emergencia" />
+                  <input type="checkbox" id="isEmergencyContact" v-model="form.guardian_details.is_emergency_contact"
+                    class="form__input" />
+                  <InputError class="form__error" :message="form.errors['guardian_details.is_emergency_contact']
+                    " />
+                </div>
+                <div v-if="form.guardian_details.is_emergency_contact">
+                  <InputLabel for="emergencyContactPriority" value="Prioridad Contacto Emergencia" />
+                  <TextInput id="emergencyContactPriority" type="number" class="form__input" v-model="form.guardian_details.emergency_contact_priority
+                    " />
+                  <InputError class="form__error" :message="form.errors[
+                    'guardian_details.emergency_contact_priority'
+                    ]
+                    " />
+                </div>
+                <div>
+                  <InputLabel for="isRestricted" value="Restringido" />
+                  <input type="checkbox" id="isRestricted" v-model="form.guardian_details.is_restricted"
+                    class="form__input" />
+                  <InputError class="form__error" :message="form.errors['guardian_details.is_restricted']" />
+                </div>
+                <div>
+                  <InputLabel for="studentId" value="ID de Estudiante" />
+                  <TextInput id="studentId" type="number" class="form__input" v-model="form.guardian_details.student_id"
+                    placeholder="ID de estudiante" />
+                  <InputError class="form__error" :message="form.errors['guardian_details.student_id']" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Specific Fields -->
+            <div v-if="showStudentFields" class="form__card form__card--student">
+              <h3 class="form__card-title">Detalles de Estudiante</h3>
+              <div class="form__card-content form__grid">
+                <div>
+                  <InputLabel for="currentCourseId" value="ID de Curso Actual" />
+                  <TextInput id="currentCourseId" type="number" class="form__input"
+                    v-model="form.student_details.current_course_id" placeholder="ID de curso" />
+                  <InputError class="form__error" :message="form.errors['student_details.current_course_id']
+                    " />
+                </div>
+              </div>
+            </div>
+
+            <div v-if="isRoleAlreadyAssigned" class="form__error form__error--main">
+              Este rol ya está asignado a este usuario para la escuela
+              seleccionada.
+            </div>
+
+            <ActionButtons button-label="Guardar Rol" :cancel-href="route('users.show', user.id)"
+              :disabled="form.processing || isRoleAlreadyAssigned" />
+          </form>
         </div>
       </div>
     </div>
@@ -489,7 +252,6 @@
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import RoleBadge from "@/Components/Badges/RoleBadge.vue";
 import { ref, computed, watch } from "vue";
 import ActionButtons from "@/Components/admin/ActionButtons.vue";
 import SearchableDropdown from "@/Components/admin/SearchableDropdown.vue";
@@ -525,20 +287,21 @@ const props = defineProps({
 });
 
 // Debugging info (can be removed later)
-console.log("=== Debug Info ===");
-console.log("User:", props.user);
-console.log(
-  "Schools with levels:",
-  props.allSchools.map((school) => ({
-    id: school.id,
-    name: school.name,
-    levels: school.school_levels,
-  }))
-);
-console.log(
-  "Available Roles:",
-  props.availableRoles.map((r) => ({ id: r.id, name: r.name }))
-);
+// console.log("=== Debug Info ===");
+// console.log("User:", props.user);
+// console.log(
+//   "Schools with levels:",
+//   props.allSchools.map((school) => ({
+//     id: school.id,
+//     name: school.name,
+//     levels: school.school_levels,
+//   }))
+// );
+// console.log(
+//   "Available Roles:",
+//   props.availableRoles.map((r) => ({ id: r.id, name: r.name }))
+// );
+
 // This prop is no longer used
 
 const selectedSchool = ref(null);
@@ -803,11 +566,13 @@ const isRoleAlreadyAssigned = computed(() => {
 });
 
 const getRoleColorClasses = (role) => {
-  const baseClasses =
-    "px-4 py-2 rounded-lg cursor-pointer transition-all duration-200 text-center";
-  const colorClass =
-    roleColorOptions.value[role.code]?.color || "gray";
-  return `${baseClasses} bg-${colorClass}-100 text-${colorClass}-800 border-${colorClass}-300`;
+  return [
+    // 'badge',
+    // 'badge--role',
+    'role--' + (role.code || 'default'),
+    getRoleSelectedClass(role),
+    'form__badge-btn'
+  ].join(' ');
 };
 
 const getRoleSelectedClass = (role) => {
@@ -817,11 +582,14 @@ const getRoleSelectedClass = (role) => {
 };
 
 const getLevelColorClasses = (level) => {
-  const baseClasses =
-    "px-4 py-2 rounded-lg cursor-pointer transition-all duration-200 text-center";
-  const colorClass =
-    schoolLevelColorOptions.value[level.code]?.color || "gray";
-  return `${baseClasses} bg-${colorClass}-100 text-${colorClass}-800 border-${colorClass}-300`;
+  const code = level && level.code ? level.code : 'default';
+  return [
+    // 'badge',
+    // 'badge--school-level',
+    'school-level--' + code,
+    getLevelSelectedClass(level),
+    'form__badge-btn'
+  ].join(' ');
 };
 
 const getLevelSelectedClass = (level) => {

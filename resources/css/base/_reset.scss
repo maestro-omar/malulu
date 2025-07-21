@@ -21,8 +21,8 @@ body {
     padding: 0;
     margin: 0;
     position: relative;
-          @include mixins.fz(2.2);
-      @include mixins.lh(2.2);
+    @include mixins.fz(2.2);
+    @include mixins.lh(2.2);
     font-weight: variables.$font-normal-weight;
     font-family: variables.$font-family;
     color: variables.$color-text;
@@ -40,8 +40,8 @@ body {
     background-color: #fff;
 
     @include mixins.mq(md) {
-          @include mixins.fz(2.2);
-  @include mixins.lh(2.4);
+        @include mixins.fz(2.2);
+        @include mixins.lh(2.4);
     }
 }
 
@@ -59,8 +59,8 @@ body {
     font-family: variables.$font-family;
     font-weight: 300;
 
-            @include mixins.fz(2.2);
-      @include mixins.lh(2.2);
+    @include mixins.fz(2.2);
+    @include mixins.lh(2.2);
 
     @include mixins.mq(md) {
         @include mixins.fz(2.2);
@@ -102,10 +102,17 @@ body {
 }
 
 .container {
-    padding: 0;
-    max-width: variables.$content-max-width-desktop;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: variables.$screen-lg;
+    margin: 0 auto; // mx-auto
+    padding: 3rem variables.$padding-content-mobile; // py-12 equivalent
+
+    @media (min-width: 640px) {
+        padding: 3rem variables.$padding-content-desktop;
+    }
+
+    @media (min-width: 1024px) {
+        padding: 3rem variables.$padding-x-sm;
+    }
 
     &--padding {
         padding-left: variables.$padding-content-mobile;
@@ -116,6 +123,49 @@ body {
             padding-right: variables.$padding-content-desktop;
         }
     }
+
+    &--as-card {
+        background: #fff;
+        border-radius: 0.75rem;
+        margin: 20px auto;
+    }
+
+    &--narrow {
+        max-width: variables.$screen-md;
+    }
+
+    &--wide {
+        max-width: variables.$screen-xlg;
+    }
+
+    &--full {
+        max-width: none; // No max-width constraint
+    }
+
+    &--compact {
+        padding: variables.$padding-content-mobile variables.$padding-content-mobile;
+
+        @media (min-width: 640px) {
+            padding: variables.$padding-content-mobile variables.$padding-content-desktop;
+        }
+
+        @media (min-width: 1024px) {
+            padding: variables.$padding-content-mobile variables.$padding-x-sm;
+        }
+    }
+
+    &--spacious {
+        padding: variables.$padding-x-md variables.$padding-content-mobile;
+
+        @media (min-width: 640px) {
+            padding: variables.$padding-x-md variables.$padding-content-desktop;
+        }
+
+        @media (min-width: 1024px) {
+            padding: variables.$padding-x-md variables.$padding-x-sm;
+        }
+    }
+
 }
 
 .image-full {

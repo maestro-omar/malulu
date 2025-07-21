@@ -1,6 +1,6 @@
 <template>
-  <span :class="['school-level-badge', 'school-level-badge--' + (level.code || 'default')]"><!--
-    -->{{ label }}
+  <span :class="['badge', 'badge--school-level', 'school-level--' + (level.code || 'default')]">
+    {{ label }}
   </span>
 </template>
 

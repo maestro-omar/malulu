@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 text-gray-900">
+    <div>
         <h2>¡Bienvenida/o, Docente!</h2>
         <p>Este es el panel para docentes.</p>
         <!-- Teacher specific content will go here -->

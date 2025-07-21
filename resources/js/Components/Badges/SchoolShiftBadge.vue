@@ -1,6 +1,6 @@
 <template>
-  <span :class="['school-shift-badge', 'school-shift-badge--' + (shift.code || 'default')]"><!--
-    -->{{ label }}
+  <span :class="['badge', 'badge--school-shift', 'school-shift--' + (shift.code || 'default')]">
+    {{ label }}
   </span>
 </template>
 

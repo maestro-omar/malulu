@@ -164,3 +164,14 @@ button{
   border: none;
   box-shadow: none;
 }
+
+// Badge button for form grid layouts
+.form__badge-btn {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  box-sizing: border-box;
+  display: block;
+  text-align: center;
+  cursor: pointer;
+  // Optional: add spacing or font tweaks as needed
+}

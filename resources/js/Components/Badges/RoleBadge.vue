@@ -1,5 +1,5 @@
 <template>
-  <span :class="['role-badge', 'role-badge--' + (role.code || 'default')]" :title="role.name">
+  <span :class="['badge', 'badge--role', 'role--' + (role.code || 'default')]" :title="role.name">
     {{ label }}
   </span>
 </template>

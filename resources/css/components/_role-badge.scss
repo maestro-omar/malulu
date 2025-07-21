@@ -1,84 +1,89 @@
 @use "../abstracts/variables";
 
-// Role Badge
-.role-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.125rem 0.625rem; // px-2.5 py-0.5
-  border-radius: 9999px; // rounded-full
-  font-size: 0.75rem; // text-xs
-  font-weight: 500; // font-medium
-  line-height: 1.2;
-  user-select: none;
-  white-space: nowrap;
-  transition: background 0.2s, color 0.2s;
+.role {
+    // Role Badge Color Modifiers
+    &--superadmin {
+        background: variables.$color-role-superadmin-bg;
+        color: variables.$color-role-superadmin-text;
+    }
 
-  &--superadmin {
-    background: variables.$color-role-superadmin-bg;
-    color: variables.$color-role-superadmin-text;
-  }
-  &--administrador {
-    background: variables.$color-role-admin-bg;
-    color: variables.$color-role-admin-text;
-  }
-  &--director {
-    background: variables.$color-role-director-bg;
-    color: variables.$color-role-director-text;
-  }
-  &--regente {
-    background: variables.$color-role-regent-bg;
-    color: variables.$color-role-regent-text;
-  }
-  &--secretaria {
-    background: variables.$color-role-secretary-bg;
-    color: variables.$color-role-secretary-text;
-  }
-  &--profesor {
-    background: variables.$color-role-professor-bg;
-    color: variables.$color-role-professor-text;
-  }
-  &--maestra {
-    background: variables.$color-role-grade-teacher-bg;
-    color: variables.$color-role-grade-teacher-text;
-  }
-  &--auxiliar {
-    background: variables.$color-role-assistant-teacher-bg;
-    color: variables.$color-role-assistant-teacher-text;
-  }
-  &--docente_curricular {
-    background: variables.$color-role-curricular-teacher-bg;
-    color: variables.$color-role-curricular-teacher-text;
-  }
-  &--docente_especial {
-    background: variables.$color-role-special-teacher-bg;
-    color: variables.$color-role-special-teacher-text;
-  }
-  &--preceptor {
-    background: variables.$color-role-class-assistant-bg;
-    color: variables.$color-role-class-assistant-text;
-  }
-  &--bibliotecario {
-    background: variables.$color-role-librarian-bg;
-    color: variables.$color-role-librarian-text;
-  }
-  &--tutor {
-    background: variables.$color-role-guardian-bg;
-    color: variables.$color-role-guardian-text;
-  }
-  &--estudiante {
-    background: variables.$color-role-student-bg;
-    color: variables.$color-role-student-text;
-  }
-  &--cooperador {
-    background: variables.$color-role-cooperative-bg;
-    color: variables.$color-role-cooperative-text;
-  }
-  &--ex_alumno {
-    background: variables.$color-role-former-student-bg;
-    color: variables.$color-role-former-student-text;
-  }
-  &--default {
-    background: variables.$color-role-default-bg;
-    color: variables.$color-role-default-text;
-  }
-} 
+    &--administrador {
+        background: variables.$color-role-admin-bg;
+        color: variables.$color-role-admin-text;
+    }
+
+    &--director {
+        background: variables.$color-role-director-bg;
+        color: variables.$color-role-director-text;
+    }
+
+    &--regente {
+        background: variables.$color-role-regent-bg;
+        color: variables.$color-role-regent-text;
+    }
+
+    &--secretaria {
+        background: variables.$color-role-secretary-bg;
+        color: variables.$color-role-secretary-text;
+    }
+
+    &--profesor {
+        background: variables.$color-role-professor-bg;
+        color: variables.$color-role-professor-text;
+    }
+
+    &--maestra {
+        background: variables.$color-role-grade-teacher-bg;
+        color: variables.$color-role-grade-teacher-text;
+    }
+
+    &--auxiliar {
+        background: variables.$color-role-assistant-teacher-bg;
+        color: variables.$color-role-assistant-teacher-text;
+    }
+
+    &--docente_curricular {
+        background: variables.$color-role-curricular-teacher-bg;
+        color: variables.$color-role-curricular-teacher-text;
+    }
+
+    &--docente_especial {
+        background: variables.$color-role-special-teacher-bg;
+        color: variables.$color-role-special-teacher-text;
+    }
+
+    &--preceptor {
+        background: variables.$color-role-class-assistant-bg;
+        color: variables.$color-role-class-assistant-text;
+    }
+
+    &--bibliotecario {
+        background: variables.$color-role-librarian-bg;
+        color: variables.$color-role-librarian-text;
+    }
+
+    &--tutor {
+        background: variables.$color-role-guardian-bg;
+        color: variables.$color-role-guardian-text;
+    }
+
+    &--estudiante {
+        background: variables.$color-role-student-bg;
+        color: variables.$color-role-student-text;
+    }
+
+    &--cooperador {
+        background: variables.$color-role-cooperative-bg;
+        color: variables.$color-role-cooperative-text;
+    }
+
+    &--ex_alumno {
+        background: variables.$color-role-former-student-bg;
+        color: variables.$color-role-former-student-text;
+    }
+
+    &--default {
+        background: variables.$color-role-default-bg;
+        color: variables.$color-role-default-text;
+    }
+}

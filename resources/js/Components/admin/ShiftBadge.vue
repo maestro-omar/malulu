@@ -1,8 +1,8 @@
 <template>
-  <span v-if="shift.includes('Mañana')" class="shift-badge shift-badge--manana">Mañana</span>
-  <span v-else-if="shift.includes('Tarde')" class="shift-badge shift-badge--tarde">Tarde</span>
-  <span v-else-if="shift.includes('Noche')" class="shift-badge shift-badge--noche">Noche</span>
-  <span v-else class="shift-badge shift-badge--default">{{ shift }}</span>
+  <span v-if="shift.includes('Mañana')" class="badge badge--shift school-shift--manana">Mañana</span>
+  <span v-else-if="shift.includes('Tarde')" class="badge badge--shift school-shift--tarde">Tarde</span>
+  <span v-else-if="shift.includes('Noche')" class="badge badge--shift school-shift--noche">Noche</span>
+  <span v-else class="badge badge--shift school-shift--default">{{ shift }}</span>
 </template>
 
 <script setup>
@@ -12,4 +12,4 @@ defineProps({
     required: true
   }
 });
-</script> 
+</script>

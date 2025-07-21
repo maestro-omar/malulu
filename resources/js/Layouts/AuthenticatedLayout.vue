@@ -21,11 +21,11 @@ const page = usePage();
 // Parse school configuration from extra field
 const schoolConfig = computed(() => {
     if (!props.school || !props.school.extra) return null;
-    
-    const extra = typeof props.school.extra === 'string' 
-        ? JSON.parse(props.school.extra) 
+
+    const extra = typeof props.school.extra === 'string'
+        ? JSON.parse(props.school.extra)
         : props.school.extra;
-    
+
     return extra.config || null;
 });
 
@@ -38,7 +38,7 @@ const headerStyles = computed(() => {
             hoverColor: 'hover:text-gray-200'
         };
     }
-    
+
     const headerConfig = schoolConfig.value.header;
     return {
         background: headerConfig.background || 'bg-gradient-to-b from-red-900 to-blue-900',
@@ -59,15 +59,15 @@ onMounted(() => {
     // console.log('Auth User:', page.props.auth.user);
     // console.log('Debug Info:', page.props.debug);
     // console.log('Menu Items:', page.props.menu.items);
-    
+
     // Debug school prop
-    console.log('Layout - school prop:', props.school);
-    console.log('Layout - school type:', typeof props.school);
-    console.log('Layout - school extra:', props.school?.extra);
-    console.log('Layout - school config:', schoolConfig.value);
-    console.log('Layout - header styles:', headerStyles.value);
-    console.log('Layout - school keys:', Object.keys(props.school || {}));
-    console.log('Layout - school logo:', props.school?.logo);
+    // console.log('Layout - school prop:', props.school);
+    // console.log('Layout - school type:', typeof props.school);
+    // console.log('Layout - school extra:', props.school?.extra);
+    // console.log('Layout - school config:', schoolConfig.value);
+    // console.log('Layout - header styles:', headerStyles.value);
+    // console.log('Layout - school keys:', Object.keys(props.school || {}));
+    // console.log('Layout - school logo:', props.school?.logo);
 });
 </script>
 
@@ -82,16 +82,16 @@ onMounted(() => {
                             <!-- Logo -->
                             <div class="authenticated-layout__nav-logo">
                                 <Link :href="route('dashboard')">
-                                    <component 
-                                        v-if="logoComponent" 
-                                        :is="logoComponent" 
-                                        class="authenticated-layout__nav-logo-image" 
-                                        :class="headerStyles.textColor" 
+                                    <component
+                                        v-if="logoComponent"
+                                        :is="logoComponent"
+                                        class="authenticated-layout__nav-logo-image"
+                                        :class="headerStyles.textColor"
                                     />
-                                    <img 
-                                        v-else-if="school && school.logo" 
-                                        :src="school.logo" 
-                                        :alt="school.name" 
+                                    <img
+                                        v-else-if="school && school.logo"
+                                        :src="school.logo"
+                                        :alt="school.name"
                                         :title="school.name"
                                         class="authenticated-layout__nav-logo-image"
                                     />
@@ -101,8 +101,8 @@ onMounted(() => {
                             <!-- Navigation Links -->
                             <div class="authenticated-layout__nav-links">
                                 <template v-for="item in $page.props.menu.items" :key="item.route">
-                                    <NavLink 
-                                        :href="route(item.route)" 
+                                    <NavLink
+                                        :href="route(item.route)"
                                         :active="route().current(item.route)"
                                         :class="[headerStyles.textColor, headerStyles.hoverColor]"
                                     >
@@ -177,8 +177,8 @@ onMounted(() => {
                 <div :class="['authenticated-layout__responsive', { 'authenticated-layout__responsive--visible': showingNavigationDropdown }]">
                     <div class="authenticated-layout__responsive-menu">
                         <template v-for="item in $page.props.menu.items" :key="item.route">
-                            <ResponsiveNavLink 
-                                :href="route(item.route)" 
+                            <ResponsiveNavLink
+                                :href="route(item.route)"
                                 :active="route().current(item.route)"
                                 :class="[headerStyles.textColor, headerStyles.hoverColor]"
                             >

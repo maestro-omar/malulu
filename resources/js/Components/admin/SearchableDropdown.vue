@@ -1,11 +1,11 @@
 <template>
-  <div class="dropdown">
+  <div class="dropdown" ref="dropdownRef">
     <div class="dropdown__search">
       <input
         type="text"
         :value="search"
         @input="updateSearch"
-        @focus="showOptions = true"
+        @focus="onInputFocus"
         :placeholder="placeholder"
         class="dropdown__search-input"
       />
@@ -23,8 +23,9 @@
 
     <!-- Dropdown Options -->
     <div
-      v-if="showOptions && filteredOptions.length > 0"
-      class="dropdown__menu dropdown__menu--search"
+      v-if="filteredOptions.length > 0"
+      :class="['dropdown__menu', 'dropdown__menu--search', { 'dropdown__menu--open': showOptions }]"
+      @mousedown.stop
     >
       <div
         v-for="option in filteredOptions"
@@ -40,6 +41,8 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+
+const dropdownRef = ref(null);
 
 const props = defineProps({
   modelValue: {
@@ -60,46 +63,73 @@ const props = defineProps({
   }
 });
 
+console.log('[Dropdown] Props received:', props);
+
 const emit = defineEmits(['update:modelValue']);
 
 const search = ref('');
 const showOptions = ref(false);
 
+const onInputFocus = () => {
+  showOptions.value = true;
+  console.log('[Dropdown] Input focused, showOptions:', showOptions.value);
+};
+
 // Initialize search with initial value
 onMounted(() => {
+  console.log('[Dropdown] Mounted');
   if (props.initialValue) {
     const value = typeof props.initialValue === 'object' ? props.initialValue : props.options.find(opt => opt.id === props.initialValue);
     if (value) {
       search.value = value.long || value.name;
       emit('update:modelValue', value);
+      console.log('[Dropdown] Initial value set:', value);
     }
   }
+  document.addEventListener('mousedown', handleClickOutside);
+});
+
+onUnmounted(() => {
+  console.log('[Dropdown] Unmounted');
+  document.removeEventListener('mousedown', handleClickOutside);
 });
 
 const filteredOptions = computed(() => {
-  if (!search.value) return props.options;
-  return props.options.filter(option =>
-    (option.long || option.name).toLowerCase().includes(search.value.toLowerCase())
-  );
+  let result;
+  if (!search.value) {
+    result = props.options;
+  } else {
+    result = props.options.filter(option =>
+      (option.long || option.name).toLowerCase().includes(search.value.toLowerCase())
+    );
+  }
+  console.log('[Dropdown] Filtering options. Search:', search.value, 'Result:', result);
+  return result;
 });
 
 const updateSearch = (event) => {
   search.value = event.target.value;
+  showOptions.value = true;
+  console.log('[Dropdown] Search updated:', search.value, 'showOptions:', showOptions.value);
 };
 
 const selectOption = (option) => {
   emit('update:modelValue', option);
   search.value = option.long || option.name;
   showOptions.value = false;
+  console.log('[Dropdown] Option selected:', option, 'showOptions:', showOptions.value);
 };
 
 const clearSearch = () => {
   search.value = '';
   emit('update:modelValue', null);
+  showOptions.value = false;
+  console.log('[Dropdown] Search cleared, showOptions:', showOptions.value);
 };
 
 // Update search when modelValue changes
 watch(() => props.modelValue, (newValue) => {
+  console.log('[Dropdown] modelValue changed:', newValue);
   if (newValue) {
     const value = typeof newValue === 'object' ? newValue : props.options.find(opt => opt.id === newValue);
     if (value) {
@@ -112,27 +142,22 @@ watch(() => props.modelValue, (newValue) => {
 
 // Also watch initialValue for changes
 watch(() => props.initialValue, (newValue) => {
+  console.log('[Dropdown] initialValue changed:', newValue);
   if (newValue) {
     const value = typeof newValue === 'object' ? newValue : props.options.find(opt => opt.id === newValue);
     if (value) {
       search.value = value.long || value.name;
       emit('update:modelValue', value);
+      console.log('[Dropdown] initialValue set:', value);
     }
   }
 }, { immediate: true });
 
 // Close dropdown when clicking outside
 const handleClickOutside = (event) => {
-  if (!event.target.closest('.relative')) {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
     showOptions.value = false;
+    console.log('[Dropdown] Clicked outside, closing dropdown');
   }
 };
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
-});
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
-});
-</script> 
+</script>

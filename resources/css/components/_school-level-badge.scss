@@ -1,32 +1,24 @@
 @use "../abstracts/variables";
 
-// School Level Badge
-.school-level-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.125rem 0.625rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  line-height: 1.2;
-  user-select: none;
-  white-space: nowrap;
-  transition: background 0.2s, color 0.2s;
+// School Level Badge Color Modifiers
+.school-level {
+    &--inicial {
+        background: variables.$color-level-initial-bg;
+        color: variables.$color-level-initial-text;
+    }
 
-  &--inicial {
-    background: variables.$color-level-initial-bg;
-    color: variables.$color-level-initial-text;
-  }
-  &--primaria {
-    background: variables.$color-level-primary-bg;
-    color: variables.$color-level-primary-text;
-  }
-  &--secundaria {
-    background: variables.$color-level-secondary-bg;
-    color: variables.$color-level-secondary-text;
-  }
-  &--default {
-    background: variables.$color-level-default-bg;
-    color: variables.$color-level-default-text;
-  }
-} 
+    &--primaria {
+        background: variables.$color-level-primary-bg;
+        color: variables.$color-level-primary-text;
+    }
+
+    &--secundaria {
+        background: variables.$color-level-secondary-bg;
+        color: variables.$color-level-secondary-text;
+    }
+
+    &--default {
+        background: variables.$color-level-default-bg;
+        color: variables.$color-level-default-text;
+    }
+}

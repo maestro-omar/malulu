@@ -29,9 +29,9 @@
         <div class="table__container">
           <!-- Search Filter -->
           <div class="table__search">
-            <input 
-              type="text" 
-              v-model="search" 
+            <input
+              type="text"
+              v-model="search"
               @input="handleSearch"
               placeholder="Buscar escuelas..."
             />
@@ -44,11 +44,11 @@
 
           <!-- Locality Filter -->
           <div class="table__filter">
-            <SearchableDropdown 
-              v-model="selectedLocality" 
+            <SearchableDropdown
+              v-model="selectedLocality"
               :options="localities"
-              placeholder="Filtrar por localidad..." 
-              @update:modelValue="handleLocalityChange" 
+              placeholder="Filtrar por localidad..."
+              @update:modelValue="handleLocalityChange"
             />
           </div>
 
@@ -65,8 +65,8 @@
                 </tr>
               </thead>
               <tbody class="table__tbody">
-                <tr 
-                  v-for="(school, index) in schools.data.filter(s => s.name !== 'GLOBAL')" 
+                <tr
+                  v-for="(school, index) in schools.data.filter(s => s.name !== 'GLOBAL')"
                   :key="school.id"
                   :class="{
                     'table__tr--even': index % 2 === 0,
@@ -110,13 +110,13 @@
 
           <!-- Mobile Card View -->
           <div class="table__mobile">
-            <div 
-              v-for="(school, index) in schools.data.filter(s => s.name !== 'GLOBAL')" 
+            <div
+              v-for="(school, index) in schools.data.filter(s => s.name !== 'GLOBAL')"
               :key="school.id"
               :class="{
                 'table__card--even': index % 2 === 0,
                 'table__card--odd': index % 2 === 1
-              }" 
+              }"
               class="table__card"
             >
               <div class="table__card-header">
@@ -233,5 +233,8 @@ watch(search, (value) => {
   handleSearch();
 });
 
+// Debugging info (can be removed later)
+console.log("=== Debug Info ===");
+console.log("Localities:", props.localities);
 console.log('schools:', props.schools.data[0])
 </script>

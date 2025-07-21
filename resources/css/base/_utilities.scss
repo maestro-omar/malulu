@@ -1,6 +1,6 @@
 @use "../abstracts/variables";
 
-// Utilities file 
+// Utilities file
 
 // Container classes
 // --------------------------------
@@ -28,54 +28,3 @@
 // <div class="container container--compact">Compact container</div>
 // <div class="container container--narrow">Narrow container</div>
 // <div class="container container--spacious container--wide">Spacious wide container</div>
-
-.container {
-  max-width: variables.$screen-lg;
-  margin: 0 auto; // mx-auto
-  padding: 3rem variables.$padding-content-mobile; // py-12 equivalent
-  
-  @media (min-width: 640px) {
-    padding: 3rem variables.$padding-content-desktop;
-  }
-  
-  @media (min-width: 1024px) {
-    padding: 3rem variables.$padding-x-sm;
-  }
-  
-  // Variants
-  &--compact {
-    padding: variables.$padding-content-mobile variables.$padding-content-mobile;
-    
-    @media (min-width: 640px) {
-      padding: variables.$padding-content-mobile variables.$padding-content-desktop;
-    }
-    
-    @media (min-width: 1024px) {
-      padding: variables.$padding-content-mobile variables.$padding-x-sm;
-    }
-  }
-  
-  &--spacious {
-    padding: variables.$padding-x-md variables.$padding-content-mobile;
-    
-    @media (min-width: 640px) {
-      padding: variables.$padding-x-md variables.$padding-content-desktop;
-    }
-    
-    @media (min-width: 1024px) {
-      padding: variables.$padding-x-md variables.$padding-x-sm;
-    }
-  }
-  
-  &--narrow {
-    max-width: variables.$screen-md;
-  }
-  
-  &--wide {
-    max-width: variables.$screen-xlg;
-  }
-  
-  &--full {
-    max-width: none; // No max-width constraint
-  }
-} 

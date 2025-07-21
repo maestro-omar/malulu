@@ -56,7 +56,7 @@ const forceDeleteUser = (id) => {
                 </div>
 
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
+                    <div>
                         <!-- Desktop Table View -->
                         <div class="hidden md:block">
                             <table class="min-w-full divide-y divide-gray-200">
@@ -80,7 +80,7 @@ const forceDeleteUser = (id) => {
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr v-for="(user, index) in users.data" 
+                                    <tr v-for="(user, index) in users.data"
                                         :key="user.id"
                                         :class="{
                                             'bg-red-50': index % 2 === 0,
@@ -185,4 +185,4 @@ const forceDeleteUser = (id) => {
             </div>
         </div>
     </AuthenticatedLayout>
-</template> 
+</template>

@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 text-gray-900">
+    <div>
         <h2>¡Bienvenida/o, Estudiante!</h2>
         <p>Este es el panel para estudiantes.</p>
         <!-- Student specific content will go here -->
@@ -8,4 +8,4 @@
 
 <script setup>
 // Any script specific to Student Panel
-</script> 
+</script>

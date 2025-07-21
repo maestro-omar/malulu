@@ -26,7 +26,7 @@
         </div>
 
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div class="p-6 text-gray-900">
+          <div>
             <!-- Desktop Table View -->
             <div class="hidden md:block">
               <table class="min-w-full divide-y divide-gray-200">

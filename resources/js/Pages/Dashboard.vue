@@ -25,7 +25,7 @@
 
         <div class="container">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
+                    <div>
                         <GlobalAdminPanel v-if="isGlobalAdmin" data="" />
                         <SchoolAdminPanel v-if="isSchoolAdmin" :data="isSchoolAdmin" :schools="schools"
                             :combinationCount="combinationCount" />

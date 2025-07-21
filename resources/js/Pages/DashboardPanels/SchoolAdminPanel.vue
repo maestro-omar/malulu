@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 text-gray-900">
+    <div>
         <h2>¡Bienvenida/o, Administrador Escolar!</h2>
         <p>Este es el panel para administradores de escuela.</p>
         <!-- School admin specific content will go here -->
