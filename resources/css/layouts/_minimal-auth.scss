@@ -1,4 +1,5 @@
 @use "../abstracts/variables";
+@use "../abstracts/mixins";
 
 // Minimal Auth Layout
 
@@ -10,11 +11,11 @@
   align-items: center;
   padding-top: 1.5rem; // pt-6
   background-color: variables.$color-grey;
-  
-  @media (min-width: 640px) {
+
+  @include mixins.mq(sm){
     padding-top: 0; // sm:pt-0
   }
-  
+
   &__logo {
     display: block;
     height: 5rem; // w-20 h-20
@@ -22,41 +23,44 @@
     fill: currentColor;
     color: variables.$color-grey-dark;
   }
-  
+
   &__container {
-    width: 100%;
-    max-width: 28rem; // sm:max-w-md
+    width: 80%;
+    max-width: 550px;
     margin-top: variables.$padding-content-mobile;
     padding: variables.$padding-content-mobile;
     background-color: white;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); // shadow-md
     overflow: hidden;
-    
-    @media (min-width: 640px) {
-      border-radius: 0.5rem; // sm:rounded-lg
+
+    @include mixins.mq(sm){
+      width: 70%;
+    }
+    @include mixins.mq(md){
+      width: 80%;
     }
   }
-  
+
   &__header {
     background-color: white;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    
+
     &-container {
       max-width: variables.$screen-lg;
       margin: 0 auto;
       padding: variables.$padding-content-mobile variables.$padding-content-mobile;
-      
-      @media (min-width: 640px) {
+
+      @include mixins.mq(sm){
         padding: variables.$padding-content-mobile variables.$padding-content-desktop;
       }
-      
+
       @media (min-width: 1024px) {
         padding: variables.$padding-content-mobile variables.$padding-x-sm;
       }
     }
   }
-  
+
   &__main {
     // Main content area
   }
-} 
+}

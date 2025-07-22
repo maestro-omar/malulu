@@ -7,6 +7,14 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    color: {
+        type: String,
+        default: '#000', // default color
+    },
+    hoverColor: {
+        type: String,
+        default: '#007bff', // default hover color
+    },
     active: {
         type: Boolean,
     },
@@ -14,13 +22,25 @@ const props = defineProps({
 
 const classes = computed(() =>
     props.active
-        ? 'nav-link nav-link--active'
-        : 'nav-link'
+        ? 'admin-nav-link admin-nav-link--active'
+        : 'admin-nav-link'
 );
+
+// Compute the style for the link
+const linkStyle = computed(() => ({
+  color: props.color,
+  transition: 'color 0.2s',
+}));
 </script>
 
 <template>
-    <Link :href="href" :class="classes">
+    <Link
+        :href="href"
+        :class="classes"
+        :style="linkStyle"
+        @mouseover="e => e.target.style.color = hoverColor"
+        @mouseleave="e => e.target.style.color = color"
+    >
         <slot />
     </Link>
 </template>

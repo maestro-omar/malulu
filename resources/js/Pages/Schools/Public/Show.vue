@@ -158,9 +158,9 @@
 import { Head, Link } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { router } from "@inertiajs/vue3";
-import SchoolLevelBadge from "@/Components/Badges/SchoolLevelBadge.vue";
+import SchoolLevelBadge from "@/Components/badges/SchoolLevelBadge.vue";
 import ShiftBadge from "@/Components/admin/ShiftBadge.vue";
-import ManagementTypeBadge from "@/Components/Badges/ManagementTypeBadge.vue";
+import ManagementTypeBadge from "@/Components/badges/ManagementTypeBadge.vue";
 import PhoneField from "@/Components/admin/PhoneField.vue";
 import EmailField from "@/Components/admin/EmailField.vue";
 import EditableImage from "@/Components/admin/EditableImage.vue";

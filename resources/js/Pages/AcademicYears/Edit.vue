@@ -8,40 +8,40 @@
     </template>
 
     <div class="container">
-      <div class="form__wrapper">
-        <form @submit.prevent="submit" class="form__container">
-          <div class="form__card">
-            <div class="form__card-content">
-              <div class="form__field">
+      <div class="admin-form__wrapper">
+        <form @submit.prevent="submit" class="admin-form__container">
+          <div class="admin-form__card">
+            <div class="admin-form__card-content">
+              <div class="admin-form__field">
                 <InputLabel for="year" value="Año" />
-                <TextInput type="number" id="year" v-model="form.year" class="form__input form__input--disabled" disabled />
+                <TextInput type="number" id="year" v-model="form.year" class="admin-form__input form__input--disabled" disabled />
               </div>
 
-              <div class="form__grid form__grid--2">
-                <div class="form__field">
+              <div class="admin-form__grid form__grid--2">
+                <div class="admin-form__field">
                   <InputLabel for="start_date" value="Fecha de Inicio" />
-                  <TextInput type="date" id="start_date" v-model="form.start_date" class="form__input" />
-                  <InputError class="form__error" :message="form.errors.start_date" />
+                  <TextInput type="date" id="start_date" v-model="form.start_date" class="admin-form__input" />
+                  <InputError class="admin-form__error" :message="form.errors.start_date" />
                 </div>
 
-                <div class="form__field">
+                <div class="admin-form__field">
                   <InputLabel for="end_date" value="Fecha de Fin" />
-                  <TextInput type="date" id="end_date" v-model="form.end_date" class="form__input" />
-                  <InputError class="form__error" :message="form.errors.end_date" />
+                  <TextInput type="date" id="end_date" v-model="form.end_date" class="admin-form__input" />
+                  <InputError class="admin-form__error" :message="form.errors.end_date" />
                 </div>
               </div>
 
-              <div class="form__grid form__grid--2">
-                <div class="form__field">
+              <div class="admin-form__grid form__grid--2">
+                <div class="admin-form__field">
                   <InputLabel for="winter_break_start" value="Inicio de Vacaciones de Invierno" />
-                  <TextInput type="date" id="winter_break_start" v-model="form.winter_break_start" class="form__input" />
-                  <InputError class="form__error" :message="form.errors.winter_break_start" />
+                  <TextInput type="date" id="winter_break_start" v-model="form.winter_break_start" class="admin-form__input" />
+                  <InputError class="admin-form__error" :message="form.errors.winter_break_start" />
                 </div>
 
-                <div class="form__field">
+                <div class="admin-form__field">
                   <InputLabel for="winter_break_end" value="Fin de Vacaciones de Invierno" />
-                  <TextInput type="date" id="winter_break_end" v-model="form.winter_break_end" class="form__input" />
-                  <InputError class="form__error" :message="form.errors.winter_break_end" />
+                  <TextInput type="date" id="winter_break_end" v-model="form.winter_break_end" class="admin-form__input" />
+                  <InputError class="admin-form__error" :message="form.errors.winter_break_end" />
                 </div>
               </div>
             </div>

@@ -1,10 +1,10 @@
 <template>
-    <div class="action-buttons__container">
-        <div class="action-buttons">
+    <div class="admin-action-buttons">
+        <div class="admin-action-buttons__container">
             <PrimaryButton :disabled="disabled" :type="type" :class="buttonClass">
                 {{ buttonLabel }}
             </PrimaryButton>
-            <CancelLink :href="cancelHref" />
+            <CancelLink :href="cancelHref" class="admin-button admin-button--danger" />
         </div>
     </div>
 </template>
@@ -34,7 +34,7 @@ defineProps({
     },
     buttonClass: {
         type: String,
-        default: ''
+        default: 'action-button--save'
     }
 });
 </script>

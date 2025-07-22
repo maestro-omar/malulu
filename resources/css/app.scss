@@ -21,16 +21,24 @@
 @use 'components/management-type-badge';
 
 // Admin Components
-@use 'components/admin-buttons';
+@use 'components/admin-button';
 @use 'components/admin-forms';
 @use 'components/admin-navigation';
+@use 'components/admin-nav-link';
+@use 'components/admin-nav-breadcrumbs';
 @use 'components/admin-dropdown';
 @use 'components/admin-modals';
 @use 'components/admin-misc';
+@use 'components/action-buttons';
+@use 'components/user-info';
+@use 'components/editable-image';
+@use 'components/shift-badge';
+@use 'components/app-logo';
+@use 'components/language-switcher';
+@use 'components/pagination';
 @use 'components/admin-checkbox-with-label';
 @use 'components/table';
 @use 'components/admin-details';
-@use 'components/editable-image';
 @use 'components/phone-field';
 @use 'components/email-field';
 @use 'components/schools-roles-card';
@@ -48,3 +56,4 @@
 @use 'pages/auth';
 @use 'pages/admin';
 @use 'pages/user-create';
+@use 'pages/welcome';

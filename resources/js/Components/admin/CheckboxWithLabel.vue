@@ -1,14 +1,14 @@
 <template>
-  <label class="checkbox-with-label">
-    <Checkbox 
-      :id="id" 
-      :value="value" 
+  <label class="admin-checkbox-with-label">
+    <Checkbox
+      :id="id"
+      :value="value"
       :name="name"
-      :checked="modelValue" 
+      :checked="modelValue"
       @update:checked="$emit('update:modelValue', $event)"
       v-bind="$attrs"
     />
-    <span class="checkbox-with-label__text">
+    <span class="admin-checkbox-with-label__text">
       <slot />
     </span>
   </label>
@@ -37,4 +37,4 @@ defineProps({
 });
 
 defineEmits(['update:modelValue']);
-</script> 
+</script>

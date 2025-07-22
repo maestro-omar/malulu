@@ -1,9 +1,9 @@
 <template>
     <button
         :class="[
-            'button',
-            'button--primary',
-            { 'button--primary--processing': processing }
+            'admin-button',
+            'admin-button--save',
+            { 'admin-button--primary--processing': processing }
         ]"
         :disabled="processing"
     >

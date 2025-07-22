@@ -5,12 +5,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Malulu</title>
+    <title>{{ config('app.name') }}</title>
 
 </head>
 
 <body class="antialiased">
-    <h1>Malulu</h1>
+    <h1>{{ config('app.name') }}</h1>
     @if (Route::has('login'))
     @auth
     <a href="{{ url('/home') }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Home</a>

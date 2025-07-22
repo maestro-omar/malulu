@@ -1,0 +1,20 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
+.admin-action-buttons {
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+
+    @media (min-width: 640px) {
+        padding: 2rem;
+    }
+
+    &__container {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

@@ -8,57 +8,57 @@
         </template>
 
         <div class="container">
-            <div class="form__wrapper">
-                <form @submit.prevent="submit" class="form__container">
-                    <div class="form__card">
-                        <div class="form__card-content">
-                            <div class="form__field">
+            <div class="admin-form__wrapper">
+                <form @submit.prevent="submit" class="admin-form__container">
+                    <div class="admin-form__card">
+                        <div class="admin-form__card-content">
+                            <div class="admin-form__field">
                                 <InputLabel for="code" value="Clave" />
                                 <TextInput
                                     id="code"
                                     v-model="form.code"
                                     type="text"
-                                    class="form__input"
+                                    class="admin-form__input"
                                     required
                                     autofocus
                                 />
-                                <InputError :message="form.errors.code" class="form__error" />
+                                <InputError :message="form.errors.code" class="admin-form__error" />
                             </div>
 
-                            <div class="form__field">
+                            <div class="admin-form__field">
                                 <InputLabel for="name" value="Nombre" />
                                 <TextInput
                                     id="name"
                                     v-model="form.name"
                                     type="text"
-                                    class="form__input"
+                                    class="admin-form__input"
                                     required
                                 />
-                                <InputError :message="form.errors.name" class="form__error" />
+                                <InputError :message="form.errors.name" class="admin-form__error" />
                             </div>
 
-                            <div class="form__field">
+                            <div class="admin-form__field">
                                 <InputLabel for="relate_with" value="Relacionado Con" />
                                 <select
                                     id="relate_with"
                                     v-model="form.relate_with"
-                                    class="form__select"
+                                    class="admin-form__select"
                                 >
                                     <option value="">Seleccione una opción</option>
                                     <option v-for="(label, value) in relateWithOptions" :key="value" :value="value">
                                         {{ label }}
                                     </option>
                                 </select>
-                                <InputError :message="form.errors.relate_with" class="form__error" />
+                                <InputError :message="form.errors.relate_with" class="admin-form__error" />
                             </div>
 
-                            <div class="form__field">
+                            <div class="admin-form__field">
                                 <CheckboxWithLabel v-model="form.active">
                                     Activo
                                 </CheckboxWithLabel>
                             </div>
 
-                            <ActionButtons 
+                            <ActionButtons
                                 button-label="Guardar"
                                 :cancel-href="route('file-types.index')"
                                 :disabled="form.processing"

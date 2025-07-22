@@ -8,16 +8,16 @@
         </template>
 
         <div class="container">
-            <div class="form__wrapper">
-                <form @submit.prevent="submit" class="form__container">
-                    <div class="form__card">
-                        <div class="form__card-content">
-                            <div class="form__field">
+            <div class="admin-form__wrapper">
+                <form @submit.prevent="submit" class="admin-form__container">
+                    <div class="admin-form__card">
+                        <div class="admin-form__card-content">
+                            <div class="admin-form__field">
                                 <InputLabel for="file_type_id" value="Tipo de Archivo" />
                                 <select
                                     id="file_type_id"
                                     v-model="form.file_type_id"
-                                    class="form__select"
+                                    class="admin-form__select"
                                     required
                                 >
                                     <option value="">Seleccione un tipo</option>
@@ -25,76 +25,76 @@
                                         {{ fileType.name }}
                                     </option>
                                 </select>
-                                <InputError :message="form.errors.file_type_id" class="form__error" />
+                                <InputError :message="form.errors.file_type_id" class="admin-form__error" />
                             </div>
 
-                            <div class="form__field">
+                            <div class="admin-form__field">
                                 <InputLabel for="code" value="Clave" />
                                 <TextInput
                                     id="code"
                                     v-model="form.code"
                                     type="text"
-                                    class="form__input"
+                                    class="admin-form__input"
                                     required
                                     autofocus
                                 />
-                                <InputError :message="form.errors.code" class="form__error" />
+                                <InputError :message="form.errors.code" class="admin-form__error" />
                             </div>
 
-                            <div class="form__field">
+                            <div class="admin-form__field">
                                 <InputLabel for="name" value="Nombre" />
                                 <TextInput
                                     id="name"
                                     v-model="form.name"
                                     type="text"
-                                    class="form__input"
+                                    class="admin-form__input"
                                     required
                                 />
-                                <InputError :message="form.errors.name" class="form__error" />
+                                <InputError :message="form.errors.name" class="admin-form__error" />
                             </div>
 
-                            <div class="form__field">
+                            <div class="admin-form__field">
                                 <InputLabel for="description" value="Descripción" />
                                 <textarea
                                     id="description"
                                     v-model="form.description"
-                                    class="form__textarea"
+                                    class="admin-form__textarea"
                                     rows="3"
                                 ></textarea>
-                                <InputError :message="form.errors.description" class="form__error" />
+                                <InputError :message="form.errors.description" class="admin-form__error" />
                             </div>
 
-                            <div class="form__field">
+                            <div class="admin-form__field">
                                 <CheckboxWithLabel v-model="form.new_overwrites">
                                     Sobrescribe archivos existentes
                                 </CheckboxWithLabel>
                             </div>
 
-                            <div class="form__field">
+                            <div class="admin-form__field">
                                 <CheckboxWithLabel v-model="form.hidden_for_familiy">
                                     Oculto para la familia
                                 </CheckboxWithLabel>
                             </div>
 
-                            <div class="form__field">
+                            <div class="admin-form__field">
                                 <CheckboxWithLabel v-model="form.upload_by_familiy">
                                     Puede ser subido por la familia
                                 </CheckboxWithLabel>
                             </div>
 
-                            <div class="form__field">
+                            <div class="admin-form__field">
                                 <InputLabel for="order" value="Orden" />
                                 <TextInput
                                     id="order"
                                     v-model="form.order"
                                     type="number"
-                                    class="form__input"
+                                    class="admin-form__input"
                                     required
                                 />
-                                <InputError :message="form.errors.order" class="form__error" />
+                                <InputError :message="form.errors.order" class="admin-form__error" />
                             </div>
 
-                            <ActionButtons 
+                            <ActionButtons
                                 button-label="Guardar"
                                 :cancel-href="route('file-subtypes.index')"
                                 :disabled="form.processing"
@@ -136,4 +136,4 @@ const form = useForm({
 const submit = () => {
     form.put(route("file-subtypes.update", props.fileSubtype.id));
 };
-</script> 
+</script>

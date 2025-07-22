@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import RoleBadge from '@/Components/Badges/RoleBadge.vue';
+import RoleBadge from '@/Components/badges/RoleBadge.vue';
 import PhoneField from '@/Components/admin/PhoneField.vue';
 import EmailField from '@/Components/admin/EmailField.vue';
 import EditableImage from '@/Components/admin/EditableImage.vue';
@@ -51,14 +51,14 @@ const destroy = () => {
                             <!-- Basic Information -->
                             <div class="detail__section">
                                 <div class="detail__image-container">
-                                    <EditableImage 
-                                        v-model="user.picture" 
-                                        type="picture" 
+                                    <EditableImage
+                                        v-model="user.picture"
+                                        type="picture"
                                         :model-id="user.id"
-                                        :can-edit="true" 
-                                        upload-route="users.upload-image" 
+                                        :can-edit="true"
+                                        upload-route="users.upload-image"
                                         delete-route="users.delete-image"
-                                        delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?" 
+                                        delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?"
                                     />
                                 </div>
                                 <h3 class="detail__section-title">Información Básica</h3>
@@ -148,18 +148,18 @@ const destroy = () => {
                         </div>
                     </div>
                 </div>
-                
-                <SchoolsAndRolesCard 
-                    :guardian-relationships="user.guardianRelationships" 
+
+                <SchoolsAndRolesCard
+                    :guardian-relationships="user.guardianRelationships"
                     :schools="user.schools"
-                    :roles="user.roles" 
+                    :roles="user.roles"
                     :role-relationships="user.roleRelationships"
-                    :teacher-relationships="user.workerRelationships" 
+                    :teacher-relationships="user.workerRelationships"
                     :student-relationships="user.studentRelationships"
-                    :can-add-roles="hasPermission(page.props, 'superadmin')" 
-                    :user-id="user.id" 
+                    :can-add-roles="hasPermission(page.props, 'superadmin')"
+                    :user-id="user.id"
                 />
-                
+
                 <div class="detail__card detail__card--mt">
                     <div class="detail__content">
                         <div class="detail__grid">

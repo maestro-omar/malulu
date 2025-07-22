@@ -21,32 +21,32 @@
     </div>
 
     <div class="container">
-      <div class="form">
-        <div class="form__wrapper">
-          <form @submit.prevent="submit" class="form__container">
-            <div v-if="form.errors.error" class="form__error form__error--main">
+      <div class="admin-form">
+        <div class="admin-form__wrapper">
+          <form @submit.prevent="submit" class="admin-form__container">
+            <div v-if="form.errors.error" class="admin-form__error form__error--main">
               {{ form.errors.error }}
             </div>
             <!-- School Selection -->
-            <div class="form__card">
-              <h3 class="form__card-title">
+            <div class="admin-form__card">
+              <h3 class="admin-form__card-title">
                 Seleccionar la escuela para el nuevo rol
               </h3>
-              <div class="form__card-content">
-                <div class="form__field">
+              <div class="admin-form__card-content">
+                <div class="admin-form__field">
                   <InputLabel for="school" value="Escuela" />
                   <SearchableDropdown id="school" v-model="selectedSchool" :options="allSchools"
                     placeholder="Buscar y seleccionar una escuela..." />
-                  <InputError class="form__error" :message="form.errors.school_id" />
+                  <InputError class="admin-form__error" :message="form.errors.school_id" />
                 </div>
-                <div v-if="selectedSchool" class="form__info">
-                  <h4 class="form__info-title">
+                <div v-if="selectedSchool" class="admin-form__info">
+                  <h4 class="admin-form__info-title">
                     Detalles de la Escuela:
                   </h4>
-                  <p class="form__info-text">
+                  <p class="admin-form__info-text">
                     Nombre: {{ selectedSchool.name }}
                   </p>
-                  <p class="form__info-text">
+                  <p class="admin-form__info-text">
                     Abreviatura: {{ selectedSchool.short }}
                   </p>
                 </div>
@@ -54,26 +54,26 @@
             </div>
 
             <!-- School Level Selection -->
-            <div v-if="selectedSchool" class="form__card">
-              <div class="form__card-header">
-                <h3 class="form__card-title">Nivel Escolar</h3>
+            <div v-if="selectedSchool" class="admin-form__card">
+              <div class="admin-form__card-header">
+                <h3 class="admin-form__card-title">Nivel Escolar</h3>
                 <button v-if="selectedLevel !== null" type="button" @click="selectedLevel = null"
-                  class="form__card-action">
+                  class="admin-form__card-action">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path
                       d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                   </svg>
                 </button>
               </div>
-              <div class="form__card-content">
-                <div v-if="selectedLevel !== null" class="form__info">
+              <div class="admin-form__card-content">
+                <div v-if="selectedLevel !== null" class="admin-form__info">
                   <div :class="getLevelColorClasses(selectedLevel)">
                     {{
                       selectedLevel ? selectedLevel.name : "Sin especificar"
                     }}
                   </div>
                 </div>
-                <div v-else class="form__grid form__grid--3">
+                <div v-else class="admin-form__grid form__grid--3">
                   <button type="button" @click="selectedLevel = null" :class="getLevelColorClasses(null)">
                     Sin especificar
                   </button>
@@ -82,92 +82,92 @@
                     {{ level.name }}
                   </button>
                 </div>
-                <InputError class="form__error" :message="form.errors.school_level_id" />
+                <InputError class="admin-form__error" :message="form.errors.school_level_id" />
               </div>
             </div>
 
             <!-- Role Selection -->
-            <div v-if="selectedSchool" class="form__card">
-              <div class="form__card-header">
-                <h3 class="form__card-title">Rol</h3>
+            <div v-if="selectedSchool" class="admin-form__card">
+              <div class="admin-form__card-header">
+                <h3 class="admin-form__card-title">Rol</h3>
                 <button v-if="selectedRole !== null" type="button" @click="selectedRole = null"
-                  class="form__card-action">
+                  class="admin-form__card-action">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path
                       d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                   </svg>
                 </button>
               </div>
-              <div class="form__card-content">
-                <div v-if="selectedRole !== null" class="form__info">
+              <div class="admin-form__card-content">
+                <div v-if="selectedRole !== null" class="admin-form__info">
                   <div :class="getRoleColorClasses(selectedRole)">
                     {{ selectedRole.name }}
                   </div>
                 </div>
-                <div v-else class="form__grid form__grid--4">
+                <div v-else class="admin-form__grid form__grid--4">
                   <button type="button" v-for="role in filteredAvailableRoles" :key="role.id"
                     @click="selectedRole = role" :class="getRoleColorClasses(role)">
                     {{ role.name }}
                   </button>
                 </div>
-                <InputError class="form__error" :message="form.errors.role_id" />
+                <InputError class="admin-form__error" :message="form.errors.role_id" />
               </div>
             </div>
 
             <!-- Generic Role Details (Start Date, Notes) -->
-            <div v-if="selectedRole" class="form__card">
-              <h3 class="form__card-title">Detalles del Rol</h3>
-              <div class="form__card-content form__grid form__grid--2">
-                <div class="form__field">
+            <div v-if="selectedRole" class="admin-form__card">
+              <h3 class="admin-form__card-title">Detalles del Rol</h3>
+              <div class="admin-form__card-content form__grid form__grid--2">
+                <div class="admin-form__field">
                   <InputLabel for="startDate" value="Fecha de Inicio" />
-                  <TextInput id="startDate" type="date" class="form__input" v-model="form.start_date" required />
-                  <InputError class="form__error" :message="form.errors.start_date" />
+                  <TextInput id="startDate" type="date" class="admin-form__input" v-model="form.start_date" required />
+                  <InputError class="admin-form__error" :message="form.errors.start_date" />
                 </div>
-                <div class="form__field form__field--full">
+                <div class="admin-form__field form__field--full">
                   <InputLabel for="notes" value="Notas" />
-                  <textarea id="notes" class="form__input" v-model="form.notes"></textarea>
-                  <InputError class="form__error" :message="form.errors.notes" />
+                  <textarea id="notes" class="admin-form__input" v-model="form.notes"></textarea>
+                  <InputError class="admin-form__error" :message="form.errors.notes" />
                 </div>
               </div>
             </div>
 
             <!-- Workers Specific Fields -->
-            <div v-if="showWorkerFields" class="form__card form__card--worker">
-              <h3 class="form__card-title">Detalles de cargo</h3>
-              <div class="form__card-content form__grid form__grid--2">
+            <div v-if="showWorkerFields" class="admin-form__card form__card--worker">
+              <h3 class="admin-form__card-title">Detalles de cargo</h3>
+              <div class="admin-form__card-content form__grid form__grid--2">
                 <div>
                   <InputLabel for="jobStatus" value="Estado de Empleo" />
-                  <SelectInput id="jobStatus" class="form__input" v-model="form.worker_details.job_status_id">
+                  <SelectInput id="jobStatus" class="admin-form__input" v-model="form.worker_details.job_status_id">
                     <option value="">Seleccionar estado...</option>
                     <option v-for="(label, value) in jobStatuses" :key="value" :value="value">
                       {{ label }}
                     </option>
                   </SelectInput>
-                  <InputError class="form__error" :message="form.errors['worker_details.job_status']" />
+                  <InputError class="admin-form__error" :message="form.errors['worker_details.job_status']" />
                 </div>
                 <div>
                   <InputLabel for="jobStatusDate" value="Fecha de Estado de Empleo" />
-                  <TextInput id="jobStatusDate" type="date" class="form__input"
+                  <TextInput id="jobStatusDate" type="date" class="admin-form__input"
                     v-model="form.worker_details.job_status_date" />
-                  <InputError class="form__error" :message="form.errors['worker_details.job_status_date']" />
+                  <InputError class="admin-form__error" :message="form.errors['worker_details.job_status_date']" />
                 </div>
                 <div>
                   <InputLabel for="decreeNumber" value="Número de Decreto" />
-                  <TextInput id="decreeNumber" type="text" class="form__input"
+                  <TextInput id="decreeNumber" type="text" class="admin-form__input"
                     v-model="form.worker_details.decree_number" />
-                  <InputError class="form__error" :message="form.errors['worker_details.decree_number']" />
+                  <InputError class="admin-form__error" :message="form.errors['worker_details.decree_number']" />
                 </div>
                 <div>
                   <InputLabel for="degreeTitle" value="Título" />
-                  <TextInput id="degreeTitle" type="text" class="form__input"
+                  <TextInput id="degreeTitle" type="text" class="admin-form__input"
                     v-model="form.worker_details.degree_title" />
-                  <InputError class="form__error" :message="form.errors['worker_details.degree_title']" />
+                  <InputError class="admin-form__error" :message="form.errors['worker_details.degree_title']" />
                 </div>
                 <div v-if="showTeacherFields">
                   <InputLabel for="classSubject" value="Asignatura (ID)" />
-                  <TextInput id="classSubject" type="number" class="form__input"
+                  <TextInput id="classSubject" type="number" class="admin-form__input"
                     v-model="form.worker_details.class_subject_id" placeholder="ID de la asignatura" />
-                  <InputError class="form__error" :message="form.errors['worker_details.class_subject_id']
+                  <InputError class="admin-form__error" :message="form.errors['worker_details.class_subject_id']
                     " />
                 </div>
                 <!-- Schedule will need custom components or further complexity -->
@@ -175,33 +175,33 @@
             </div>
 
             <!-- Guardian Specific Fields -->
-            <div v-if="showGuardianFields" class="form__card form__card--guardian">
-              <h3 class="form__card-title">Detalles de Tutor</h3>
-              <div class="form__card-content form__grid form__grid--2">
+            <div v-if="showGuardianFields" class="admin-form__card form__card--guardian">
+              <h3 class="admin-form__card-title">Detalles de Tutor</h3>
+              <div class="admin-form__card-content form__grid form__grid--2">
                 <div>
                   <InputLabel for="relationshipType" value="Tipo de Relación" />
-                  <SelectInput id="relationshipType" class="form__input"
+                  <SelectInput id="relationshipType" class="admin-form__input"
                     v-model="form.guardian_details.relationship_type">
                     <option value="">Seleccionar relación...</option>
                     <option v-for="(label, value) in relationshipTypes" :key="value" :value="value">
                       {{ label }}
                     </option>
                   </SelectInput>
-                  <InputError class="form__error" :message="form.errors['guardian_details.relationship_type']
+                  <InputError class="admin-form__error" :message="form.errors['guardian_details.relationship_type']
                     " />
                 </div>
                 <div>
                   <InputLabel for="isEmergencyContact" value="Contacto de Emergencia" />
                   <input type="checkbox" id="isEmergencyContact" v-model="form.guardian_details.is_emergency_contact"
-                    class="form__input" />
-                  <InputError class="form__error" :message="form.errors['guardian_details.is_emergency_contact']
+                    class="admin-form__input" />
+                  <InputError class="admin-form__error" :message="form.errors['guardian_details.is_emergency_contact']
                     " />
                 </div>
                 <div v-if="form.guardian_details.is_emergency_contact">
                   <InputLabel for="emergencyContactPriority" value="Prioridad Contacto Emergencia" />
-                  <TextInput id="emergencyContactPriority" type="number" class="form__input" v-model="form.guardian_details.emergency_contact_priority
+                  <TextInput id="emergencyContactPriority" type="number" class="admin-form__input" v-model="form.guardian_details.emergency_contact_priority
                     " />
-                  <InputError class="form__error" :message="form.errors[
+                  <InputError class="admin-form__error" :message="form.errors[
                     'guardian_details.emergency_contact_priority'
                     ]
                     " />
@@ -209,33 +209,33 @@
                 <div>
                   <InputLabel for="isRestricted" value="Restringido" />
                   <input type="checkbox" id="isRestricted" v-model="form.guardian_details.is_restricted"
-                    class="form__input" />
-                  <InputError class="form__error" :message="form.errors['guardian_details.is_restricted']" />
+                    class="admin-form__input" />
+                  <InputError class="admin-form__error" :message="form.errors['guardian_details.is_restricted']" />
                 </div>
                 <div>
                   <InputLabel for="studentId" value="ID de Estudiante" />
-                  <TextInput id="studentId" type="number" class="form__input" v-model="form.guardian_details.student_id"
+                  <TextInput id="studentId" type="number" class="admin-form__input" v-model="form.guardian_details.student_id"
                     placeholder="ID de estudiante" />
-                  <InputError class="form__error" :message="form.errors['guardian_details.student_id']" />
+                  <InputError class="admin-form__error" :message="form.errors['guardian_details.student_id']" />
                 </div>
               </div>
             </div>
 
             <!-- Student Specific Fields -->
-            <div v-if="showStudentFields" class="form__card form__card--student">
-              <h3 class="form__card-title">Detalles de Estudiante</h3>
-              <div class="form__card-content form__grid">
+            <div v-if="showStudentFields" class="admin-form__card form__card--student">
+              <h3 class="admin-form__card-title">Detalles de Estudiante</h3>
+              <div class="admin-form__card-content form__grid">
                 <div>
                   <InputLabel for="currentCourseId" value="ID de Curso Actual" />
-                  <TextInput id="currentCourseId" type="number" class="form__input"
+                  <TextInput id="currentCourseId" type="number" class="admin-form__input"
                     v-model="form.student_details.current_course_id" placeholder="ID de curso" />
-                  <InputError class="form__error" :message="form.errors['student_details.current_course_id']
+                  <InputError class="admin-form__error" :message="form.errors['student_details.current_course_id']
                     " />
                 </div>
               </div>
             </div>
 
-            <div v-if="isRoleAlreadyAssigned" class="form__error form__error--main">
+            <div v-if="isRoleAlreadyAssigned" class="admin-form__error form__error--main">
               Este rol ya está asignado a este usuario para la escuela
               seleccionada.
             </div>

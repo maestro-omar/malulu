@@ -5,6 +5,7 @@ import InputLabel from '@/Components/admin/InputLabel.vue';
 import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
+import { watch } from 'vue';
 
 defineProps({
     status: {
@@ -30,9 +31,7 @@ const submit = () => {
             para restablecer tu contraseña que te permitirá elegir una nueva.
         </div>
 
-        <div v-if="status" class="auth__status">
-            {{ status }}
-        </div>
+        <div v-if="status" class="auth__status" v-html="status"></div>
 
         <form @submit.prevent="submit" class="auth__form">
             <div class="auth__field">
@@ -41,7 +40,7 @@ const submit = () => {
                 <TextInput
                     id="email"
                     type="email"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     v-model="form.email"
                     required
                     autofocus

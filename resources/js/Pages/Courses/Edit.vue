@@ -6,16 +6,16 @@
     </template>
 
     <div class="container">
-      <div class="form__wrapper">
-        <form @submit.prevent="submit" class="form__container">
-          <div class="form__card">
-            <div class="form__card-content">
+      <div class="admin-form__wrapper">
+        <form @submit.prevent="submit" class="admin-form__container">
+          <div class="admin-form__card">
+            <div class="admin-form__card-content">
               <!-- Hidden School ID Field -->
               <input type="hidden" v-model="form.school_id" />
               <!-- Hidden School Level ID Field -->
               <input type="hidden" v-model="form.school_level_id" />
 
-              <div class="form__field">
+              <div class="admin-form__field">
                 <InputLabel for="school_shift_id" value="Turno Escolar" />
                 <SelectInput
                   id="school_shift_id"
@@ -23,13 +23,13 @@
                   :options="schoolShifts"
                   option-value="id"
                   option-label="name"
-                  class="form__input"
+                  class="admin-form__input"
                   required
                 />
-                <InputError class="form__error" :message="form.errors.school_shift_id" />
+                <InputError class="admin-form__error" :message="form.errors.school_shift_id" />
               </div>
 
-              <div class="form__field">
+              <div class="admin-form__field">
                 <InputLabel for="previous_course_id" value="Curso Anterior" />
                 <SelectInput
                   id="previous_course_id"
@@ -39,63 +39,63 @@
                   option-label="full_name"
                   :show-default-option="true"
                   default-option-label="Ninguno"
-                  class="form__input"
+                  class="admin-form__input"
                 />
-                <InputError class="form__error" :message="form.errors.previous_course_id" />
+                <InputError class="admin-form__error" :message="form.errors.previous_course_id" />
               </div>
 
-              <div class="form__field">
+              <div class="admin-form__field">
                 <InputLabel for="number" value="Número" />
                 <TextInput
                   id="number"
                   type="number"
                   v-model="form.number"
-                  class="form__input"
+                  class="admin-form__input"
                   required
                 />
-                <InputError class="form__error" :message="form.errors.number" />
+                <InputError class="admin-form__error" :message="form.errors.number" />
               </div>
 
-              <div class="form__field">
+              <div class="admin-form__field">
                 <InputLabel for="letter" value="Letra" />
                 <TextInput
                   id="letter"
                   type="text"
                   v-model="form.letter"
-                  class="form__input"
+                  class="admin-form__input"
                   required
                 />
-                <InputError class="form__error" :message="form.errors.letter" />
+                <InputError class="admin-form__error" :message="form.errors.letter" />
               </div>
 
-              <div class="form__field">
+              <div class="admin-form__field">
                 <InputLabel for="start_date" value="Fecha de Inicio" />
                 <TextInput
                   id="start_date"
                   type="date"
                   v-model="form.start_date"
-                  class="form__input"
+                  class="admin-form__input"
                   required
                 />
-                <InputError class="form__error" :message="form.errors.start_date" />
+                <InputError class="admin-form__error" :message="form.errors.start_date" />
               </div>
 
-              <div class="form__field">
+              <div class="admin-form__field">
                 <InputLabel for="end_date" value="Fecha de Fin" />
                 <TextInput
                   id="end_date"
                   type="date"
                   v-model="form.end_date"
-                  class="form__input"
+                  class="admin-form__input"
                 />
-                <InputError class="form__error" :message="form.errors.end_date" />
+                <InputError class="admin-form__error" :message="form.errors.end_date" />
               </div>
 
-              <div class="form__field">
+              <div class="admin-form__field">
                 <CheckboxWithLabel id="active" v-model="form.active">
                   Activo
                 </CheckboxWithLabel>
-                <InputError class="form__error" :message="form.errors.active" />
+                <InputError class="admin-form__error" :message="form.errors.active" />
               </div>
             </div>
           </div>
@@ -150,4 +150,4 @@ const form = useForm({
 const submit = () => {
   form.put(route('courses.update', { school: props.school.cue, schoolLevel: props.selectedLevel.code, course: props.course.id }))
 }
-</script> 
+</script>

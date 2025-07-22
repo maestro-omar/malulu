@@ -7,11 +7,12 @@ trait PaginationTrait
     /**
      * Handle pagination logic based on per_page parameter
      */
-    public function handlePagination($query, $perPage)
+    public function handlePagination($query, ?int $perPage, int $default = 10)
     {
+        //limit pagination count
         if ($perPage === null) {
             // Default to 10 items per page
-            return $query->paginate(10);
+            return $query->paginate($default);
         } elseif ($perPage <= 0) {
             // Return all items without pagination
             return $query->get();
@@ -20,4 +21,4 @@ trait PaginationTrait
             return $query->paginate($perPage);
         }
     }
-} 
+}

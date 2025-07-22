@@ -16,7 +16,7 @@
         <template #additional-buttons>
           <Link v-if="hasPermission($page.props, 'school.view', null)"
             :href="route('schools.index')"
-            class="btn btn--secondary">
+            class="admin-button admin-button--top admin-button--secondary">
           Volver a Escuelas
           </Link>
           <Link v-for="level in school.school_levels" :key="level.id"
@@ -56,7 +56,7 @@
                       </div>
                     </div>
                   </div>
-                  
+
                   <div class="detail__field">
                     <label class="detail__label">Nombre</label>
                     <p class="detail__value">{{ school.name }}</p>
@@ -181,9 +181,9 @@
 import { Head, Link } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { router } from "@inertiajs/vue3";
-import SchoolLevelBadge from "@/Components/Badges/SchoolLevelBadge.vue";
+import SchoolLevelBadge from "@/Components/badges/SchoolLevelBadge.vue";
 import ShiftBadge from "@/Components/admin/ShiftBadge.vue";
-import ManagementTypeBadge from "@/Components/Badges/ManagementTypeBadge.vue";
+import ManagementTypeBadge from "@/Components/badges/ManagementTypeBadge.vue";
 import PhoneField from "@/Components/admin/PhoneField.vue";
 import EmailField from "@/Components/admin/EmailField.vue";
 import EditableImage from "@/Components/admin/EditableImage.vue";

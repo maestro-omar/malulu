@@ -1,0 +1,27 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  &__avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  &__details {
+    &__name {
+      font-weight: variables.$font-normal-weight;
+      color: variables.$color-text;
+    }
+
+    &__email {
+      @include mixins.fz(1.5);
+      color: variables.$color-grey-dark;
+    }
+  }
+}

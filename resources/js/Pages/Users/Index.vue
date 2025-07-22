@@ -2,7 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
-import RoleBadge from '@/Components/Badges/RoleBadge.vue';
+import RoleBadge from '@/Components/badges/RoleBadge.vue';
 import { ref, computed, watch } from 'vue';
 import noImage from '@images/no-image-person.png';
 import AdminHeader from '@/Sections/AdminHeader.vue';
@@ -82,14 +82,14 @@ const getUniqueRoles = (roles) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <AdminHeader 
-                :breadcrumbs="breadcrumbs" 
-                :title="`Listado de usuarios`" 
+            <AdminHeader
+                :breadcrumbs="breadcrumbs"
+                :title="`Listado de usuarios`"
                 :add="{
                     show: hasPermission($page.props, 'user.manage'),
                     href: route('users.create'),
                     label: 'Nuevo usuario'
-                }" 
+                }"
                 :trashed="{
                     show: hasPermission($page.props, 'user.manage'),
                     href: route('users.trashed'),
@@ -111,9 +111,9 @@ const getUniqueRoles = (roles) => {
                     <div class="table__container">
                         <!-- Search Filter -->
                         <div class="table__search">
-                            <input 
-                                type="text" 
-                                v-model="search" 
+                            <input
+                                type="text"
+                                v-model="search"
                                 @input="handleSearch"
                                 placeholder="Buscar usuarios..."
                             />
@@ -138,9 +138,9 @@ const getUniqueRoles = (roles) => {
                                     </tr>
                                 </thead>
                                 <tbody class="table__tbody">
-                                    <tr 
-                                        v-for="(user, index) in users.data" 
-                                        :key="user.id" 
+                                    <tr
+                                        v-for="(user, index) in users.data"
+                                        :key="user.id"
                                         :class="{
                                             'table__tr--highlighted': user.id === $page.props.auth.user.id,
                                             'table__tr--even': user.id !== $page.props.auth.user.id && index % 2 === 0,
@@ -157,8 +157,8 @@ const getUniqueRoles = (roles) => {
                                             <EmailField :email="user.email" />
                                         </td>
                                         <td class="table__td table__schools">
-                                            <span 
-                                                v-for="school in user.schools" 
+                                            <span
+                                                v-for="school in user.schools"
                                                 :key="school.id"
                                                 class="table__badge"
                                                 :title="school.name"
@@ -167,10 +167,10 @@ const getUniqueRoles = (roles) => {
                                             </span>
                                         </td>
                                         <td class="table__td table__roles">
-                                            <RoleBadge 
-                                                v-for="role in getUniqueRoles(user.roles)" 
+                                            <RoleBadge
+                                                v-for="role in getUniqueRoles(user.roles)"
                                                 :key="role.id"
-                                                :role="role" 
+                                                :role="role"
                                             />
                                         </td>
                                         <td class="table__td table__actions">
@@ -184,10 +184,10 @@ const getUniqueRoles = (roles) => {
                                             >
                                                 Editar
                                             </Link>
-                                            <button 
+                                            <button
                                                 v-if="hasPermission($page.props, 'user.manage') &&
                                                     !isAdmin(user) &&
-                                                    user.id !== $page.props.auth.user.id" 
+                                                    user.id !== $page.props.auth.user.id"
                                                 @click="deleteUser(user.id)"
                                             >
                                                 Eliminar
@@ -200,14 +200,14 @@ const getUniqueRoles = (roles) => {
 
                         <!-- Mobile Card View -->
                         <div class="table__mobile">
-                            <div 
-                                v-for="(user, index) in users.data" 
-                                :key="user.id" 
+                            <div
+                                v-for="(user, index) in users.data"
+                                :key="user.id"
                                 :class="{
                                     'table__card--highlighted': user.id === $page.props.auth.user.id,
                                     'table__card--even': user.id !== $page.props.auth.user.id && index % 2 === 0,
                                     'table__card--odd': user.id !== $page.props.auth.user.id && index % 2 === 1
-                                }" 
+                                }"
                                 class="table__card"
                             >
                                 <div class="table__card-header">
@@ -229,10 +229,10 @@ const getUniqueRoles = (roles) => {
                                         >
                                             Editar
                                         </Link>
-                                        <button 
+                                        <button
                                             v-if="hasPermission($page.props, 'user.manage') &&
                                                 !isAdmin(user) &&
-                                                user.id !== $page.props.auth.user.id" 
+                                                user.id !== $page.props.auth.user.id"
                                             @click="deleteUser(user.id)"
                                         >
                                             Eliminar
@@ -242,8 +242,8 @@ const getUniqueRoles = (roles) => {
                                 <div class="table__card-section">
                                     <div class="table__card-label">Escuelas:</div>
                                     <div class="table__card-content">
-                                        <span 
-                                            v-for="school in user.schools" 
+                                        <span
+                                            v-for="school in user.schools"
                                             :key="school.id"
                                             class="table__badge"
                                             :title="school.name"
@@ -255,10 +255,10 @@ const getUniqueRoles = (roles) => {
                                 <div class="table__card-section">
                                     <div class="table__card-label">Roles:</div>
                                     <div class="table__card-content">
-                                        <RoleBadge 
-                                            v-for="role in getUniqueRoles(user.roles)" 
+                                        <RoleBadge
+                                            v-for="role in getUniqueRoles(user.roles)"
                                             :key="role.id"
-                                            :role="role" 
+                                            :role="role"
                                         />
                                     </div>
                                 </div>

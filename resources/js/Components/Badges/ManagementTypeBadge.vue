@@ -1,6 +1,5 @@
 <template>
-  <span :class="['badge', 'badge--management-type', 'management-type--' + (mtype.code || 'default')]"
-    :title="mtype.name">
+  <span :class="['badge', 'badge--management-type', 'management-type--' + (mtype.code || 'default')]" :title="mtype.name">
     {{ label }}
   </span>
 </template>

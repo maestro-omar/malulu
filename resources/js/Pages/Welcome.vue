@@ -18,41 +18,39 @@ defineProps({
         required: true,
     },
 });
+const appName = import.meta.env.VITE_APP_NAME || 'Malulu'
 </script>
 
 <template>
 
     <Head title="Bienvenides" />
-    <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-center">
-        <div v-if="canLogin" class="sm:fixed sm:top-0 sm:right-0 p-6 text-end">
+    <div class="welcome welcome__container">
+        <div v-if="canLogin" class="welcome__auth-links">
             <Link v-if="$page.props.auth.user" :href="route('dashboard')"
-                class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
-            Inicio</Link>
-
+                class="welcome__auth-link">
+                Inicio
+            </Link>
             <template v-else>
-                <Link :href="route('login')"
-                    class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
-                Acceso</Link>
-
-                <Link v-if="canRegister" :href="route('register')"
-                    class="ms-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
-                Register</Link>
+                <Link :href="route('login')" class="welcome__auth-link">
+                    Acceso
+                </Link>
+                <Link v-if="canRegister" :href="route('register')" class="welcome__auth-link">
+                    Register
+                </Link>
             </template>
         </div>
 
-        <div class="max-w-7xl mx-auto p-6 lg:p-8">
-            <div class="flex justify-center">
-                <ApplicationLogo class="w-20 h-20 fill-current text-gray-500" />
+        <div class="welcome__main">
+            <div class="welcome__logo">
+                <ApplicationLogo />
             </div>
-            <div class="mt-4 flex justify-center block">
-                <h1>Malulu</h1>
+            <div class="welcome__title">
+                <h1>{{ appName }}</h1>
             </div>
-
-            <div class="mt-16">
+            <div class="welcome__subtitle">
                 El único sistema integral de administración, gestión y comunicación escolar.
             </div>
-
-            <div class="flex justify-center mt-16 text-gray-500">
+            <div class="welcome__footer">
                 Framework: Laravel v{{ laravelVersion }} + Spatie + Vite/VUE (con PHP v{{ phpVersion }})
             </div>
         </div>

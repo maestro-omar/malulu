@@ -19,7 +19,7 @@ defineExpose({ focus: () => input.value.focus() });
 
 <template>
     <input
-        class="form__input"
+        class="admin-form__input"
         v-model="model"
         ref="input"
     />

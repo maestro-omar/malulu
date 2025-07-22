@@ -1,7 +1,7 @@
 <template>
   <Link
     :href="href"
-    class="nav-cancel"
+    :class="class"
   >
     Cancelar
   </Link>
@@ -14,6 +14,10 @@ defineProps({
   href: {
     type: String,
     required: true
+  },
+  class: {
+    type: String,
+    default: 'nav-cancel'
   }
 });
 </script>

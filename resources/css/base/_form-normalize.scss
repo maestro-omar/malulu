@@ -23,8 +23,7 @@ input[type="search"] {
 // Position radios and checkboxes better
 input[type="radio"],
 input[type="checkbox"] {
-    margin: 4px 0 0;
-    margin-top: 1px \9; // IE8-9
+    margin: 0;
     line-height: normal;
 }
 
@@ -77,6 +76,7 @@ input[type="search"] {
 // Note that as of 8.3, iOS doesn't support `datetime` or `week`.
 
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
+
     input[type="date"],
     input[type="time"],
     input[type="datetime-local"],
@@ -89,26 +89,27 @@ input[type="search"] {
 }
 
 
-  /* ---------Range -----------*/
-  input[type="range"] {
+/* ---------Range -----------*/
+input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     background: transparent;
     cursor: pointer;
     width: 100%;
     background: linear-gradient(to right, variables.$color-brand 0%, variables.$color-brand 50%, rgba(112, 122, 127, 0.12) 50%, rgba(112, 122, 127, 0.12) 100%);
-  }
-  input[type="range"]:focus {
-  outline: none;
-  }
+}
 
-  input[type="range"]::-webkit-slider-runnable-track{
+input[type="range"]:focus {
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
     background-color: rgba(112, 122, 127, 0.12);
     height: 4px;
-  }
+}
 
-  input[type="range"]::-webkit-slider-thumb {
-   -webkit-appearance: none;
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
     appearance: none;
     margin-top: -6px;
     background-color: #fff;
@@ -116,4 +117,4 @@ input[type="search"] {
     border-radius: 50%;
     height: 16px;
     width: 16px;
-  }
+}

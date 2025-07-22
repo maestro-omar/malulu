@@ -170,7 +170,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
-import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
+import SchoolLevelBadge from '@/Components/badges/SchoolLevelBadge.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
 

@@ -10,7 +10,7 @@
       </div>
 
       <div class="schools-roles-card__schools">
-        <div v-for="(school, idx) in schools" :key="school.id" 
+        <div v-for="(school, idx) in schools" :key="school.id"
              :class="['schools-roles-card__school', { 'schools-roles-card__school--alternate': idx % 2 === 0 }]">
           <!-- School Header -->
           <div class="schools-roles-card__school-header">
@@ -39,7 +39,7 @@
           <template v-for="role in getRolesForSchool(school.id)" :key="`details-${role.id}`">
             <div v-if="expandedRoleDetails[school.id]?.[role.id]" class="schools-roles-card__details">
               <!-- Worker Relationships -->
-              <div v-if="hasworkerRelationshipsForRole(role.id, school.id)" 
+              <div v-if="hasworkerRelationshipsForRole(role.id, school.id)"
                    :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
                 <h5 class="schools-roles-card__section-title">Información Docente - {{ role.name }}</h5>
                 <div class="schools-roles-card__relationships">
@@ -95,7 +95,7 @@
               </div>
 
               <!-- Guardian Relationships -->
-              <div v-if="hasGuardianRelationshipsForRole(role.id, school.id)" 
+              <div v-if="hasGuardianRelationshipsForRole(role.id, school.id)"
                    :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
                 <h5 class="schools-roles-card__section-title">Información de Tutor - {{ role.name }}</h5>
                 <div class="schools-roles-card__relationships">
@@ -145,7 +145,7 @@
               </div>
 
               <!-- Student Relationships -->
-              <div v-if="hasStudentRelationshipsForRole(role.id, school.id)" 
+              <div v-if="hasStudentRelationshipsForRole(role.id, school.id)"
                    :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
                 <h5 class="schools-roles-card__section-title">Información de Estudiante - {{ role.name }}</h5>
                 <div class="schools-roles-card__relationships">
@@ -179,7 +179,7 @@
               </div>
 
               <!-- General Role Relationships (for roles without specific relationship types) -->
-              <div v-if="hasGeneralRoleRelationshipsForRole(role.id, school.id)" 
+              <div v-if="hasGeneralRoleRelationshipsForRole(role.id, school.id)"
                    :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
                 <h5 class="schools-roles-card__section-title">Información General del Rol - {{ role.name }}</h5>
                 <div class="schools-roles-card__relationships">
@@ -213,7 +213,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import RoleBadge from '@/Components/Badges/RoleBadge.vue';
+import RoleBadge from '@/Components/badges/RoleBadge.vue';
 import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({

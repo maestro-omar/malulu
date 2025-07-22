@@ -47,7 +47,7 @@ class SchoolService
             ->where('name', '!=', School::GLOBAL)
             ->orderBy('name');
 
-        return $this->handlePagination($query, $request->input('per_page'));
+        return $this->handlePagination($query, $request->input('per_page'), 15);
     }
 
     /**
@@ -190,7 +190,7 @@ class SchoolService
             ->orderBy('name');
 
         if ($request) {
-            return $this->handlePagination($query, $request->input('per_page'));
+            return $this->handlePagination($query, $request->input('per_page'), 15);
         }
 
         // Default behavior if no request provided
@@ -295,7 +295,7 @@ class SchoolService
             ->where('name', '!=', School::GLOBAL)
             ->orderBy('name');
 
-        return $this->handlePagination($query, $request->input('per_page'));
+        return $this->handlePagination($query, $request->input('per_page'), 15);
     }
 
     // Add other business logic methods...

@@ -11,28 +11,28 @@
       <Link
         v-if="add && add.show"
         :href="add.href"
-        class="btn btn--indigo"
+        class="admin-button admin-button--top admin-button--indigo"
       >
         {{ add.label || 'Nuevo' }}
       </Link>
       <Link
         v-if="trashed && trashed.show"
         :href="trashed.href"
-        class="btn btn--gray"
+        class="admin-button admin-button--top admin-button--gray"
       >
         {{ trashed.label || 'Eliminados' }}
       </Link>
       <Link
         v-if="edit && edit.show"
         :href="edit.href"
-        class="btn btn--blue"
+        class="admin-button admin-button--top admin-button--blue"
       >
         {{ edit.label || 'Editar' }}
       </Link>
       <button
         v-if="del && del.show"
         @click="del.onClick"
-        class="btn btn--red"
+        class="admin-button admin-button--top admin-button--red"
       >
         {{ del.label || 'Eliminar' }}
       </button>

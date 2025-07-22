@@ -4,22 +4,30 @@
 // Auth page styles
 
 .auth {
-  &__description {
-    margin-bottom: 1rem;
-    @include mixins.fz(1.5);
-    color: variables.$color-grey-dark;
-  }
+    &__description {
+        margin-bottom: 1rem;
+        @include mixins.fz(1.5);
+        @include mixins.lh(1.5);
+        color: variables.$color-grey-dark;
+    }
 
-  &__status {
-    margin-bottom: 1rem;
-    font-weight: variables.$font-normal-weight;
-    @include mixins.fz(1.5);
-    color: variables.$color-green;
-  }
+    &__status {
+        margin-bottom: 1rem;
+        @include mixins.fz(1.5);
+        @include mixins.lh(1.5);
+        font-weight: variables.$font-normal-weight;
+        color: variables.$color-yellow;
+    }
 
-  &__form {
-    // Form container styles
-  }
+    &__form {
+        // Form container styles
+    }
+
+    &__link {
+      @include mixins.fz(1.5);
+      @include mixins.lh(1.5);
+
+    }
 
     &__field {
         margin-bottom: 1rem;

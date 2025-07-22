@@ -14,8 +14,8 @@ const props = defineProps({
 
 const classes = computed(() =>
     props.active
-        ? 'nav-link nav-link--active'
-        : 'nav-link'
+        ? 'admin-nav-link admin-nav-link--active'
+        : 'admin-nav-link'
 );
 </script>
 

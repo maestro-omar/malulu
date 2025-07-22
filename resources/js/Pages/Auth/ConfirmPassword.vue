@@ -31,7 +31,7 @@ const submit = () => {
                 <TextInput
                     id="password"
                     type="password"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     v-model="form.password"
                     required
                     autocomplete="current-password"

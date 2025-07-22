@@ -7,7 +7,7 @@
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Cursos de ${school.short} - ${selectedLevel.name}`">
         <template #additional-buttons>
           <Link :href="route('courses.create', { school: school.cue, schoolLevel: selectedLevel.code })"
-            class="btn btn--blue">
+            class="admin-button admin-button--top admin-button--blue">
           Agregar Nuevo Curso
           </Link>
         </template>
@@ -32,10 +32,10 @@
               <!-- Year Filter -->
               <div class="table__filter-group">
                 <label for="year-filter" class="table__filter-label">Año</label>
-                <input 
-                  type="number" 
-                  id="year-filter" 
-                  v-model.number="selectedYear" 
+                <input
+                  type="number"
+                  id="year-filter"
+                  v-model.number="selectedYear"
                   @input="triggerFilter"
                   class="table__filter-input"
                 />
@@ -65,15 +65,15 @@
                 <label class="table__filter-label">Turno</label>
                 <div class="table__filter-buttons">
                   <template v-for="([code, shiftData]) in filteredShiftOptions" :key="code">
-                    <button 
+                    <button
                       @click="selectedShift = code; triggerFilter();"
                       :class="getShiftButtonClasses(shiftData, selectedShift === code)"
                     >
                       {{ shiftData.label }}
                     </button>
                   </template>
-                  <button 
-                    @click="selectedShift = null; triggerFilter();" 
+                  <button
+                    @click="selectedShift = null; triggerFilter();"
                     :class="getShiftButtonClasses({ color: 'blue' }, selectedShift === null)"
                   >
                     Todos
@@ -98,8 +98,8 @@
                 </tr>
               </thead>
               <tbody class="table__tbody">
-                <tr 
-                  v-for="(course, index) in courses.data" 
+                <tr
+                  v-for="(course, index) in courses.data"
                   :key="course.id"
                   :class="{
                     'table__tr--even': index % 2 === 0,
@@ -111,7 +111,7 @@
                     <SchoolShiftBadge :shift="course.school_shift" />
                   </td>
                   <td class="table__td table__td--center">
-                    <Link 
+                    <Link
                       v-if="course.previous_course"
                       :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
                       class="table__link"
@@ -150,13 +150,13 @@
 
           <!-- Mobile Card View -->
           <div class="table__mobile">
-            <div 
-              v-for="(course, index) in courses.data" 
+            <div
+              v-for="(course, index) in courses.data"
               :key="course.id"
               :class="{
                 'table__card--even': index % 2 === 0,
                 'table__card--odd': index % 2 === 1
-              }" 
+              }"
               class="table__card"
             >
               <div class="table__card-header">
@@ -184,7 +184,7 @@
               <div class="table__card-section">
                 <div class="table__card-label">Curso Anterior:</div>
                 <div class="table__card-content">
-                  <Link 
+                  <Link
                     v-if="course.previous_course"
                     :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
                     class="table__link"
@@ -238,7 +238,7 @@ import Pagination from '@/Components/admin/Pagination.vue'
 import { ref, watch, computed } from 'vue'
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { schoolShiftOptions } from '@/Composables/schoolShiftOptions';
-import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
+import SchoolShiftBadge from '@/Components/badges/SchoolShiftBadge.vue'
 
 const props = defineProps({
   courses: {

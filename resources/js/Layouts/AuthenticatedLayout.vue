@@ -33,17 +33,17 @@ const schoolConfig = computed(() => {
 const headerStyles = computed(() => {
     if (!schoolConfig.value || !schoolConfig.value.header) {
         return {
-            background: 'bg-gradient-to-b from-red-900 to-blue-900',
-            textColor: 'text-white',
-            hoverColor: 'hover:text-gray-200'
+            background: '#F5F5F5',
+            textColor: '#475569',
+            hoverColor: '#0d9488'
         };
     }
 
     const headerConfig = schoolConfig.value.header;
     return {
-        background: headerConfig.background || 'bg-gradient-to-b from-red-900 to-blue-900',
-        textColor: headerConfig.textColor || 'text-white',
-        hoverColor: headerConfig.hoverColor || 'hover:text-gray-200'
+        background: headerConfig.background || '#F5F5F5',
+        textColor: headerConfig.textColor || '#475569',
+        hoverColor: headerConfig.hoverColor || '#0d9488'
     };
 });
 
@@ -74,7 +74,7 @@ onMounted(() => {
 <template>
     <div class="authenticated-layout">
         <div class="authenticated-layout__container">
-            <nav class="authenticated-layout__nav" :class="headerStyles.background">
+            <nav class="authenticated-layout__nav" :background-color="headerStyles.background">
                 <!-- Primary Navigation Menu -->
                 <div class="authenticated-layout__nav-container">
                     <div class="authenticated-layout__nav-content">
@@ -86,7 +86,7 @@ onMounted(() => {
                                         v-if="logoComponent"
                                         :is="logoComponent"
                                         class="authenticated-layout__nav-logo-image"
-                                        :class="headerStyles.textColor"
+                                        :color="headerStyles.textColor"
                                     />
                                     <img
                                         v-else-if="school && school.logo"
@@ -104,7 +104,8 @@ onMounted(() => {
                                     <NavLink
                                         :href="route(item.route)"
                                         :active="route().current(item.route)"
-                                        :class="[headerStyles.textColor, headerStyles.hoverColor]"
+                                        :color="headerStyles.textColor"
+                                        :hoverColor="headerStyles.hoverColor"
                                     >
                                         {{ item.name }}
                                     </NavLink>

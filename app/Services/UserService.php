@@ -33,7 +33,7 @@ class UserService
                     ->orWhere('email', 'like', "%{$search}%");
             });
         }
-        $users = $this->handlePagination($query, $request->input('per_page'));
+        $users = $this->handlePagination($query, $request->input('per_page'), 30);
 
         // Transform the data to include roles in the expected format
         $transformedUsers = json_decode(json_encode($users), true);
@@ -79,7 +79,7 @@ class UserService
     {
         $query = User::onlyTrashed()->with('roles');
         if ($request) {
-            return $this->handlePagination($query, $request->input('per_page'));
+            return $this->handlePagination($query, $request->input('per_page'), 30);
         }
         return $query->paginate(10);
     }

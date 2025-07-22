@@ -41,7 +41,7 @@ defineExpose({ focus: () => select.value.focus() });
     <select
         :id="id"
         :name="name"
-        class="form__select"
+        class="admin-form__select"
         :class="class"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
@@ -50,4 +50,4 @@ defineExpose({ focus: () => select.value.focus() });
     >
         <slot />
     </select>
-</template> 
+</template>

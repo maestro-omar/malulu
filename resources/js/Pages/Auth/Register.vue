@@ -54,7 +54,7 @@ const submit = () => {
                     type="text"
                     name="name"
                     v-model="form.name"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                     autofocus
                     autocomplete="name"
@@ -69,7 +69,7 @@ const submit = () => {
                     type="text"
                     name="firstname"
                     v-model="form.firstname"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                     autocomplete="given-name"
                 />
@@ -83,7 +83,7 @@ const submit = () => {
                     type="text"
                     name="lastname"
                     v-model="form.lastname"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                     autocomplete="family-name"
                 />
@@ -97,7 +97,7 @@ const submit = () => {
                     type="text"
                     name="id_number"
                     v-model="form.id_number"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                 />
                 <InputError :message="form.errors.id_number" />
@@ -110,7 +110,7 @@ const submit = () => {
                     type="date"
                     name="birthdate"
                     v-model="form.birthdate"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                 />
                 <InputError :message="form.errors.birthdate" />
@@ -123,7 +123,7 @@ const submit = () => {
                     type="email"
                     name="email"
                     v-model="form.email"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                     autocomplete="username"
                 />
@@ -137,7 +137,7 @@ const submit = () => {
                     type="tel"
                     name="phone"
                     v-model="form.phone"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                     autocomplete="tel"
                 />
@@ -151,7 +151,7 @@ const submit = () => {
                     type="text"
                     name="address"
                     v-model="form.address"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                     autocomplete="street-address"
                 />
@@ -165,7 +165,7 @@ const submit = () => {
                     type="text"
                     name="locality"
                     v-model="form.locality"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                 />
                 <InputError :message="form.errors.locality" />
@@ -177,7 +177,7 @@ const submit = () => {
                     id="province_id"
                     name="province_id"
                     v-model="form.province_id"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                 >
                     <option value="">Seleccione una provincia</option>
@@ -194,7 +194,7 @@ const submit = () => {
                     id="country_id"
                     name="country_id"
                     v-model="form.country_id"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                 >
                     <option value="">Seleccione un país</option>
@@ -212,7 +212,7 @@ const submit = () => {
                     type="text"
                     name="nationality"
                     v-model="form.nationality"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                 />
                 <InputError :message="form.errors.nationality" />
@@ -225,7 +225,7 @@ const submit = () => {
                     type="password"
                     name="password"
                     v-model="form.password"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                     autocomplete="new-password"
                 />
@@ -239,7 +239,7 @@ const submit = () => {
                     type="password"
                     name="password_confirmation"
                     v-model="form.password_confirmation"
-                    class="form__input--full-width"
+                    class="admin-form__input--full-width"
                     required
                     autocomplete="new-password"
                 />

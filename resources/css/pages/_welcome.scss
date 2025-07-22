@@ -1,0 +1,57 @@
+// BEM styles for Welcome page
+
+.welcome {
+    &__container {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        // Responsive for sm:fixed, sm:top-0, sm:right-0
+        @media (min-width: 640px) {
+            .welcome__auth-links {
+                position: fixed;
+                top: 0;
+                right: 0;
+                padding: 1.5rem;
+                text-align: end;
+            }
+        }
+    }
+
+    &__auth-links {
+        // Default mobile
+        padding: 1.5rem;
+        text-align: end;
+    }
+
+    &__main {}
+
+    &__logo {
+        display: flex;
+        justify-content: center;
+    }
+
+    &__title {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    &__subtitle {
+        margin-top: 4rem;
+        text-align: center;
+        font-size: 1.25rem;
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: center;
+        margin-top: 4rem;
+        color: #6b7280; // gray-500
+        font-size: 1rem;
+    }
+}

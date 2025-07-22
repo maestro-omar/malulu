@@ -7,7 +7,7 @@
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Listado de Escuelas`" :add="{
         show: hasPermission($page.props, 'superadmin', null),
         href: route('schools.create'),
-        label: 'Nueva'
+        label: 'Nueva escuela'
       }" :trashed="{
         show: hasPermission($page.props, 'superadmin', null),
         href: route('schools.trashed'),
@@ -174,9 +174,9 @@ import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
 import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
-import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
-import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
-import ManagementTypeBadge from '@/Components/Badges/ManagementTypeBadge.vue';
+import SchoolLevelBadge from '@/Components/badges/SchoolLevelBadge.vue';
+import SchoolShiftBadge from '@/Components/badges/SchoolShiftBadge.vue';
+import ManagementTypeBadge from '@/Components/badges/ManagementTypeBadge.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
 
