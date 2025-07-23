@@ -40,7 +40,7 @@ class CustomResetPassword extends ResetPasswordNotification
             ->subject(__('messages.password-reset.subject'))
             ->greeting(__('messages.password-reset.greeting'))
             ->line(__('messages.password-reset.line1'))
-            ->action(__('messages.password-reset.action'), url(config('app.url') . route('password.reset', [
+            ->action(__('messages.password-reset.action'), url(trim(config('app.url'), '/') . route('password.reset', [
                 'token' => $this->token,
                 'email' => $notifiable->getEmailForPasswordReset()
             ], false)))
