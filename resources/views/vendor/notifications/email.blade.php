@@ -4,9 +4,9 @@
 # {{ $greeting }}
 @else
 @if ($level === 'error')
-# @lang('messages.Whoops!')
+# {{ __('messages.Whoops!') }}
 @else
-# @lang('messages.Hello!')
+# {{ __('messages.Hello!') }}
 @endif
 @endif
 
@@ -39,15 +39,15 @@
 @if (! empty($salutation))
 {{ $salutation }}
 @else
-@lang('messages.Regards'),<br>
+{{ __('messages.Regards') }},<br>
 {{ config('app.name') }}
 @endif
 
 {{-- Subcopy --}}
 @isset($actionText)
 <x-slot:subcopy>
-@lang('messages.trouble_clicking_button', ['actionText' => $actionText]
-) <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
+{{ __('messages.trouble_clicking_button', ['actionText' => $actionText]
+)}} <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
 </x-slot:subcopy>
 @endisset
 </x-mail::message>

@@ -26,10 +26,8 @@ return [
     'already_registered' => '¿Ya estás registrado?',
     'not_registered' => '¿No estás registrado?',
 
-    'Hello!' => '¡Hola!!',
-    'Whoops!' => '¡Ups!',
-    'Regards' => 'Saludos',
     'trouble_clicking_button' => 'Si tienes problemas para hacer clic en el botón ":actionText", copia y pega la URL de abajo en tu navegador web:',
+    'All rights reserved.' => '¡Todos los derechos reservados!',
 
     'password-reset' => [
         'subject' => 'Recuperá tu contraseña',
