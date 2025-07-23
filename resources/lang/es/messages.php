@@ -25,4 +25,18 @@ return [
     'name' => 'Nombre',
     'already_registered' => '¿Ya estás registrado?',
     'not_registered' => '¿No estás registrado?',
-]; 
+
+    'Hello!' => '¡Hola!!',
+    'Whoops!' => '¡Ups!',
+    'Regards' => 'Saludos',
+    'trouble_clicking_button' => 'Si tienes problemas para hacer clic en el botón ":actionText", copia y pega la URL de abajo en tu navegador web:',
+
+    'password-reset' => [
+        'subject' => 'Recuperá tu contraseña',
+        'greeting' => '¡Hola!',
+        'line1' => 'Te mandamos este correo porque recibimos una solicitud de restablecimiento de contraseña para tu cuenta.',
+        'action' => 'Restablecer contraseña',
+        'line2' => 'Si no solicitaste un restablecimiento de contraseña, no es necesario realizar ninguna otra acción.',
+        'salutation' => 'Saludos,',
+    ]
+];

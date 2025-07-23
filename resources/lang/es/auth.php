@@ -19,5 +19,6 @@ return [
         'sent' => 'Se envió el email para recuperar el acceso.<br>Revisá tu casilla (y -eventualmente- el correo no deseado).',
         'user' => 'Hubo un error al enviar el email de recuperación. Verificá que la dirección ingresada sea correcta.',
         'reseted' => 'Se actualizó la contraseña.',
+        'throttled' => 'Demasiados intentos. Por favor esperá antes de volver a intentalo.',
     ],
 ];

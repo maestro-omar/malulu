@@ -20,7 +20,7 @@ use App\Models\Catalogs\Country;
 use App\Models\Relations\RoleRelationship;
 use App\Models\Relations\GuardianRelationship;
 use App\Models\Relations\StudentRelationship;
-
+use App\Notifications\CustomResetPassword;
 class User extends Authenticatable
 {
     use FilterConstants, HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
@@ -346,5 +346,10 @@ class User extends Authenticatable
         return collect(self::getFilteredConstants())
             ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
             ->toArray();
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPassword($token));
     }
 }
