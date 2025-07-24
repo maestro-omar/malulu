@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Entities\School;
 use App\Models\Catalogs\Role;
 use Spatie\Permission\Models\Permission;
+use App\Services\UserContextService;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -47,7 +48,10 @@ class HandleInertiaRequests extends Middleware
                     'firstname' => $user->firstname,
                     'lastname' => $user->lastname,
                     'email' => $user->email,
-                    'permissionBySchool' => $user->permissionBySchoolDirect()
+                    //omar importante
+                    'permissionBySchool' => $user->permissionBySchoolDirect(),
+                    'schools' => UserContextService::relatedSchools(),
+                    'activeSchoolId' => UserContextService::activeSchoolId(),
                 ] : null,
             ],
             'menu' => [

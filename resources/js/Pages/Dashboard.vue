@@ -110,6 +110,6 @@ const firstSchool = combinationCount === 1 ? Object.values(schools)[0] : false;
 
 // Debug firstSchool
 console.log('Dashboard - combinationCount:', combinationCount);
-console.log('Dashboard - schools:', schools);
+// console.log('Dashboard - schools:', schools);
 console.log('Dashboard - firstSchool:', firstSchool);
 </script>

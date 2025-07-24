@@ -30,7 +30,7 @@ class SchoolController extends SchoolBaseController
 
     public function index(Request $request)
     {
-        return Inertia::render('Schools/Index', [
+        return $this->render($request, 'Schools/Index', [
             'schools' => $this->schoolService->getSchools($request),
             'localities' => Locality::orderBy('order')->get(),
             'search' => $request->search,
@@ -40,7 +40,7 @@ class SchoolController extends SchoolBaseController
 
     public function create()
     {
-        return Inertia::render('Schools/Create', [
+        return $this->render(null, 'Schools/Create', [
             'breadcrumbs' => Breadcrumbs::generate('schools.create'),
             'localities' => Locality::orderBy('order')->get(),
             'schoolLevels' => SchoolLevel::orderBy('id')->get(),
@@ -69,7 +69,7 @@ class SchoolController extends SchoolBaseController
             abort(403, 'Cannot edit GLOBAL school.');
         }
 
-        return Inertia::render('Schools/Edit', [
+        return $this->render($request, 'Schools/Edit', [
             'school' => $school->load(['locality', 'schoolLevels', 'managementType', 'shifts']),
             'breadcrumbs' => Breadcrumbs::generate('schools.edit', $school),
             'localities' => Locality::orderBy('order')->get(),
@@ -118,7 +118,7 @@ class SchoolController extends SchoolBaseController
             $school->extra = json_decode($school->extra, true);
         }
 
-        return Inertia::render('Schools/Show', [
+        return $this->render(null, 'Schools/Show', [
             'school' => $school,
             'breadcrumbs' => Breadcrumbs::generate('schools.show', $school),
         ]);
@@ -128,7 +128,7 @@ class SchoolController extends SchoolBaseController
     {
         $schools = $this->schoolService->getTrashedSchools();
 
-        return Inertia::render('Schools/Trashed', [
+        return $this->render(null, 'Schools/Trashed', [
             'schools' => $schools
         ]);
     }

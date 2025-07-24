@@ -8,7 +8,6 @@ use App\Services\CourseService;
 use App\Models\Catalogs\Role;
 use App\Models\Relations\RoleRelationship;
 use App\Models\Entities\User;
-use App\Models\Entities\School;
 use App\Models\Catalogs\SchoolLevel;
 use App\Models\Catalogs\SchoolShift;
 
@@ -55,7 +54,7 @@ class DashboardService
 
         if (!$isGlobalAdmin) {
             $rolesAndSchools = $this->user->allRolesAcrossTeamsParsed();
-            $roleRelationships = $this->user->roleRelationships->all();
+            $roleRelationships = $this->user->roleRelationships->all(); //OMAR ¿cambiar por ->activeRoleRelationships?
             foreach ($roleRelationships as $roleRel) {
                 $count++;
                 $schoolId = $roleRel->school_id;
@@ -83,8 +82,7 @@ class DashboardService
                     $schoolIds[] = $schoolId;
             }
         }
-        $schools = School::select('cue', 'id', 'name', 'short', 'slug', 'logo', 'extra')->find($schoolIds)->keyBy('id')->toArray();
-        return ['rolesCardsFlags' => $flags, 'schools' => $schools, 'count' => $count];
+        return ['rolesCardsFlags' => $flags, 'count' => $count];
     }
 
     /**

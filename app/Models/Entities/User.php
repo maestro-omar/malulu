@@ -137,7 +137,7 @@ class User extends Authenticatable
      */
     public function activeRoleRelationships()
     {
-        return $this->roleRelationships()->active();
+        return $this->roleRelationships()->active()->get();
     }
 
     /**
