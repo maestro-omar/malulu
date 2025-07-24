@@ -1,24 +1,45 @@
 @use "../abstracts/variables";
+@use "sass:color";
 
 // School Level Badge Color Modifiers
 .school-level {
     &--inicial {
         background: variables.$color-level-initial-bg;
         color: variables.$color-level-initial-text;
+
+        &.school-level--darker {
+            background: color.scale(variables.$color-level-initial-bg, $lightness: -30%);
+            // color: color.scale(variables.$color-level-initial-text, $lightness: -40%);
+        }
     }
 
     &--primaria {
         background: variables.$color-level-primary-bg;
         color: variables.$color-level-primary-text;
+
+        &.school-level--darker {
+            background: color.scale(variables.$color-level-primary-bg, $lightness: -30%);
+            // color: color.scale(variables.$color-level-primary-text, $lightness: -40%);
+        }
     }
 
     &--secundaria {
         background: variables.$color-level-secondary-bg;
         color: variables.$color-level-secondary-text;
+
+        &.school-level--darker {
+            background: color.scale(variables.$color-level-secondary-bg, $lightness: -30%);
+            // color: color.scale(variables.$color-level-secondary-text, $lightness: -40%);
+        }
     }
 
     &--default {
         background: variables.$color-level-default-bg;
         color: variables.$color-level-default-text;
+
+        &.school-level--darker {
+            background: color.scale(variables.$color-level-default-bg, $lightness: -30%);
+            // color: color.scale(variables.$color-level-default-text, $lightness: -40%);
+        }
     }
 }

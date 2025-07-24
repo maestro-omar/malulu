@@ -25,76 +25,69 @@ const form = useForm({
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-gray-900">Información del Perfil</h2>
-
-            <p class="mt-1 text-sm text-gray-600">
+            <h2 class="admin-form__card-title">Información del Perfil</h2>
+            <p class="admin-form__card-description">
                 Actualice la información del perfil y la dirección de correo electrónico de su cuenta.
             </p>
         </header>
 
-        <form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
-            <div>
+        <form @submit.prevent="form.patch(route('profile.update'))" class="admin-form__container">
+            <div class="admin-form__field">
                 <InputLabel for="name" value="Nombre" />
-
                 <TextInput
                     id="name"
                     type="text"
-                    class="mt-1 block form__input--full-width"
+                    class="admin-form__input"
                     v-model="form.name"
                     required
                     autofocus
                     autocomplete="name"
                 />
-
-                <InputError class="mt-2" :message="form.errors.name" />
+                <InputError class="admin-form__error" :message="form.errors.name" />
             </div>
 
-            <div>
+            <div class="admin-form__field">
                 <InputLabel for="email" value="Correo Electrónico" />
-
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block form__input--full-width"
+                    class="admin-form__input"
                     v-model="form.email"
                     required
                     autocomplete="username"
                 />
-
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError class="admin-form__error" :message="form.errors.email" />
             </div>
 
-            <div v-if="mustVerifyEmail && user.email_verified_at === null">
-                <p class="text-sm mt-2 text-gray-800">
+            <div v-if="mustVerifyEmail && user.email_verified_at === null" class="admin-form__field">
+                <p class="admin-form__verify-message">
                     Su dirección de correo electrónico no está verificada.
                     <Link
                         :href="route('verification.send')"
                         method="post"
                         as="button"
-                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        class="admin-form__verify-link"
                     >
                         Haga clic aquí para reenviar el correo de verificación.
                     </Link>
                 </p>
-
                 <div
                     v-show="status === 'verification-link-sent'"
-                    class="mt-2 font-medium text-sm text-green-600"
+                    class="admin-form__verify-success"
                 >
                     Se ha enviado un nuevo enlace de verificación a su dirección de correo electrónico.
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="admin-form__actions">
                 <PrimaryButton :disabled="form.processing">Guardar</PrimaryButton>
-
                 <Transition
                     enter-active-class="transition ease-in-out"
                     enter-from-class="opacity-0"
                     leave-active-class="transition ease-in-out"
                     leave-to-class="opacity-0"
                 >
-                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600">Guardado.</p>
+                    <p v-if="form.recentlySuccessful" class="admin-form__success-message">Guardado.</p>
                 </Transition>
             </div>
         </form>

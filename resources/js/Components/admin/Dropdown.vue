@@ -45,13 +45,13 @@ const open = ref(false);
 </script>
 
 <template>
-    <div class="dropdown">
+    <div class="admin-dropdown">
         <div @click="open = !open">
             <slot name="trigger" />
         </div>
 
         <!-- Full Screen Dropdown Overlay -->
-        <div v-show="open" class="dropdown__overlay" @click="open = false"></div>
+        <div v-show="open" class="admin-dropdown__overlay" @click="open = false"></div>
 
         <Transition
             enter-active-class="transition ease-out duration-200"
@@ -63,11 +63,11 @@ const open = ref(false);
         >
             <div
                 v-show="open"
-                class="dropdown__menu"
-                :class="[widthClass, alignmentClasses, { 'dropdown__menu--open': open }]"
+                class="admin-dropdown__menu"
+                :class="[widthClass, alignmentClasses, { 'admin-dropdown__menu--open': open }]"
                 @click="open = false"
             >
-                <div class="dropdown__content" :class="contentClasses">
+                <div class="admin-dropdown__content" :class="contentClasses">
                     <slot name="content" />
                 </div>
             </div>

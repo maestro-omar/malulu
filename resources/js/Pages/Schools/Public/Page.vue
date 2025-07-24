@@ -69,7 +69,7 @@
                     <div>
                       <label class="block text-sm font-medium text-gray-400">Turnos</label>
                       <div class="mt-2 flex flex-wrap gap-2">
-                        <ShiftBadge v-for="shift in school.shifts" :key="shift.id" :shift="shift.name" />
+                        <SchoolShiftBadge v-for="shift in school.shifts" :key="shift.id" :shift="shift" />
                       </div>
                     </div>
                   </div>
@@ -159,7 +159,7 @@ import { Head, Link } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { router } from "@inertiajs/vue3";
 import SchoolLevelBadge from "@/Components/badges/SchoolLevelBadge.vue";
-import ShiftBadge from "@/Components/admin/ShiftBadge.vue";
+import SchoolShiftBadge from "@/Components/badges/SchoolShiftBadge.vue";
 import ManagementTypeBadge from "@/Components/badges/ManagementTypeBadge.vue";
 import PhoneField from "@/Components/admin/PhoneField.vue";
 import EmailField from "@/Components/admin/EmailField.vue";

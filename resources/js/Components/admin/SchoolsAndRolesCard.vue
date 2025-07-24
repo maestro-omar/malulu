@@ -4,7 +4,7 @@
       <div class="schools-roles-card__header">
         <h3 class="schools-roles-card__title">{{ title || 'Escuelas y Roles' }}</h3>
         <Link v-if="canAddRoles" :href="route('users.add-role', userId)"
-          class="btn-indigo">
+          class="admin-butotn--indigo">
         NUEVO ROL
         </Link>
       </div>

@@ -1,34 +1,34 @@
 <template>
-  <div class="user-information">
-    <div class="user-information__grid">
+  <div class="admin-user-information">
+    <div class="admin-user-information__grid">
       <!-- Left Column (20%) -->
-      <div class="user-information__profile">
-        <h3 class="user-information__name">
+      <div class="admin-user-information__profile">
+        <h3 class="admin-user-information__name">
           {{ user.firstname + " " + user.lastname }}
         </h3>
-        <div v-if="showPicture" class="user-information__picture">
+        <div v-if="showPicture" class="admin-user-information__picture">
           <EditableImage
             :model-value="user.picture"
             :default-image="'/images/no-image-person.png'"
             :can-edit="false"
-            class="user-information__image"
+            class="admin-user-information__image"
           />
         </div>
       </div>
 
       <!-- Right Column (80%) -->
-      <div class="user-information__details">
-        <div class="user-information__details-grid">
+      <div class="admin-user-information__details">
+        <div class="admin-user-information__details-grid">
           <!-- ID Number -->
-          <div class="user-information__field">
-            <span class="user-information__field-label">DNI:</span>
-            <span class="user-information__field-value">{{ user.id_number }}</span>
+          <div class="admin-user-information__field">
+            <span class="admin-user-information__field-label">DNI:</span>
+            <span class="admin-user-information__field-value">{{ user.id_number }}</span>
           </div>
 
           <!-- Birthdate -->
-          <div class="user-information__field user-information__field--span-2">
-            <span class="user-information__field-label">Fecha de Nacimiento:</span>
-            <span class="user-information__field-value">
+          <div class="admin-user-information__field admin-user-information__field--span-2">
+            <span class="admin-user-information__field-label">Fecha de Nacimiento:</span>
+            <span class="admin-user-information__field-value">
               {{ formatDateShort(user.birthdate) }}
               <template v-if="user.birthdate">
                 &nbsp;({{ calculateAge(user.birthdate) }} años)
@@ -39,17 +39,17 @@
           <!-- Email (if enabled) -->
           <div
             v-if="showContact"
-            class="user-information__field user-information__field--span-2"
+            class="admin-user-information__field admin-user-information__field--span-2"
           >
-            <span class="user-information__field-value">
-              <EmailField id="userEmail" :email="user.email" class="user-information__contact-field" />
+            <span class="admin-user-information__field-value">
+              <EmailField id="userEmail" :email="user.email" class="admin-user-information__contact-field" />
             </span>
           </div>
 
           <!-- Phone (if enabled) -->
-          <div v-if="showContact" class="user-information__field">
-            <span class="user-information__field-value">
-              <PhoneField id="userPhone" :phone="user.phone" class="user-information__contact-field" />
+          <div v-if="showContact" class="admin-user-information__field">
+            <span class="admin-user-information__field-value">
+              <PhoneField id="userPhone" :phone="user.phone" class="admin-user-information__contact-field" />
             </span>
           </div>
         </div>
@@ -57,7 +57,7 @@
     </div>
 
     <!-- Roles Section (if enabled) -->
-    <div v-if="showRoles" class="user-information__roles">
+    <div v-if="showRoles" class="admin-user-information__roles">
       <slot name="roles">
         <SchoolsAndRolesCard
           :title="'Escuelas y roles actuales'"

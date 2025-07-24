@@ -1,22 +1,28 @@
+@use "../abstracts/mixins";
 @use "../abstracts/variables";
 
 // General Badge Styles
 .badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.125rem 0.625rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  line-height: 1.2;
-  user-select: none;
-  white-space: nowrap;
-  transition: background 0.2s, color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 10%;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    @include mixins.fz(1.2);
+    @include mixins.lh(1.2);
+    font-weight: 400;
+    user-select: none;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
 }
 
 // Badge type modifiers for semantic clarity (optional, for future extension)
 .badge--role {}
+
 .badge--shift {}
+
 .badge--management-type {}
+
 .badge--school-level {}
+
 .badge--school-shift {}

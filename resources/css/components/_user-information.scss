@@ -3,29 +3,29 @@
 
 // User Information Component
 
-.user-information {
+.admin-user-information {
   background-color: variables.$color-grey; // bg-gray-50
   padding: 1rem; // p-4
   border-radius: 0.5rem; // rounded-lg
-  
+
   &__grid {
     display: grid; // grid
     grid-template-columns: 1fr; // grid-cols-1
     gap: 1.5rem; // gap-6
-    
+
     @media (min-width: 768px) {
       grid-template-columns: 1fr 4fr; // md:grid-cols-5 (1 + 4)
     }
   }
-  
+
   &__profile {
     text-align: center; // text-center
-    
+
     @media (min-width: 768px) {
       grid-column: span 1; // col-span-1
     }
   }
-  
+
   &__name {
     @include mixins.fz(2.2); // text-lg
     font-weight: 600; // font-semibold
@@ -33,35 +33,35 @@
     text-align: center; // text-center
     color: variables.$color-black-text; // text-gray-900
   }
-  
+
   &__picture {
     display: flex; // flex
     justify-content: center; // justify-center
   }
-  
+
   &__image {
     width: 8rem; // w-32
     height: 8rem; // h-32
     border-radius: 9999px; // rounded-full
     object-fit: cover; // object-cover
   }
-  
+
   &__details {
     @media (min-width: 768px) {
       grid-column: span 4; // col-span-4
     }
   }
-  
+
   &__details-grid {
     display: grid; // grid
     grid-template-columns: 1fr; // grid-cols-1
     gap: 1rem; // gap-4
-    
+
     @media (min-width: 768px) {
       grid-template-columns: repeat(3, 1fr); // md:grid-cols-3
     }
   }
-  
+
   &__field {
     background-color: white; // bg-white
     padding: 0.75rem; // p-3
@@ -69,31 +69,31 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); // shadow-sm
     display: flex; // flex
     align-items: center; // items-center
-    
+
     &--span-2 {
       @media (min-width: 768px) {
         grid-column: span 2; // col-span-2
       }
     }
   }
-  
+
   &__field-label {
     @include mixins.fz(1.5); // text-sm
     font-weight: variables.$font-normal-weight; // font-medium
     color: variables.$color-text; // text-gray-700
   }
-  
+
   &__field-value {
     margin-left: 0.5rem; // ml-2
     @include mixins.fz(1.5); // text-sm
     color: variables.$color-black-text; // text-gray-900
   }
-  
+
   &__contact-field {
     display: inline; // inline
   }
-  
+
   &__roles {
     margin-top: 1.5rem; // mt-6
   }
-} 
+}

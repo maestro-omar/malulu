@@ -43,6 +43,7 @@
 @use 'components/email-field';
 @use 'components/schools-roles-card';
 @use 'components/user-information';
+@use 'components/admin-form';
 
 // Layouts
 @use 'layouts/header';
@@ -57,3 +58,4 @@
 @use 'pages/admin';
 @use 'pages/user-create';
 @use 'pages/welcome';
+@use 'pages/delete-user';

@@ -1,9 +1,7 @@
 <script setup>
-import DangerButton from '@/Components/admin/DangerButton.vue';
 import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import Modal from '@/Components/admin/Modal.vue';
-import SecondaryButton from '@/Components/admin/SecondaryButton.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
@@ -38,56 +36,49 @@ const closeModal = () => {
 </script>
 
 <template>
-    <section class="space-y-6">
-        <header>
-            <h2 class="text-lg font-medium text-gray-900">Eliminar Cuenta</h2>
-
-            <p class="mt-1 text-sm text-gray-600">
+    <section class="delete-user">
+        <header class="delete-user__header">
+            <h2 class="delete-user__title">Eliminar Cuenta</h2>
+            <p class="delete-user__description">
                 Una vez que su cuenta sea eliminada, todos sus recursos y datos serán eliminados permanentemente. Antes de eliminar
                 su cuenta, por favor descargue cualquier dato o información que desee conservar.
             </p>
         </header>
 
-        <DangerButton @click="confirmUserDeletion">Eliminar Cuenta</DangerButton>
+        <button @click="confirmUserDeletion" class="admin-button admin-button--danger delete-user__delete-btn">Eliminar Cuenta</button>
 
         <Modal :show="confirmingUserDeletion" @close="closeModal">
-            <div class="p-6">
-                <h2 class="text-lg font-medium text-gray-900">
+            <div class="delete-user__modal">
+                <h2 class="delete-user__modal-title">
                     ¿Está seguro de que desea eliminar su cuenta?
                 </h2>
-
-                <p class="mt-1 text-sm text-gray-600">
+                <p class="delete-user__modal-description">
                     Una vez que su cuenta sea eliminada, todos sus recursos y datos serán eliminados permanentemente. Por favor,
                     ingrese su contraseña para confirmar que desea eliminar permanentemente su cuenta.
                 </p>
-
-                <div class="mt-6">
+                <div class="delete-user__modal-input">
                     <InputLabel for="password" value="Contraseña" class="sr-only" />
-
                     <TextInput
                         id="password"
                         ref="passwordInput"
                         v-model="form.password"
                         type="password"
-                        class="mt-1 block w-3/4"
+                        class="delete-user__password-input"
                         placeholder="Contraseña"
                         @keyup.enter="deleteUser"
                     />
-
-                    <InputError :message="form.errors.password" class="mt-2" />
+                    <InputError :message="form.errors.password" class="delete-user__input-error" />
                 </div>
-
-                <div class="mt-6 flex justify-end">
-                    <SecondaryButton @click="closeModal"> Cancelar </SecondaryButton>
-
-                    <DangerButton
-                        class="ms-3"
-                        :class="{ 'opacity-25': form.processing }"
+                <div class="delete-user__modal-actions">
+                    <button @click="closeModal" class="admin-button admin-button--secondary delete-user__cancel-btn"> Cancelar </button>
+                    <button
+                        class="admin-button admin-button--danger delete-user__confirm-btn"
+                        :class="{ 'delete-user__confirm-btn--processing': form.processing }"
                         :disabled="form.processing"
                         @click="deleteUser"
                     >
                         Eliminar Cuenta
-                    </DangerButton>
+                    </button>
                 </div>
             </div>
         </Modal>

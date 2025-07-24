@@ -1,18 +1,18 @@
 <template>
-  <div class="dropdown" ref="dropdownRef">
-    <div class="dropdown__search">
+  <div class="admin-dropdown" ref="dropdownRef">
+    <div class="admin-dropdown__search">
       <input
         type="text"
         :value="search"
         @input="updateSearch"
         @focus="onInputFocus"
         :placeholder="placeholder"
-        class="dropdown__search-input"
+        class="admin-dropdown__search-input"
       />
-      <div v-if="search" class="dropdown__search-clear">
+      <div v-if="search" class="admin-dropdown__search-clear">
         <button
           @click="clearSearch"
-          class="dropdown__search-clear-button"
+          class="admin-dropdown__search-clear-button"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -24,14 +24,14 @@
     <!-- Dropdown Options -->
     <div
       v-if="filteredOptions.length > 0"
-      :class="['dropdown__menu', 'dropdown__menu--search', { 'dropdown__menu--open': showOptions }]"
+      :class="['admin-dropdown__menu', 'admin-dropdown__menu--search', { 'admin-dropdown__menu--open': showOptions }]"
       @mousedown.stop
     >
       <div
         v-for="option in filteredOptions"
         :key="option.id"
         @click="selectOption(option)"
-        class="dropdown__link"
+        class="admin-dropdown__link"
       >
         {{ option.long || option.name }}
       </div>
@@ -63,7 +63,7 @@ const props = defineProps({
   }
 });
 
-console.log('[Dropdown] Props received:', props);
+// console.log('[Dropdown] Props received:', props);
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -72,25 +72,25 @@ const showOptions = ref(false);
 
 const onInputFocus = () => {
   showOptions.value = true;
-  console.log('[Dropdown] Input focused, showOptions:', showOptions.value);
+  // console.log('[Dropdown] Input focused, showOptions:', showOptions.value);
 };
 
 // Initialize search with initial value
 onMounted(() => {
-  console.log('[Dropdown] Mounted');
+  // console.log('[Dropdown] Mounted');
   if (props.initialValue) {
     const value = typeof props.initialValue === 'object' ? props.initialValue : props.options.find(opt => opt.id === props.initialValue);
     if (value) {
       search.value = value.long || value.name;
       emit('update:modelValue', value);
-      console.log('[Dropdown] Initial value set:', value);
+      // console.log('[Dropdown] Initial value set:', value);
     }
   }
   document.addEventListener('mousedown', handleClickOutside);
 });
 
 onUnmounted(() => {
-  console.log('[Dropdown] Unmounted');
+  // console.log('[Dropdown] Unmounted');
   document.removeEventListener('mousedown', handleClickOutside);
 });
 
@@ -103,33 +103,33 @@ const filteredOptions = computed(() => {
       (option.long || option.name).toLowerCase().includes(search.value.toLowerCase())
     );
   }
-  console.log('[Dropdown] Filtering options. Search:', search.value, 'Result:', result);
+  // console.log('[Dropdown] Filtering options. Search:', search.value, 'Result:', result);
   return result;
 });
 
 const updateSearch = (event) => {
   search.value = event.target.value;
   showOptions.value = true;
-  console.log('[Dropdown] Search updated:', search.value, 'showOptions:', showOptions.value);
+  // console.log('[Dropdown] Search updated:', search.value, 'showOptions:', showOptions.value);
 };
 
 const selectOption = (option) => {
   emit('update:modelValue', option);
   search.value = option.long || option.name;
   showOptions.value = false;
-  console.log('[Dropdown] Option selected:', option, 'showOptions:', showOptions.value);
+  // console.log('[Dropdown] Option selected:', option, 'showOptions:', showOptions.value);
 };
 
 const clearSearch = () => {
   search.value = '';
   emit('update:modelValue', null);
   showOptions.value = false;
-  console.log('[Dropdown] Search cleared, showOptions:', showOptions.value);
+  // console.log('[Dropdown] Search cleared, showOptions:', showOptions.value);
 };
 
 // Update search when modelValue changes
 watch(() => props.modelValue, (newValue) => {
-  console.log('[Dropdown] modelValue changed:', newValue);
+  // console.log('[Dropdown] modelValue changed:', newValue);
   if (newValue) {
     const value = typeof newValue === 'object' ? newValue : props.options.find(opt => opt.id === newValue);
     if (value) {
@@ -142,13 +142,13 @@ watch(() => props.modelValue, (newValue) => {
 
 // Also watch initialValue for changes
 watch(() => props.initialValue, (newValue) => {
-  console.log('[Dropdown] initialValue changed:', newValue);
+  // console.log('[Dropdown] initialValue changed:', newValue);
   if (newValue) {
     const value = typeof newValue === 'object' ? newValue : props.options.find(opt => opt.id === newValue);
     if (value) {
       search.value = value.long || value.name;
       emit('update:modelValue', value);
-      console.log('[Dropdown] initialValue set:', value);
+      // console.log('[Dropdown] initialValue set:', value);
     }
   }
 }, { immediate: true });
@@ -157,7 +157,7 @@ watch(() => props.initialValue, (newValue) => {
 const handleClickOutside = (event) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
     showOptions.value = false;
-    console.log('[Dropdown] Clicked outside, closing dropdown');
+    // console.log('[Dropdown] Clicked outside, closing dropdown');
   }
 };
 </script>

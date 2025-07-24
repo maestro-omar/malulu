@@ -12,7 +12,7 @@ defineProps({
 <template>
     <Link
         :href="href"
-        class="dropdown__link"
+        class="admin-dropdown__link"
     >
         <slot />
     </Link>

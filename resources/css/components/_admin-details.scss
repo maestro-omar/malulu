@@ -3,7 +3,7 @@
 
 // Admin Detail Components
 
-.detail {
+.admin-detail {
   p {
     margin: 0;
   }
@@ -108,7 +108,7 @@
   }
 
   &__value {
-    margin-top: 0.25rem; // mt-1
+    margin: 0.25rem 0 0 0; // mt-1
     @include mixins.fz(1.5); // text-sm
     color: variables.$color-black-text; // text-gray-900
   }

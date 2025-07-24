@@ -1,6 +1,6 @@
 @use "../abstracts/mixins";
 
-// Header layout 
+// Header layout
 // Page subtitle
 .page-subtitle {
   @include mixins.fz(3);
@@ -13,22 +13,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  
+
   &__content {
     display: flex;
     flex-direction: column;
     flex: 1;
   }
-  
+
   &__actions {
     display: flex;
     flex-direction: column;
     gap: 0.5rem; // space-y-2
-    
+
     @media (min-width: 768px) { // md: breakpoint
+      margin-left: 20px;
       flex-direction: row;
       gap: 1rem; // md:space-x-4
-      
+
       // Reset vertical spacing on md+
       > * {
         margin-top: 0;
@@ -36,4 +37,4 @@
       }
     }
   }
-} 
+}

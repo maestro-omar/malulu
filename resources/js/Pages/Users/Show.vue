@@ -44,13 +44,13 @@ const destroy = () => {
         </template>
 
         <div class="container">
-            <div class="detail__wrapper">
-                <div class="detail__card">
-                    <div class="detail__content">
-                        <div class="detail__grid">
+            <div class="admin-detail__wrapper">
+                <div class="admin-detail__card">
+                    <div class="admin-detail__content">
+                        <div class="admin-detail__grid">
                             <!-- Basic Information -->
-                            <div class="detail__section">
-                                <div class="detail__image-container">
+                            <div class="admin-detail__section">
+                                <div class="admin-detail__image-container">
                                     <EditableImage
                                         v-model="user.picture"
                                         type="picture"
@@ -61,48 +61,48 @@ const destroy = () => {
                                         delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?"
                                     />
                                 </div>
-                                <h3 class="detail__section-title">Información Básica</h3>
-                                <div class="detail__info-layout">
-                                    <div class="detail__info-content">
-                                        <div class="detail__field">
-                                            <label class="detail__label">Nombre de usuario</label>
-                                            <div class="detail__value">{{ user.name }}</div>
+                                <h3 class="admin-detail__section-title">Información Básica</h3>
+                                <div class="admin-detail__info-layout">
+                                    <div class="admin-detail__info-content">
+                                        <div class="admin-detail__field">
+                                            <label class="admin-detail__label">Nombre de usuario</label>
+                                            <div class="admin-detail__value">{{ user.name }}</div>
                                         </div>
 
-                                        <div class="detail__field-grid">
-                                            <div class="detail__field">
-                                                <label class="detail__label">Nombre</label>
-                                                <div class="detail__value">{{ user.firstname || '-' }}</div>
+                                        <div class="admin-detail__field-grid">
+                                            <div class="admin-detail__field">
+                                                <label class="admin-detail__label">Nombre</label>
+                                                <div class="admin-detail__value">{{ user.firstname || '-' }}</div>
                                             </div>
-                                            <div class="detail__field">
-                                                <label class="detail__label">Apellido</label>
-                                                <div class="detail__value">{{ user.lastname || '-' }}</div>
+                                            <div class="admin-detail__field">
+                                                <label class="admin-detail__label">Apellido</label>
+                                                <div class="admin-detail__value">{{ user.lastname || '-' }}</div>
                                             </div>
-                                            <div class="detail__field">
-                                                <label class="detail__label">Género</label>
-                                                <div class="detail__value">
+                                            <div class="admin-detail__field">
+                                                <label class="admin-detail__label">Género</label>
+                                                <div class="admin-detail__value">
                                                     {{ genders[user.gender] || user.gender || '-' }}
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="detail__field-grid">
-                                            <div class="detail__field">
-                                                <label class="detail__label">DNI</label>
-                                                <div class="detail__value">{{ user.id_number || '-' }}</div>
+                                        <div class="admin-detail__field-grid">
+                                            <div class="admin-detail__field">
+                                                <label class="admin-detail__label">DNI</label>
+                                                <div class="admin-detail__value">{{ user.id_number || '-' }}</div>
                                             </div>
-                                            <div class="detail__field">
-                                                <label class="detail__label">Fecha de Nacimiento</label>
-                                                <div class="detail__value">
+                                            <div class="admin-detail__field">
+                                                <label class="admin-detail__label">Fecha de Nacimiento</label>
+                                                <div class="admin-detail__value">
                                                     {{ user.birthdate ? new
                                                         Date(user.birthdate).toLocaleDateString('es-AR', {
                                                             timeZone: 'UTC'
                                                         }) : '-' }}
                                                 </div>
                                             </div>
-                                            <div class="detail__field">
-                                                <label class="detail__label">Nacionalidad</label>
-                                                <div class="detail__value">{{ user.nationality || '-' }}</div>
+                                            <div class="admin-detail__field">
+                                                <label class="admin-detail__label">Nacionalidad</label>
+                                                <div class="admin-detail__value">{{ user.nationality || '-' }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -110,38 +110,38 @@ const destroy = () => {
                             </div>
 
                             <!-- Contact Information -->
-                            <div class="detail__section">
-                                <h3 class="detail__section-title">Información de Contacto</h3>
-                                <div class="detail__field-grid detail__field-grid--contact">
-                                    <div class="detail__field detail__field--email">
-                                        <label class="detail__label">Email</label>
+                            <div class="admin-detail__section">
+                                <h3 class="admin-detail__section-title">Información de Contacto</h3>
+                                <div class="admin-detail__field-grid admin-detail__field-grid--contact">
+                                    <div class="admin-detail__field admin-detail__field--email">
+                                        <label class="admin-detail__label">Email</label>
                                         <EmailField :email="user.email" />
                                     </div>
-                                    <div class="detail__field">
-                                        <label class="detail__label">Teléfono</label>
+                                    <div class="admin-detail__field">
+                                        <label class="admin-detail__label">Teléfono</label>
                                         <PhoneField :phone="user.phone" />
                                     </div>
                                 </div>
 
-                                <div class="detail__field-grid">
-                                    <div class="detail__field">
-                                        <label class="detail__label">Dirección</label>
-                                        <div class="detail__value">{{ user.address || '-' }}</div>
+                                <div class="admin-detail__field-grid">
+                                    <div class="admin-detail__field">
+                                        <label class="admin-detail__label">Dirección</label>
+                                        <div class="admin-detail__value">{{ user.address || '-' }}</div>
                                     </div>
-                                    <div class="detail__field">
-                                        <label class="detail__label">Localidad</label>
-                                        <div class="detail__value">{{ user.locality || '-' }}</div>
+                                    <div class="admin-detail__field">
+                                        <label class="admin-detail__label">Localidad</label>
+                                        <div class="admin-detail__value">{{ user.locality || '-' }}</div>
                                     </div>
                                 </div>
 
-                                <div class="detail__field-grid">
-                                    <div class="detail__field">
-                                        <label class="detail__label">Provincia</label>
-                                        <div class="detail__value">{{ user.province?.name || '-' }}</div>
+                                <div class="admin-detail__field-grid">
+                                    <div class="admin-detail__field">
+                                        <label class="admin-detail__label">Provincia</label>
+                                        <div class="admin-detail__value">{{ user.province?.name || '-' }}</div>
                                     </div>
-                                    <div class="detail__field">
-                                        <label class="detail__label">País</label>
-                                        <div class="detail__value">{{ user.country?.name || '-' }}</div>
+                                    <div class="admin-detail__field">
+                                        <label class="admin-detail__label">País</label>
+                                        <div class="admin-detail__value">{{ user.country?.name || '-' }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -160,22 +160,22 @@ const destroy = () => {
                     :user-id="user.id"
                 />
 
-                <div class="detail__card detail__card--mt">
-                    <div class="detail__content">
-                        <div class="detail__grid">
+                <div class="admin-detail__card admin-detail__card--mt">
+                    <div class="admin-detail__content">
+                        <div class="admin-detail__grid">
                             <!-- System Information -->
-                            <div class="detail__section">
-                                <h3 class="detail__section-title">Información del Sistema</h3>
-                                <div class="detail__field-grid">
-                                    <div class="detail__field">
-                                        <label class="detail__label">Fecha de Registro</label>
-                                        <div class="detail__value">
+                            <div class="admin-detail__section">
+                                <h3 class="admin-detail__section-title">Información del Sistema</h3>
+                                <div class="admin-detail__field-grid">
+                                    <div class="admin-detail__field">
+                                        <label class="admin-detail__label">Fecha de Registro</label>
+                                        <div class="admin-detail__value">
                                             {{ new Date(user.created_at).toLocaleDateString() }}
                                         </div>
                                     </div>
-                                    <div class="detail__field">
-                                        <label class="detail__label">Última Actualización</label>
-                                        <div class="detail__value">
+                                    <div class="admin-detail__field">
+                                        <label class="admin-detail__label">Última Actualización</label>
+                                        <div class="admin-detail__value">
                                             {{ new Date(user.updated_at).toLocaleDateString() }}
                                         </div>
                                     </div>

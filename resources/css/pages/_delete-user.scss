@@ -1,0 +1,77 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
+.admin-delete-user {
+    &__header {
+        margin-bottom: 2rem;
+    }
+
+    &__title {
+        @include mixins.fz(1.25);
+        @include mixins.lh(1.4);
+        font-weight: 500;
+        color: variables.$color-black-text;
+    }
+
+    &__description {
+        @include mixins.fz(1);
+        @include mixins.lh(1.2);
+        color: variables.$color-text;
+        margin-top: 0.25rem;
+    }
+
+    &__delete-btn {
+        margin-bottom: 2rem;
+    }
+
+    &__modal {
+        padding: 1.5rem;
+    }
+
+    &__modal-title {
+        @include mixins.fz(1.5);
+        @include mixins.lh(1.7);
+        font-weight: 500;
+        color: variables.$color-black-text;
+    }
+
+    &__modal-description {
+        margin-top: 0.25rem;
+        @include mixins.fz(1);
+        @include mixins.lh(1.2);
+        color: variables.$color-text;
+    }
+
+    &__modal-input {
+        margin-top: 1.5rem;
+    }
+
+    &__password-input {
+        display: block;
+        width: 75%;
+        margin-top: 0.25rem;
+    }
+
+    &__input-error {
+        margin-top: 0.5rem;
+    }
+
+    &__modal-actions {
+        margin-top: 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    &__cancel-btn {
+        // Additional styles if needed
+    }
+
+    &__confirm-btn {
+        // Additional styles if needed
+    }
+
+    &__confirm-btn--processing {
+        opacity: 0.25;
+    }
+}
