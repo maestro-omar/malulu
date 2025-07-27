@@ -28,16 +28,15 @@ class SchoolManagementType extends Model
     public static function vueOptions(): array
     {
         $map = [
-            self::PUBLIC   => ['label' => 'Pública', 'color' => 'sky'],
-            self::PRIVATE => ['label' => 'Privada', 'color' => 'purple'],
-            self::GENERATIVE   => ['label' => 'Generativa', 'color' => 'emerald'],
-            self::SELF_MANAGED   => ['label' => 'Autogestionada', 'color' => 'pink'],
+            self::PUBLIC   => ['label' => 'Pública'],
+            self::PRIVATE => ['label' => 'Privada'],
+            self::GENERATIVE   => ['label' => 'Generativa'],
+            self::SELF_MANAGED   => ['label' => 'Autogestionada'],
         ];
 
         return collect(self::getFilteredConstants())
             ->mapWithKeys(fn($value) => [$value => $map[$value] ?? [
                 'label' => ucfirst($value),
-                'color' => 'gray',
             ]])
             ->toArray();
     }

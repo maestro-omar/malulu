@@ -35,15 +35,14 @@ class JobStatus extends Model
     public static function vueOptions(): array
     {
         $map = [
-            self::SUBSTITUTE => ['label' => 'Suplente', 'color' => 'red'],
-            self::INTERIM    => ['label' => 'Interino', 'color' => 'blue'],
-            self::PERMANENT  => ['label' => 'Permanente', 'color' => 'green'],
+            self::SUBSTITUTE => ['label' => 'Suplente'],
+            self::INTERIM    => ['label' => 'Interino'],
+            self::PERMANENT  => ['label' => 'Permanente'],
         ];
 
         return collect(self::getFilteredConstants())
             ->mapWithKeys(fn($value) => [$value => $map[$value] ?? [
                 'label' => ucfirst($value),
-                'color' => 'gray',
             ]])
             ->toArray();
     }

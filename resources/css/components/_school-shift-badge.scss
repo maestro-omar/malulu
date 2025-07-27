@@ -1,4 +1,5 @@
 @use "../abstracts/variables";
+@use "sass:color";
 
 // School Shift Badge Color Modifiers
 .school-shift--manana {
@@ -15,5 +16,23 @@
 }
 .school-shift--default {
   background: variables.$color-shift-default-bg;
+  color: variables.$color-shift-default-text;
+}
+
+// Light variants for inactive state
+.school-shift--manana-light {
+  background: color.scale(variables.$color-shift-morning-bg, $lightness: 30%);
+  color: variables.$color-shift-morning-text;
+}
+.school-shift--tarde-light {
+  background: color.scale(variables.$color-shift-afternoon-bg, $lightness: 30%);
+  color: variables.$color-shift-afternoon-text;
+}
+.school-shift--noche-light {
+  background: color.scale(variables.$color-shift-night-bg, $lightness: 30%);
+  color: variables.$color-shift-night-text;
+}
+.school-shift--default-light {
+  background: color.scale(variables.$color-shift-default-bg, $lightness: 30%);
   color: variables.$color-shift-default-text;
 }

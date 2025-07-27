@@ -56,15 +56,14 @@ class SchoolLevel extends Model
     public static function vueOptions(): array
     {
         $map = [
-            self::KINDER => ['label' => 'Inicial', 'color' => 'rose'],
-            self::PRIMARY   => ['label' => 'Primaria', 'color' => 'amber'],
-            self::SECONDARY => ['label' => 'Secundaria', 'color' => 'violet'],
+            self::KINDER => ['label' => 'Inicial'],
+            self::PRIMARY   => ['label' => 'Primaria'],
+            self::SECONDARY => ['label' => 'Secundaria'],
         ];
 
         return collect(self::getFilteredConstants())
             ->mapWithKeys(fn($value) => [$value => $map[$value] ?? [
                 'label' => ucfirst($value),
-                'color' => 'gray',
             ]])
             ->toArray();
     }

@@ -26,15 +26,14 @@ class SchoolShift extends Model
     public static function vueOptions(): array
     {
         $map = [
-            self::MORNING   => ['label' => 'Mañana', 'color' => 'green'],
-            self::AFTERNOON => ['label' => 'Tarde', 'color' => 'orange'],
-            self::NIGHT   => ['label' => 'Noche', 'color' => 'indigo'],
+            self::MORNING   => ['label' => 'Mañana'],
+            self::AFTERNOON => ['label' => 'Tarde'],
+            self::NIGHT   => ['label' => 'Noche'],
         ];
 
         return collect(self::getFilteredConstants())
             ->mapWithKeys(fn($value) => [$value => $map[$value] ?? [
                 'label' => ucfirst($value),
-                'color' => 'gray',
             ]])
             ->toArray();
     }

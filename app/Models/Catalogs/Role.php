@@ -28,7 +28,8 @@ class Role extends SpatieRole
      * Role code constants
      */
     const SUPERADMIN = 'superadmin';
-    const ADMIN = 'administrador';
+    const CONFIGURATOR = 'configurador';
+    const SCHOOL_ADMIN = 'administrador';
     const DIRECTOR = 'director';
     const REGENT = 'regente';
     const SECRETARY = 'secretaria';
@@ -66,7 +67,8 @@ class Role extends SpatieRole
     {
         return [
             self::SUPERADMIN,
-            self::ADMIN,
+            self::CONFIGURATOR,
+            self::SCHOOL_ADMIN,
             self::DIRECTOR,
             self::REGENT,
             self::SECRETARY,
@@ -88,17 +90,18 @@ class Role extends SpatieRole
      * Get roles that don't require extra data
      *
      * @return array
-     */
     public static function rolesWithoutExtraData(): array
     {
         return [
             self::SUPERADMIN,
-            self::ADMIN,
+            self::CONFIGURATOR,
+            self::SCHOOL_ADMIN,
             self::DIRECTOR,
             self::REGENT,
             self::SECRETARY,
         ];
     }
+     */
 
     /**
      * Get worker role codes
@@ -204,28 +207,28 @@ class Role extends SpatieRole
     public static function vueOptions(): array
     {
         $map = [
-            self::SUPERADMIN => ['label' => 'Superadmin', 'color' => 'black'],
-            self::ADMIN => ['label' => 'Administrador', 'color' => 'purple'],
-            self::DIRECTOR => ['label' => 'Director/a', 'color' => 'blue'],
-            self::REGENT => ['label' => 'Regente', 'color' => 'green'],
-            self::SECRETARY => ['label' => 'Secretario/a', 'color' => 'yellow'],
-            self::PROFESSOR => ['label' => 'Profesor/a', 'color' => 'indigo'],
-            self::GRADE_TEACHER => ['label' => 'Maestro/a de Grado', 'color' => 'pink'],
-            self::ASSISTANT_TEACHER => ['label' => 'Auxiliar Docente', 'color' => 'orange'],
-            self::CURRICULAR_TEACHER => ['label' => 'Maestro/a Curricular', 'color' => 'teal'],
-            self::SPECIAL_TEACHER => ['label' => 'Maestro/a Especial', 'color' => 'cyan'],
-            self::CLASS_ASSISTANT => ['label' => 'Preceptor/a', 'color' => 'emerald'],
-            self::LIBRARIAN => ['label' => 'Bibliotecario/a', 'color' => 'violet'],
-            self::GUARDIAN => ['label' => 'Tutor/a', 'color' => 'rose'],
-            self::STUDENT => ['label' => 'Alumno/a', 'color' => 'sky'],
-            self::COOPERATIVE => ['label' => 'Cooperadora', 'color' => 'amber'],
-            self::FORMER_STUDENT => ['label' => 'Ex-alumno/a', 'color' => 'slate'],
+            self::SUPERADMIN => ['label' => 'Superadmin'],
+            self::CONFIGURATOR => ['label' => 'Configurador'],
+            self::SCHOOL_ADMIN => ['label' => 'Administrador'],
+            self::DIRECTOR => ['label' => 'Director/a'],
+            self::REGENT => ['label' => 'Regente'],
+            self::SECRETARY => ['label' => 'Secretario/a'],
+            self::PROFESSOR => ['label' => 'Profesor/a'],
+            self::GRADE_TEACHER => ['label' => 'Maestro/a de Grado'],
+            self::ASSISTANT_TEACHER => ['label' => 'Auxiliar Docente'],
+            self::CURRICULAR_TEACHER => ['label' => 'Maestro/a Curricular'],
+            self::SPECIAL_TEACHER => ['label' => 'Maestro/a Especial'],
+            self::CLASS_ASSISTANT => ['label' => 'Preceptor/a'],
+            self::LIBRARIAN => ['label' => 'Bibliotecario/a'],
+            self::GUARDIAN => ['label' => 'Tutor/a'],
+            self::STUDENT => ['label' => 'Alumno/a'],
+            self::COOPERATIVE => ['label' => 'Cooperadora'],
+            self::FORMER_STUDENT => ['label' => 'Ex-alumno/a'],
         ];
 
         return collect(self::getFilteredConstants())
             ->mapWithKeys(fn($value) => [$value => $map[$value] ?? [
                 'label' => ucfirst(str_replace('_', ' ', $value)),
-                'color' => 'gray',
             ]])
             ->toArray();
     }

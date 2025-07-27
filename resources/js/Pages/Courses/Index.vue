@@ -67,14 +67,14 @@
                   <template v-for="([code, shiftData]) in filteredShiftOptions" :key="code">
                     <button
                       @click="selectedShift = code; triggerFilter();"
-                      :class="getShiftButtonClasses(shiftData, selectedShift === code)"
+                      :class="getShiftButtonClasses(code, selectedShift === code)"
                     >
                       {{ shiftData.label }}
                     </button>
                   </template>
                   <button
                     @click="selectedShift = null; triggerFilter();"
-                    :class="getShiftButtonClasses({ color: 'blue' }, selectedShift === null)"
+                    :class="getShiftButtonClasses('default', selectedShift === null)"
                   >
                     Todos
                   </button>
@@ -238,7 +238,7 @@ import Pagination from '@/Components/admin/Pagination.vue'
 import { ref, watch, computed } from 'vue'
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { schoolShiftOptions } from '@/Composables/schoolShiftOptions';
-import SchoolShiftBadge from '@/Components/badges/SchoolShiftBadge.vue'
+import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
 
 const props = defineProps({
   courses: {
@@ -309,31 +309,16 @@ const triggerFilter = () => {
   }, 300);
 };
 
-const getShiftButtonClasses = (shiftData, isActive) => {
+const getShiftButtonClasses = (shiftCode, isActive) => {
   const baseClasses = 'btn btn--sm';
-  const colorMap = {
-    green: {
-      active: 'btn--green',
-      inactive: 'btn--green-light',
-    },
-    orange: {
-      active: 'btn--orange',
-      inactive: 'btn--orange-light',
-    },
-    indigo: {
-      active: 'btn--indigo',
-      inactive: 'btn--indigo-light',
-    },
-    // Add more colors if needed based on your API response
-    gray: {
-      active: 'btn--gray',
-      inactive: 'btn--gray-light',
-    },
-  };
-
-  const colorClasses = colorMap[shiftData.color] || colorMap.gray;
-
-  return `${baseClasses} ${isActive ? colorClasses.active : colorClasses.inactive}`;
+  
+  // Direct concatenation with shift code
+  const shiftClass = `school-shift--${shiftCode || 'default'}`;
+  
+  // For active state, use the shift class. For inactive, add a light variant
+  const stateClass = isActive ? shiftClass : `${shiftClass}-light`;
+  
+  return `${baseClasses} ${stateClass}`;
 };
 
 </script>
