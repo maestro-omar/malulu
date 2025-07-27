@@ -44,9 +44,15 @@ class RoleAndPermissionSeeder extends Seeder
                 'description' => 'Administrador general del sistema',
                 'short' => 'Super',
             ],
-            Role::ADMIN => [
+            Role::CONFIGURATOR => [
+                'name' => 'Configurador',
+                'code' => Role::CONFIGURATOR,
+                'description' => 'Administrador parcial del sistema',
+                'short' => 'Config',
+            ],
+            Role::SCHOOL_ADMIN => [
                 'name' => 'Administrador',
-                'code' => Role::ADMIN,
+                'code' => Role::SCHOOL_ADMIN,
                 'description' => 'Administrador de la escuela',
                 'short' => 'Admin',
             ],
@@ -258,11 +264,14 @@ class RoleAndPermissionSeeder extends Seeder
             'user.manage',
             'role.manage',
             'permission.manage',
+        ];
+
+        $configPermissions = [
             'academic-year.manage',
             'file-type.manage',
             'file-subtype.manage',
             'country.manage',
-            'distrinct.manage',
+            'district.manage',
             'province.manage',
             'locality.manage',
             'jobstatus.manage',
@@ -273,6 +282,7 @@ class RoleAndPermissionSeeder extends Seeder
             'studentcourseendreason.manage',
         ];
 
+
         $adminPermissions = [
             'admin.create',
         ];
@@ -282,7 +292,7 @@ class RoleAndPermissionSeeder extends Seeder
             'school.delete',
         ];
 
-        $schoolEdirPermissions = [
+        $schoolEditPermissions = [
             'school.edit',
         ];
 
@@ -363,9 +373,10 @@ class RoleAndPermissionSeeder extends Seeder
             case 'MAGIC_ALL':
                 return array_merge(
                     $superAdminPermissions,
+                    $configPermissions,
                     $adminPermissions,
                     $schoolAdminPermissions,
-                    $schoolEdirPermissions,
+                    $schoolEditPermissions,
                     $academicAdminPermissions,
                     $teacherPermissions,
                     $studentPermissions,
@@ -378,10 +389,15 @@ class RoleAndPermissionSeeder extends Seeder
                     $academicHistoryPermissions,
                     $universalPermissions
                 );
-            case Role::ADMIN:
+            case Role::CONFIGURATOR:
+                return array_merge(
+                    $configPermissions,
+                    $universalPermissions
+                );
+            case Role::SCHOOL_ADMIN:
                 return array_merge(
                     $adminPermissions,
-                    $schoolEdirPermissions,
+                    $schoolEditPermissions,
                     $academicAdminPermissions,
                     $teacherPermissions,
                     $studentPermissions,
@@ -398,7 +414,7 @@ class RoleAndPermissionSeeder extends Seeder
             case Role::REGENT:
             case Role::SECRETARY:
                 return array_merge(
-                    $schoolEdirPermissions,
+                    $schoolEditPermissions,
                     $academicAdminPermissions,
                     $teacherPermissions,
                     $studentPermissions,

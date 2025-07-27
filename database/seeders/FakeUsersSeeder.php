@@ -80,6 +80,34 @@ class FakeUsersSeeder extends Seeder
         if (!$province || !$country) {
             throw new \Exception('Default province or country not found. Please run ProvinceSeeder and CountrySeeder first.');
         }
+        // Get global school ID
+        $globalSchoolId = School::specialGlobalId();
+        if (!$globalSchoolId) {
+            throw new \Exception('Global school not found. Please run SchoolSeeder first.');
+        }
+
+        // Create admin user
+        $configMalulu = User::firstOrCreate(
+            ['email' => 'config@malulu.com'],
+            [
+                'name' => 'Gestor provincial',
+                'firstname' => 'Gestor',
+                'lastname' => 'Gestor',
+                'id_number' => '02345678',
+                'gender' => 'fem',
+                'birthdate' => '1970-01-01',
+                'phone' => '26611223344',
+                'address' => 'Av. Illia 321',
+                'locality' => 'San Luis',
+                'province_id' => $province->id,
+                'country_id' => $country->id,
+                'nationality' => 'Argentina',
+                'password' => Hash::make('123123123'),
+            ]
+        );
+
+        $configRoleId = $this->allRoles[Role::GUARDIAN] ?? null;
+        $configMalulu->assignRoleForSchool($configRoleId, $globalSchoolId);
 
         $guardianRoleId = $this->allRoles[Role::GUARDIAN] ?? null;
 
@@ -102,14 +130,12 @@ class FakeUsersSeeder extends Seeder
                 'province_id' => $province->id,
                 'country_id' => $country->id,
                 'nationality' => 'Argentina',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('123123123'),
             ]
         );
 
         // Assign admin role
-        $adminRoleId = $this->allRoles[Role::ADMIN] ?? null;
-        if (empty($adminRoleId)) dd("Sin role ADMIN");
-        $this->assignRoleWithRelationship($admin, $adminRoleId, $defaultSchool, null, Role::ADMIN);
+        $this->assignRoleWithRelationship($admin, $defaultSchool, null, Role::SCHOOL_ADMIN);
 
         // Create random users
         $usersToCreate = [
@@ -188,7 +214,7 @@ class FakeUsersSeeder extends Seeder
         })->get();
 
         foreach ($cooperativeUsers as $user) {
-            $this->assignRoleWithRelationship($user, $guardianRoleId, $defaultSchool, null, Role::COOPERATIVE);
+            $this->assignRoleWithRelationship($user, $defaultSchool, null, Role::COOPERATIVE);
         }
 
         // Make 3 grade teachers also guardians
@@ -196,7 +222,7 @@ class FakeUsersSeeder extends Seeder
             $query->where('code', Role::GRADE_TEACHER);
         })->take(3)->get();
         foreach ($gradeTeachers as $i => $user) {
-            $this->assignRoleWithRelationship($user, $guardianRoleId, $defaultSchool, null, Role::GUARDIAN, 'Teacher and guardian '  . $i);
+            $this->assignRoleWithRelationship($user, $defaultSchool, null, Role::GUARDIAN, 'Teacher and guardian '  . $i);
         }
 
         // Make one teacher from default school also be a guardian in another school
@@ -209,13 +235,13 @@ class FakeUsersSeeder extends Seeder
             $otherSchool = School::where('code', '!=', self::DEFAULT_CUE)->inRandomOrder()->first();
             if ($otherSchool) {
                 // Assign guardian role in the other school
-                $this->assignRoleWithRelationship($teacherFromDefaultSchool, $guardianRoleId, $otherSchool, null, Role::GUARDIAN, 'Teacher and guardian in other school');
+                $this->assignRoleWithRelationship($teacherFromDefaultSchool, $otherSchool, null, Role::GUARDIAN, 'Teacher and guardian in other school');
             }
         }
 
         // Create users for other schools
         $otherSchools = School::where('code', '!=', self::DEFAULT_CUE)->limit(self::OTHER_SCHOOLS_LIMIT)->get();
-        $availableRoles = array_diff(Role::allCodes(), [Role::SUPERADMIN, Role::ADMIN]);
+        $availableRoles = array_diff(Role::allCodes(), [Role::SUPERADMIN, Role::SCHOOL_ADMIN]);
 
 
         foreach ($otherSchools as $school) {
@@ -352,7 +378,7 @@ class FakeUsersSeeder extends Seeder
                         'province_id' => $province->id,
                         'country_id' => $country->id,
                         'nationality' => $nationality,
-                        'password' => Hash::make('password'),
+                        'password' => Hash::make('123123123'),
                     ]
                 );
 
@@ -369,7 +395,7 @@ class FakeUsersSeeder extends Seeder
                     }
                 }
 
-                echo "Trying to assign role to user_id: {$user->id}, school_id: {$school->id} \n";
+                // echo "Trying to assign role to user_id: {$user->id}, school_id: {$school->id} \n";
 
                 $role = Role::find($roleId);
                 $existingRoleRelationship = $user->roleRelationships()
@@ -381,7 +407,7 @@ class FakeUsersSeeder extends Seeder
                     // Skip or log, do not assign again
                 } else {
                     // Safe to assign
-                    $this->assignRoleWithRelationship($user, $roleId, $school, $schoolLevelId, $roleCode);
+                    $this->assignRoleWithRelationship($user, $school, $schoolLevelId, $roleCode);
                 }
             }
         }
@@ -423,11 +449,14 @@ class FakeUsersSeeder extends Seeder
     /**
      * Assigns a role to a user for a specific school and creates the corresponding relationship (worker, student, or guardian).
      */
-    private function assignRoleWithRelationship(User $user, int $roleId, School $school, ?int $schoolLevelId, string $roleCode, string $note = ''): void
+    private function assignRoleWithRelationship(User $user, School $school, ?int $schoolLevelId, string $roleCode, string $note = ''): void
     {
         if (!$school || !School::find($school->id)) {
             throw new \Exception('School does not exist: ' . print_r($school, true));
         }
+        // Get the role by code
+        $roleId = $this->allRoles[$roleCode];
+
         $creator = User::find(1); // or use a more appropriate creator if needed
         $details = [
             'start_date' => now()->subYears($this->faker->numberBetween(1, 5)),
@@ -469,7 +498,11 @@ class FakeUsersSeeder extends Seeder
                 ];
             }
         }
-        $this->userService->assignRoleWithDetails($user, $school->id, $roleId, $schoolLevelId, $details, $creator);
+        try {
+            $this->userService->assignRoleWithDetails($user, $school->id, $roleId, $schoolLevelId, $details, $creator);
+        } catch (\Exception $e) {
+            echo "Skip error: {$user->id}, school_id: {$school->id}, roleId: $roleId , schoolLevelId: $schoolLevelId \n";
+        }
     }
 
     /**
