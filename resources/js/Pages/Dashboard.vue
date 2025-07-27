@@ -2,7 +2,7 @@
 
     <Head title="Panel de inicio" />
 
-    <AuthenticatedLayout :school="firstSchool">
+    <AuthenticatedLayout>
         <template #header>
             <div v-if="firstSchool" class="dashboard__header">
                 <h2 class="page-subtitle">
@@ -67,8 +67,8 @@ import FormerStudentPanel from '@/Pages/DashboardPanels/FormerStudentPanel.vue';
 import DefaultPanel from '@/Pages/DashboardPanels/DefaultPanel.vue';
 
 const page = usePage();
-const schools = page.props.schools;
-const combinationCount = page.props.count;
+const schools = page.props.auth.user.schools;
+const combinationCount = page.props.combinationCount;
 const isGlobalAdmin = computed(() => page.props.rolesCardsFlags.isGlobalAdmin);
 
 const isSchoolAdmin = computed(() => {
@@ -106,10 +106,5 @@ const isOtherWorker = computed(() => {
     return typeof data === 'object' && data !== null && Object.keys(data).length > 0 ? data : false;
 });
 
-const firstSchool = combinationCount === 1 ? Object.values(schools)[0] : false;
-
-// Debug firstSchool
-console.log('Dashboard - combinationCount:', combinationCount);
-// console.log('Dashboard - schools:', schools);
-console.log('Dashboard - firstSchool:', firstSchool);
+const firstSchool = combinationCount === 1 ? Object.values(schools)[0] : null;
 </script>

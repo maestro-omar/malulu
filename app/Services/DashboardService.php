@@ -9,14 +9,12 @@ use App\Models\Catalogs\Role;
 use App\Models\Relations\RoleRelationship;
 use App\Models\Entities\User;
 use App\Models\Catalogs\SchoolLevel;
-use App\Models\Catalogs\SchoolShift;
 
 class DashboardService
 {
     private Userservice $userService;
     private CourseService $courseService;
     private User $user;
-    private $userData;
 
     public function __construct(UserService $userService, CourseService $courseService)
     {
@@ -24,19 +22,18 @@ class DashboardService
         $this->courseService = $courseService;
     }
 
-    public function getData($request, User $loggedUser)
+    public function getData($request)
     {
-        $this->user = $loggedUser;
-        $this->userData = $this->userService->getUserShowData($loggedUser);
+        $this->user = auth()->user();
         $data = $this->getFlagsForCards();
         return $data + [
-            'loggedUserData' => $this->userData
+            'loggedUserData' => $this->userService->getUserShowData($this->user)
         ];
     }
 
     private function getFlagsForCards()
     {
-        $isGlobalAdmin =  $this->user->isSuperadmin();
+        $isGlobalAdmin = $this->user->isSuperadmin();
         $flags = [
             'isGlobalAdmin' => $isGlobalAdmin,
             'isSchoolAdmin' => [],
@@ -63,7 +60,7 @@ class DashboardService
                     dd('ERROR INESPERADO: role no encontrado', $roleRel, $rolesAndSchools);
                 $roleCode = $roleData['role_code'];
 
-                if ($roleCode === Role::ADMIN) {
+                if ($roleCode === Role::SCHOOL_ADMIN) {
                     $flags['isSchoolAdmin'][$schoolId] = $this->schoolAdmin($roleRel);
                 } elseif (Role::isTeacher($roleCode)) {
                     $flags['isTeacher'][$schoolId] = $this->schoolTeacher($roleRel);
@@ -82,7 +79,7 @@ class DashboardService
                     $schoolIds[] = $schoolId;
             }
         }
-        return ['rolesCardsFlags' => $flags, 'count' => $count];
+        return ['rolesCardsFlags' => $flags, 'combinationCount' => $count];
     }
 
     /**
@@ -134,7 +131,7 @@ class DashboardService
      */
     protected function schoolStudent(RoleRelationship $roleRel): array
     {
-        dd($roleRel->studentRelationship);
+        dd('schoolStudentschoolStudent', $roleRel->studentRelationship);
         return [];
     }
 
@@ -147,7 +144,7 @@ class DashboardService
      */
     protected function schoolGuardian(RoleRelationship $roleRel): array
     {
-        // dd($roleRel->guardian_relationship);
+        // dd('guardian_relationshipguardian_relationship', $roleRel->guardian_relationship);
         return $roleRel->guardianRelationship;
     }
 

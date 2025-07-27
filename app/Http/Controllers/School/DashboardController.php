@@ -19,7 +19,7 @@ class DashboardController extends SchoolBaseController
 
     public function dashboard(Request $request)
     {
-        $data = $this->dashboardService->getData($request, $this->loggedUser());
+        $data = $this->dashboardService->getData($request);
         return $this->render($request, 'Dashboard', $data + ['breadcrumbs' => Breadcrumbs::generate('dashboard')]);
     }
 }

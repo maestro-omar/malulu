@@ -48,10 +48,11 @@ class HandleInertiaRequests extends Middleware
                     'firstname' => $user->firstname,
                     'lastname' => $user->lastname,
                     'email' => $user->email,
+                    'picture' => $user->picture,
                     //omar importante
                     'permissionBySchool' => $user->permissionBySchoolDirect(),
                     'schools' => UserContextService::relatedSchools(),
-                    'activeSchoolId' => UserContextService::activeSchoolId(),
+                    'activeSchool' => UserContextService::activeSchool(),
                 ] : null,
             ],
             'menu' => [

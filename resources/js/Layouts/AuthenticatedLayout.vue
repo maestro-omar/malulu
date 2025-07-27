@@ -8,23 +8,17 @@ import NavLink from '@/Components/admin/NavLink.vue';
 import ResponsiveNavLink from '@/Components/admin/ResponsiveNavLink.vue';
 import Breadcrumb from '@/Components/admin/Breadcrumbs.vue';
 
-const props = defineProps({
-    school: {
-        type: Object,
-        default: null
-    }
-});
-
 const showingNavigationDropdown = ref(false);
 const page = usePage();
+const school = page.props.auth.user.activeSchool;
 
 // Parse school configuration from extra field
 const schoolConfig = computed(() => {
-    if (!props.school || !props.school.extra) return null;
+    if (!school || !school.extra) return null;
 
-    const extra = typeof props.school.extra === 'string'
-        ? JSON.parse(props.school.extra)
-        : props.school.extra;
+    const extra = typeof school.extra === 'string'
+        ? JSON.parse(school.extra)
+        : school.extra;
 
     return extra.config || null;
 });
@@ -49,7 +43,7 @@ const headerStyles = computed(() => {
 
 // Get logo component or image
 const logoComponent = computed(() => {
-    if (!props.school || !props.school.logo) {
+    if (!school || !school.logo) {
         return ApplicationLogo;
     }
     return null;
@@ -61,13 +55,13 @@ onMounted(() => {
     // console.log('Menu Items:', page.props.menu.items);
 
     // Debug school prop
-    // console.log('Layout - school prop:', props.school);
-    // console.log('Layout - school type:', typeof props.school);
-    // console.log('Layout - school extra:', props.school?.extra);
+    // console.log('Layout - school prop:', school);
+    // console.log('Layout - school type:', typeof school);
+    // console.log('Layout - school extra:', school?.extra);
     // console.log('Layout - school config:', schoolConfig.value);
     // console.log('Layout - header styles:', headerStyles.value);
-    // console.log('Layout - school keys:', Object.keys(props.school || {}));
-    // console.log('Layout - school logo:', props.school?.logo);
+    // console.log('Layout - school keys:', Object.keys(school || {}));
+    // console.log('Layout - school logo:', school?.logo);
 });
 </script>
 

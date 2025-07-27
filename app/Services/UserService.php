@@ -75,7 +75,7 @@ class UserService
         return $transformedUsers;
     }
 
-    public function getTrashedUsers(Request $request = null)
+    public function getTrashedUsers(?Request $request = null)
     {
         $query = User::onlyTrashed()->with('roles');
         if ($request) {
@@ -361,7 +361,25 @@ class UserService
         ]);
 
         // Transform the data to include roles and schools
-        $transformedUser = $user->toArray();
+        $basicKeys = [
+            'address',
+            'birthdate',
+            'country',
+            'email',
+            'firstname',
+            'gender',
+            'id_number',
+            'lastname',
+            'locality',
+            'name',
+            'nationality',
+            'phone',
+            'picture',
+            'province',
+            'updated_at'
+        ];
+        $transformedUser = [];
+        $transformedUser['basic'] = array_intersect_key($user->toArray(), array_flip($basicKeys));
         $allRolesAcrossTeams = collect($user->allRolesAcrossTeams);
 
         // Get unique school IDs from roles
@@ -390,7 +408,8 @@ class UserService
             return [
                 'id' => $school->id,
                 'name' => $school->name,
-                'short' => $school->short
+                'short' => $school->short,
+                'slug' => $school->slug,
             ];
         })->values()->toArray();
 
@@ -587,7 +606,8 @@ class UserService
                 return [
                     'id' => $school->id,
                     'name' => $school->name,
-                    'short' => $school->short
+                    'short' => $school->short,
+                    'slug' => $school->slug
                 ];
             })->toArray();
 
