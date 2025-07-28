@@ -102,7 +102,7 @@
             </div>
           </div>
 
-          <ActionButtons button-label="Guardar Cambios" :cancel-href="route('courses.index', {school: school.cue, schoolLevel: selectedLevel.code})"
+          <ActionButtons button-label="Guardar Cambios" :cancel-href="route('courses.index', {school: school.slug, schoolLevel: selectedLevel.code})"
             :disabled="form.processing" />
         </form>
       </div>

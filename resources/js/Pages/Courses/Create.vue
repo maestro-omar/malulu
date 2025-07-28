@@ -70,7 +70,7 @@
                 <PrimaryButton :disabled="form.processing">
                   Crear Curso
                 </PrimaryButton>
-                <CancelLink :href="route('courses.index', { school: school.cue, schoolLevel: selectedLevel.code })" />
+                <CancelLink :href="route('courses.index', { school: school.slug, schoolLevel: selectedLevel.code })" />
               </div>
             </form>
           </div>

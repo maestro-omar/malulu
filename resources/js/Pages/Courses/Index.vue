@@ -6,7 +6,7 @@
     <template #header>
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Cursos de ${school.short} - ${selectedLevel.name}`">
         <template #additional-buttons>
-          <Link :href="route('courses.create', { school: school.cue, schoolLevel: selectedLevel.code })"
+          <Link :href="route('courses.create', { school: school.slug, schoolLevel: selectedLevel.code })"
             class="admin-button admin-button--top admin-button--blue">
           Agregar Nuevo Curso
           </Link>
@@ -108,7 +108,7 @@
                   <td class="table__td table__td--center">
                     <Link
                       v-if="course.previous_course"
-                      :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
+                      :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
                       class="table__link"
                     >
                       {{ course.previous_course.number }} º {{ course.previous_course.letter }}
@@ -128,12 +128,12 @@
                   </td>
                   <td class="table__td table__actions">
                     <Link
-                      :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
+                      :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })"
                     >
                       Ver
                     </Link>
                     <Link
-                      :href="route('courses.edit', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
+                      :href="route('courses.edit', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })"
                     >
                       Editar
                     </Link>
@@ -165,12 +165,12 @@
                 </div>
                 <div class="table__card-actions">
                   <Link
-                    :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
+                    :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })"
                   >
                     Ver
                   </Link>
                   <Link
-                    :href="route('courses.edit', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
+                    :href="route('courses.edit', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })"
                   >
                     Editar
                   </Link>
@@ -181,7 +181,7 @@
                 <div class="table__card-content">
                   <Link
                     v-if="course.previous_course"
-                    :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
+                    :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
                     class="table__link"
                   >
                     {{ course.previous_course.number }} º {{ course.previous_course.letter }}
@@ -293,7 +293,7 @@ const triggerFilter = () => {
   filterTimeout = setTimeout(() => {
     router.get(
       route('courses.index', {
-        school: props.school.cue,
+        school: props.school.slug,
         schoolLevel: props.selectedLevel.code,
         year: selectedYear.value,
         active: activeStatus.value,

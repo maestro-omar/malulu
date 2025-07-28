@@ -61,7 +61,7 @@
                   <p class="text-lg font-semibold text-gray-900">
                     <Link
                       v-if="course.previous_course"
-                      :href="route('courses.show', { school: school.cue, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
+                      :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
                       class="text-blue-600 hover:text-blue-900"
                     >
                       {{ course.previous_course.number }} º {{ course.previous_course.letter }}
@@ -75,13 +75,13 @@
             <div class="mt-6 flex space-x-4">
               <Link
                 v-if="hasPermission($page.props, 'school.edit', school.id)"
-                :href="route('courses.edit', { school: school.cue, schoolLevel: selectedLevel.code, course: course.id })"
+                :href="route('courses.edit', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })"
                 class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
               >
                 Editar Curso
               </Link>
               <Link
-                :href="route('courses.index', { school: school.cue, schoolLevel: selectedLevel.code })"
+                :href="route('courses.index', { school: school.slug, schoolLevel: selectedLevel.code })"
                 class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
               >
                 Volver al Listado
