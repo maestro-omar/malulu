@@ -15,6 +15,9 @@ return [
 
     // System routes slugs
     'profile' => 'perfil',
+    'staff' => 'personal',
+    'students' => 'estudiantes',
+    'guardians' => 'tutores',
     'users' => 'usuarios',
     'trashed' => 'eliminados',
     'restore' => 'restaurar',

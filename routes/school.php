@@ -3,6 +3,7 @@
 use App\Http\Controllers\School\CourseController;
 use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\School\SchoolPageController;
+use App\Http\Controllers\School\UserController;
 use Illuminate\Support\Facades\Route;
 // use Inertia\Inertia;
 
@@ -23,6 +24,10 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get(__('routes.pages') . '/{schoolPage}/' . __('routes.edit'), [SchoolPageController::class, 'edit'])->name('school-pages.edit')->middleware('school.permission:school-page.manage');
         Route::put(__('routes.pages') . '/{schoolPage}', [SchoolPageController::class, 'update'])->name('school-pages.update')->middleware('school.permission:school-page.manage');
         Route::delete(__('routes.pages') . '/{schoolPage}', [SchoolPageController::class, 'destroy'])->name('school-pages.destroy')->middleware('school.permission:school-page.manage');
+
+        Route::get( __('routes.staff'), [UserController::class, 'staff'])->name('staff.index');
+        Route::get( __('routes.students'), [UserController::class, 'students'])->name('students.index');
+        Route::get( __('routes.guardians'), [UserController::class, 'guardians'])->name('guardians.index');
 
         // Courses Routes
         Route::get('{schoolLevel}/' . __('routes.courses'), [CourseController::class, 'index'])->name('courses.index')->middleware('school.permission:course.manage');

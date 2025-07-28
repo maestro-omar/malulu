@@ -14,16 +14,23 @@
         label: 'Eliminar'
       }">
         <template #additional-buttons>
-          <Link v-if="hasPermission($page.props, 'school.view', null)"
-            :href="route('schools.index')"
-            class="admin-button admin-button--top admin-button--secondary">
-          Volver a Escuelas
-          </Link>
           <Link v-for="level in school.school_levels" :key="level.id"
             v-if="hasPermission($page.props, 'course.manage', school.id)"
             :href="route('courses.index', { school: school.slug, schoolLevel: level.code })"
             :class="['admin-button', 'admin-button--top', `school-level--darker school-level--${level.code}`]">
           Cursos ({{ level.name }})
+          </Link>
+          <Link :href="route('students.index', { school: school.slug })"
+            :class="['admin-button', 'admin-button--top', ` admin-button--green`]">
+          Estudiantes
+          </Link>
+          <Link :href="route('guardians.index', { school: school.slug })"
+            :class="['admin-button', 'admin-button--top', ` admin-button--blue`]">
+          Madres/padres
+          </Link>
+          <Link :href="route('staff.index', { school: school.slug })"
+            :class="['admin-button', 'admin-button--top', ` admin-button--orange`]">
+          Personal
           </Link>
         </template>
       </AdminHeader>
@@ -41,8 +48,7 @@
                       <label class="admin-detail__label">Logo</label>
                       <div class="admin-detail__image-container">
                         <EditableImage v-model="school.logo" type="logo" :model-id="school.cue" :can-edit="true"
-                          upload-route="schools.upload-image"
-                          delete-route="schools.delete-image"
+                          upload-route="schools.upload-image" delete-route="schools.delete-image"
                           delete-confirm-message="¿Está seguro que desea eliminar el logo?" />
                       </div>
                     </div>
@@ -51,7 +57,8 @@
                       <label class="admin-detail__label">Imagen Principal</label>
                       <div class="admin-detail__image-container">
                         <EditableImage v-model="school.picture" type="picture" :model-id="school.cue" :can-edit="true"
-                          image-class="admin-detail__picture" upload-route="schools.upload-image" delete-route="schools.delete-image"
+                          image-class="admin-detail__picture" upload-route="schools.upload-image"
+                          delete-route="schools.delete-image"
                           delete-confirm-message="¿Está seguro que desea eliminar la imagen principal?" />
                       </div>
                     </div>
