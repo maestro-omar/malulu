@@ -10,6 +10,8 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           <div>
             <form @submit.prevent="submit">
+              <!-- Flash Messages -->
+              <FlashMessages :error="flash?.error" :success="flash?.success" />
               <div class="mb-4">
                 <label
                   class="block text-gray-700 text-sm font-bold mb-2"
@@ -146,6 +148,7 @@ import { Head } from "@inertiajs/vue3";
 import { formatDateForInput } from "@/utils/date";
 import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
 import CancelLink from "@/Components/admin/CancelLink.vue";
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 
 const form = useForm({
   year: "",

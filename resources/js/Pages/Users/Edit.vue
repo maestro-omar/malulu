@@ -6,6 +6,7 @@ import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
 import ActionButtons from '@/Components/admin/ActionButtons.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 
 const props = defineProps({
     user: Object,
@@ -50,6 +51,8 @@ const submit = () => {
         <div class="container">
             <div class="admin-form__wrapper">
                 <form @submit.prevent="submit" class="admin-form__container">
+                    <!-- Flash Messages -->
+                    <FlashMessages :error="flash?.error" :success="flash?.success" />
                     <!-- Basic Information Card -->
                     <div class="admin-form__card">
                         <h3 class="admin-form__card-title">Información Básica</h3>

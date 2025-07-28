@@ -8,6 +8,8 @@
     <div class="container">
       <div class="admin-form__wrapper">
         <form @submit.prevent="submit" class="admin-form__container">
+          <!-- Flash Messages -->
+          <FlashMessages :error="flash?.error" :success="flash?.success" />
           <!-- Basic Information Card -->
           <div class="admin-form__card">
             <h3 class="admin-form__card-title">Información Básica</h3>
@@ -105,6 +107,7 @@ import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
 import CancelLink from '@/Components/admin/CancelLink.vue';
 import AdminHeader from "@/Sections/AdminHeader.vue";
 import { hasPermission } from '@/utils/permissions';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 
 const page = usePage();
 const roles = page.props.roles || [];

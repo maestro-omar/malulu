@@ -10,6 +10,8 @@
     <div class="container">
       <div class="admin-form__wrapper">
         <form @submit.prevent="submit" class="admin-form__container">
+          <!-- Flash Messages -->
+          <FlashMessages :error="flash?.error" :success="flash?.success" />
           <div class="admin-form__card">
             <div class="admin-form__card-content">
               <div class="admin-form__field">
@@ -63,6 +65,7 @@ import InputLabel from '@/Components/admin/InputLabel.vue'
 import TextInput from '@/Components/admin/TextInput.vue'
 import InputError from '@/Components/admin/InputError.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 
 const props = defineProps({
   academicYear: {

@@ -10,6 +10,8 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           <div>
             <form @submit.prevent="submit" class="space-y-6">
+              <!-- Flash Messages -->
+              <FlashMessages :error="flash?.error" :success="flash?.success" />
               <div>
                 <InputLabel for="name" value="Nombre" />
                 <TextInput
@@ -206,6 +208,7 @@ import CancelLink from "@/Components/admin/CancelLink.vue";
 import AdminHeader from "@/Sections/AdminHeader.vue";
 import { hasPermission } from '@/utils/permissions';
 import { ref } from 'vue';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 
 const props = defineProps({
   localities: Array,

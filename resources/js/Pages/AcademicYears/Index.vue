@@ -14,12 +14,7 @@
 
     <div class="container">
       <!-- Flash Messages -->
-      <div v-if="flash?.error" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-        <span class="block sm:inline">{{ flash.error }}</span>
-      </div>
-      <div v-if="flash?.success" class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-        <span class="block sm:inline">{{ flash.success }}</span>
-      </div>
+      <FlashMessages :error="flash?.error" :success="flash?.success" />
 
       <div class="table__wrapper">
         <div class="table__container">
@@ -36,8 +31,8 @@
                 </tr>
               </thead>
               <tbody class="table__tbody">
-                <tr 
-                  v-for="(year, index) in academicYears" 
+                <tr
+                  v-for="(year, index) in academicYears"
                   :key="year.id"
                   :class="{
                     'table__tr--even': index % 2 === 0,
@@ -62,13 +57,13 @@
 
           <!-- Mobile Card View -->
           <div class="table__mobile">
-            <div 
-              v-for="(year, index) in academicYears" 
+            <div
+              v-for="(year, index) in academicYears"
               :key="year.id"
               :class="{
                 'table__card--even': index % 2 === 0,
                 'table__card--odd': index % 2 === 1
-              }" 
+              }"
               class="table__card"
             >
               <div class="table__card-header">
@@ -112,6 +107,7 @@ import { formatDate } from '../../utils/date'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 
 defineProps({
   academicYears: {

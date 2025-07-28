@@ -8,6 +8,8 @@
     <div class="container">
       <div class="admin-form__wrapper">
         <form @submit.prevent="submit" class="admin-form__container">
+          <!-- Flash Messages -->
+          <FlashMessages :error="flash?.error" :success="flash?.success" />
           <div class="admin-form__card">
             <div class="admin-form__card-content">
               <!-- Hidden School ID Field -->
@@ -120,6 +122,7 @@ import SelectInput from '@/Components/admin/SelectInput.vue'
 import CheckboxWithLabel from '@/Components/admin/CheckboxWithLabel.vue'
 import { formatDateForInput } from '@/utils/date'
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 
 const props = defineProps({
   course: {

@@ -1,8 +1,10 @@
 <template>
   <AuthenticatedLayout>
+
     <Head title="Cursos" />
     <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Crear Nuevo Curso para ${school.name} (Nivel: ${selectedLevel.name})`"></AdminHeader>
+      <AdminHeader :breadcrumbs="breadcrumbs"
+        :title="`Crear Nuevo Curso para ${school.name} (Nivel: ${selectedLevel.name})`"></AdminHeader>
     </template>
 
     <div class="py-12">
@@ -15,79 +17,45 @@
               <!-- Hidden School Level ID Field -->
               <input type="hidden" v-model="form.school_level_id" />
 
+              <!-- Flash Messages -->
+              <FlashMessages :error="flash?.error" :success="flash?.success" />
+
               <div class="mb-4">
                 <InputLabel for="school_shift_id" value="Turno Escolar" />
-                <SelectInput
-                  id="school_shift_id"
-                  v-model="form.school_shift_id"
-                  :options="schoolShifts"
-                  option-value="id"
-                  option-label="name"
-                  class="mt-1 block w-full"
-                  required
-                />
+                <SelectInput id="school_shift_id" v-model="form.school_shift_id" :options="schoolShifts"
+                  option-value="id" option-label="name" class="mt-1 block w-full" required />
                 <InputError class="mt-2" :message="form.errors.school_shift_id" />
               </div>
 
               <div class="mb-4">
                 <InputLabel for="previous_course_id" value="Curso Anterior" />
-                <SelectInput
-                  id="previous_course_id"
-                  v-model="form.previous_course_id"
-                  :options="courses"
-                  option-value="id"
-                  option-label="full_name"
-                  :show-default-option="true"
-                  default-option-label="Ninguno"
-                  class="mt-1 block w-full"
-                />
+                <SelectInput id="previous_course_id" v-model="form.previous_course_id" :options="courses"
+                  option-value="id" option-label="full_name" :show-default-option="true" default-option-label="Ninguno"
+                  class="mt-1 block w-full" />
                 <InputError class="mt-2" :message="form.errors.previous_course_id" />
               </div>
 
               <div class="mb-4">
                 <InputLabel for="number" value="Número" />
-                <TextInput
-                  id="number"
-                  type="number"
-                  v-model="form.number"
-                  class="mt-1 block w-full"
-                  required
-                />
+                <TextInput id="number" type="number" v-model="form.number" class="mt-1 block w-full" required />
                 <InputError class="mt-2" :message="form.errors.number" />
               </div>
 
               <div class="mb-4">
                 <InputLabel for="letter" value="Letra" />
-                <TextInput
-                  id="letter"
-                  type="text"
-                  v-model="form.letter"
-                  class="mt-1 block w-full"
-                  required
-                />
+                <TextInput id="letter" type="text" v-model="form.letter" class="mt-1 block w-full" required />
                 <InputError class="mt-2" :message="form.errors.letter" />
               </div>
 
               <div class="mb-4">
                 <InputLabel for="start_date" value="Fecha de Inicio" />
-                <TextInput
-                  id="start_date"
-                  type="date"
-                  v-model="form.start_date"
-                  class="mt-1 block w-full"
-                  required
-                />
+                <TextInput id="start_date" type="date" v-model="form.start_date" class="mt-1 block w-full" required />
                 <InputError class="mt-2" :message="form.errors.start_date" />
               </div>
 
               <div class="mb-4">
                 <InputLabel for="end_date" value="Fecha de Fin" />
-                <TextInput
-                  id="end_date"
-                  type="date"
-                  v-model="form.end_date"
-                  class="mt-1 block w-full"
-                />
+                <TextInput id="end_date" type="date" v-model="form.end_date" class="mt-1 block w-full" />
                 <InputError class="mt-2" :message="form.errors.end_date" />
               </div>
 
@@ -102,7 +70,7 @@
                 <PrimaryButton :disabled="form.processing">
                   Crear Curso
                 </PrimaryButton>
-                <CancelLink :href="route('courses.index', {school: school.cue, schoolLevel: selectedLevel.code})" />
+                <CancelLink :href="route('courses.index', { school: school.cue, schoolLevel: selectedLevel.code })" />
               </div>
             </form>
           </div>
@@ -124,6 +92,7 @@ import CancelLink from '@/Components/admin/CancelLink.vue'
 import CheckboxWithLabel from '@/Components/admin/CheckboxWithLabel.vue'
 import { formatDateForInput } from '@/utils/date'
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 
 const props = defineProps({
   school: Object,
@@ -148,6 +117,6 @@ const form = useForm({
 })
 
 const submit = () => {
-  form.post(route('courses.store', {school: props.school.cue, schoolLevel: props.selectedLevel.code}))
+  form.post(route('courses.store', { school: props.school.cue, schoolLevel: props.selectedLevel.code }))
 }
 </script>

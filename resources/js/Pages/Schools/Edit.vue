@@ -10,6 +10,8 @@
     <div class="container">
       <div class="admin-form__wrapper">
         <form @submit.prevent="submit" class="admin-form__container">
+          <!-- Flash Messages -->
+          <FlashMessages :error="flash?.error" :success="flash?.success" />
           <div class="admin-form__card">
             <div class="admin-form__card-content">
               <div class="admin-form__grid form__grid--2">
@@ -202,6 +204,7 @@ import ActionButtons from '@/Components/admin/ActionButtons.vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 
 const props = defineProps({
   school: Object,

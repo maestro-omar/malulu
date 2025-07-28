@@ -18,12 +18,7 @@
 
     <div class="container">
       <!-- Flash Messages -->
-      <div v-if="flash?.error" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-        <span class="block sm:inline">{{ flash.error }}</span>
-      </div>
-      <div v-if="flash?.success" class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-        <span class="block sm:inline">{{ flash.success }}</span>
-      </div>
+      <FlashMessages :error="flash?.error" :success="flash?.success" />
 
       <div class="table__wrapper">
         <div class="table__container">
@@ -179,6 +174,7 @@ import SchoolShiftBadge from '@/Components/badges/SchoolShiftBadge.vue';
 import ManagementTypeBadge from '@/Components/badges/ManagementTypeBadge.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 
 const props = defineProps({
   schools: Object,

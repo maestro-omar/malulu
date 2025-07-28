@@ -1,0 +1,35 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+@use "sass:color";
+
+.flash-messages {
+    margin-bottom: 1.5rem;
+
+    &__message {
+        border: 1px solid transparent;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        position: relative;
+        @include mixins.fz(1.2);
+        @include mixins.lh(1.2);
+        font-weight: 400;
+
+        &--error {
+            background-color: color.scale(variables.$color-ko, $lightness: 80%);
+            border-color: color.scale(variables.$color-ko, $lightness: 50%);
+            color: variables.$color-ko;
+        }
+
+
+        &--success {
+            background-color: color.scale(variables.$color-ok, $lightness: 80%);
+            border-color: color.scale(variables.$color-ok, $lightness: 50%);
+            color: variables.$color-ok;
+        }
+    }
+
+    &__text {
+        display: inline-block;
+    }
+}
