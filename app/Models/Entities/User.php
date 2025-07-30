@@ -21,6 +21,8 @@ use App\Models\Relations\RoleRelationship;
 use App\Models\Relations\GuardianRelationship;
 use App\Models\Relations\StudentRelationship;
 use App\Notifications\CustomResetPassword;
+use App\Models\Entities\Builders\User as Builder;
+
 class User extends Authenticatable
 {
     use FilterConstants, HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
@@ -79,6 +81,24 @@ class User extends Authenticatable
     const GENDER_OTHER = 'otro';
 
     private $permissionBySchoolCache;
+
+    /**
+     * @return void
+     */
+    protected static function booted()
+    {
+        // static::addGlobalScope('enabled', static fn (Builder $q) => $q->where(static::TABLE.'.enabled', true));
+    }
+
+    /**
+     * @param \Illuminate\Database\Query\Builder $q
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|static
+     */
+    public function newEloquentBuilder($q)
+    {
+        return new Builder($q);
+    }
 
     /**
      * Get the province that owns the user.
@@ -167,6 +187,7 @@ class User extends Authenticatable
             ->active()
             ->first();
     }
+
 
     /**
      * Get the student relationship for the user.

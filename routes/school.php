@@ -25,9 +25,12 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::put(__('routes.pages') . '/{schoolPage}', [SchoolPageController::class, 'update'])->name('school-pages.update')->middleware('school.permission:school-page.manage');
         Route::delete(__('routes.pages') . '/{schoolPage}', [SchoolPageController::class, 'destroy'])->name('school-pages.destroy')->middleware('school.permission:school-page.manage');
 
-        Route::get( __('routes.staff'), [UserController::class, 'staff'])->name('staff.index');
-        Route::get( __('routes.students'), [UserController::class, 'students'])->name('students.index');
-        Route::get( __('routes.guardians'), [UserController::class, 'guardians'])->name('guardians.index');
+        Route::get(__('routes.staff'), [UserController::class, 'staff'])->name('school.staff');
+        Route::get(__('routes.students'), [UserController::class, 'students'])->name('school.students');
+        Route::get(__('routes.students') . '/' . __('routes.create'), [UserController::class, 'studentCreate'])->name('school.students.create');
+        Route::get(__('routes.guardians'), [UserController::class, 'guardians'])->name('school.guardians');
+
+        Route::get(__('routes.guardians'), [UserController::class, 'guardians'])->name('school.guardians');
 
         // Courses Routes
         Route::get('{schoolLevel}/' . __('routes.courses'), [CourseController::class, 'index'])->name('courses.index')->middleware('school.permission:course.manage');

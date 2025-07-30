@@ -20,15 +20,15 @@
             :class="['admin-button', 'admin-button--top', `school-level--darker school-level--${level.code}`]">
           Cursos ({{ level.name }})
           </Link>
-          <Link :href="route('students.index', { school: school.slug })"
+          <Link :href="route('school.students', { school: school.slug })"
             :class="['admin-button', 'admin-button--top', ` admin-button--green`]">
           Estudiantes
           </Link>
-          <Link :href="route('guardians.index', { school: school.slug })"
+          <Link :href="route('school.guardians', { school: school.slug })"
             :class="['admin-button', 'admin-button--top', ` admin-button--blue`]">
           Madres/padres
           </Link>
-          <Link :href="route('staff.index', { school: school.slug })"
+          <Link :href="route('school.staff', { school: school.slug })"
             :class="['admin-button', 'admin-button--top', ` admin-button--orange`]">
           Personal
           </Link>
@@ -185,19 +185,17 @@
 </template>
 
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { router } from "@inertiajs/vue3";
+import EditableImage from "@/Components/admin/EditableImage.vue";
+import EmailField from "@/Components/admin/EmailField.vue";
+import PhoneField from "@/Components/admin/PhoneField.vue";
+import ManagementTypeBadge from "@/Components/badges/ManagementTypeBadge.vue";
 import SchoolLevelBadge from "@/Components/badges/SchoolLevelBadge.vue";
 import SchoolShiftBadge from "@/Components/badges/SchoolShiftBadge.vue";
-import ManagementTypeBadge from "@/Components/badges/ManagementTypeBadge.vue";
-import PhoneField from "@/Components/admin/PhoneField.vue";
-import EmailField from "@/Components/admin/EmailField.vue";
-import EditableImage from "@/Components/admin/EditableImage.vue";
-import { computed } from 'vue'
-import { schoolLevelOptions } from '@/Composables/schoolLevelOptions'
+import { schoolLevelOptions } from '@/Composables/schoolLevelOptions';
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import AdminHeader from "@/Sections/AdminHeader.vue";
 import { hasPermission } from '@/utils/permissions';
+import { Head, Link, router } from "@inertiajs/vue3";
 
 const props = defineProps({
   school: Object,
