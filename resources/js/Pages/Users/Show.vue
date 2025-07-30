@@ -1,14 +1,12 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import RoleBadge from '@/Components/badges/RoleBadge.vue';
-import PhoneField from '@/Components/admin/PhoneField.vue';
-import EmailField from '@/Components/admin/EmailField.vue';
 import EditableImage from '@/Components/admin/EditableImage.vue';
-import { router } from '@inertiajs/vue3';
+import EmailField from '@/Components/admin/EmailField.vue';
+import PhoneField from '@/Components/admin/PhoneField.vue';
 import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
+import { Head, router, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     user: Object,
@@ -26,6 +24,7 @@ const destroy = () => {
 </script>
 
 <template>
+
     <Head :title="`Usuario: ${user.name}`" />
 
     <AuthenticatedLayout>
@@ -33,7 +32,7 @@ const destroy = () => {
             <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles del usuario ${user.firstname} ${user.lastname}`"
                 :edit="{
                     show: hasPermission($page.props, 'user.manage'),
-                    href: route('users.edit', user.id),
+                    href: route('users.edit', { 'user': user.id }),
                     label: 'Editar'
                 }" :del="{
                     show: hasPermission($page.props, 'user.manage'),
@@ -51,15 +50,10 @@ const destroy = () => {
                             <!-- Basic Information -->
                             <div class="admin-detail__section">
                                 <div class="admin-detail__image-container">
-                                    <EditableImage
-                                        v-model="user.picture"
-                                        type="picture"
-                                        :model-id="user.id"
-                                        :can-edit="true"
-                                        upload-route="users.upload-image"
+                                    <EditableImage v-model="user.picture" type="picture" :model-id="user.id"
+                                        :can-edit="true" upload-route="users.upload-image"
                                         delete-route="users.delete-image"
-                                        delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?"
-                                    />
+                                        delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?" />
                                 </div>
                                 <h3 class="admin-detail__section-title">Información Básica</h3>
                                 <div class="admin-detail__info-layout">
@@ -149,16 +143,10 @@ const destroy = () => {
                     </div>
                 </div>
 
-                <SchoolsAndRolesCard
-                    :guardian-relationships="user.guardianRelationships"
-                    :schools="user.schools"
-                    :roles="user.roles"
-                    :role-relationships="user.roleRelationships"
-                    :teacher-relationships="user.workerRelationships"
-                    :student-relationships="user.studentRelationships"
-                    :can-add-roles="hasPermission(page.props, 'superadmin')"
-                    :user-id="user.id"
-                />
+                <SchoolsAndRolesCard :guardian-relationships="user.guardianRelationships" :schools="user.schools"
+                    :roles="user.roles" :role-relationships="user.roleRelationships"
+                    :teacher-relationships="user.workerRelationships" :student-relationships="user.studentRelationships"
+                    :can-add-roles="hasPermission(page.props, 'superadmin')" :user-id="user.id" />
 
                 <div class="admin-detail__card admin-detail__card--mt">
                     <div class="admin-detail__content">
