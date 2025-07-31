@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('school_shift_id')->constrained()->onDelete('cascade');
             $table->unsignedBigInteger('previous_course_id')->nullable();
             $table->unsignedTinyInteger('number');
+            $table->string('name')->nullable();
             $table->string('letter', 1);
             $table->date('start_date');
             $table->date('end_date')->nullable();
@@ -43,4 +44,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('courses');
     }
-}; 
+};

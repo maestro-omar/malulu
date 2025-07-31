@@ -58,16 +58,19 @@ class CourseSeeder extends Seeder
         $coursesByLevel = [
             SchoolLevel::KINDER => [
                 [
-                    'grade' => 1,
-                    'letters' => ['A', 'B'],
-                ],
-                [
                     'grade' => 2,
                     'letters' => ['A', 'B'],
+                    'names' => ['ositos', 'duendes'],
                 ],
                 [
                     'grade' => 3,
                     'letters' => ['A', 'B'],
+                    'names' => ['rosa', 'verde'],
+                ],
+                [
+                    'grade' => 4,
+                    'letters' => ['A', 'B'],
+                    'names' => ['amarilla', 'violeta'],
                 ],
             ],
             SchoolLevel::PRIMARY => [
@@ -141,13 +144,13 @@ class CourseSeeder extends Seeder
                 $this->command->error("No shifts found for school: {$school->name}. Skipping...");
                 continue;
             }
-            
+
             foreach ($schoolLevels as $level) {
                 if (isset($coursesByLevel[$level->code])) {
                     $previousCourse = null;
 
                     foreach ($coursesByLevel[$level->code] as $courseData) {
-                        foreach ($courseData['letters'] as $letter) {
+                        foreach ($courseData['letters'] as $cIdx => $letter) {
                             foreach ($schoolShifts as $shift) {
                                 try {
                                     $course = Course::create([
@@ -157,6 +160,7 @@ class CourseSeeder extends Seeder
                                         'previous_course_id' => $previousCourse ? $previousCourse->id : null,
                                         'number' => $courseData['grade'],
                                         'letter' => $letter,
+                                        'name' => $courseData['names'][$cIdx] ?? null,
                                         'start_date' => $startDate,
                                         'end_date' => $endDate,
                                         'active' => true,

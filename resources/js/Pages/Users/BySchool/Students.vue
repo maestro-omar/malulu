@@ -5,9 +5,12 @@ import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
+import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
 import { hasPermission } from '@/utils/permissions';
 import noImage from '@images/no-image-person.png';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { slugify } from '@/utils/strings';
 import { ref, watch } from 'vue';
 
 const props = defineProps({
@@ -33,7 +36,7 @@ const handleSearch = () => {
     }
     searchTimeout = setTimeout(() => {
         router.get(
-            route('users.index'),
+            route('school.students', { school: props.school.slug }),
             { search: search.value },
             { preserveState: true, preserveScroll: true }
         );
@@ -43,7 +46,7 @@ const handleSearch = () => {
 const clearSearch = () => {
     search.value = '';
     router.get(
-        route('users.index'),
+        route('school.students', { school: props.school.slug }),
         {},
         { preserveState: true, preserveScroll: true }
     );
@@ -115,7 +118,11 @@ const getUniqueRoles = (roles) => {
                                 <tr>
                                     <th class="table__th">Foto</th>
                                     <th class="table__th">Nombre</th>
+                                    <th class="table__th">Apellido</th>
                                     <th class="table__th">Email</th>
+                                    <th class="table__th">Nivel</th>
+                                    <th class="table__th">Turno</th>
+                                    <th class="table__th">Curso</th>
                                     <th class="table__th">Acciones</th>
                                 </tr>
                             </thead>
@@ -129,13 +136,29 @@ const getUniqueRoles = (roles) => {
                                         <img :src="user.picture || noImage" :alt="user.name" />
                                     </td>
                                     <td class="table__td table__name">
-                                        {{ user.name }}
+                                        <Link
+                                            :href="route('school.student.show', { school: props.school.slug, idAndName: user.id + '-' + slugify(user.lastname) + '-' + slugify(user.firstname) })">
+                                            {{ user.lastname }} {{ user.firstname }}
+                                        </Link>
+                                    </td>
+                                    <td class="table__td table__name">
+                                        {{ user.lastname }}
                                     </td>
                                     <td class="table__td table__email">
                                         <EmailField :email="user.email" />
                                     </td>
+                                    <td class="table__td table__name">
+                                        <SchoolLevelBadge :level="user.course.level" />
+                                    </td>
+                                    <td class="table__td table__name">
+                                        <SchoolShiftBadge :shift="user.course.shift" />
+                                    </td>
+                                    <td class="table__td table__name">
+                                        {{ user.course.number + user.course.letter }}
+                                    </td>
                                     <td class="table__td table__actions">
-                                        <Link :href="route('users.show', user.id)">
+                                        <Link
+                                            :href="route('school.student.show', { school: props.school.slug, idAndName: user.id + '-' + slugify(user.lastname) + '-' + slugify(user.firstname) })">
                                         Ver
                                         </Link>
                                         <Link

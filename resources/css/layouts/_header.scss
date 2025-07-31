@@ -1,4 +1,5 @@
 @use "../abstracts/mixins";
+@use "../abstracts/variables";
 
 // Header layout
 // Page subtitle
@@ -52,7 +53,10 @@
             }
 
             &--more {
-                margin-top: 15px;
+                border-top: 1px solid variables.$color-grey-dark;
+
+                padding-top: 15px;
+                margin: 15px 0;
             }
         }
     }

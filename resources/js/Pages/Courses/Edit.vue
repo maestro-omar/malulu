@@ -151,6 +151,6 @@ const form = useForm({
 })
 
 const submit = () => {
-  form.put(route('courses.update', { school: props.school.cue, schoolLevel: props.selectedLevel.code, course: props.course.id }))
+  form.put(route('courses.update', { school: props.school.slug, schoolLevel: props.selectedLevel.code, course: props.course.id }))
 }
 </script>

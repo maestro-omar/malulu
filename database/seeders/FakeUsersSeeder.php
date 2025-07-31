@@ -28,7 +28,7 @@ class FakeUsersSeeder extends Seeder
     const OTHER_SCHOOLS_LIMIT = 1;
     const FAST_TEST = true;
     private $mathSubject;
-    private $course;
+    private $courses;
     // private $schoolLevels;
     private $allRoles;
     private $faker;
@@ -38,7 +38,7 @@ class FakeUsersSeeder extends Seeder
     {
         // Get required IDs
         $this->mathSubject = ClassSubject::where('short_name', 'MAT')->first();
-        $this->course = Course::first();
+        $this->courses = Course::all();
         // $this->schoolLevels = SchoolLevel::all(); // Get all school levels
         $this->allRoles = Role::pluck('id', 'code')->toArray();
         $this->faker = Faker::create('es_ES'); // Using Spanish locale for more realistic names
@@ -62,7 +62,7 @@ class FakeUsersSeeder extends Seeder
             return;
         }
 
-        if (!$this->course) {
+        if (!$this->courses) {
             $this->command->error('No courses found. Please run CourseSeeder first.');
             return;
         }
@@ -447,6 +447,17 @@ class FakeUsersSeeder extends Seeder
     }
 
     /**
+     * Get a random course for a specific school.
+     */
+    private function getRandomCourseForSchool(School $school): ?Course
+    {
+        return Course::where('school_id', $school->id)
+            ->where('active', true)
+            ->inRandomOrder()
+            ->first();
+    }
+
+    /**
      * Assigns a role to a user for a specific school and creates the corresponding relationship (worker, student, or guardian).
      */
     private function assignRoleWithRelationship(User $user, School $school, ?int $schoolLevelId, string $roleCode, string $note = ''): void
@@ -463,6 +474,7 @@ class FakeUsersSeeder extends Seeder
             'notes' => $note ?: "Auto-generated {$roleCode} relationship",
         ];
         if (in_array($roleCode, [Role::GRADE_TEACHER, Role::ASSISTANT_TEACHER, Role::CURRICULAR_TEACHER, Role::SPECIAL_TEACHER, Role::PROFESSOR])) {
+            $randomCourse = $this->getRandomCourseForSchool($school);
             $details['worker_details'] = [
                 'class_subject_id' => $this->mathSubject->id,
                 'job_status_id' => $this->faker->randomElement($this->jobStatuses()),
@@ -475,12 +487,13 @@ class FakeUsersSeeder extends Seeder
                     'PhD in Education'
                 ]),
                 // Optionally add courses for teacher roles
-                'courses' => [$this->course->id],
+                'courses' => $randomCourse ? [$randomCourse->id] : [],
             ];
         }
         if ($roleCode === Role::STUDENT) {
+            $randomCourse = $this->getRandomCourseForSchool($school);
             $details['student_details'] = [
-                'current_course_id' => $this->course->id,
+                'current_course_id' => $randomCourse ? $randomCourse->id : null,
             ];
         }
         if ($roleCode === Role::GUARDIAN) {

@@ -27,6 +27,7 @@ class Course extends Model
         'school_shift_id',
         'previous_course_id',
         'number',
+        'name',
         'letter',
         'start_date',
         'end_date',

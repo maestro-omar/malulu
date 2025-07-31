@@ -88,6 +88,10 @@ class CourseService
                 'min:1',
                 'max:9'
             ],
+            'name' => [
+                'nullable',
+                'string',
+            ],
             'letter' => [
                 'required',
                 'string',
