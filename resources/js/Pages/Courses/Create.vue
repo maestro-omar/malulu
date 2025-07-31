@@ -48,6 +48,11 @@
               </div>
 
               <div class="mb-4">
+                <InputLabel for="name" value="Nombre (opcional)" />
+                <TextInput id="name" type="text" v-model="form.name" class="mt-1 block w-full" />
+                <InputError class="mt-2" :message="form.errors.name" />
+              </div>
+              <div class="mb-4">
                 <InputLabel for="start_date" value="Fecha de Inicio" />
                 <TextInput id="start_date" type="date" v-model="form.start_date" class="mt-1 block w-full" required />
                 <InputError class="mt-2" :message="form.errors.start_date" />
