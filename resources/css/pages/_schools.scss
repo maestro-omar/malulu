@@ -1,0 +1,280 @@
+@use "../abstracts/variables";
+@use "../abstracts/mixins";
+
+// Schools Pages
+
+.schools-public {
+  padding: 3rem 0;
+
+  &__container {
+    margin: 0 auto;
+    padding: 0 1rem;
+
+    @media (min-width: 640px) {
+      padding: 0 1.5rem;
+    }
+
+    @media (min-width: 1024px) {
+      padding: 0 2rem;
+    }
+  }
+
+  &__content {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  &__filters {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  &__search {
+    position: relative;
+
+    input {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border: 1px solid variables.$color-grey-dark;
+      border-radius: 0.375rem;
+      outline: none;
+      transition: border-color 0.2s;
+
+      &:focus {
+        border-color: variables.$color-brand;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+    }
+
+    &-clear {
+      position: absolute;
+      right: 0.75rem;
+      top: 0.625rem;
+      background: none;
+      border: none;
+      color: variables.$color-grey-dark;
+      cursor: pointer;
+
+      &:hover {
+        color: variables.$color-text;
+      }
+
+      svg {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
+  }
+
+  &__table-container {
+    overflow-x: auto;
+  }
+
+  &__desktop {
+    display: none;
+
+    @media (min-width: 768px) {
+      display: block;
+    }
+  }
+
+  &__mobile {
+    display: block;
+    padding: 1rem;
+
+    @media (min-width: 768px) {
+      display: none;
+    }
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      background: variables.$color-grey;
+    }
+
+    th {
+      padding: 0.75rem 1.5rem;
+      text-align: left;
+      @include mixins.fz(1.2);
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    tbody {
+      background: #fff;
+    }
+
+    tr {
+      border-bottom: 1px solid #e5e7eb;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background: variables.$color-grey;
+      }
+
+      &:nth-child(even) {
+        background: variables.$color-grey;
+
+        &:hover {
+          background: #f3f4f6;
+        }
+      }
+
+      &:nth-child(odd) {
+        background: #fff;
+
+        &:hover {
+          background: variables.$color-grey;
+        }
+      }
+    }
+
+    td {
+      padding: 0.75rem 1.5rem;
+      text-align: left;
+      @include mixins.fz(1.5);
+      vertical-align: middle;
+    }
+  }
+
+  &__name {
+    .schools-public__name-primary {
+      @include mixins.fz(1.5);
+      font-weight: variables.$font-normal-weight;
+      color: variables.$color-black-text;
+    }
+
+    .schools-public__name-secondary {
+      @include mixins.fz(1.5);
+      color: #6b7280;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-top: 0.25rem;
+    }
+  }
+
+  &__cue {
+    color: #6b7280;
+  }
+
+  &__locality {
+    color: #6b7280;
+  }
+
+  &__levels {
+    .schools-public__badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+  }
+
+  &__actions {
+    a {
+      color: variables.$color-brand;
+      text-decoration: none;
+
+      &:hover {
+        color: variables.$color-brand;
+      }
+    }
+  }
+
+  &__card {
+    background: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    &:nth-child(even) {
+      background: variables.$color-grey;
+    }
+
+    &:nth-child(odd) {
+      background: #fff;
+    }
+
+    &-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+
+    &-info {
+      h3 {
+        @include mixins.fz(1.5);
+        font-weight: variables.$font-normal-weight;
+        color: variables.$color-black-text;
+        margin: 0;
+      }
+
+      p {
+        @include mixins.fz(1.5);
+        color: #6b7280;
+        margin: 0;
+      }
+    }
+
+    &-actions {
+      display: flex;
+      gap: 0.5rem;
+      @include mixins.fz(1.5);
+      font-weight: variables.$font-normal-weight;
+
+      a {
+        color: variables.$color-brand;
+        text-decoration: none;
+
+        &:hover {
+          color: variables.$color-brand;
+        }
+      }
+    }
+
+    &-section {
+      margin-top: 0.5rem;
+
+      .schools-public__card-label {
+        @include mixins.fz(0.75);
+        font-weight: variables.$font-normal-weight;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+      }
+
+      .schools-public__card-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        @include mixins.fz(1.5);
+        color: #6b7280;
+      }
+    }
+  }
+
+  &__pagination {
+    margin-top: 1.5rem;
+    padding: 0 1.5rem 1.5rem;
+  }
+}
