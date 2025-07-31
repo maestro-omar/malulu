@@ -20,19 +20,29 @@ class SchoolPermission
     public function handle(Request $request, Closure $next, $permission)
     {
         $user = Auth::user();
-        $schoolId = $request->route('school');
+        $route = $request->route();
+        $routeName = $route->getName();
+        $publicRoutes = ['schools.show'];
+        if ($user->isSuperadmin() || ($routeName && in_array($routeName, $publicRoutes))) {
+            //ok, go on
+        } else {
 
-        // If the route model binding provides a School model, get its id
-        if (is_object($schoolId) && method_exists($schoolId, 'getKey')) {
-            $schoolId = $schoolId->getKey();
-        }
-        // dd($request);
 
-        if (!$user || !$this->hasPermissionToSchool($user, $permission, $schoolId)) {
-            return Inertia::render('Errors/403')
-                ->toResponse($request)
-                ->setStatusCode(403);
-            // abort(403, 'No tienes permiso para esta acceder a esta escuela');
+            $school = $request->route('school');
+
+            // If the route model binding provides a School model, get its id
+            if (is_object($school) && method_exists($school, 'getKey')) {
+                $schoolId = $school->getKey();
+            } else {
+                $schoolId = $school;
+            }
+
+            if (!$user || !$this->hasPermissionToSchool($user, $permission, $schoolId)) {
+                return Inertia::render('Errors/403')
+                    ->toResponse($request)
+                    ->setStatusCode(403);
+                // abort(403, 'No tienes permiso para esta acceder a esta escuela');
+            }
         }
 
         return $next($request);
