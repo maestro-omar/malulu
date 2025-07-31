@@ -66,7 +66,10 @@ class SchoolController extends SchoolBaseController
     public function edit(School $school)
     {
         if ($school->name === School::GLOBAL) {
-            abort(403, 'Cannot edit GLOBAL school.');
+            return Inertia::render('Errors/404')
+                // ->toResponse($request)
+                ->setStatusCode(404);
+            // abort(403, 'Cannot edit GLOBAL school.');
         }
 
         return $this->render($request, 'Schools/Edit', [

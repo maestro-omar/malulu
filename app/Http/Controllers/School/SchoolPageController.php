@@ -74,7 +74,10 @@ class SchoolPageController extends SchoolBaseController
     {
         // Ensure the page belongs to the school
         if ($schoolPage->school_id !== $school->id) {
-            abort(404);
+            return Inertia::render('Errors/404')
+                // ->toResponse($request)
+                ->setStatusCode(404);
+            // abort(404);
         }
 
         $schoolPage->load(['school', 'creator']);
@@ -90,7 +93,10 @@ class SchoolPageController extends SchoolBaseController
     {
         // Ensure the page belongs to the school
         if ($schoolPage->school_id !== $school->id) {
-            abort(404);
+            return Inertia::render('Errors/404')
+                // ->toResponse($request)
+                ->setStatusCode(404);
+            // abort(404);
         }
 
         return Inertia::render('SchoolPages/Edit', [
@@ -104,7 +110,10 @@ class SchoolPageController extends SchoolBaseController
     {
         // Ensure the page belongs to the school
         if ($schoolPage->school_id !== $school->id) {
-            abort(404);
+            return Inertia::render('Errors/404')
+                // ->toResponse($request)
+                ->setStatusCode(404);
+            // abort(404);
         }
 
         try {
@@ -138,7 +147,10 @@ class SchoolPageController extends SchoolBaseController
     {
         // Ensure the page belongs to the school
         if ($schoolPage->school_id !== $school->id) {
-            abort(404);
+            return Inertia::render('Errors/404')
+                // ->toResponse($request)
+                ->setStatusCode(404);
+            // abort(404);
         }
 
         try {
@@ -151,4 +163,4 @@ class SchoolPageController extends SchoolBaseController
                 ->withErrors(['error' => $e->getMessage()]);
         }
     }
-} 
+}

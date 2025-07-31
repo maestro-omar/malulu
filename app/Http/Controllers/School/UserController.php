@@ -47,7 +47,10 @@ class UserController extends SchoolBaseController
 
         // Validate if the authenticated user has access to this school
         if (!$this->userService->hasAccessToSchool($this->school->id)) {
-            abort(403, 'No tienes acceso a esta escuela.');
+            return Inertia::render('Errors/403')
+                // ->toResponse($request)
+                ->setStatusCode(403);
+            // abort(403, 'No tienes acceso a esta escuela.');
         }
     }
 }

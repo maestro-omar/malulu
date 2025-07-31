@@ -70,7 +70,10 @@ class PublicSchoolPageController extends Controller
             }
 
             // If not a default page and doesn't exist, return 404
-            abort(404);
+            return Inertia::render('Errors/404')
+                // ->toResponse($request)
+                ->setStatusCode(404);
+            // abort(404);
         }
 
         return Inertia::render('Schools/Public/Page', [
@@ -132,7 +135,7 @@ class PublicSchoolPageController extends Controller
         $content = '<h1>Información de Contacto</h1>
         <div class="contact-info">
             <p>Estamos aquí para ayudarte. No dudes en contactarnos:</p>
-            
+
             <div class="contact-details">
                 <h2>Datos de la Escuela</h2>
                 <p><strong>Nombre:</strong> ' . htmlspecialchars($school->name) . '</p>';
@@ -155,7 +158,7 @@ class PublicSchoolPageController extends Controller
 
         $content .= '<p><strong>Horarios de atención:</strong> Lunes a Viernes de 8:00 a 16:00</p>
             </div>
-            
+
             <div class="contact-form">
                 <h2>Envíanos un mensaje</h2>
                 <p>Para consultas específicas, por favor contacta directamente a la escuela.</p>
@@ -173,29 +176,29 @@ class PublicSchoolPageController extends Controller
         return '<h1>Nuestro Equipo</h1>
         <div class="team-info">
             <p>Conoce al equipo que hace posible la excelencia educativa en ' . htmlspecialchars($school->name) . '.</p>
-            
+
             <div class="team-sections">
                 <div class="team-section">
                     <h2>Dirección</h2>
                     <p>Nuestro equipo directivo trabaja para mantener los más altos estándares de calidad educativa.</p>
                 </div>
-                
+
                 <div class="team-section">
                     <h2>Docentes</h2>
                     <p>Contamos con un equipo de docentes altamente calificados y comprometidos con la educación de nuestros estudiantes.</p>
                 </div>
-                
+
                 <div class="team-section">
                     <h2>Personal Administrativo</h2>
                     <p>Nuestro personal administrativo está disponible para ayudarte con cualquier consulta.</p>
                 </div>
-                
+
                 <div class="team-section">
                     <h2>Personal de Mantenimiento</h2>
                     <p>Mantienen nuestras instalaciones en excelente estado para el desarrollo de las actividades educativas.</p>
                 </div>
             </div>
-            
+
             <div class="team-note">
                 <p><em>Para información específica sobre algún miembro del equipo, contacta directamente a la escuela.</em></p>
             </div>
@@ -210,7 +213,7 @@ class PublicSchoolPageController extends Controller
         $content = '<h1>Bienvenidos a ' . htmlspecialchars($school->name) . '</h1>
         <div class="welcome-content">
             <p>Somos una institución educativa comprometida con la excelencia académica y el desarrollo integral de nuestros estudiantes.</p>
-            
+
             <div class="school-highlights">
                 <h2>¿Por qué elegirnos?</h2>
                 <ul>
@@ -221,7 +224,7 @@ class PublicSchoolPageController extends Controller
                     <li>Compromiso con el desarrollo integral</li>
                 </ul>
             </div>
-            
+
             <div class="school-info">
                 <h2>Información General</h2>';
 
@@ -238,7 +241,7 @@ class PublicSchoolPageController extends Controller
         }
 
         $content .= '</div>
-            
+
             <div class="call-to-action">
                 <h2>¿Interesado en nuestra escuela?</h2>
                 <p>Contacta con nosotros para obtener más información sobre nuestros programas y proceso de inscripción.</p>

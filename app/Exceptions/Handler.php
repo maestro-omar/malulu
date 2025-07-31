@@ -61,6 +61,17 @@ class Handler extends ExceptionHandler
                 ->toResponse($request)
                 ->setStatusCode(403);
         }
+        if (
+            $exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+            || $exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException
+        ) {
+            // Illuminate\Database\Eloquent\ModelNotFoundException
+            // Redirigir o retornar una vista personalizada
+            return Inertia::render('Errors/404')
+                ->toResponse($request)
+                ->setStatusCode(404);
+        }
+        dd($exception);
 
         return parent::render($request, $exception);
     }

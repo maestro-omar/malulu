@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class SchoolPermission
 {
@@ -25,9 +26,13 @@ class SchoolPermission
         if (is_object($schoolId) && method_exists($schoolId, 'getKey')) {
             $schoolId = $schoolId->getKey();
         }
+        // dd($request);
 
         if (!$user || !$this->hasPermissionToSchool($user, $permission, $schoolId)) {
-            abort(403, 'Unauthorized');
+            return Inertia::render('Errors/403')
+                ->toResponse($request)
+                ->setStatusCode(403);
+            // abort(403, 'No tienes permiso para esta acceder a esta escuela');
         }
 
         return $next($request);

@@ -52,6 +52,7 @@
 @use 'layouts/authenticated';
 @use 'layouts/guest';
 @use 'layouts/minimal-auth';
+@use 'layouts/error-layout';
 
 // Pages
 @use 'pages/dashboard';
@@ -61,3 +62,4 @@
 @use 'pages/welcome';
 @use 'pages/delete-user';
 @use 'pages/province-show';
+@use 'pages/error-page';
