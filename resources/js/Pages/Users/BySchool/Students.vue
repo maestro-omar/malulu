@@ -10,6 +10,7 @@ import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
 import { hasPermission } from '@/utils/permissions';
 import noImage from '@images/no-image-person.png';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { slugify } from '@/utils/strings';
 import { ref, watch } from 'vue';
 
 const props = defineProps({
@@ -135,7 +136,10 @@ const getUniqueRoles = (roles) => {
                                         <img :src="user.picture || noImage" :alt="user.name" />
                                     </td>
                                     <td class="table__td table__name">
-                                        {{ user.firstname }}
+                                        <Link
+                                            :href="route('school.student.show', { school: props.school.slug, idAndName: user.id + '-' + slugify(user.lastname) + '-' + slugify(user.firstname) })">
+                                            {{ user.lastname }} {{ user.firstname }}
+                                        </Link>
                                     </td>
                                     <td class="table__td table__name">
                                         {{ user.lastname }}
@@ -153,7 +157,8 @@ const getUniqueRoles = (roles) => {
                                         {{ user.course.number + user.course.letter }}
                                     </td>
                                     <td class="table__td table__actions">
-                                        <Link :href="route('users.show', user.id)">
+                                        <Link
+                                            :href="route('school.student.show', { school: props.school.slug, idAndName: user.id + '-' + slugify(user.lastname) + '-' + slugify(user.firstname) })">
                                         Ver
                                         </Link>
                                         <Link
