@@ -190,14 +190,34 @@ class User extends Authenticatable
 
 
     /**
-     * Get the student relationship for the user.
+     * Get the student relationships for the user.
      */
-    public function studentRelationship()
+    public function studentRelationships()
     {
-        return $this->hasOne(StudentRelationship::class, 'role_relationship_id', 'id')
-            ->whereHas('roleRelationship', function ($query) {
-                $query->where('user_id', $this->id);
-            });
+        return $this->hasManyThrough(
+            StudentRelationship::class,
+            RoleRelationship::class,
+            'user_id', // Foreign key on role_relationships table
+            'role_relationship_id', // Foreign key on student_relationships table
+            'id', // Local key on users table
+            'id' // Local key on role_relationships table
+        );
+    }
+
+    /**
+     * Get the active student relationship for the user.
+     */
+    public function activeStudentRelationship()
+    {
+        return $this->hasOneThrough(
+            StudentRelationship::class,
+            RoleRelationship::class,
+            'user_id', // Foreign key on role_relationships table
+            'role_relationship_id', // Foreign key on student_relationships table
+            'id', // Local key on users table
+            'id' // Local key on role_relationships table
+        )->whereNull('role_relationships.end_date')
+            ->whereNull('role_relationships.end_reason_id');
     }
 
     /**

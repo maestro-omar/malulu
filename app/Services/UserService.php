@@ -45,7 +45,7 @@ class UserService
                             }]);
                         }]);
                     },
-                    'studentRelationship' => function ($query) {
+                    'studentRelationships' => function ($query) {
                         $query->with(['currentCourse']);
                     },
                     'creator'

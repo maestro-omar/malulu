@@ -117,6 +117,6 @@ const form = useForm({
 })
 
 const submit = () => {
-  form.post(route('courses.store', { school: props.school.cue, schoolLevel: props.selectedLevel.code }))
+  form.post(route('courses.store', { school: props.school.slug, schoolLevel: props.selectedLevel.code }))
 }
 </script>
