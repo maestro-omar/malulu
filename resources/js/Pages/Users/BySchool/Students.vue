@@ -3,14 +3,14 @@
 import EmailField from '@/Components/admin/EmailField.vue';
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import AdminHeader from '@/Sections/AdminHeader.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
+import { formatNumber, slugify } from '@/utils/strings';
 import noImage from '@images/no-image-person.png';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { slugify } from '@/utils/strings';
 import { ref, watch } from 'vue';
 
 const props = defineProps({
@@ -70,15 +70,6 @@ const isAdmin = (user) => {
     return user.roles && user.roles.some(role => role.name === 'admin' || role.name === 'Administrador');
 };
 
-const isCurrentUserAdmin = () => {
-    return isAdmin($page.props.auth.user);
-};
-
-const getUniqueRoles = (roles) => {
-    return roles.filter((role, index, self) =>
-        index === self.findIndex((r) => r.id === role.id)
-    );
-};
 </script>
 
 <template>
@@ -120,6 +111,7 @@ const getUniqueRoles = (roles) => {
                                     <th class="table__th">Nombre</th>
                                     <th class="table__th">Apellido</th>
                                     <th class="table__th">Email</th>
+                                    <th class="table__th">DNI</th>
                                     <th class="table__th">Nivel</th>
                                     <th class="table__th">Turno</th>
                                     <th class="table__th">Curso</th>
@@ -138,7 +130,7 @@ const getUniqueRoles = (roles) => {
                                     <td class="table__td table__name">
                                         <Link
                                             :href="route('school.student.show', { school: props.school.slug, idAndName: user.id + '-' + slugify(user.lastname) + '-' + slugify(user.firstname) })">
-                                            {{ user.lastname }} {{ user.firstname }}
+                                        {{ user.lastname }} {{ user.firstname }}
                                         </Link>
                                     </td>
                                     <td class="table__td table__name">
@@ -146,6 +138,9 @@ const getUniqueRoles = (roles) => {
                                     </td>
                                     <td class="table__td table__email">
                                         <EmailField :email="user.email" />
+                                    </td>
+                                    <td class="table__td table__id">
+                                        {{ formatNumber(user.id_number) }}
                                     </td>
                                     <td class="table__td table__name">
                                         <SchoolLevelBadge :level="user.course.level" />
@@ -161,13 +156,11 @@ const getUniqueRoles = (roles) => {
                                             :href="route('school.student.show', { school: props.school.slug, idAndName: user.id + '-' + slugify(user.lastname) + '-' + slugify(user.firstname) })">
                                         Ver
                                         </Link>
-                                        <Link
-                                            v-if="hasPermission($page.props, 'user.manage') &&
-                                                (!isAdmin(user) || (isAdmin(user) && user.id === $page.props.auth.user.id))"
+                                        <Link v-if="hasPermission($page.props, 'student.edit')"
                                             :href="route('users.edit', user.id)">
                                         Editar
                                         </Link>
-                                        <button v-if="hasPermission($page.props, 'user.manage') &&
+                                        <button v-if="hasPermission($page.props, 'student.delete') &&
                                             !isAdmin(user) &&
                                             user.id !== $page.props.auth.user.id" @click="deleteUser(user.id)">
                                             Eliminar
@@ -197,15 +190,11 @@ const getUniqueRoles = (roles) => {
                                     <Link :href="route('users.show', user.id)">
                                     Ver
                                     </Link>
-                                    <Link
-                                        v-if="hasPermission($page.props, 'user.manage') &&
-                                            (!isAdmin(user) || (isAdmin(user) && user.id === $page.props.auth.user.id))"
+                                    <Link v-if="hasPermission($page.props, 'student.edit')"
                                         :href="route('users.edit', user.id)">
                                     Editar
                                     </Link>
-                                    <button v-if="hasPermission($page.props, 'user.manage') &&
-                                        !isAdmin(user) &&
-                                        user.id !== $page.props.auth.user.id" @click="deleteUser(user.id)">
+                                    <button v-if="hasPermission($page.props, 'student.delete')">
                                         Eliminar
                                     </button>
                                 </div>
