@@ -54,6 +54,7 @@
 @use 'layouts/guest-header';
 @use 'layouts/minimal-auth';
 @use 'layouts/error-layout';
+@use 'layouts/school';
 
 // Pages
 @use 'pages/dashboard';
@@ -65,4 +66,5 @@
 @use 'pages/province-show';
 @use 'pages/error-page';
 @use 'pages/schools';
+@use 'pages/school-public';
 @use 'pages/schools-public';

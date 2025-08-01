@@ -9,7 +9,7 @@ import { computed, onMounted, ref } from 'vue';
 
 const showingNavigationDropdown = ref(false);
 const page = usePage();
-const school = page.props.auth.user.activeSchool;
+const school = page.props.school;
 
 // Parse school configuration from extra field
 const schoolConfig = computed(() => {
@@ -65,25 +65,25 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="authenticated-layout">
-        <div class="authenticated-layout__container">
-            <nav class="authenticated-layout__nav" :background-color="headerStyles.background">
+    <div class="school-layout">
+        <div class="school-layout__container">
+            <nav class="school-layout__nav" :background-color="headerStyles.background">
                 <!-- Primary Navigation Menu -->
-                <div class="authenticated-layout__nav-container">
-                    <div class="authenticated-layout__nav-content">
-                        <div class="authenticated-layout__nav-left">
+                <div class="school-layout__nav-container">
+                    <div class="school-layout__nav-content">
+                        <div class="school-layout__nav-left">
                             <!-- Logo -->
-                            <div class="authenticated-layout__nav-logo">
+                            <div class="school-layout__nav-logo">
                                 <Link :href="route('dashboard')">
                                 <component v-if="logoComponent" :is="logoComponent"
-                                    class="authenticated-layout__nav-logo-image" :color="headerStyles.textColor" />
+                                    class="school-layout__nav-logo-image" :color="headerStyles.textColor" />
                                 <img v-else-if="school && school.logo" :src="school.logo" :alt="school.name"
-                                    :title="school.name" class="authenticated-layout__nav-logo-image" />
+                                    :title="school.name" class="school-layout__nav-logo-image" />
                                 </Link>
                             </div>
 
                             <!-- Navigation Links -->
-                            <div class="authenticated-layout__nav-links">
+                            <div class="school-layout__nav-links">
                                 <template v-for="item in $page.props.menu.items" :key="item.route">
                                     <NavLink :href="route(item.route)" :active="route().current(item.route)"
                                         :color="headerStyles.textColor" :hoverColor="headerStyles.hoverColor">
@@ -93,14 +93,13 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div class="authenticated-layout__nav-right">
+                        <div class="school-layout__nav-right">
                             <!-- Settings Dropdown -->
-                            <div class="authenticated-layout__nav-dropdown">
+                            <div v-if="$page.props.auth.user" class="school-layout__nav-dropdown">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
-                                        <span class="authenticated-layout__nav-dropdown-trigger">
-                                            <button type="button"
-                                                class="authenticated-layout__nav-dropdown-trigger-button"
+                                        <span class="school-layout__nav-dropdown-trigger">
+                                            <button type="button" class="school-layout__nav-dropdown-trigger-button"
                                                 :class="[headerStyles.textColor, headerStyles.hoverColor]">
                                                 {{ $page.props.auth.user.name }}
 
@@ -118,7 +117,7 @@ onMounted(() => {
                                         <template v-for="item in $page.props.menu.userItems"
                                             :key="item.route || 'separator'">
                                             <template v-if="item.type === 'separator'">
-                                                <div class="authenticated-layout__responsive-settings-separator"></div>
+                                                <div class="school-layout__responsive-settings-separator"></div>
                                             </template>
                                             <template v-else>
                                                 <DropdownLink :href="route(item.route)"
@@ -133,9 +132,9 @@ onMounted(() => {
                         </div>
 
                         <!-- Hamburger -->
-                        <div class="authenticated-layout__nav-hamburger">
+                        <div class="school-layout__nav-hamburger">
                             <button @click="showingNavigationDropdown = !showingNavigationDropdown"
-                                class="authenticated-layout__nav-hamburger-button"
+                                class="school-layout__nav-hamburger-button"
                                 :class="[headerStyles.textColor, headerStyles.hoverColor]">
                                 <svg stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path :class="{
@@ -156,8 +155,8 @@ onMounted(() => {
 
                 <!-- Responsive Navigation Menu -->
                 <div
-                    :class="['authenticated-layout__responsive', { 'authenticated-layout__responsive--visible': showingNavigationDropdown }]">
-                    <div class="authenticated-layout__responsive-menu">
+                    :class="['school-layout__responsive', { 'school-layout__responsive--visible': showingNavigationDropdown }]">
+                    <div class="school-layout__responsive-menu">
                         <template v-for="item in $page.props.menu.items" :key="item.route">
                             <ResponsiveNavLink :href="route(item.route)" :active="route().current(item.route)"
                                 :class="[headerStyles.textColor, headerStyles.hoverColor]">
@@ -167,20 +166,19 @@ onMounted(() => {
                     </div>
 
                     <!-- Responsive Settings Options -->
-                    <div class="authenticated-layout__responsive-settings">
-                        <div class="authenticated-layout__responsive-settings-user">
-                            <div class="authenticated-layout__responsive-settings-user-name"
-                                :class="headerStyles.textColor">
+                    <div class="school-layout__responsive-settings">
+                        <div v-if="$page.props.auth.user" class="school-layout__responsive-settings-user">
+                            <div class="school-layout__responsive-settings-user-name" :class="headerStyles.textColor">
                                 {{ $page.props.auth.user.name }}
                             </div>
-                            <div class="authenticated-layout__responsive-settings-user-email">{{
+                            <div class="school-layout__responsive-settings-user-email">{{
                                 $page.props.auth.user.email }}</div>
                         </div>
 
-                        <div class="authenticated-layout__responsive-settings-links">
+                        <div v-if="$page.props.menu" class="school-layout__responsive-settings-links">
                             <template v-for="item in $page.props.menu.userItems" :key="item.route || 'separator'">
                                 <template v-if="item.type === 'separator'">
-                                    <div class="authenticated-layout__responsive-settings-separator"></div>
+                                    <div class="school-layout__responsive-settings-separator"></div>
                                 </template>
                                 <template v-else>
                                     <ResponsiveNavLink :href="route(item.route)"
@@ -196,14 +194,14 @@ onMounted(() => {
             </nav>
 
             <!-- Page Heading -->
-            <header class="authenticated-layout__header" v-if="$slots.header">
-                <div class="authenticated-layout__header-container">
+            <header class="school-layout__header" v-if="$slots.header">
+                <div class="school-layout__header-container">
                     <slot name="header" />
                 </div>
             </header>
 
             <!-- Page Content -->
-            <main class="authenticated-layout__main">
+            <main class="school-layout__main">
                 <slot />
             </main>
         </div>

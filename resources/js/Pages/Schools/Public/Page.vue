@@ -4,147 +4,112 @@
 
   <GuestLayout>
     <template #header>
-      <GuestHeader :title="`Escuela: ${school.short}`">
-      </GuestHeader>
+      <GuestHeader :title="`MI Escuela: ${school.short}`" />
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+    <div class="school-public__container">
+      <div class="school-public__card">
+        <div class="school-public__grid school-public__grid--2">
           <div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <div class="space-y-4">
-                  <div class="grid grid-cols-3 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400">Logo</label>
-                      <div class="mt-1">
-                        <EditableImage v-model="school.logo" type="logo" :model-id="school.cue" :can-edit="false"
-                          image-class="h-12 w-12 object-contain" />
-                      </div>
-                    </div>
-
-                    <div class="col-span-2">
-                      <label class="block text-sm font-medium text-gray-400">Imagen Principal</label>
-                      <div class="mt-1">
-                        <EditableImage v-model="school.picture" type="picture" :model-id="school.cue"
-                          :can-edit="false" />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-400">Nombre</label>
-                    <p class="mt-1 text-sm text-gray-900">{{ school.name }}</p>
-                  </div>
-
-                  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400">Nombre Corto</label>
-                      <p class="mt-1 text-sm text-gray-900">
-                        {{ school.short }}
-                      </p>
-                    </div>
-
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400">CUE</label>
-                      <p class="mt-1 text-sm text-gray-900">{{ school.cue }}</p>
-                    </div>
-                  </div>
-
-                  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400">Tipo de Gestión</label>
-                      <div class="mt-1">
-                        <ManagementTypeBadge :mtype="school.management_type" :key="school.management_type.id" />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400">Niveles</label>
-                      <div class="mt-2 flex flex-wrap gap-2">
-                        <SchoolLevelBadge v-for="level in school.school_levels" :key="level.id" :level="level" />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400">Turnos</label>
-                      <div class="mt-2 flex flex-wrap gap-2">
-                        <SchoolShiftBadge v-for="shift in school.shifts" :key="shift.id" :shift="shift" />
-                      </div>
-                    </div>
-                  </div>
+            <div class="school-public__section">
+              <div class="school-public__grid school-public__grid--3">
+                <div>
+                  <EditableImage v-model="school.logo" type="logo" :model-id="school.cue" :can-edit="false"
+                    image-class="school-public__logo-img" />
+                </div>
+                <div class="school-public__grid-col-2">
+                  <EditableImage v-model="school.picture" type="picture" :model-id="school.cue" :can-edit="false" />
                 </div>
               </div>
-
-              <div>
-                <h3 class="text-lg font-semibold mb-4">Ubicación y Contacto</h3>
-                <div class="space-y-4">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400">Localidad</label>
-                      <p class="mt-1 text-sm text-gray-900">
-                        {{ school.locality.name }}
-                      </p>
-                    </div>
-
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400">Dirección</label>
-                      <p class="mt-1 text-sm text-gray-900">
-                        {{ school.address }}
-                      </p>
-                    </div>
+              <div class="school-public__field">
+                <label class="school-public__label">Nombre</label>
+                <p class="school-public__value">{{ school.name }}</p>
+              </div>
+              <div class="school-public__grid school-public__grid--2 school-public__grid--md-3">
+                <div>
+                  <label class="school-public__label">Nombre Corto</label>
+                  <p class="school-public__value">{{ school.short }}</p>
+                </div>
+                <div>
+                  <label class="school-public__label">CUE</label>
+                  <p class="school-public__value">{{ school.cue }}</p>
+                </div>
+              </div>
+              <div class="school-public__grid school-public__grid--2 school-public__grid--md-3">
+                <div>
+                  <label class="school-public__label">Tipo de Gestión</label>
+                  <div>
+                    <ManagementTypeBadge :mtype="school.management_type" :key="school.management_type.id" />
                   </div>
-
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400">Código Postal</label>
-                      <p class="mt-1 text-sm text-gray-900">
-                        {{ school.zip_code }}
-                      </p>
-                    </div>
-
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400">Coordenadas</label>
-                      <div class="flex items-center space-x-2">
-                        <p class="mt-1 text-sm text-gray-900">
-                          {{ school.coordinates }}
-                        </p>
-                        <a :href="`https://www.google.com/maps/search/?api=1&query=${school.coordinates}`"
-                          target="_blank" class="text-blue-600 hover:text-blue-800" title="Ver en Google Maps">
-                          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path
-                              d="M12 0C7.802 0 4 3.403 4 7.602C4 11.8 7.469 16.812 12 24C16.531 16.812 20 11.8 20 7.602C20 3.403 16.199 0 12 0ZM12 11C10.343 11 9 9.657 9 8C9 6.343 10.343 5 12 5C13.657 5 15 6.343 15 8C15 9.657 13.657 11 12 11Z" />
-                          </svg>
-                        </a>
-                      </div>
-                    </div>
+                </div>
+                <div>
+                  <label class="school-public__label">Niveles</label>
+                  <div class="school-public__badge-group">
+                    <SchoolLevelBadge v-for="level in school.school_levels" :key="level.id" :level="level" />
                   </div>
-
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400">Teléfono</label>
-                      <PhoneField :phone="school.phone" />
-                    </div>
-
-                    <div>
-                      <label class="block text-sm font-medium text-gray-400">Email</label>
-                      <EmailField :email="school.email" />
-                    </div>
+                </div>
+                <div>
+                  <label class="school-public__label">Turnos</label>
+                  <div class="school-public__badge-group">
+                    <SchoolShiftBadge v-for="shift in school.shifts" :key="shift.id" :shift="shift" />
                   </div>
                 </div>
               </div>
             </div>
-
-            <div class="mt-6">
-              <h3 class="text-lg font-semibold mb-4">Redes sociales</h3>
-              <div class="space-y-4">
-                <div v-for="(social, index) in school.social" :key="index" class="grid grid-cols-12 gap-4">
-                  <div class="col-span-6">
-                    <a :href="social.link" target="_blank" class="mt-1 text-sm text-indigo-600 hover:text-indigo-900">
-                      {{ social.label }}
+          </div>
+          <div>
+            <div class="school-public__section-title">Ubicación y Contacto</div>
+            <div class="school-public__section">
+              <div class="school-public__grid school-public__grid--2 school-public__grid--md-2">
+                <div>
+                  <label class="school-public__label">Localidad</label>
+                  <p class="school-public__value">{{ school.locality.name }}</p>
+                </div>
+                <div>
+                  <label class="school-public__label">Dirección</label>
+                  <p class="school-public__value">{{ school.address }}</p>
+                </div>
+              </div>
+              <div class="school-public__grid school-public__grid--2 school-public__grid--md-2">
+                <div>
+                  <label class="school-public__label">Código Postal</label>
+                  <p class="school-public__value">{{ school.zip_code }}</p>
+                </div>
+                <div>
+                  <label class="school-public__label">Coordenadas</label>
+                  <div class="school-public__coordinates">
+                    <p class="school-public__value">{{ school.coordinates }}</p>
+                    <a :href="`https://www.google.com/maps/search/?api=1&query=${school.coordinates}`" target="_blank"
+                      class="school-public__map-link" title="Ver en Google Maps">
+                      <svg class="school-public__map-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                          d="M12 0C7.802 0 4 3.403 4 7.602C4 11.8 7.469 16.812 12 24C16.531 16.812 20 11.8 20 7.602C20 3.403 16.199 0 12 0ZM12 11C10.343 11 9 9.657 9 8C9 6.343 10.343 5 12 5C13.657 5 15 6.343 15 8C15 9.657 13.657 11 12 11Z" />
+                      </svg>
                     </a>
                   </div>
                 </div>
+              </div>
+              <div class="school-public__grid school-public__grid--2 school-public__grid--md-2">
+                <div>
+                  <label class="school-public__label">Teléfono</label>
+                  <PhoneField :phone="school.phone" />
+                </div>
+                <div>
+                  <label class="school-public__label">Email</label>
+                  <EmailField :email="school.email" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="school-public__section school-public__section--social">
+          <h3 class="school-public__section-title">Redes sociales</h3>
+          <div class="school-public__social-list">
+            <div v-for="(social, index) in school.social" :key="index" class="school-public__social-item">
+              <div class="school-public__social-col">
+                <a :href="social.link" target="_blank" class="school-public__social-link">
+                  {{ social.label }}
+                </a>
               </div>
             </div>
           </div>
@@ -155,18 +120,15 @@
 </template>
 
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { router } from "@inertiajs/vue3";
+import EditableImage from "@/Components/admin/EditableImage.vue";
+import EmailField from "@/Components/admin/EmailField.vue";
+import PhoneField from "@/Components/admin/PhoneField.vue";
+import ManagementTypeBadge from "@/Components/badges/ManagementTypeBadge.vue";
 import SchoolLevelBadge from "@/Components/badges/SchoolLevelBadge.vue";
 import SchoolShiftBadge from "@/Components/badges/SchoolShiftBadge.vue";
-import ManagementTypeBadge from "@/Components/badges/ManagementTypeBadge.vue";
-import PhoneField from "@/Components/admin/PhoneField.vue";
-import EmailField from "@/Components/admin/EmailField.vue";
-import EditableImage from "@/Components/admin/EditableImage.vue";
-import { computed } from 'vue'
-import { schoolLevelOptions } from '@/Composables/schoolLevelOptions'
+import { schoolLevelOptions } from '@/Composables/schoolLevelOptions';
 import GuestHeader from "@/Sections/GuestHeader.vue";
+import { Head, router } from "@inertiajs/vue3";
 
 const props = defineProps({
   school: Object,

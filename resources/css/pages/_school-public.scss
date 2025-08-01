@@ -1,0 +1,107 @@
+@use "../abstracts/variables"as v;
+@use "../abstracts/mixins"as m;
+@use "sass:color";
+
+.school-public {
+    &__container {
+        padding: 48px 0;
+        max-width: 1120px;
+        margin: 0 auto;
+
+        @include m.mq(sm) {
+            padding: 64px 0;
+        }
+    }
+
+    &__card {
+        background: #fff;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        border-radius: 12px;
+        padding: 32px;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 16px;
+
+        &--2 {
+            grid-template-columns: 1fr 1fr;
+
+            @include m.mq(md) {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        &--3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        &--12 {
+            grid-template-columns: repeat(12, 1fr);
+        }
+    }
+
+    &__field {
+        margin-bottom: 16px;
+    }
+
+    &__label {
+        display: block;
+        @include m.fz(1.4);
+        font-weight: v.$font-normal-weight;
+        color: v.$color-gray;
+        margin-bottom: 4px;
+    }
+
+    &__value {
+        margin-top: 4px;
+        @include m.fz(1.6);
+        color: v.$color-black-text;
+    }
+
+    &__badge-group,
+    &__badge-container {
+        margin-top: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    &__section-title {
+        @include m.fz(1.8);
+        font-weight: v.$font-bold-weight;
+        margin-bottom: 16px;
+    }
+
+    &__social-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    &__social-item {
+        display: grid;
+        gap: 16px;
+    }
+
+    &__social-link {
+        color: v.$color-indigo;
+        @include m.fz(1.6);
+        margin-top: 4px;
+
+        &:hover {
+            color: color.scale(v.$color-indigo, $lightness: -10%);
+        }
+    }
+
+    &__map-link {
+        color: v.$color-blue;
+
+        &:hover {
+            color: color.scale(v.$color-blue, $lightness: -10%);
+        }
+
+        margin-left: 8px;
+    }
+}

@@ -2,34 +2,38 @@
 @use "../abstracts/variables";
 
 .editable-image {
-  position: relative;
-  display: inline-block;
+    position: relative;
+    display: inline-block;
 
-  &__preview {
-    border-radius: 0.375rem;
-    object-fit: cover;
-  }
-
-  &__overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.15s ease-in-out;
-    border-radius: 0.375rem;
-
-    &:hover {
-      opacity: 1;
+    img {
+        width: 100%;
     }
-  }
 
-  &__input {
-    display: none;
-  }
+    &__preview {
+        border-radius: 0.375rem;
+        object-fit: cover;
+    }
+
+    &__overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.15s ease-in-out;
+        border-radius: 0.375rem;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    &__input {
+        display: none;
+    }
 }

@@ -1,68 +1,35 @@
 <template>
   <div class="editable-image">
     <div class="editable-image__container" @click="canEdit ? openFileInput() : null">
-      <img 
-        :src="modelValue || noImage" 
-        :class="[
-          'editable-image__image',
-          getImageClass()
-        ]" 
-      />
+      <img :src="modelValue || noImage" :class="[
+        'editable-image__image',
+        getImageClass()
+      ]" />
       <div class="editable-image__controls">
-        <button
-          v-if="canEdit"
-          @click.stop="openFileInput"
-          class="editable-image__button"
-          title="Editar imagen"
-        >
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-            />
+        <button v-if="canEdit" @click.stop="openFileInput" class="editable-image__button" title="Editar imagen">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
           </svg>
         </button>
-        <button
-          v-if="canEdit && modelValue"
-          @click.stop="handleDelete"
-          class="editable-image__button editable-image__button--danger"
-          title="Eliminar imagen"
-        >
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-            />
+        <button v-if="canEdit && modelValue" @click.stop="handleDelete"
+          class="editable-image__button editable-image__button--danger" title="Eliminar imagen">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
         </button>
       </div>
-      <input
-        type="file"
-        ref="fileInput"
-        class="editable-image__input"
-        accept="image/*"
-        @change="handleFileChange"
-      />
+      <input v-if="canEdit" type="file" ref="fileInput" class="editable-image__input" accept="image/*"
+        @change="handleFileChange" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { router } from "@inertiajs/vue3";
 import noImage from "@images/no-image-person.png";
+import { router } from "@inertiajs/vue3";
+import { ref } from "vue";
 
 const props = defineProps({
   modelValue: {
@@ -126,7 +93,7 @@ const getImageClass = () => {
   if (props.imageClass) {
     return props.imageClass;
   }
-  
+
   // Otherwise, use type-based classes
   switch (props.type) {
     case 'logo':
