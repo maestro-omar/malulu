@@ -28,7 +28,6 @@ class FakeUsersSeeder extends Seeder
     const OTHER_SCHOOLS_LIMIT = 1;
     const FAST_TEST = true;
     private $mathSubject;
-    private $courses;
     // private $schoolLevels;
     private $allRoles;
     private $faker;
@@ -38,7 +37,6 @@ class FakeUsersSeeder extends Seeder
     {
         // Get required IDs
         $this->mathSubject = ClassSubject::where('short_name', 'MAT')->first();
-        $this->courses = Course::all();
         // $this->schoolLevels = SchoolLevel::all(); // Get all school levels
         $this->allRoles = Role::pluck('id', 'code')->toArray();
         $this->faker = Faker::create('es_ES'); // Using Spanish locale for more realistic names
@@ -62,7 +60,7 @@ class FakeUsersSeeder extends Seeder
             return;
         }
 
-        if (!$this->courses) {
+        if (Course::count() === 0) {
             $this->command->error('No courses found. Please run CourseSeeder first.');
             return;
         }
@@ -449,12 +447,20 @@ class FakeUsersSeeder extends Seeder
     /**
      * Get a random course for a specific school.
      */
-    private function getRandomCourseForSchool(School $school): ?Course
+    private function getRandomCourseForSchool(School $school, ?int $schoolLevelId = null): ?Course
     {
-        return Course::where('school_id', $school->id)
-            ->where('active', true)
-            ->inRandomOrder()
-            ->first();
+        static $last;
+        $query = Course::where('school_id', $school->id)
+            ->where('active', true);
+        if ($last) {
+            $query->where('id', '!=', $last->id);
+        }
+        if ($schoolLevelId) {
+            $query->where('school_level_id', $schoolLevelId);
+        }
+
+        $last = $query->inRandomOrder()->first();
+        return $last;
     }
 
     /**
@@ -474,7 +480,7 @@ class FakeUsersSeeder extends Seeder
             'notes' => $note ?: "Auto-generated {$roleCode} relationship",
         ];
         if (in_array($roleCode, [Role::GRADE_TEACHER, Role::ASSISTANT_TEACHER, Role::CURRICULAR_TEACHER, Role::SPECIAL_TEACHER, Role::PROFESSOR])) {
-            $randomCourse = $this->getRandomCourseForSchool($school);
+            $randomCourse = $this->getRandomCourseForSchool($school, $schoolLevelId);
             $details['worker_details'] = [
                 'class_subject_id' => $this->mathSubject->id,
                 'job_status_id' => $this->faker->randomElement($this->jobStatuses()),
@@ -491,7 +497,7 @@ class FakeUsersSeeder extends Seeder
             ];
         }
         if ($roleCode === Role::STUDENT) {
-            $randomCourse = $this->getRandomCourseForSchool($school);
+            $randomCourse = $this->getRandomCourseForSchool($school, $schoolLevelId);
             $details['student_details'] = [
                 'current_course_id' => $randomCourse ? $randomCourse->id : null,
             ];
