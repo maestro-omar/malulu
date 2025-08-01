@@ -1,7 +1,9 @@
 <script setup>
 import ApplicationLogo from '@/Components/admin/ApplicationLogo.vue';
-import { Link } from '@inertiajs/vue3';
-
+import { usePage, Link } from '@inertiajs/vue3';
+const page = usePage();
+const user = page.props.auth.user;
+console.log(user, 'aaaa');
 defineProps({
     canLogin: {
         type: Boolean,
@@ -19,20 +21,23 @@ defineProps({
             <!-- Page Heading -->
             <header class="guest-layout__header" v-if="$slots.header">
                 <div class="guest-layout__header-container">
-                    <div>
+                    <div class="guest-layout__header-logo-container">
                         <Link href="/">
-                        <ApplicationLogo class="guest-layout__header-logo" />
+                            <ApplicationLogo class="guest-layout__header-logo" />
                         </Link>
                     </div>
-                    <slot name="header" />
+                    <div class="guest-layout__header-main-container">
+                        <slot name="header" />
+                    </div>
                     <div v-if="canLogin" class="guest-layout__header-nav">
                         <Link v-if="$page.props.auth.user" :href="route('dashboard')"
                             class="guest-layout__header-nav-link">
                         Inicio</Link>
 
                         <template v-else>
-                            <Link :href="route('login')"
-                                class="guest-layout__header-nav-link">
+                            <Link v-if="user" :href="route('profile')" class="guest-layout__header-nav-link">
+                            Perfil</Link>
+                            <Link v-else :href="route('login')" class="guest-layout__header-nav-link">
                             Acceso</Link>
 
                             <Link v-if="canRegister" :href="route('register')"

@@ -51,6 +51,7 @@
 @use 'layouts/footer';
 @use 'layouts/authenticated';
 @use 'layouts/guest';
+@use 'layouts/guest-header';
 @use 'layouts/minimal-auth';
 @use 'layouts/error-layout';
 

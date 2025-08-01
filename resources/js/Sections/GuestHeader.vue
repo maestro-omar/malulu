@@ -1,8 +1,8 @@
 <template>
-  <div class="flex justify-between items-center">
-    <div class="flex flex-col flex-1">
-      <Breadcrumb v-if="breadcrumbs" :breadcrumbs="breadcrumbs" />
-      <h2 class="page-subtitle">
+  <div class="guest-header">
+    <div class="guest-header__content">
+      <Breadcrumb v-if="breadcrumbs" :breadcrumbs="breadcrumbs" class="guest-header__breadcrumb" />
+      <h2 class="guest-header__title">
         {{ title }}
       </h2>
     </div>
