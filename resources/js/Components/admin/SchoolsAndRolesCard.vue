@@ -99,7 +99,7 @@
               <!-- Guardian Relationships -->
               <div v-if="hasGuardianRelationshipsForRole(role.id, school.id)"
                 :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
-                <h5 class="schools-roles-card__section-title">Información de Tutor - {{ role.name }}</h5>
+                <h5 class="schools-roles-card__section-title">Información de Tutor</h5>
                 <div class="schools-roles-card__relationships">
                   <div v-for="relationship in getGuardianRelationshipsForRole(role.id, school.id)"
                     :key="relationship.id" class="schools-roles-card__relationship">
@@ -153,16 +153,25 @@
               <!-- Student Relationships -->
               <div v-if="hasStudentRelationshipsForRole(role.id, school.id)"
                 :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
-                <h5 class="schools-roles-card__section-title">Información de Estudiante - {{ role.name }}</h5>
+                <h5 class="schools-roles-card__section-title">Información de Estudiante</h5>
                 <div class="schools-roles-card__relationships">
                   <div v-for="relationship in getStudentRelationshipsForRole(role.id, school.id)" :key="relationship.id"
                     class="schools-roles-card__relationship">
-                    <div v-if="relationship.current_course" class="schools-roles-card__relationship-content">
+                    <div v-if="relationship.current_course"
+                      class="schools-roles-card__relationship-content schools-roles-card__relationship-content--student-course">
                       <div class="schools-roles-card__field">
                         <span class="schools-roles-card__field-label">Curso:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.current_course.number }}°{{
-                          relationship.current_course.letter }} {{ relationship.current_course.name ?
-                            `[${relationship.current_course.name}]` : '' }} </p>
+                        <a class="schools-roles-card__field-value"
+                          :href="route('courses.show', { 'school': school.slug, 'schoolLevel': getSchoolLevelCode(relationship.current_course.school_level_id), 'course': getCourseSlug(relationship.current_course) })">
+                          {{ relationship.current_course.number }}°{{
+                            relationship.current_course.letter }} {{ relationship.current_course.name ?
+                            `[${relationship.current_course.name}]` : '' }}</a>
+                      </div>
+                      <div v-if="relationship.current_course.level" class="schools-roles-card__field">
+                        <span class="schools-roles-card__field-label">Nivel:</span>
+                        <div class="schools-roles-card__field-value">
+                          <SchoolLevelBadge :level="relationship.current_course.level" />
+                        </div>
                       </div>
                       <div v-if="relationship.start_date" class="schools-roles-card__field">
                         <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
@@ -220,8 +229,11 @@
 
 <script setup>
 import RoleBadge from '@/Components/badges/RoleBadge.vue';
+import SchoolLevelBadge from '@/Components/badges/SchoolLevelBadge.vue';
+import { schoolLevelOptions } from '@/Composables/schoolLevelOptions';
+import { formatDate, getCourseSlug } from '@/utils/strings';
 import { Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps({
   title: {
@@ -338,9 +350,42 @@ const getGeneralRoleRelationshipsForRole = (roleId, schoolId) => {
   });
 };
 
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString();
+// Get school level options with ID mapping
+const { options: schoolLevelOptionsData } = schoolLevelOptions();
+
+// Create a dynamic reverse mapping from ID to code using the loaded data
+const schoolLevelIdToCode = computed(() => {
+  if (!schoolLevelOptionsData.value || Object.keys(schoolLevelOptionsData.value).length === 0) {
+    return {};
+  }
+
+  // Create reverse mapping: ID -> code
+  const mapping = {};
+  Object.entries(schoolLevelOptionsData.value).forEach(([code, data]) => {
+    if (data.id) {
+      mapping[data.id] = code;
+    }
+  });
+
+  return mapping;
+});
+
+const getSchoolLevelCode = (schoolLevelId) => {
+  if (!schoolLevelId) {
+    return null;
+  }
+
+  // Use the dynamic mapping from loaded data
+  const code = schoolLevelIdToCode.value[schoolLevelId];
+
+  if (!code) {
+    console.warn(`No school level code found for ID ${schoolLevelId}. Available mappings:`, schoolLevelIdToCode.value);
+    return null;
+  }
+
+  return code;
 };
+
 
 const roleColors = {
   'admin': 'schools-roles-card__section--admin',
@@ -363,6 +408,4 @@ const roleColors = {
 const getRoleBackgroundColor = (role) => {
   return roleColors[role.code] || 'schools-roles-card__section--default';
 };
-console.log(props.roleRelationships);
-console.log(props.studentRelationships);
 </script>

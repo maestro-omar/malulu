@@ -27,6 +27,9 @@ class SchoolManagementType extends Model
 
     public static function vueOptions(): array
     {
+        // Get all records from database
+        $records = static::all()->keyBy('code');
+
         $map = [
             self::PUBLIC   => ['label' => 'Pública'],
             self::PRIVATE => ['label' => 'Privada'],
@@ -35,9 +38,15 @@ class SchoolManagementType extends Model
         ];
 
         return collect(self::getFilteredConstants())
-            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? [
-                'label' => ucfirst($value),
-            ]])
+            ->mapWithKeys(function ($value, $constant) use ($records, $map) {
+                $record = $records->get($value);
+
+                return [$value => [
+                    'id' => $record ? $record->id : null,
+                    'label' => $map[$value]['label'] ?? ucfirst($value),
+                    'code' => $value,
+                ]];
+            })
             ->toArray();
     }
 }

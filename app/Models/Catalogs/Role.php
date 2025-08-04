@@ -206,6 +206,9 @@ class Role extends SpatieRole
 
     public static function vueOptions(): array
     {
+        // Get all records from database
+        $records = static::all()->keyBy('code');
+
         $map = [
             self::SUPERADMIN => ['label' => 'Superadmin'],
             self::CONFIGURATOR => ['label' => 'Configurador'],
@@ -227,9 +230,15 @@ class Role extends SpatieRole
         ];
 
         return collect(self::getFilteredConstants())
-            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? [
-                'label' => ucfirst(str_replace('_', ' ', $value)),
-            ]])
+            ->mapWithKeys(function ($value, $constant) use ($records, $map) {
+                $record = $records->get($value);
+
+                return [$value => [
+                    'id' => $record ? $record->id : null,
+                    'label' => $map[$value]['label'] ?? ucfirst(str_replace('_', ' ', $value)),
+                    'code' => $value,
+                ]];
+            })
             ->toArray();
     }
 }

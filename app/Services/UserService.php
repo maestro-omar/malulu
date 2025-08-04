@@ -40,13 +40,13 @@ class UserService
                         $query->with(['student' => function ($query) {
                             $query->with(['roleRelationships' => function ($query) {
                                 $query->with(['studentRelationship' => function ($query) {
-                                    $query->with(['currentCourse']);
+                                    $query->with(['currentCourse.schoolLevel']);
                                 }]);
                             }]);
                         }]);
                     },
                     'studentRelationship' => function ($query) {
-                        $query->with(['currentCourse']);
+                        $query->with(['currentCourse.schoolLevel']);
                     },
                     'creator'
                 ]);
@@ -242,16 +242,20 @@ class UserService
 
     private function parseCurrentCourse($currentCourse)
     {
-        return $currentCourse ? $currentCourse->toArray() : null;
-        // return $currentCourse ? [
-        //     'id' => $currentCourse->id,
-        //     'name' => $currentCourse->name,
-        //     'number' => $currentCourse->number,
-        //     'letter' => $currentCourse->letter,
-        //     'school_level_id' => $currentCourse->school_level_id,
-        //     'school_shift_id' => $currentCourse->school_shift_id,
-        //     'start_date' => $currentCourse->start_date,
-        //     'end_date' => $currentCourse->end_date,
-        // ] : null;
+        return $currentCourse ? [
+            'id' => $currentCourse->id,
+            'name' => $currentCourse->name,
+            'number' => $currentCourse->number,
+            'letter' => $currentCourse->letter,
+            'school_level_id' => $currentCourse->school_level_id,
+            'level' => $currentCourse->schoolLevel ? [
+                'id' => $currentCourse->schoolLevel->id,
+                'name' => $currentCourse->schoolLevel->name,
+                'code' => $currentCourse->schoolLevel->code,
+            ] : null,
+            'school_shift_id' => $currentCourse->school_shift_id,
+            'start_date' => $currentCourse->start_date,
+            'end_date' => $currentCourse->end_date,
+        ] : null;
     }
 }

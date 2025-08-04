@@ -27,3 +27,22 @@ export function slugify(text) {
     .replace(/[^\w-]+/g, '')
     .replace(/--+/g, '-');
 }
+
+
+export function getCourseSlug(course) {
+  if (!course) return '';
+
+  // Build the base slug with ID, number and letter
+  let slug = course.id + '-' + course.number + course.letter;
+
+  // Add the course name only if it exists and is not null
+  if (course.name && course.name.trim()) {
+    slug += '-' + course.name;
+  }
+
+  return slugify(slug);
+}
+
+export function  formatDate(date)  {
+  return new Date(date).toLocaleDateString();
+}
