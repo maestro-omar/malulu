@@ -39,6 +39,19 @@ class UserController extends SchoolBaseController
         ]);
     }
 
+    public function student(Request $request, $schoolSlug, $studentIdAndName): Response
+    {
+        $this->setSchool($schoolSlug);
+        $student = $this->getStudent($studentIdAndName);
+
+        return $this->render($request, 'Users/BySchool/Student.Show', [
+            'user' => $student,
+            'genders' => User::genders(),
+            'school' => $this->school,
+            'breadcrumbs' => Breadcrumbs::generate('schools.student', $this->school, $student),
+        ]);
+    }
+
 
     private function setSchool(string $slug)
     {
@@ -52,5 +65,12 @@ class UserController extends SchoolBaseController
                 ->setStatusCode(403);
             // abort(403, 'No tienes acceso a esta escuela.');
         }
+    }
+
+    private function getStudent(string $studentIdAndName)
+    {
+        $id = (int) explode('-', $studentIdAndName)[0];
+        $student = User::where('id', $id)->first();
+        return $student ? $this->userService->getUserShowData($student) : null;
     }
 }

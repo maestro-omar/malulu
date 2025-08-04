@@ -181,12 +181,7 @@ class UserService
                     'student' => $student ? [
                         'id' => $student->id,
                         'name' => $student->name,
-                        'current_course' => $currentCourse ? [
-                            'id' => $currentCourse->id,
-                            'name' => $currentCourse->name,
-                            'grade' => $currentCourse->grade,
-                            'section' => $currentCourse->section
-                        ] : null
+                        'current_course' => $this->parseCurrentCourse($currentCourse)
                     ] : null,
                     'student_id' => $relationship->student_id,
                     'relationship_type' => $relationship->relationship_type,
@@ -210,12 +205,7 @@ class UserService
                 return [
                     'id' => $relationship->id,
                     'role_relationship_id' => $relationship->role_relationship_id,
-                    'current_course' => $relationship->currentCourse ? [
-                        'id' => $relationship->currentCourse->id,
-                        'name' => $relationship->currentCourse->name,
-                        'grade' => $relationship->currentCourse->grade,
-                        'section' => $relationship->currentCourse->section
-                    ] : null,
+                    'current_course' => $this->parseCurrentCourse($relationship->currentCourse),
                     'start_date' => $roleRelationship->start_date ? $roleRelationship->start_date->toDateString() : null,
                     'creator' => $roleRelationship->creator ? [
                         'id' => $roleRelationship->creator->id,
@@ -249,5 +239,19 @@ class UserService
     {
         return User::genders();
     }
-}
 
+    private function parseCurrentCourse($currentCourse)
+    {
+        return $currentCourse ? $currentCourse->toArray() : null;
+        // return $currentCourse ? [
+        //     'id' => $currentCourse->id,
+        //     'name' => $currentCourse->name,
+        //     'number' => $currentCourse->number,
+        //     'letter' => $currentCourse->letter,
+        //     'school_level_id' => $currentCourse->school_level_id,
+        //     'school_shift_id' => $currentCourse->school_shift_id,
+        //     'start_date' => $currentCourse->start_date,
+        //     'end_date' => $currentCourse->end_date,
+        // ] : null;
+    }
+}

@@ -29,6 +29,7 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get(__('routes.students'), [UserController::class, 'students'])->name('school.students');
         Route::get(__('routes.students') . '/' . __('routes.create'), [UserController::class, 'studentCreate'])->name('school.students.create');
         Route::get(__('routes.student') . '/{idAndName}', [UserController::class, 'student'])->name('school.student.show');
+        Route::get(__('routes.student') . '/{idAndName}/' . __('routes.edit'), [UserController::class, 'studentEdit'])->name('school.student.edit');
         Route::get(__('routes.guardians'), [UserController::class, 'guardians'])->name('school.guardians');
 
         Route::get(__('routes.guardians'), [UserController::class, 'guardians'])->name('school.guardians');

@@ -76,6 +76,11 @@ Breadcrumbs::for('schools.students', function (Trail $trail, $school) {
     $trail->push('Estudiantes', route('school.students', $school));
 });
 
+Breadcrumbs::for('schools.student', function (Trail $trail, $school, $student) {
+    $trail->parent('schools.students', $school);
+    $trail->push($student['firstname'] . ' ' . $student['lastname'], route('school.student.show', [$school, $student['id'] . '-' . $student['name'] . ' ' . $student['lastname']]));
+});
+
 // 📅 Ciclos lectivos
 Breadcrumbs::for('academic-years.index', function (Trail $trail) {
     $trail->parent('dashboard');
