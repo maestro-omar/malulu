@@ -6,8 +6,9 @@ import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
-import { slugify } from '@/utils/strings';
+import { calculateAge, slugify } from '@/utils/strings';
 import { Head, router, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 const props = defineProps({
     user: Object,
@@ -17,6 +18,10 @@ const props = defineProps({
 });
 
 const page = usePage();
+
+const userAge = computed(() => {
+    return calculateAge(props.user.birthdate);
+});
 
 const destroy = () => {
     if (confirm("¿Está seguro que desea eliminar este usuario?")) {
@@ -89,10 +94,16 @@ const destroy = () => {
                                             <div class="admin-detail__field">
                                                 <label class="admin-detail__label">Fecha de Nacimiento</label>
                                                 <div class="admin-detail__value">
-                                                    {{ user.birthdate ? new
-                                                        Date(user.birthdate).toLocaleDateString('es-AR', {
-                                                            timeZone: 'UTC'
-                                                        }) : '-' }}
+                                                    <span v-if="user.birthdate">
+                                                        {{ new Date(user.birthdate).toLocaleDateString('es-AR', {
+                                                            timeZone:
+                                                                'UTC'
+                                                        }) }}
+                                                        <span v-if="userAge !== null" class="admin-detail__age">
+                                                            ({{ userAge }} años)
+                                                        </span>
+                                                    </span>
+                                                    <span v-else>-</span>
                                                 </div>
                                             </div>
                                             <div class="admin-detail__field">

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\School;
 
 use App\Models\Entities\User;
 use App\Models\Entities\School;
+use App\Models\Catalogs\Province;
+use App\Models\Catalogs\Country;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -49,6 +51,22 @@ class UserController extends SchoolBaseController
             'genders' => User::genders(),
             'school' => $this->school,
             'breadcrumbs' => Breadcrumbs::generate('schools.student', $this->school, $student),
+        ]);
+    }
+
+    public function studentEdit(Request $request, $schoolSlug, $studentIdAndName): Response
+    {
+        $this->setSchool($schoolSlug);
+        $student = $this->getStudent($studentIdAndName);
+
+        return Inertia::render('Users/BySchool/Student.Edit', [
+            'user' => $student, //->load(['roles']
+            'school' => $this->school,
+            'roles' => Role::all(),
+            'provinces' => Province::orderBy('order')->get(),
+            'countries' => Country::orderBy('order')->get(),
+            'genders' => User::genders(),
+            'breadcrumbs' => Breadcrumbs::generate('schools.student.edit', $this->school, $student),
         ]);
     }
 

@@ -80,6 +80,10 @@ Breadcrumbs::for('schools.student', function (Trail $trail, $school, $student) {
     $trail->parent('schools.students', $school);
     $trail->push($student['firstname'] . ' ' . $student['lastname'], route('school.student.show', [$school, $student['id'] . '-' . $student['name'] . ' ' . $student['lastname']]));
 });
+Breadcrumbs::for('schools.student.edit', function (Trail $trail, $school, $student) {
+    $trail->parent('schools.student', $school, $student);
+    $trail->push('Editar');
+});
 
 // 📅 Ciclos lectivos
 Breadcrumbs::for('academic-years.index', function (Trail $trail) {
