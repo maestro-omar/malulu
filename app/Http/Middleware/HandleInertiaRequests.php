@@ -169,8 +169,10 @@ class HandleInertiaRequests extends Middleware
     }
     private function getFlash(Request $request)
     {
-        $flash = $request->session()->get('flash');
-        $flash = (object) $flash;
-        return $flash;
+        return [
+            'success' => $request->session()->get('success'),
+            'error' => $request->session()->get('error'),
+            'status' => $request->session()->get('status'),
+        ];
     }
 }

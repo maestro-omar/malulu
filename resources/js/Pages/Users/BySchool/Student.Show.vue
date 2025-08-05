@@ -1,6 +1,7 @@
 <script setup>
 import EditableImage from '@/Components/admin/EditableImage.vue';
 import EmailField from '@/Components/admin/EmailField.vue';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import PhoneField from '@/Components/admin/PhoneField.vue';
 import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -16,6 +17,7 @@ const props = defineProps({
     school: Object,
     genders: Object,
     breadcrumbs: Array,
+    flash: Object,
 });
 
 const page = usePage();
@@ -48,6 +50,8 @@ const destroy = () => {
             }">
             </AdminHeader>
         </template>
+        <!-- Flash Messages -->
+        <FlashMessages :flash="flash" />
 
         <div class="container">
             <div class="admin-detail__wrapper">

@@ -44,7 +44,7 @@ class UserController extends SchoolBaseController
     public function student(Request $request, $schoolSlug, $studentIdAndName): Response
     {
         $this->setSchool($schoolSlug);
-        $student = $this->getStudent($studentIdAndName);
+        $student = $this->getStudentData($studentIdAndName);
 
         return $this->render($request, 'Users/BySchool/Student.Show', [
             'user' => $student,
@@ -57,11 +57,11 @@ class UserController extends SchoolBaseController
     public function studentEdit(Request $request, $schoolSlug, $studentIdAndName): Response
     {
         $this->setSchool($schoolSlug);
-        $student = $this->getStudent($studentIdAndName);
+        $student = $this->getStudentData($studentIdAndName);
 
         return Inertia::render('Users/BySchool/Student.Edit', [
-            'user' => $student, //->load(['roles']
             'school' => $this->school,
+            'user' => $student, //->load(['roles']
             'roles' => Role::all(),
             'provinces' => Province::orderBy('order')->get(),
             'countries' => Country::orderBy('order')->get(),
@@ -74,13 +74,13 @@ class UserController extends SchoolBaseController
     /**
      * Update the specified user in storage.
      */
-    public function studentUpdate(Request $request, $schoolSlug, $studentIdAndName): Response
+    public function studentUpdate(Request $request, $schoolSlug, $studentIdAndName)
     {
         $this->setSchool($schoolSlug);
         $student = $this->getStudent($studentIdAndName);
         try {
             $this->userService->updateUser($student, $request->all());
-            return redirect()->back()->with('success', 'Estudiante actualizado exitosamente.');
+            return redirect()->route('school.student.show', ['school' => $schoolSlug, 'idAndName' => $studentIdAndName])->with('success', 'Estudiante actualizado exitosamente.');
         } catch (ValidationException $e) {
             return redirect()->back()
                 ->withErrors($e->errors())
@@ -109,7 +109,12 @@ class UserController extends SchoolBaseController
     private function getStudent(string $studentIdAndName)
     {
         $id = (int) explode('-', $studentIdAndName)[0];
-        $student = User::where('id', $id)->first();
+        return User::where('id', $id)->first();
+    }
+
+    private function getStudentData(string $studentIdAndName)
+    {
+        $student = $this->getStudent($studentIdAndName);
         return $student ? $this->userService->getUserShowData($student) : null;
     }
 }

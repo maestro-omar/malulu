@@ -6,6 +6,7 @@ import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import { route_school_student } from '@/utils/routes';
 import { calculateAge } from '@/utils/strings.js';
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -16,10 +17,10 @@ const props = defineProps({
     roles: Array,
     provinces: Array,
     countries: Array,
-    genders: Array,
+    genders: Object,
     breadcrumbs: Array,
+    flash: Object,
 });
-console.log('zzz', props.user);
 
 const form = useForm({
     name: props.user.name,
@@ -50,17 +51,17 @@ const birthdateLabel = computed(() => {
 });
 
 const submit = () => {
-    form.put(route('school.student.update', { school: props.school.slug, idAndName: props.user.id + '-' + slugify(props.user.name + ' ' + props.user.lastname) }));
+    form.put(route_school_student(props.school, props.user, 'update'));
 };
 </script>
 
 <template>
 
-    <Head :title="`Editar Estudiante: ${props.user.name}`" />
+    <Head :title="`Editar Estudiante: ${user.name}`" />
 
     <AuthenticatedLayout>
         <template #header>
-            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Estudiante: ${props.user.name}`"></AdminHeader>
+            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Estudiante: ${user.name}`"></AdminHeader>
         </template>
 
         <div class="container">
@@ -88,9 +89,9 @@ const submit = () => {
                                 </div>
                                 <div class="admin-form__field">
                                     <InputLabel for="gender" value="Género" />
-                                    <select id="gender" class="admin-form__input" v-model="form.gender">
+                                    <select id="gender" class="admin-form__select" v-model="form.gender">
                                         <option value="">Seleccionar género</option>
-                                        <option v-for="(label, value) in props.genders" :key="value" :value="value">
+                                        <option v-for="(label, value) in genders" :key="value" :value="value">
                                             {{ label }}
                                         </option>
                                     </select>
@@ -190,8 +191,8 @@ const submit = () => {
                         </div>
                     </div>
 
-                    <ActionButtons button-label="Guardar Cambios" :cancel-href="route('users.show', props.user.id)"
-                        :disabled="form.processing" />
+                    <ActionButtons button-label="Guardar Cambios"
+                        :cancel-href="route_school_student(school, user, 'show')" :disabled="form.processing" />
                 </form>
             </div>
         </div>

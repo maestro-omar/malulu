@@ -27,9 +27,49 @@
             border-color: color.scale(variables.$color-ok, $lightness: 50%);
             color: variables.$color-ok;
         }
+
+        &--dismissible {
+            cursor: pointer;
+            position: relative;
+            padding-right: 3rem;
+        }
     }
 
     &__text {
         display: inline-block;
     }
+
+    &__close {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: currentColor;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+// Flash message animations
+.flash-slide-enter-active,
+.flash-slide-leave-active {
+    transition: all 0.3s ease;
+}
+
+.flash-slide-enter-from {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.flash-slide-leave-to {
+    opacity: 0;
+    transform: translateY(-20px);
 }

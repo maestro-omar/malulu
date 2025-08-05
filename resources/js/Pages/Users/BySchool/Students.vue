@@ -9,7 +9,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
 import { route_school_student } from '@/utils/routes';
-import { formatNumber, slugify } from '@/utils/strings';
+import { formatNumber } from '@/utils/strings';
 import noImage from '@images/no-image-person.png';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -129,9 +129,8 @@ const isAdmin = (user) => {
                                         <img :src="user.picture || noImage" :alt="user.name" />
                                     </td>
                                     <td class="table__td table__name">
-                                        <Link
-                                            :href="route('school.student.show', { school: props.school.slug, idAndName: user.id + '-' + slugify(user.lastname) + '-' + slugify(user.firstname) })">
-                                        {{ user.lastname }} {{ user.firstname }}
+                                        <Link :href="route_school_student(school, user, 'show')">
+                                        {{ user.firstname }}
                                         </Link>
                                     </td>
                                     <td class="table__td table__name">
@@ -144,13 +143,13 @@ const isAdmin = (user) => {
                                         {{ formatNumber(user.id_number) }}
                                     </td>
                                     <td class="table__td table__name">
-                                        <SchoolLevelBadge :level="user.course.level" />
+                                        <SchoolLevelBadge v-if="user.course" :level="user.course.level" />
                                     </td>
                                     <td class="table__td table__name">
-                                        <SchoolShiftBadge :shift="user.course.shift" />
+                                        <SchoolShiftBadge v-if="user.course" :shift="user.course.shift" />
                                     </td>
                                     <td class="table__td table__name">
-                                        {{ user.course.number + user.course.letter }}
+                                        {{ user.course ? user.course.number + user.course.letter : '' }}
                                     </td>
                                     <td class="table__td table__actions">
                                         <Link :href="route_school_student(school, user, 'show')">
