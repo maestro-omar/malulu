@@ -60,8 +60,7 @@ class Handler extends ExceptionHandler
             return Inertia::render('Errors/403')
                 ->toResponse($request)
                 ->setStatusCode(403);
-        }
-        if (
+        } elseif (
             $exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
             || $exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException
         ) {
@@ -70,8 +69,10 @@ class Handler extends ExceptionHandler
             return Inertia::render('Errors/404')
                 ->toResponse($request)
                 ->setStatusCode(404);
+        } elseif ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+        } else {
+            dd('Other exception: ', $exception);
         }
-        dd($exception);
 
         return parent::render($request, $exception);
     }

@@ -18,18 +18,13 @@
 
     <div class="container">
       <!-- Flash Messages -->
-      <FlashMessages :error="flash?.error" :success="flash?.success" />
+      <FlashMessages :flash="flash" />
 
       <div class="table__wrapper">
         <div class="table__container">
           <!-- Search Filter -->
           <div class="table__search">
-            <input
-              type="text"
-              v-model="search"
-              @input="handleSearch"
-              placeholder="Buscar escuelas..."
-            />
+            <input type="text" v-model="search" @input="handleSearch" placeholder="Buscar escuelas..." />
             <button v-if="search" @click="clearSearch" class="table__search-clear">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -39,12 +34,8 @@
 
           <!-- Locality Filter -->
           <div class="table__filter">
-            <SearchableDropdown
-              v-model="selectedLocality"
-              :options="localities"
-              placeholder="Filtrar por localidad..."
-              @update:modelValue="handleLocalityChange"
-            />
+            <SearchableDropdown v-model="selectedLocality" :options="localities" placeholder="Filtrar por localidad..."
+              @update:modelValue="handleLocalityChange" />
           </div>
 
           <!-- Desktop Table View -->
@@ -60,14 +51,10 @@
                 </tr>
               </thead>
               <tbody class="table__tbody">
-                <tr
-                  v-for="(school, index) in schools.data.filter(s => s.name !== 'GLOBAL')"
-                  :key="school.id"
-                  :class="{
-                    'table__tr--even': index % 2 === 0,
-                    'table__tr--odd': index % 2 === 1
-                  }"
-                >
+                <tr v-for="(school, index) in schools.data.filter(s => s.name !== 'GLOBAL')" :key="school.id" :class="{
+                  'table__tr--even': index % 2 === 0,
+                  'table__tr--odd': index % 2 === 1
+                }">
                   <td class="table__td table__name">
                     <div class="table__name-primary">{{ school.name }}</div>
                     <div class="table__name-secondary">
@@ -89,13 +76,14 @@
                   </td>
                   <td class="table__td table__actions">
                     <Link v-if="hasPermission($page.props, 'school.view')" :href="route('schools.show', school.slug)">
-                      Ver
+                    Ver
                     </Link>
                     <Link v-if="hasPermission($page.props, 'school.edit')" :href="route('schools.edit', school.slug)">
-                      Editar
+                    Editar
                     </Link>
-                    <Link v-if="hasPermission($page.props, 'school.delete')" :href="route('schools.destroy', school.slug)" method="delete" as="button">
-                      Eliminar
+                    <Link v-if="hasPermission($page.props, 'school.delete')"
+                      :href="route('schools.destroy', school.slug)" method="delete" as="button">
+                    Eliminar
                     </Link>
                   </td>
                 </tr>
@@ -105,15 +93,10 @@
 
           <!-- Mobile Card View -->
           <div class="table__mobile">
-            <div
-              v-for="(school, index) in schools.data.filter(s => s.name !== 'GLOBAL')"
-              :key="school.id"
-              :class="{
-                'table__card--even': index % 2 === 0,
-                'table__card--odd': index % 2 === 1
-              }"
-              class="table__card"
-            >
+            <div v-for="(school, index) in schools.data.filter(s => s.name !== 'GLOBAL')" :key="school.id" :class="{
+              'table__card--even': index % 2 === 0,
+              'table__card--odd': index % 2 === 1
+            }" class="table__card">
               <div class="table__card-header">
                 <div class="table__card-user">
                   <div class="table__card-info">
@@ -123,13 +106,14 @@
                 </div>
                 <div class="table__card-actions">
                   <Link v-if="hasPermission($page.props, 'school.view')" :href="route('schools.show', school.slug)">
-                    Ver
+                  Ver
                   </Link>
                   <Link v-if="hasPermission($page.props, 'school.edit')" :href="route('schools.edit', school.slug)">
-                    Editar
+                  Editar
                   </Link>
-                  <Link v-if="hasPermission($page.props, 'school.delete')" :href="route('schools.destroy', school.slug)" method="delete" as="button">
-                    Eliminar
+                  <Link v-if="hasPermission($page.props, 'school.delete')" :href="route('schools.destroy', school.slug)"
+                    method="delete" as="button">
+                  Eliminar
                   </Link>
                 </div>
               </div>
@@ -164,17 +148,17 @@
 </template>
 
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
 import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
+import ManagementTypeBadge from '@/Components/badges/ManagementTypeBadge.vue';
 import SchoolLevelBadge from '@/Components/badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/badges/SchoolShiftBadge.vue';
-import ManagementTypeBadge from '@/Components/badges/ManagementTypeBadge.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
   schools: Object,

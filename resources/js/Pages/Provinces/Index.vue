@@ -1,4 +1,5 @@
 <template>
+
     <Head title="Provincias" />
 
     <AuthenticatedLayout>
@@ -8,7 +9,7 @@
 
         <div class="container">
             <!-- Flash Messages -->
-            <FlashMessages :error="flash?.error" :success="flash?.success" />
+            <FlashMessages :flash="flash" />
 
             <div class="table__wrapper">
                 <div class="table__container">
@@ -24,14 +25,10 @@
                                 </tr>
                             </thead>
                             <tbody class="table__tbody">
-                                <tr
-                                    v-for="(province, index) in provinces"
-                                    :key="province.id"
-                                    :class="{
-                                        'table__tr--even': index % 2 === 0,
-                                        'table__tr--odd': index % 2 === 1
-                                    }"
-                                >
+                                <tr v-for="(province, index) in provinces" :key="province.id" :class="{
+                                    'table__tr--even': index % 2 === 0,
+                                    'table__tr--odd': index % 2 === 1
+                                }">
                                     <td class="table__td table__logo">
                                         <img v-if="province.logo1" :src="province.logo1" alt="Escudo" />
                                     </td>
@@ -49,15 +46,10 @@
 
                     <!-- Mobile Card View -->
                     <div class="table__mobile">
-                        <div
-                            v-for="(province, index) in provinces"
-                            :key="province.id"
-                            :class="{
-                                'table__card--even': index % 2 === 0,
-                                'table__card--odd': index % 2 === 1
-                            }"
-                            class="table__card"
-                        >
+                        <div v-for="(province, index) in provinces" :key="province.id" :class="{
+                            'table__card--even': index % 2 === 0,
+                            'table__card--odd': index % 2 === 1
+                        }" class="table__card">
                             <div class="table__card-header">
                                 <div class="table__card-user">
                                     <img v-if="province.logo1" :src="province.logo1" alt="Escudo" />
@@ -81,10 +73,10 @@
 </template>
 
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import { Head, Link, router } from '@inertiajs/vue3';
 
 defineProps({
     provinces: Array,

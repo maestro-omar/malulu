@@ -1,12 +1,12 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import ActionButtons from '@/Components/admin/ActionButtons.vue';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
-import ActionButtons from '@/Components/admin/ActionButtons.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import { Head, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
     user: Object,
@@ -52,27 +52,30 @@ const submit = () => {
             <div class="admin-form__wrapper">
                 <form @submit.prevent="submit" class="admin-form__container">
                     <!-- Flash Messages -->
-                    <FlashMessages :error="flash?.error" :success="flash?.success" />
+                    <FlashMessages :flash="flash" />
                     <!-- Basic Information Card -->
                     <div class="admin-form__card">
                         <h3 class="admin-form__card-title">Información Básica</h3>
                         <div class="admin-form__card-content">
                             <div class="admin-form__field">
                                 <InputLabel for="name" value="Nombre de usuario" />
-                                <TextInput id="name" type="text" class="admin-form__input" v-model="form.name" required />
+                                <TextInput id="name" type="text" class="admin-form__input" v-model="form.name"
+                                    required />
                                 <InputError class="admin-form__error" :message="form.errors.name" />
                             </div>
 
                             <div class="admin-form__grid form__grid--2">
                                 <div class="admin-form__field">
                                     <InputLabel for="firstname" value="Nombre" />
-                                    <TextInput id="firstname" type="text" class="admin-form__input" v-model="form.firstname" />
+                                    <TextInput id="firstname" type="text" class="admin-form__input"
+                                        v-model="form.firstname" />
                                     <InputError class="admin-form__error" :message="form.errors.firstname" />
                                 </div>
 
                                 <div class="admin-form__field">
                                     <InputLabel for="lastname" value="Apellido" />
-                                    <TextInput id="lastname" type="text" class="admin-form__input" v-model="form.lastname" />
+                                    <TextInput id="lastname" type="text" class="admin-form__input"
+                                        v-model="form.lastname" />
                                     <InputError class="admin-form__error" :message="form.errors.lastname" />
                                 </div>
                             </div>
@@ -80,19 +83,22 @@ const submit = () => {
                             <div class="admin-form__grid form__grid--3">
                                 <div class="admin-form__field">
                                     <InputLabel for="id_number" value="DNI" />
-                                    <TextInput id="id_number" type="text" class="admin-form__input" v-model="form.id_number" />
+                                    <TextInput id="id_number" type="text" class="admin-form__input"
+                                        v-model="form.id_number" />
                                     <InputError class="admin-form__error" :message="form.errors.id_number" />
                                 </div>
 
                                 <div class="admin-form__field">
                                     <InputLabel for="birthdate" value="Fecha de Nacimiento" />
-                                    <TextInput id="birthdate" type="date" class="admin-form__input" v-model="form.birthdate" />
+                                    <TextInput id="birthdate" type="date" class="admin-form__input"
+                                        v-model="form.birthdate" />
                                     <InputError class="admin-form__error" :message="form.errors.birthdate" />
                                 </div>
 
                                 <div class="admin-form__field">
                                     <InputLabel for="nationality" value="Nacionalidad" />
-                                    <TextInput id="nationality" type="text" class="admin-form__input" v-model="form.nationality" />
+                                    <TextInput id="nationality" type="text" class="admin-form__input"
+                                        v-model="form.nationality" />
                                     <InputError class="admin-form__error" :message="form.errors.nationality" />
                                 </div>
                             </div>
@@ -106,7 +112,8 @@ const submit = () => {
                             <div class="admin-form__grid form__grid--2">
                                 <div class="admin-form__field">
                                     <InputLabel for="email" value="Correo electrónico" />
-                                    <TextInput id="email" type="email" class="admin-form__input" v-model="form.email" required />
+                                    <TextInput id="email" type="email" class="admin-form__input" v-model="form.email"
+                                        required />
                                     <InputError class="admin-form__error" :message="form.errors.email" />
                                 </div>
 
@@ -120,13 +127,15 @@ const submit = () => {
                             <div class="admin-form__grid form__grid--2">
                                 <div class="admin-form__field">
                                     <InputLabel for="address" value="Dirección" />
-                                    <TextInput id="address" type="text" class="admin-form__input" v-model="form.address" />
+                                    <TextInput id="address" type="text" class="admin-form__input"
+                                        v-model="form.address" />
                                     <InputError class="admin-form__error" :message="form.errors.address" />
                                 </div>
 
                                 <div class="admin-form__field">
                                     <InputLabel for="locality" value="Localidad" />
-                                    <TextInput id="locality" type="text" class="admin-form__input" v-model="form.locality" />
+                                    <TextInput id="locality" type="text" class="admin-form__input"
+                                        v-model="form.locality" />
                                     <InputError class="admin-form__error" :message="form.errors.locality" />
                                 </div>
                             </div>
@@ -157,11 +166,8 @@ const submit = () => {
                         </div>
                     </div>
 
-                    <ActionButtons
-                        button-label="Guardar Cambios"
-                        :cancel-href="route('users.show', props.user.id)"
-                        :disabled="form.processing"
-                    />
+                    <ActionButtons button-label="Guardar Cambios" :cancel-href="route('users.show', props.user.id)"
+                        :disabled="form.processing" />
                 </form>
             </div>
         </div>

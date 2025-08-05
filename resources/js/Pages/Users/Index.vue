@@ -1,14 +1,14 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Pagination from '@/Components/admin/Pagination.vue';
-import RoleBadge from '@/Components/badges/RoleBadge.vue';
-import { ref, computed, watch } from 'vue';
-import noImage from '@images/no-image-person.png';
-import AdminHeader from '@/Sections/AdminHeader.vue';
-import { hasPermission } from '@/utils/permissions';
 import EmailField from '@/Components/admin/EmailField.vue';
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import Pagination from '@/Components/admin/Pagination.vue';
+import RoleBadge from '@/Components/badges/RoleBadge.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminHeader from '@/Sections/AdminHeader.vue';
+import { hasPermission } from '@/utils/permissions';
+import noImage from '@images/no-image-person.png';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     users: Object,
@@ -101,7 +101,7 @@ const getUniqueRoles = (roles) => {
 
         <div class="container">
                 <!-- Flash Messages -->
-                <FlashMessages :error="flash?.error" :success="flash?.success" />
+                <FlashMessages :flash="flash" />
 
                 <div class="table__wrapper">
                     <div class="table__container">

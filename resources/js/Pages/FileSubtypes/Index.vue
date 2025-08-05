@@ -14,7 +14,7 @@
 
         <div class="container">
             <!-- Flash Messages -->
-            <FlashMessages :error="flash?.error" :success="flash?.success" />
+            <FlashMessages :flash="flash" />
 
             <div class="table__wrapper">
                 <div class="table__container">
@@ -31,23 +31,20 @@
                                 </tr>
                             </thead>
                             <tbody class="table__tbody">
-                                <tr
-                                    v-for="(fileSubtype, index) in fileSubtypes"
-                                    :key="fileSubtype.id"
-                                    :class="{
-                                        'table__tr--even': index % 2 === 0,
-                                        'table__tr--odd': index % 2 === 1
-                                    }"
-                                >
+                                <tr v-for="(fileSubtype, index) in fileSubtypes" :key="fileSubtype.id" :class="{
+                                    'table__tr--even': index % 2 === 0,
+                                    'table__tr--odd': index % 2 === 1
+                                }">
                                     <td class="table__td table__type">{{ fileSubtype.file_type }}</td>
                                     <td class="table__td table__name">{{ fileSubtype.name }}</td>
                                     <td class="table__td table__description">{{ fileSubtype.description }}</td>
                                     <td class="table__td table__order">{{ fileSubtype.order }}</td>
                                     <td class="table__td table__actions">
                                         <Link :href="route('file-subtypes.edit', fileSubtype.id)">
-                                            Editar
+                                        Editar
                                         </Link>
-                                        <button v-if="fileSubtype.can_delete" @click="deleteFileSubtype(fileSubtype.id)">
+                                        <button v-if="fileSubtype.can_delete"
+                                            @click="deleteFileSubtype(fileSubtype.id)">
                                             Eliminar
                                         </button>
                                     </td>
@@ -58,15 +55,10 @@
 
                     <!-- Mobile Card View -->
                     <div class="table__mobile">
-                        <div
-                            v-for="(fileSubtype, index) in fileSubtypes"
-                            :key="fileSubtype.id"
-                            :class="{
-                                'table__card--even': index % 2 === 0,
-                                'table__card--odd': index % 2 === 1
-                            }"
-                            class="table__card"
-                        >
+                        <div v-for="(fileSubtype, index) in fileSubtypes" :key="fileSubtype.id" :class="{
+                            'table__card--even': index % 2 === 0,
+                            'table__card--odd': index % 2 === 1
+                        }" class="table__card">
                             <div class="table__card-header">
                                 <div class="table__card-user">
                                     <div class="table__card-info">
@@ -76,7 +68,7 @@
                                 </div>
                                 <div class="table__card-actions">
                                     <Link :href="route('file-subtypes.edit', fileSubtype.id)">
-                                        Editar
+                                    Editar
                                     </Link>
                                     <button v-if="fileSubtype.can_delete" @click="deleteFileSubtype(fileSubtype.id)">
                                         Eliminar
@@ -100,11 +92,11 @@
 </template>
 
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import { Head, Link, router } from '@inertiajs/vue3';
 
 defineProps({
     fileSubtypes: Array,

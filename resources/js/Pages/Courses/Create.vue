@@ -18,7 +18,7 @@
               <input type="hidden" v-model="form.school_level_id" />
 
               <!-- Flash Messages -->
-              <FlashMessages :error="flash?.error" :success="flash?.success" />
+              <FlashMessages :flash="flash" />
 
               <div class="mb-4">
                 <InputLabel for="school_shift_id" value="Turno Escolar" />
@@ -86,18 +86,17 @@
 </template>
 
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
-import { Head, useForm } from '@inertiajs/vue3'
+import CancelLink from '@/Components/admin/CancelLink.vue'
+import CheckboxWithLabel from '@/Components/admin/CheckboxWithLabel.vue'
+import FlashMessages from '@/Components/admin/FlashMessages.vue'
 import InputError from '@/Components/admin/InputError.vue'
 import InputLabel from '@/Components/admin/InputLabel.vue'
 import PrimaryButton from '@/Components/admin/PrimaryButton.vue'
-import TextInput from '@/Components/admin/TextInput.vue'
 import SelectInput from '@/Components/admin/SelectInput.vue'
-import CancelLink from '@/Components/admin/CancelLink.vue'
-import CheckboxWithLabel from '@/Components/admin/CheckboxWithLabel.vue'
-import { formatDateForInput } from '@/utils/date'
-import AdminHeader from '@/Sections/AdminHeader.vue';
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import TextInput from '@/Components/admin/TextInput.vue'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import AdminHeader from '@/Sections/AdminHeader.vue'
+import { Head, useForm } from '@inertiajs/vue3'
 
 const props = defineProps({
   school: Object,

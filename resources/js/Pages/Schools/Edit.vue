@@ -11,7 +11,7 @@
       <div class="admin-form__wrapper">
         <form @submit.prevent="submit" class="admin-form__container">
           <!-- Flash Messages -->
-          <FlashMessages :error="flash?.error" :success="flash?.success" />
+          <FlashMessages :flash="flash" />
           <div class="admin-form__card">
             <div class="admin-form__card-content">
               <div class="admin-form__grid form__grid--2">
@@ -20,7 +20,8 @@
                   <div class="admin-form__card-content">
                     <div class="admin-form__field">
                       <InputLabel for="name" value="Nombre" />
-                      <TextInput id="name" type="text" class="admin-form__input" v-model="form.name" required autofocus />
+                      <TextInput id="name" type="text" class="admin-form__input" v-model="form.name" required
+                        autofocus />
                       <InputError :message="form.errors.name" class="admin-form__error" />
                     </div>
 
@@ -47,7 +48,8 @@
                     <div class="admin-form__grid form__grid--2">
                       <div class="admin-form__field">
                         <InputLabel for="management_type" value="Tipo de Gestión" />
-                        <select id="management_type" v-model="form.management_type_id" class="admin-form__select" required>
+                        <select id="management_type" v-model="form.management_type_id" class="admin-form__select"
+                          required>
                           <option value="">Seleccionar tipo de gestión</option>
                           <option v-for="type in managementTypes" :key="type.id" :value="type.id">
                             {{ type.name }}
@@ -62,7 +64,8 @@
                         <InputLabel value="Niveles" />
                         <div class="admin-form__checkbox-group">
                           <div v-for="level in schoolLevels" :key="level.id" class="admin-form__checkbox-item">
-                            <Checkbox :id="'level-' + level.id" :value="level.id" v-model:checked="form.school_levels" />
+                            <Checkbox :id="'level-' + level.id" :value="level.id"
+                              v-model:checked="form.school_levels" />
                             <label :for="'level-' + level.id" class="admin-form__checkbox-label">
                               {{ level.name }}
                             </label>
@@ -160,7 +163,8 @@
                       <TextInput type="url" class="admin-form__input" v-model="social.link" placeholder="https://..." />
                     </div>
                     <div class="admin-form__social-remove">
-                      <button type="button" @click="removeSocial(index)" class="admin-form__button form__button--danger">
+                      <button type="button" @click="removeSocial(index)"
+                        class="admin-form__button form__button--danger">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                           <path fill-rule="evenodd"
                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -193,18 +197,17 @@
 </template>
 
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import ActionButtons from '@/Components/admin/ActionButtons.vue';
+import Checkbox from '@/Components/admin/Checkbox.vue';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
-import TextInput from '@/Components/admin/TextInput.vue';
-import Checkbox from '@/Components/admin/Checkbox.vue';
 import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
-import ActionButtons from '@/Components/admin/ActionButtons.vue';
-import { ref, computed, onMounted, watch } from 'vue';
+import TextInput from '@/Components/admin/TextInput.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
-import { hasPermission } from '@/utils/permissions';
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import { Head, useForm } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
   school: Object,

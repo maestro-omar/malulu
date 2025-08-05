@@ -9,7 +9,7 @@
       <div class="admin-form__wrapper">
         <form @submit.prevent="submit" class="admin-form__container">
           <!-- Flash Messages -->
-          <FlashMessages :error="flash?.error" :success="flash?.success" />
+          <FlashMessages :flash="flash" />
           <!-- Basic Information Card -->
           <div class="admin-form__card">
             <h3 class="admin-form__card-title">Información Básica</h3>
@@ -99,15 +99,12 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useForm, usePage, Link } from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head } from "@inertiajs/vue3";
-import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
 import CancelLink from '@/Components/admin/CancelLink.vue';
-import AdminHeader from "@/Sections/AdminHeader.vue";
-import { hasPermission } from '@/utils/permissions';
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import AdminHeader from "@/Sections/AdminHeader.vue";
+import { Head, useForm, usePage } from "@inertiajs/vue3";
 
 const page = usePage();
 const roles = page.props.roles || [];

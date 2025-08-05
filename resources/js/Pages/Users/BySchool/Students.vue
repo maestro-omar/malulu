@@ -3,11 +3,12 @@
 import EmailField from '@/Components/admin/EmailField.vue';
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
-import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
-import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
+import SchoolLevelBadge from '@/Components/badges/SchoolLevelBadge.vue';
+import SchoolShiftBadge from '@/Components/badges/SchoolShiftBadge.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
+import { route_school_student } from '@/utils/routes';
 import { formatNumber, slugify } from '@/utils/strings';
 import noImage from '@images/no-image-person.png';
 import { Head, Link, router } from '@inertiajs/vue3';
@@ -87,7 +88,7 @@ const isAdmin = (user) => {
 
         <div class="container">
             <!-- Flash Messages -->
-            <FlashMessages :error="flash?.error" :success="flash?.success" />
+            <FlashMessages :flash="flash" />
 
             <div class="table__wrapper">
                 <div class="table__container">
@@ -152,12 +153,11 @@ const isAdmin = (user) => {
                                         {{ user.course.number + user.course.letter }}
                                     </td>
                                     <td class="table__td table__actions">
-                                        <Link
-                                            :href="route('school.student.show', { school: props.school.slug, idAndName: user.id + '-' + slugify(user.lastname) + '-' + slugify(user.firstname) })">
+                                        <Link :href="route_school_student(school, user, 'show')">
                                         Ver
                                         </Link>
                                         <Link v-if="hasPermission($page.props, 'student.edit')"
-                                            :href="route('users.edit', user.id)">
+                                            :href="route_school_student(school, user, 'edit')">
                                         Editar
                                         </Link>
                                         <button v-if="hasPermission($page.props, 'student.delete') &&

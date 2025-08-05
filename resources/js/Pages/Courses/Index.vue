@@ -16,7 +16,7 @@
 
     <div class="container">
       <!-- Flash Messages -->
-      <FlashMessages :error="flash?.error" :success="flash?.success" />
+      <FlashMessages :flash="flash" />
 
       <div class="table__wrapper">
         <div class="table__container">
@@ -27,13 +27,8 @@
               <!-- Year Filter -->
               <div class="table__filter-group">
                 <label for="year-filter" class="table__filter-label">Año</label>
-                <input
-                  type="number"
-                  id="year-filter"
-                  v-model.number="selectedYear"
-                  @input="triggerFilter"
-                  class="table__filter-input"
-                />
+                <input type="number" id="year-filter" v-model.number="selectedYear" @input="triggerFilter"
+                  class="table__filter-input" />
               </div>
 
               <!-- Active Status Filter -->
@@ -41,15 +36,18 @@
                 <label class="table__filter-label">Estado</label>
                 <div class="table__filter-radio-group">
                   <label class="table__filter-radio">
-                    <input type="radio" name="active-status" :value="true" v-model="activeStatus" @change="triggerFilter">
+                    <input type="radio" name="active-status" :value="true" v-model="activeStatus"
+                      @change="triggerFilter">
                     <span>Activo</span>
                   </label>
                   <label class="table__filter-radio">
-                    <input type="radio" name="active-status" :value="false" v-model="activeStatus" @change="triggerFilter">
+                    <input type="radio" name="active-status" :value="false" v-model="activeStatus"
+                      @change="triggerFilter">
                     <span>Inactivo</span>
                   </label>
                   <label class="table__filter-radio">
-                    <input type="radio" name="active-status" :value="null" v-model="activeStatus" @change="triggerFilter">
+                    <input type="radio" name="active-status" :value="null" v-model="activeStatus"
+                      @change="triggerFilter">
                     <span>Todos</span>
                   </label>
                 </div>
@@ -60,17 +58,13 @@
                 <label class="table__filter-label">Turno</label>
                 <div class="table__filter-buttons">
                   <template v-for="([code, shiftData]) in filteredShiftOptions" :key="code">
-                    <button
-                      @click="selectedShift = code; triggerFilter();"
-                      :class="getShiftButtonClasses(code, selectedShift === code)"
-                    >
+                    <button @click="selectedShift = code; triggerFilter();"
+                      :class="getShiftButtonClasses(code, selectedShift === code)">
                       {{ shiftData.label }}
                     </button>
                   </template>
-                  <button
-                    @click="selectedShift = null; triggerFilter();"
-                    :class="getShiftButtonClasses('default', selectedShift === null)"
-                  >
+                  <button @click="selectedShift = null; triggerFilter();"
+                    :class="getShiftButtonClasses('default', selectedShift === null)">
                     Todos
                   </button>
                 </div>
@@ -93,25 +87,19 @@
                 </tr>
               </thead>
               <tbody class="table__tbody">
-                <tr
-                  v-for="(course, index) in courses.data"
-                  :key="course.id"
-                  :class="{
-                    'table__tr--even': index % 2 === 0,
-                    'table__tr--odd': index % 2 === 1
-                  }"
-                >
+                <tr v-for="(course, index) in courses.data" :key="course.id" :class="{
+                  'table__tr--even': index % 2 === 0,
+                  'table__tr--odd': index % 2 === 1
+                }">
                   <td class="table__td table__td--center">{{ course.number + ' º ' + course.letter }}</td>
                   <td class="table__td table__td--center">
                     <SchoolShiftBadge :shift="course.school_shift" />
                   </td>
                   <td class="table__td table__td--center">
-                    <Link
-                      v-if="course.previous_course"
+                    <Link v-if="course.previous_course"
                       :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
-                      class="table__link"
-                    >
-                      {{ course.previous_course.number }} º {{ course.previous_course.letter }}
+                      class="table__link">
+                    {{ course.previous_course.number }} º {{ course.previous_course.letter }}
                     </Link>
                     <span v-else>-</span>
                   </td>
@@ -128,14 +116,12 @@
                   </td>
                   <td class="table__td table__actions">
                     <Link
-                      :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })"
-                    >
-                      Ver
+                      :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })">
+                    Ver
                     </Link>
                     <Link
-                      :href="route('courses.edit', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })"
-                    >
-                      Editar
+                      :href="route('courses.edit', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })">
+                    Editar
                     </Link>
                   </td>
                 </tr>
@@ -145,15 +131,10 @@
 
           <!-- Mobile Card View -->
           <div class="table__mobile">
-            <div
-              v-for="(course, index) in courses.data"
-              :key="course.id"
-              :class="{
-                'table__card--even': index % 2 === 0,
-                'table__card--odd': index % 2 === 1
-              }"
-              class="table__card"
-            >
+            <div v-for="(course, index) in courses.data" :key="course.id" :class="{
+              'table__card--even': index % 2 === 0,
+              'table__card--odd': index % 2 === 1
+            }" class="table__card">
               <div class="table__card-header">
                 <div class="table__card-user">
                   <div class="table__card-info">
@@ -165,26 +146,22 @@
                 </div>
                 <div class="table__card-actions">
                   <Link
-                    :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })"
-                  >
-                    Ver
+                    :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })">
+                  Ver
                   </Link>
                   <Link
-                    :href="route('courses.edit', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })"
-                  >
-                    Editar
+                    :href="route('courses.edit', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })">
+                  Editar
                   </Link>
                 </div>
               </div>
               <div class="table__card-section">
                 <div class="table__card-label">Curso Anterior:</div>
                 <div class="table__card-content">
-                  <Link
-                    v-if="course.previous_course"
+                  <Link v-if="course.previous_course"
                     :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
-                    class="table__link"
-                  >
-                    {{ course.previous_course.number }} º {{ course.previous_course.letter }}
+                    class="table__link">
+                  {{ course.previous_course.number }} º {{ course.previous_course.letter }}
                   </Link>
                   <span v-else>-</span>
                 </div>
@@ -226,15 +203,15 @@
 </template>
 
 <script setup>
-import { Link, Head, router } from '@inertiajs/vue3'
-import { formatDate } from '../../utils/date'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import FlashMessages from '@/Components/admin/FlashMessages.vue'
 import Pagination from '@/Components/admin/Pagination.vue'
-import { ref, watch, computed } from 'vue'
-import AdminHeader from '@/Sections/AdminHeader.vue';
-import { schoolShiftOptions } from '@/Composables/schoolShiftOptions';
-import SchoolShiftBadge from '@/Components/badges/SchoolShiftBadge.vue';
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import SchoolShiftBadge from '@/Components/badges/SchoolShiftBadge.vue'
+import { schoolShiftOptions } from '@/Composables/schoolShiftOptions'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import AdminHeader from '@/Sections/AdminHeader.vue'
+import { Head, Link, router } from '@inertiajs/vue3'
+import { computed, ref } from 'vue'
+import { formatDate } from '../../utils/date'
 
 const props = defineProps({
   courses: {

@@ -38,7 +38,8 @@ class HandleInertiaRequests extends Middleware
         $user = $request->user();
         $menuItems = $this->getMenuItems($user);
         $userMenuItems = $this->getUserMenuItems($user);
-        // dd($user->permissionBySchoolDirect());
+        $flash = $this->getFlash($request);
+        // dd($flash);
         return [
             ...parent::share($request),
             'auth' => [
@@ -65,6 +66,7 @@ class HandleInertiaRequests extends Middleware
             'debug' => [
                 'guard' => Auth::getDefaultDriver(),
             ],
+            'flash' => $flash,
         ];
     }
 
@@ -164,5 +166,11 @@ class HandleInertiaRequests extends Middleware
             'icon' => 'logout',
         ];
         return $items;
+    }
+    private function getFlash(Request $request)
+    {
+        $flash = $request->session()->get('flash');
+        $flash = (object) $flash;
+        return $flash;
     }
 }

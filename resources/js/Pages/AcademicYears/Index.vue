@@ -14,7 +14,7 @@
 
     <div class="container">
       <!-- Flash Messages -->
-      <FlashMessages :error="flash?.error" :success="flash?.success" />
+      <FlashMessages :flash="flash" />
 
       <div class="table__wrapper">
         <div class="table__container">
@@ -31,14 +31,10 @@
                 </tr>
               </thead>
               <tbody class="table__tbody">
-                <tr
-                  v-for="(year, index) in academicYears"
-                  :key="year.id"
-                  :class="{
-                    'table__tr--even': index % 2 === 0,
-                    'table__tr--odd': index % 2 === 1
-                  }"
-                >
+                <tr v-for="(year, index) in academicYears" :key="year.id" :class="{
+                  'table__tr--even': index % 2 === 0,
+                  'table__tr--odd': index % 2 === 1
+                }">
                   <td class="table__td table__year">{{ year.year }}</td>
                   <td class="table__td table__date">{{ formatDate(year.start_date) }}</td>
                   <td class="table__td table__date">{{ formatDate(year.end_date) }}</td>
@@ -47,7 +43,7 @@
                   </td>
                   <td class="table__td table__actions">
                     <Link :href="route('academic-years.edit', year.id)">
-                      Editar
+                    Editar
                     </Link>
                   </td>
                 </tr>
@@ -57,15 +53,10 @@
 
           <!-- Mobile Card View -->
           <div class="table__mobile">
-            <div
-              v-for="(year, index) in academicYears"
-              :key="year.id"
-              :class="{
-                'table__card--even': index % 2 === 0,
-                'table__card--odd': index % 2 === 1
-              }"
-              class="table__card"
-            >
+            <div v-for="(year, index) in academicYears" :key="year.id" :class="{
+              'table__card--even': index % 2 === 0,
+              'table__card--odd': index % 2 === 1
+            }" class="table__card">
               <div class="table__card-header">
                 <div class="table__card-user">
                   <div class="table__card-info">
@@ -75,7 +66,7 @@
                 </div>
                 <div class="table__card-actions">
                   <Link :href="route('academic-years.edit', year.id)">
-                    Editar
+                  Editar
                   </Link>
                 </div>
               </div>
@@ -102,12 +93,12 @@
 </template>
 
 <script setup>
-import { Head, Link } from '@inertiajs/vue3'
-import { formatDate } from '../../utils/date'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import { Head, Link } from '@inertiajs/vue3';
+import { formatDate } from '../../utils/date';
 
 defineProps({
   academicYears: {

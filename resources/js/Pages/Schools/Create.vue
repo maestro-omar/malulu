@@ -1,5 +1,6 @@
 <template>
   <AuthenticatedLayout>
+
     <Head title="Crear Escuela" />
     <template #header>
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Crear Escuela`"></AdminHeader>
@@ -11,145 +12,82 @@
           <div>
             <form @submit.prevent="submit" class="space-y-6">
               <!-- Flash Messages -->
-              <FlashMessages :error="flash?.error" :success="flash?.success" />
+              <FlashMessages :flash="flash" />
               <div>
                 <InputLabel for="name" value="Nombre" />
-                <TextInput
-                  id="name"
-                  type="text"
-                  class="mt-1 block w-full"
-                  v-model="form.name"
-                  required
-                  autofocus
-                />
+                <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required autofocus />
                 <InputError :message="form.errors.name" class="mt-2" />
               </div>
 
               <div class="grid grid-cols-2 gap-4">
                 <div>
                   <InputLabel for="logo" value="Logo" />
-                  <input
-                    type="file"
-                    id="logo"
-                    @change="form.logo = $event.target.files[0]"
-                    class="mt-1 block w-full text-sm text-gray-500
+                  <input type="file" id="logo" @change="form.logo = $event.target.files[0]" class="mt-1 block w-full text-sm text-gray-500
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-md file:border-0
                       file:text-sm file:font-semibold
                       file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100"
-                    accept="image/*"
-                  />
+                      hover:file:bg-indigo-100" accept="image/*" />
                   <InputError :message="form.errors.logo" class="mt-2" />
                 </div>
 
                 <div>
                   <InputLabel for="picture" value="Imagen Principal" />
-                  <input
-                    type="file"
-                    id="picture"
-                    @change="form.picture = $event.target.files[0]"
-                    class="mt-1 block w-full text-sm text-gray-500
+                  <input type="file" id="picture" @change="form.picture = $event.target.files[0]" class="mt-1 block w-full text-sm text-gray-500
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-md file:border-0
                       file:text-sm file:font-semibold
                       file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100"
-                    accept="image/*"
-                  />
+                      hover:file:bg-indigo-100" accept="image/*" />
                   <InputError :message="form.errors.picture" class="mt-2" />
                 </div>
               </div>
 
               <div>
                 <InputLabel for="short" value="Nombre Corto" />
-                <TextInput
-                  id="short"
-                  type="text"
-                  class="mt-1 block w-full"
-                  v-model="form.short"
-                  required
-                  @blur="handleShortBlur"
-                />
+                <TextInput id="short" type="text" class="mt-1 block w-full" v-model="form.short" required
+                  @blur="handleShortBlur" />
                 <InputError :message="form.errors.short" class="mt-2" />
               </div>
 
               <div>
                 <InputLabel for="slug" value="Slug" />
-                <TextInput
-                  id="slug"
-                  type="text"
-                  class="mt-1 block w-full"
-                  v-model="form.slug"
-                  required
-                  @input="manualSlugEdit = true"
-                />
+                <TextInput id="slug" type="text" class="mt-1 block w-full" v-model="form.slug" required
+                  @input="manualSlugEdit = true" />
                 <InputError :message="form.errors.slug" class="mt-2" />
               </div>
 
               <div>
                 <InputLabel for="cue" value="CUE" />
-                <TextInput
-                  id="cue"
-                  type="text"
-                  class="mt-1 block w-full"
-                  v-model="form.cue"
-                  required
-                />
+                <TextInput id="cue" type="text" class="mt-1 block w-full" v-model="form.cue" required />
                 <InputError :message="form.errors.cue" class="mt-2" />
               </div>
 
               <div>
                 <InputLabel for="locality" value="Localidad" />
-                <SearchableDropdown
-                  id="locality"
-                  v-model="form.locality_id"
-                  :options="localities"
-                  required
-                />
+                <SearchableDropdown id="locality" v-model="form.locality_id" :options="localities" required />
                 <InputError :message="form.errors.locality_id" class="mt-2" />
               </div>
 
               <div>
                 <InputLabel for="management_type" value="Tipo de Gestión" />
-                <select
-                  id="management_type"
-                  v-model="form.management_type_id"
+                <select id="management_type" v-model="form.management_type_id"
                   class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                  required
-                >
+                  required>
                   <option value="">Seleccionar tipo de gestión</option>
-                  <option
-                    v-for="type in managementTypes"
-                    :key="type.id"
-                    :value="type.id"
-                  >
+                  <option v-for="type in managementTypes" :key="type.id" :value="type.id">
                     {{ type.name }}
                   </option>
                 </select>
-                <InputError
-                  :message="form.errors.management_type_id"
-                  class="mt-2"
-                />
+                <InputError :message="form.errors.management_type_id" class="mt-2" />
               </div>
 
               <div>
                 <InputLabel value="Niveles" />
                 <div class="mt-2 space-y-2">
-                  <div
-                    v-for="level in schoolLevels"
-                    :key="level.id"
-                    class="flex items-center"
-                  >
-                    <Checkbox
-                      :id="'level-' + level.id"
-                      :value="level.id"
-                      v-model:checked="form.school_levels"
-                    />
-                    <label
-                      :for="'level-' + level.id"
-                      class="ml-2 text-sm text-gray-600"
-                    >
+                  <div v-for="level in schoolLevels" :key="level.id" class="flex items-center">
+                    <Checkbox :id="'level-' + level.id" :value="level.id" v-model:checked="form.school_levels" />
+                    <label :for="'level-' + level.id" class="ml-2 text-sm text-gray-600">
                       {{ level.name }}
                     </label>
                   </div>
@@ -160,20 +98,9 @@
               <div>
                 <InputLabel value="Turnos" />
                 <div class="mt-2 space-y-2">
-                  <div
-                    v-for="shift in shifts"
-                    :key="shift.id"
-                    class="flex items-center"
-                  >
-                    <Checkbox
-                      :id="'shift-' + shift.id"
-                      :value="shift.id"
-                      v-model:checked="form.shifts"
-                    />
-                    <label
-                      :for="'shift-' + shift.id"
-                      class="ml-2 text-sm text-gray-600"
-                    >
+                  <div v-for="shift in shifts" :key="shift.id" class="flex items-center">
+                    <Checkbox :id="'shift-' + shift.id" :value="shift.id" v-model:checked="form.shifts" />
+                    <label :for="'shift-' + shift.id" class="ml-2 text-sm text-gray-600">
                       {{ shift.name }}
                     </label>
                   </div>
@@ -196,19 +123,18 @@
 </template>
 
 <script setup>
-import { Head, Link, useForm } from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import CancelLink from "@/Components/admin/CancelLink.vue";
+import Checkbox from "@/Components/admin/Checkbox.vue";
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import InputError from "@/Components/admin/InputError.vue";
 import InputLabel from "@/Components/admin/InputLabel.vue";
 import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
-import TextInput from "@/Components/admin/TextInput.vue";
-import Checkbox from "@/Components/admin/Checkbox.vue";
 import SearchableDropdown from "@/Components/admin/SearchableDropdown.vue";
-import CancelLink from "@/Components/admin/CancelLink.vue";
+import TextInput from "@/Components/admin/TextInput.vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import AdminHeader from "@/Sections/AdminHeader.vue";
-import { hasPermission } from '@/utils/permissions';
+import { Head, useForm } from "@inertiajs/vue3";
 import { ref } from 'vue';
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
 
 const props = defineProps({
   localities: Array,

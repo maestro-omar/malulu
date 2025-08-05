@@ -11,12 +11,13 @@
       <div class="admin-form__wrapper">
         <form @submit.prevent="submit" class="admin-form__container">
           <!-- Flash Messages -->
-          <FlashMessages :error="flash?.error" :success="flash?.success" />
+          <FlashMessages :flash="flash" />
           <div class="admin-form__card">
             <div class="admin-form__card-content">
               <div class="admin-form__field">
                 <InputLabel for="year" value="Año" />
-                <TextInput type="number" id="year" v-model="form.year" class="admin-form__input form__input--disabled" disabled />
+                <TextInput type="number" id="year" v-model="form.year" class="admin-form__input form__input--disabled"
+                  disabled />
               </div>
 
               <div class="admin-form__grid form__grid--2">
@@ -36,13 +37,15 @@
               <div class="admin-form__grid form__grid--2">
                 <div class="admin-form__field">
                   <InputLabel for="winter_break_start" value="Inicio de Vacaciones de Invierno" />
-                  <TextInput type="date" id="winter_break_start" v-model="form.winter_break_start" class="admin-form__input" />
+                  <TextInput type="date" id="winter_break_start" v-model="form.winter_break_start"
+                    class="admin-form__input" />
                   <InputError class="admin-form__error" :message="form.errors.winter_break_start" />
                 </div>
 
                 <div class="admin-form__field">
                   <InputLabel for="winter_break_end" value="Fin de Vacaciones de Invierno" />
-                  <TextInput type="date" id="winter_break_end" v-model="form.winter_break_end" class="admin-form__input" />
+                  <TextInput type="date" id="winter_break_end" v-model="form.winter_break_end"
+                    class="admin-form__input" />
                   <InputError class="admin-form__error" :message="form.errors.winter_break_end" />
                 </div>
               </div>
@@ -58,14 +61,14 @@
 </template>
 
 <script setup>
-import { useForm, Head } from '@inertiajs/vue3'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import ActionButtons from '@/Components/admin/ActionButtons.vue'
+import FlashMessages from '@/Components/admin/FlashMessages.vue'
+import InputError from '@/Components/admin/InputError.vue'
 import InputLabel from '@/Components/admin/InputLabel.vue'
 import TextInput from '@/Components/admin/TextInput.vue'
-import InputError from '@/Components/admin/InputError.vue'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import { Head, useForm } from '@inertiajs/vue3'
 
 const props = defineProps({
   academicYear: {

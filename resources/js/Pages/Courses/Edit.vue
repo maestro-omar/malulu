@@ -1,15 +1,17 @@
 <template>
   <AuthenticatedLayout>
+
     <Head title="Cursos" />
     <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Curso para ${school.name} (Nivel: ${selectedLevel.name})`"></AdminHeader>
+      <AdminHeader :breadcrumbs="breadcrumbs"
+        :title="`Editar Curso para ${school.name} (Nivel: ${selectedLevel.name})`"></AdminHeader>
     </template>
 
     <div class="container">
       <div class="admin-form__wrapper">
         <form @submit.prevent="submit" class="admin-form__container">
           <!-- Flash Messages -->
-          <FlashMessages :error="flash?.error" :success="flash?.success" />
+          <FlashMessages :flash="flash" />
           <div class="admin-form__card">
             <div class="admin-form__card-content">
               <!-- Hidden School ID Field -->
@@ -19,77 +21,40 @@
 
               <div class="admin-form__field">
                 <InputLabel for="school_shift_id" value="Turno Escolar" />
-                <SelectInput
-                  id="school_shift_id"
-                  v-model="form.school_shift_id"
-                  :options="schoolShifts"
-                  option-value="id"
-                  option-label="name"
-                  class="admin-form__input"
-                  required
-                />
+                <SelectInput id="school_shift_id" v-model="form.school_shift_id" :options="schoolShifts"
+                  option-value="id" option-label="name" class="admin-form__input" required />
                 <InputError class="admin-form__error" :message="form.errors.school_shift_id" />
               </div>
 
               <div class="admin-form__field">
                 <InputLabel for="previous_course_id" value="Curso Anterior" />
-                <SelectInput
-                  id="previous_course_id"
-                  v-model="form.previous_course_id"
-                  :options="courses"
-                  option-value="id"
-                  option-label="full_name"
-                  :show-default-option="true"
-                  default-option-label="Ninguno"
-                  class="admin-form__input"
-                />
+                <SelectInput id="previous_course_id" v-model="form.previous_course_id" :options="courses"
+                  option-value="id" option-label="full_name" :show-default-option="true" default-option-label="Ninguno"
+                  class="admin-form__input" />
                 <InputError class="admin-form__error" :message="form.errors.previous_course_id" />
               </div>
 
               <div class="admin-form__field">
                 <InputLabel for="number" value="Número" />
-                <TextInput
-                  id="number"
-                  type="number"
-                  v-model="form.number"
-                  class="admin-form__input"
-                  required
-                />
+                <TextInput id="number" type="number" v-model="form.number" class="admin-form__input" required />
                 <InputError class="admin-form__error" :message="form.errors.number" />
               </div>
 
               <div class="admin-form__field">
                 <InputLabel for="letter" value="Letra" />
-                <TextInput
-                  id="letter"
-                  type="text"
-                  v-model="form.letter"
-                  class="admin-form__input"
-                  required
-                />
+                <TextInput id="letter" type="text" v-model="form.letter" class="admin-form__input" required />
                 <InputError class="admin-form__error" :message="form.errors.letter" />
               </div>
 
               <div class="admin-form__field">
                 <InputLabel for="start_date" value="Fecha de Inicio" />
-                <TextInput
-                  id="start_date"
-                  type="date"
-                  v-model="form.start_date"
-                  class="admin-form__input"
-                  required
-                />
+                <TextInput id="start_date" type="date" v-model="form.start_date" class="admin-form__input" required />
                 <InputError class="admin-form__error" :message="form.errors.start_date" />
               </div>
 
               <div class="admin-form__field">
                 <InputLabel for="end_date" value="Fecha de Fin" />
-                <TextInput
-                  id="end_date"
-                  type="date"
-                  v-model="form.end_date"
-                  class="admin-form__input"
-                />
+                <TextInput id="end_date" type="date" v-model="form.end_date" class="admin-form__input" />
                 <InputError class="admin-form__error" :message="form.errors.end_date" />
               </div>
 
@@ -102,7 +67,8 @@
             </div>
           </div>
 
-          <ActionButtons button-label="Guardar Cambios" :cancel-href="route('courses.index', {school: school.slug, schoolLevel: selectedLevel.code})"
+          <ActionButtons button-label="Guardar Cambios"
+            :cancel-href="route('courses.index', { school: school.slug, schoolLevel: selectedLevel.code })"
             :disabled="form.processing" />
         </form>
       </div>
@@ -111,18 +77,17 @@
 </template>
 
 <script setup>
-import { useForm, Head } from '@inertiajs/vue3'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import ActionButtons from '@/Components/admin/ActionButtons.vue'
+import CheckboxWithLabel from '@/Components/admin/CheckboxWithLabel.vue'
+import FlashMessages from '@/Components/admin/FlashMessages.vue'
 import InputError from '@/Components/admin/InputError.vue'
 import InputLabel from '@/Components/admin/InputLabel.vue'
-import PrimaryButton from '@/Components/admin/PrimaryButton.vue'
-import TextInput from '@/Components/admin/TextInput.vue'
 import SelectInput from '@/Components/admin/SelectInput.vue'
-import CheckboxWithLabel from '@/Components/admin/CheckboxWithLabel.vue'
+import TextInput from '@/Components/admin/TextInput.vue'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import AdminHeader from '@/Sections/AdminHeader.vue'
 import { formatDateForInput } from '@/utils/date'
-import AdminHeader from '@/Sections/AdminHeader.vue';
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
+import { Head, useForm } from '@inertiajs/vue3'
 
 const props = defineProps({
   course: {
