@@ -28,7 +28,7 @@ class FakeUsersSeeder extends Seeder
     const OTHER_SCHOOLS_LIMIT = 1;
     const FAST_TEST = true;
     private $mathSubject;
-    // private $schoolLevels;
+    private $schoolLevels;
     private $allRoles;
     private $faker;
     private $userService;
@@ -37,7 +37,7 @@ class FakeUsersSeeder extends Seeder
     {
         // Get required IDs
         $this->mathSubject = ClassSubject::where('short_name', 'MAT')->first();
-        // $this->schoolLevels = SchoolLevel::all(); // Get all school levels
+        $this->schoolLevels = SchoolLevel::all(); // Get all school levels
         $this->allRoles = Role::pluck('id', 'code')->toArray();
         $this->faker = Faker::create('es_ES'); // Using Spanish locale for more realistic names
         $this->userService = app(UserService::class);
@@ -303,6 +303,8 @@ class FakeUsersSeeder extends Seeder
             'Colón'
         ];
 
+        $schoolLevels = $school->schoolLevels;
+
         foreach ($roleCounts as $roleCode => $count) {
             for ($i = 1; $i <= $count; $i++) {
                 // Assign gender based on random choice, using User constants
@@ -341,11 +343,10 @@ class FakeUsersSeeder extends Seeder
                 // Generate realistic phone numbers for San Luis
                 $phone = '266' . $this->faker->numberBetween(4000000, 4999999);
 
-                // Generate realistic DNI numbers
-                $dni = $this->faker->numberBetween(10000000, 99999999);
 
                 // Adjust birthdate based on role
-                $birthdate = $this->getBirthdateForRole($roleCode);
+                $birthdate = $this->getBirthdateForRole($roleCode, $schoolLevels);
+
 
                 // Set nationality (80% Argentine, 20% other)
                 $nationality = $this->faker->boolean(80) ? 'Argentina' : $this->faker->randomElement([
@@ -359,6 +360,7 @@ class FakeUsersSeeder extends Seeder
                     'Venezuela'
                 ]);
 
+                $dni = $this->getDNI($birthdate, $nationality);
 
 
                 $user = User::firstOrCreate(
@@ -387,7 +389,6 @@ class FakeUsersSeeder extends Seeder
                 $schoolLevelId = null;
                 if (in_array($roleCode, [Role::GRADE_TEACHER, Role::ASSISTANT_TEACHER, Role::CURRICULAR_TEACHER, Role::SPECIAL_TEACHER, Role::PROFESSOR, Role::STUDENT])) {
                     // Get school levels for this school
-                    $schoolLevels = $school->schoolLevels;
                     if ($schoolLevels->isNotEmpty()) {
                         $schoolLevelId = $schoolLevels->random()->id;
                     }
@@ -414,10 +415,23 @@ class FakeUsersSeeder extends Seeder
     /**
      * Get appropriate birthdate range based on role
      */
-    private function getBirthdateForRole(string $roleCode): \DateTime
+    private function getBirthdateForRole(string $roleCode, $schoolLevels): \DateTime
     {
+        if ($roleCode === Role::STUDENT) {
+            if ($schoolLevels->isEmpty()) {
+                return $this->faker->dateTimeBetween('-18 years', '-5 years');
+            }
+            $schoolLevel = $schoolLevels->random();
+            if ($schoolLevel->code === SchoolLevel::KINDER) {
+                return $this->faker->dateTimeBetween('-6 years', '-2 years');
+            } elseif ($schoolLevel->code === SchoolLevel::PRIMARY) {
+                return $this->faker->dateTimeBetween('-12 years', '-6 years');
+            } elseif ($schoolLevel->code === SchoolLevel::SECONDARY) {
+                return $this->faker->dateTimeBetween('-18 years', '-12 years');
+            }
+            return $this->faker->dateTimeBetween('-18 years', '-5 years');
+        }
         return match ($roleCode) {
-            Role::STUDENT => $this->faker->dateTimeBetween('-18 years', '-5 years'),
             Role::FORMER_STUDENT => $this->faker->dateTimeBetween('-30 years', '-19 years'),
             Role::GUARDIAN => $this->faker->dateTimeBetween('-60 years', '-25 years'),
             Role::GRADE_TEACHER, Role::ASSISTANT_TEACHER, Role::CURRICULAR_TEACHER, Role::SPECIAL_TEACHER, Role::PROFESSOR => $this->faker->dateTimeBetween('-65 years', '-25 years'),
@@ -447,7 +461,7 @@ class FakeUsersSeeder extends Seeder
     /**
      * Get a random course for a specific school.
      */
-    private function getRandomCourseForSchool(School $school, ?int $schoolLevelId = null): ?Course
+    private function getRandomCourseForSchool(string $roleCode, School $school, ?int $schoolLevelId = null, ?User $user = null): ?Course
     {
         static $last;
         $query = Course::where('school_id', $school->id)
@@ -455,7 +469,17 @@ class FakeUsersSeeder extends Seeder
         if ($last) {
             $query->where('id', '!=', $last->id);
         }
-        if ($schoolLevelId) {
+        if ($roleCode === Role::STUDENT && $user) {
+            // if ($schoolLevelId)
+            //     $query->where('school_level_id', $schoolLevelId);
+            $age = $this->calculateAge($user->birthdate);
+            if ($this->schoolLevelCodeById($schoolLevelId) === SchoolLevel::KINDER)
+                $query->where('number', $age);
+            elseif ($this->schoolLevelCodeById($schoolLevelId) === SchoolLevel::PRIMARY)
+                $query->where('number', $age - 5);
+            elseif ($this->schoolLevelCodeById($schoolLevelId) === SchoolLevel::SECONDARY)
+                $query->where('number', $age - 12);
+        } elseif ($schoolLevelId) {
             $query->where('school_level_id', $schoolLevelId);
         }
 
@@ -480,7 +504,7 @@ class FakeUsersSeeder extends Seeder
             'notes' => $note ?: "Auto-generated {$roleCode} relationship",
         ];
         if (in_array($roleCode, [Role::GRADE_TEACHER, Role::ASSISTANT_TEACHER, Role::CURRICULAR_TEACHER, Role::SPECIAL_TEACHER, Role::PROFESSOR])) {
-            $randomCourse = $this->getRandomCourseForSchool($school, $schoolLevelId);
+            $randomCourse = $this->getRandomCourseForSchool($roleCode, $school, $schoolLevelId, $user);
             $details['worker_details'] = [
                 'class_subject_id' => $this->mathSubject->id,
                 'job_status_id' => $this->faker->randomElement($this->jobStatuses()),
@@ -497,7 +521,7 @@ class FakeUsersSeeder extends Seeder
             ];
         }
         if ($roleCode === Role::STUDENT) {
-            $randomCourse = $this->getRandomCourseForSchool($school, $schoolLevelId);
+            $randomCourse = $this->getRandomCourseForSchool($roleCode, $school, $schoolLevelId, $user);
             $details['student_details'] = [
                 'current_course_id' => $randomCourse ? $randomCourse->id : null,
             ];
@@ -558,5 +582,55 @@ class FakeUsersSeeder extends Seeder
         \App\Models\Entities\User::where('id', '!=', 1)->withTrashed()->forceDelete();
 
         echo "Deleting users with IDs: ", implode(", ", $userIds->toArray()), "\n";
+    }
+
+    private function schoolLevelCodeById(int $id): string
+    {
+        return $this->schoolLevels->firstWhere('id', $id)->code;
+    }
+
+    private function calculateAge(\DateTime $birthdate): int
+    {
+        return $birthdate->diff(new \DateTime())->y;
+    }
+
+    private function getDNI($birthdate, $nationality)
+    {
+        if ($nationality !== 'Argentina')
+            return $this->faker->numberBetween(91000000, 99999999);
+
+        $age = $this->calculateAge($birthdate);
+        [$min, $max] = $this->getDNIRangeForAge($age);
+
+        return $this->faker->numberBetween($min, $max);
+    }
+
+    private function getDNIRangeForAge(int $age): array
+    {
+        // Based on reference points: age 70->11M, age 47->28M, age 42->30M, age 13->52M
+        if ($age >= 80) {
+            return [1000000, 10000000];
+        } elseif ($age >= 70) {
+            return [10000000, 15000000];
+        } elseif ($age >= 60) {
+            return [15000000, 20000000];
+        } elseif ($age >= 50) {
+            return [20000000, 26000000];
+        } elseif ($age >= 45) {
+            return [26000000, 29000000];
+        } elseif ($age >= 40) {
+            return [29000000, 32000000];
+        } elseif ($age >= 30) {
+            return [32000000, 40000000];
+        } elseif ($age >= 20) {
+            return [40000000, 46000000];
+        } elseif ($age >= 15) {
+            return [46000000, 51000000];
+        } elseif ($age >= 10) {
+            return [51000000, 55000000];
+        } else {
+            // Under 10
+            return [55000000, 70000000];
+        }
     }
 }
