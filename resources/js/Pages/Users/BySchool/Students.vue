@@ -10,9 +10,10 @@ import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
 import { route_school_student } from '@/utils/routes';
 import { formatNumber } from '@/utils/strings';
+import { useTableSearchSort } from '@/utils/tables';
 import noImage from '@images/no-image-person.png';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { watch } from 'vue';
 
 const props = defineProps({
     school: Object,
@@ -28,30 +29,20 @@ const props = defineProps({
     },
 });
 
-const search = ref(props.filters?.search || '');
-let searchTimeout = null;
-
-const handleSearch = () => {
-    if (searchTimeout) {
-        clearTimeout(searchTimeout);
-    }
-    searchTimeout = setTimeout(() => {
-        router.get(
-            route('school.students', { school: props.school.slug }),
-            { search: search.value },
-            { preserveState: true, preserveScroll: true }
-        );
-    }, 300);
-};
-
-const clearSearch = () => {
-    search.value = '';
-    router.get(
-        route('school.students', { school: props.school.slug }),
-        {},
-        { preserveState: true, preserveScroll: true }
-    );
-};
+// Use table search and sort composable
+const {
+    search,
+    sortField,
+    sortDirection,
+    handleSearch,
+    handleSort,
+    getSortClass,
+    clearSearch
+} = useTableSearchSort({
+    routeName: 'school.students',
+    routeParams: { school: props.school.slug },
+    filters: props.filters
+});
 
 // Watch for changes in search
 watch(search, () => {
@@ -59,7 +50,7 @@ watch(search, () => {
 });
 
 // Debug log when component receives props
-console.log('Users data received:', props.users);
+// console.log('Users data received:', props.users);
 
 const deleteUser = (id) => {
     if (confirm('¿Está seguro de eliminar este usuario?')) {
@@ -109,13 +100,31 @@ const isAdmin = (user) => {
                             <thead class="table__thead">
                                 <tr>
                                     <th class="table__th">Foto</th>
-                                    <th class="table__th">Nombre</th>
-                                    <th class="table__th">Apellido</th>
+                                    <th :class="['table__th', 'table__th--sortable', getSortClass('firstname')]"
+                                        @click="handleSort('firstname')">
+                                        Nombre
+                                    </th>
+                                    <th :class="['table__th', 'table__th--sortable', getSortClass('lastname')]"
+                                        @click="handleSort('lastname')">
+                                        Apellido
+                                    </th>
                                     <th class="table__th">Email</th>
-                                    <th class="table__th">DNI</th>
-                                    <th class="table__th">Nivel</th>
-                                    <th class="table__th">Turno</th>
-                                    <th class="table__th">Curso</th>
+                                    <th :class="['table__th', 'table__th--sortable', getSortClass('id_number')]"
+                                        @click="handleSort('id_number')">
+                                        DNI
+                                    </th>
+                                    <th :class="['table__th', 'table__th--sortable', getSortClass('level')]"
+                                        @click="handleSort('level')">
+                                        Nivel
+                                    </th>
+                                    <th :class="['table__th', 'table__th--sortable', getSortClass('shift')]"
+                                        @click="handleSort('shift')">
+                                        Turno
+                                    </th>
+                                    <th :class="['table__th', 'table__th--sortable', getSortClass('course')]"
+                                        @click="handleSort('course')">
+                                        Curso
+                                    </th>
                                     <th class="table__th">Acciones</th>
                                 </tr>
                             </thead>

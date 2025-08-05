@@ -41,7 +41,7 @@ class UserAdminController extends SystemBaseController
     {
         return Inertia::render('Users/Index', [
             'users' => $this->userService->getUsers($request),
-            'filters' => $request->only(['search']),
+            'filters' => $request->only(['search', 'sort', 'direction']),
             'breadcrumbs' => Breadcrumbs::generate('users.index'),
         ]);
     }

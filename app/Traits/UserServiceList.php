@@ -17,6 +17,7 @@ trait UserServiceList
     {
         $query = User::with('allRolesAcrossTeams');
         $query = $this->addTextSearch($request, $query);
+        $query = $this->addSorting($request, $query);
         $users = $this->handlePagination($query, $request->input('per_page'), 30);
 
         // Transform the data to include roles in the expected format
@@ -64,6 +65,7 @@ trait UserServiceList
         $studentRoleId = Role::where('code', Role::STUDENT)->firstOrFail()->id;
         $query = User::withActiveRoleRelationship($studentRoleId, $schoolId);
         $query = $this->addTextSearch($request, $query);
+        $query = $this->addSorting($request, $query);
         $users = $this->handlePagination($query, $request->input('per_page'), 30);
 
         // Transform the data to include roles in the expected format, similar to getUsers
@@ -92,6 +94,7 @@ trait UserServiceList
     {
         $query = User::withActiveRoleRelationships($roleSchoolPairs);
         $query = $this->addTextSearch($request, $query);
+        $query = $this->addSorting($request, $query);
         $users = $this->handlePagination($query, $request->input('per_page'), 30);
 
         // Transform the data to include roles in the expected format
@@ -149,5 +152,107 @@ trait UserServiceList
             });
         }
         return $query;
+    }
+
+    private function addSorting(Request $request, $query)
+    {
+        if ($request->filled('sort')) {
+            $sort = $request->input('sort');
+            $direction = $request->input('direction', 'asc');
+
+            // Validate sort field and direction
+            if (!$this->isValidSortField($sort) || !in_array($direction, ['asc', 'desc'])) {
+                return $query;
+            }
+
+            // Handle relationship-based sorting
+            if ($this->isRelationshipSortField($sort)) {
+                $this->addRelationshipSorting($query, $sort, $direction);
+            } else {
+                // Direct user table field sorting
+                $query->orderBy("users.{$sort}", $direction);
+            }
+        }
+        return $query;
+    }
+
+    /**
+     * Validate if the sort field is allowed
+     */
+    private function isValidSortField(string $field): bool
+    {
+        $validDirectFields = [
+            'id',
+            'name',
+            'firstname',
+            'lastname',
+            'id_number',
+            'gender',
+            'birthdate',
+            'phone',
+            'address',
+            'locality',
+            'nationality',
+            'email',
+            'created_at',
+            'updated_at'
+        ];
+
+        $validRelationshipFields = [
+            'level',    // from course->schoolLevel
+            'shift',    // from course->schoolShift
+            'course'    // from course number+letter
+        ];
+
+        return in_array($field, $validDirectFields) || in_array($field, $validRelationshipFields);
+    }
+
+    /**
+     * Check if field requires relationship joins
+     */
+    private function isRelationshipSortField(string $field): bool
+    {
+        return in_array($field, ['level', 'shift', 'course']);
+    }
+
+    /**
+     * Add sorting for relationship-based fields
+     */
+    private function addRelationshipSorting($query, string $field, string $direction)
+    {
+        // Join student relationships, courses, and related tables
+        $query->leftJoin('role_relationships', function ($join) {
+            $join->on('users.id', '=', 'role_relationships.user_id')
+                ->whereNull('role_relationships.deleted_at')
+                ->whereNull('role_relationships.end_date');
+        })
+            ->leftJoin('student_relationships', function ($join) {
+                $join->on('role_relationships.id', '=', 'student_relationships.role_relationship_id')
+                    ->whereNull('student_relationships.deleted_at');
+            })
+            ->leftJoin('courses', 'student_relationships.current_course_id', '=', 'courses.id');
+
+        switch ($field) {
+            case 'level':
+                $query->leftJoin('school_levels', 'courses.school_level_id', '=', 'school_levels.id')
+                    ->select('users.*', 'school_levels.code as level_code')
+                    ->orderBy('school_levels.code', $direction)
+                    ->distinct();
+                break;
+
+            case 'shift':
+                $query->leftJoin('school_shifts', 'courses.school_shift_id', '=', 'school_shifts.id')
+                    ->select('users.*', 'school_shifts.code as shift_code')
+                    ->orderBy('school_shifts.code', $direction)
+                    ->distinct();
+                break;
+
+            case 'course':
+                $query->select('users.*', 'courses.number as course_number', 'courses.letter as course_letter')
+                    ->orderBy('courses.number', $direction)
+                    ->orderBy('courses.letter', $direction)
+                    ->distinct();
+                break;
+        }
     }
 }

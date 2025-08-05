@@ -36,7 +36,7 @@ class UserController extends SchoolBaseController
         return $this->render($request, 'Users/BySchool/Students', [
             'users' => $this->userService->getStudentsBySchool($request, $this->school->id),
             'school' => $this->school,
-            'filters' => $request->only(['search']),
+            'filters' => $request->only(['search', 'sort', 'direction']),
             'breadcrumbs' => Breadcrumbs::generate('schools.students', $this->school),
         ]);
     }
