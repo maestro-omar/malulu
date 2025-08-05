@@ -145,6 +145,12 @@ class CourseSeeder extends Seeder
                 continue;
             }
 
+            $schoolLevels = $school->schoolLevels;
+            if ($schoolLevels->isEmpty()) {
+                $this->command->error("No levels found for school: {$school->name}. Skipping...");
+                continue;
+            }
+
             foreach ($schoolLevels as $level) {
                 if (isset($coursesByLevel[$level->code])) {
                     $previousCourse = null;
