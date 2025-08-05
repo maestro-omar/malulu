@@ -67,7 +67,7 @@ const submit = () => {
             <div class="admin-form__wrapper">
                 <form @submit.prevent="submit" class="admin-form__container">
                     <!-- Flash Messages -->
-                    <FlashMessages :error="flash?.error" :success="flash?.success" />
+                    <FlashMessages :flash="flash" />
                     <!-- Basic Information Card -->
                     <div class="admin-form__card">
                         <h3 class="admin-form__card-title">Información Básica</h3>

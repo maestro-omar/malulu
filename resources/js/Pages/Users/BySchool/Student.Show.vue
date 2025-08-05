@@ -6,7 +6,8 @@ import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';
-import { calculateAge, slugify } from '@/utils/strings';
+import { route_school_student } from '@/utils/routes';
+import { calculateAge } from '@/utils/strings';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -38,7 +39,7 @@ const destroy = () => {
         <template #header>
             <AdminHeader :breadcrumbs="breadcrumbs" :title="`Estudiante ${user.firstname} ${user.lastname}`" :edit="{
                 show: hasPermission($page.props, 'student.edit'),
-                href: route('school.student.edit', { 'school': school.slug, 'idAndName': user.id + '-' + slugify(user.name + ' ' + user.lastname) }),
+                href: route_school_student(school, user, 'edit'),
                 label: 'Editar'
             }" :del="{
                 show: hasPermission($page.props, 'student.delete'),

@@ -71,6 +71,27 @@ class UserController extends SchoolBaseController
     }
 
 
+    /**
+     * Update the specified user in storage.
+     */
+    public function studentUpdate(Request $request, $schoolSlug, $studentIdAndName): Response
+    {
+        $this->setSchool($schoolSlug);
+        $student = $this->getStudent($studentIdAndName);
+        try {
+            $this->userService->updateUser($student, $request->all());
+            return redirect()->back()->with('success', 'Estudiante actualizado exitosamente.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()])
+                ->withInput();
+        }
+    }
+
     private function setSchool(string $slug)
     {
         // Find the school by CUE
