@@ -207,7 +207,7 @@ class UserAdminController extends SystemBaseController
             // Use the static methods from RoleRelationship model
             'jobStatuses' => WorkerRelationship::jobStatuses(),
             'relationshipTypes' => GuardianRelationship::relationshipTypes(),
-            'breadcrumbs' => Breadcrumbs::generate('users.show', $user),
+            'breadcrumbs' => Breadcrumbs::generate('users.add.role', $user),
         ]);
     }
 

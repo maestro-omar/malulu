@@ -343,7 +343,7 @@ class RoleAndPermissionSeeder extends Seeder
             'cooperative.publish',
         ];
 
-        $guardianPermissions = [
+        $childPermissions = [
             'child.edit',
             'child.document.upload',
             'child.academic-history.view',
@@ -358,6 +358,10 @@ class RoleAndPermissionSeeder extends Seeder
 
         $academicHistoryPermissions = [
             'academic-history.view',
+        ];
+
+        $roleStudentPermissions = [
+            'student.me',
         ];
 
         $universalPermissions = [
@@ -384,7 +388,7 @@ class RoleAndPermissionSeeder extends Seeder
                     $libraryPermissions,
                     $documentPermissions,
                     $cooperativePermissions,
-                    $guardianPermissions,
+                    $childPermissions,
                     $libraryBasicPermissions,
                     $academicHistoryPermissions,
                     $universalPermissions
@@ -405,7 +409,7 @@ class RoleAndPermissionSeeder extends Seeder
                     $libraryPermissions,
                     $documentPermissions,
                     $cooperativePermissions,
-                    $guardianPermissions,
+                    $childPermissions,
                     $libraryBasicPermissions,
                     $academicHistoryPermissions,
                     $universalPermissions
@@ -422,7 +426,7 @@ class RoleAndPermissionSeeder extends Seeder
                     $libraryPermissions,
                     $documentPermissions,
                     $cooperativePermissions,
-                    $guardianPermissions,
+                    $childPermissions,
                     $libraryBasicPermissions,
                     $academicHistoryPermissions,
                     $universalPermissions
@@ -450,7 +454,7 @@ class RoleAndPermissionSeeder extends Seeder
                 );
             case Role::GUARDIAN:
                 return array_merge(
-                    $guardianPermissions,
+                    $childPermissions,
                     $libraryBasicPermissions,
                     $universalPermissions
                 );
@@ -461,6 +465,7 @@ class RoleAndPermissionSeeder extends Seeder
                 );
             case Role::STUDENT:
                 return array_merge(
+                    $roleStudentPermissions,
                     $libraryBasicPermissions,
                     $academicHistoryPermissions,
                     $universalPermissions

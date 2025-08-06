@@ -370,6 +370,18 @@ class User extends Authenticatable
         return $matrix;
     }
 
+    public function hasPermissionToSchool($permission, $schoolId): bool
+    {
+        $matrix = $this->permissionBySchoolDirect();
+        $splited = explode('|', $permission);
+        foreach ($splited as $p) {
+            if (isset($matrix[$p]) && in_array($schoolId, $matrix[$p])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Get all available relationship types.
      */

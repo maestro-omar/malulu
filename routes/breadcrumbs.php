@@ -33,13 +33,18 @@ Breadcrumbs::for('users.create', function (Trail $trail) {
 });
 
 Breadcrumbs::for('users.edit', function (Trail $trail, $user) {
-    $trail->parent('users.index');
-    $trail->push("Editar {$user->name}");
+    $trail->parent('users.show', $user);
+    $trail->push("Editar");
+});
+
+Breadcrumbs::for('users.add.role', function (Trail $trail, $user) {
+    $trail->parent('users.show', $user);
+    $trail->push("Añadir rol");
 });
 
 Breadcrumbs::for('users.show', function (Trail $trail, $user) {
     $trail->parent('users.index');
-    $trail->push($user->name);
+    $trail->push($user->name, route('users.show', $user));
 });
 
 // 🏫 Escuelas

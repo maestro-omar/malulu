@@ -4,6 +4,14 @@ import { Link } from '@inertiajs/vue3';
 
 defineProps({
     status: Number,
+    message: {
+        type: String,
+        required: false,
+    },
+    description: {
+        type: String,
+        required: false,
+    },
 })
 </script>
 
@@ -19,8 +27,8 @@ defineProps({
             </div>
 
             <h1 class="error-page__title">{{ status ?? 403 }}</h1>
-            <p class="error-page__message">Acceso denegado</p>
-            <p class="error-page__description">No tenés permiso para acceder a esta página.</p>
+            <p class="error-page__message" v-html="message ?? 'Acceso denegado'"></p>
+            <p class="error-page__description">{{ description ?? 'No tenés permiso para acceder a esta página' }}</p>
             <p class="error-page__help">Si creés que esto es un error, contactá a un administrador.</p>
 
             <div class="error-page__actions">

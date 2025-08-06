@@ -257,7 +257,7 @@ const filteredShiftOptions = computed(() => {
   });
 });
 
-console.log('props.courses:', props.courses);
+// console.log('props.courses:', props.courses);
 
 // Debounce function and filter trigger
 let filterTimeout = null;

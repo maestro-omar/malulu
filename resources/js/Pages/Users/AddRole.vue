@@ -1,17 +1,10 @@
 <template>
 
-  <Head :title="`Añadir Rol: ${user.name}`" />
+  <Head :title="`Añadir Rol a ${user.name}`" />
 
   <AuthenticatedLayout>
     <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Añadir rol a Usuario`">
-        <template #additional-buttons>
-          <Link :href="route('users.show', user.id)"
-            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-          Volver a Usuario
-          </Link>
-        </template>
-      </AdminHeader>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Añadir Rol a ${user.name}`"></AdminHeader>
     </template>
 
     <div class="container container--as-card">

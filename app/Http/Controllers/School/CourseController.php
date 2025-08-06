@@ -118,11 +118,16 @@ class CourseController extends SchoolBaseController
 
     public function show(School $school, SchoolLevel $schoolLevel, Course $course)
     {
-        dd('afasqw');
+        $user = auth()->user();
+        if ($user->hasPermissionToSchool('course.manage', $school->id)) {
+            $view = 'Courses/Show';
+        } else {
+            $view = 'Courses/ShowForStudent'; //or guardian
+        }
 
         $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse']);
 
-        return Inertia::render('Courses/Show', [
+        return Inertia::render($view, [
             'course' => $course,
             'school' => $school,
             'selectedLevel' => $schoolLevel,

@@ -1,4 +1,5 @@
 <template>
+
   <Head :title="`Detalle del Curso ${course.number}º ${course.letter}`" />
 
   <AuthenticatedLayout>
@@ -7,87 +8,85 @@
       </AdminHeader>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div>
-            <div class="mb-6">
-              <h2 class="text-2xl font-bold text-gray-800 mb-4">Información del Curso</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p class="text-sm font-medium text-gray-600">Número de Curso:</p>
-                  <p class="text-lg font-semibold text-gray-900">{{ course.number }}</p>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-600">Letra de Curso:</p>
-                  <p class="text-lg font-semibold text-gray-900">{{ course.letter }}</p>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-600">Escuela:</p>
-                  <p class="text-lg font-semibold text-gray-900">{{ course.school.name }} ({{ course.school.cue }})</p>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-600">Nivel Escolar:</p>
-                  <p class="text-lg font-semibold text-gray-900">{{ course.school_level.name }}</p>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-600">Turno:</p>
-                  <p class="text-lg font-semibold text-gray-900">{{ course.school_shift.name }}</p>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-600">Fecha de Inicio:</p>
-                  <p class="text-lg font-semibold text-gray-900">{{ formatDate(course.start_date) }}</p>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-600">Fecha de Fin:</p>
-                  <p class="text-lg font-semibold text-gray-900">{{ course.end_date ? formatDate(course.end_date) : '-' }}</p>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-600">Estado:</p>
-                  <p class="text-lg font-semibold text-gray-900">
-                    <span
-                      :class="{
-                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
-                        'bg-green-100 text-green-800': course.active,
-                        'bg-red-100 text-red-800': !course.active,
-                      }"
-                    >
-                      {{ course.active ? 'Activo' : 'Inactivo' }}
-                    </span>
-                  </p>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-600">Curso Anterior:</p>
-                  <p class="text-lg font-semibold text-gray-900">
-                    <Link
-                      v-if="course.previous_course"
-                      :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
-                      class="text-blue-600 hover:text-blue-900"
-                    >
+    <div class="container">
+      <div class="admin-detail__wrapper">
+        <div class="admin-detail__card">
+          <div class="admin-detail__content">
+            <div>
+              <div class="admin-detail__section">
+                <h2 class="admin-detail__section-title">Información del Curso</h2>
+                <div class="admin-detail__field-grid">
+                  <div class="admin-detail__field">
+                    <label class="admin-detail__label">Número de Curso:</label>
+                    <div class="admin-detail__value">{{ course.number }}</div>
+                  </div>
+                  <div class="admin-detail__field">
+                    <label class="admin-detail__label">Letra de Curso:</label>
+                    <div class="admin-detail__value">{{ course.letter }}</div>
+                  </div>
+                  <div class="admin-detail__field">
+                    <label class="admin-detail__label">Escuela:</label>
+                    <div class="admin-detail__value">{{ course.school.name }} ({{ course.school.cue }})</div>
+                  </div>
+                  <div class="admin-detail__field">
+                    <label class="admin-detail__label">Nivel Escolar:</label>
+                    <div class="admin-detail__badge-container">
+                      <SchoolLevelBadge :level="course.school_level" />
+                    </div>
+                  </div>
+                  <div class="admin-detail__field">
+                    <label class="admin-detail__label">Turno:</label>
+                    <div class="admin-detail__badge-container">
+                      <SchoolShiftBadge :shift="course.school_shift" />
+                    </div>
+                  </div>
+                  <div class="admin-detail__field">
+                    <label class="admin-detail__label">Fecha de Inicio:</label>
+                    <div class="admin-detail__value">{{ formatDate(course.start_date) }}</div>
+                  </div>
+                  <div class="admin-detail__field">
+                    <label class="admin-detail__label">Fecha de Fin:</label>
+                    <div class="admin-detail__value">{{ course.end_date ? formatDate(course.end_date) : '-' }}</div>
+                  </div>
+                  <div class="admin-detail__field">
+                    <label class="admin-detail__label">Estado:</label>
+                    <div class="admin-detail__value">
+                      <span :class="{
+                        'admin-detail__status': true,
+                        'admin-detail__status--active': course.active,
+                        'admin-detail__status--inactive': !course.active,
+                      }">
+                        {{ course.active ? 'Activo' : 'Inactivo' }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="admin-detail__field">
+                    <label class="admin-detail__label">Curso Anterior:</label>
+                    <div class="admin-detail__value">
+                      <Link v-if="course.previous_course"
+                        :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
+                        class="admin-detail__link">
                       {{ course.previous_course.number }} º {{ course.previous_course.letter }}
-                    </Link>
-                    <span v-else>-</span>
-                  </p>
+                      </Link>
+                      <span v-else>-</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="mt-6 flex space-x-4">
-              <Link
-                v-if="hasPermission($page.props, 'school.edit', school.id)"
-                :href="route('courses.edit', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })"
-                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-              >
+              <div class="admin-detail__actions">
+                <Link v-if="hasPermission($page.props, 'school.edit', school.id)"
+                  :href="route('courses.edit', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })"
+                  class="admin-detail__link admin-detail__link--primary">
                 Editar Curso
-              </Link>
-              <Link
-                :href="route('courses.index', { school: school.slug, schoolLevel: selectedLevel.code })"
-                class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
-              >
+                </Link>
+                <Link :href="route('courses.index', { school: school.slug, schoolLevel: selectedLevel.code })"
+                  class="admin-detail__link admin-detail__link--secondary">
                 Volver al Listado
-              </Link>
-            </div>
+                </Link>
+              </div>
 
+            </div>
           </div>
         </div>
       </div>
@@ -99,6 +98,8 @@
 import { Link, Head } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
+import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue'
+import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
 import { formatDate } from '../../utils/date'
 import { hasPermission } from '@/utils/permissions';
 

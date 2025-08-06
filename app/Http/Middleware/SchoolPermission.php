@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\Entities\School;
 
 class SchoolPermission
 {
@@ -33,30 +34,22 @@ class SchoolPermission
             // If the route model binding provides a School model, get its id
             if (is_object($school) && method_exists($school, 'getKey')) {
                 $schoolId = $school->getKey();
-            } else {
+            } elseif (is_numeric($school)) {
                 $schoolId = $school;
+            } else {
+                $school = School::where('slug', $school)->first();
+                $schoolId = $school ? $school->id : null;
             }
 
-            if (!$user || !$this->hasPermissionToSchool($user, $permission, $schoolId)) {
-                return Inertia::render('Errors/403')
+            if (!$user || !$user->hasPermissionToSchool($permission, $schoolId)) {
+                return Inertia::render('Errors/403', [
+                    'description' => 'No tienes permiso para esta acceder a esta información en esta escuela',
+                ])
                     ->toResponse($request)
                     ->setStatusCode(403);
-                // abort(403, 'No tienes permiso para esta acceder a esta escuela');
             }
         }
 
         return $next($request);
-    }
-
-    protected function hasPermissionToSchool($user, $permission, $schoolId): bool
-    {
-        $matrix = $user->permissionBySchoolDirect();
-        $splited = explode('|', $permission);
-        foreach ($splited as $p) {
-            if (isset($matrix[$p]) && in_array($schoolId, $matrix[$p])) {
-                return true;
-            }
-        }
-        return false;
     }
 }
