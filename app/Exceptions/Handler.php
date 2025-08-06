@@ -60,18 +60,30 @@ class Handler extends ExceptionHandler
             return Inertia::render('Errors/403')
                 ->toResponse($request)
                 ->setStatusCode(403);
-        } elseif (
-            $exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-            || $exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException
-        ) {
-            // Illuminate\Database\Eloquent\ModelNotFoundException
-            // Redirigir o retornar una vista personalizada
+        } elseif ($exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
             return Inertia::render('Errors/404')
+                ->toResponse($request)
+                ->setStatusCode(404);
+        } elseif ($exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+            return Inertia::render('Errors/404', [
+                'message' => 'El recurso que estás buscando no existe.<!-- ' . $exception->getMessage() . ' -->',
+            ])
                 ->toResponse($request)
                 ->setStatusCode(404);
         } elseif ($exception instanceof \Illuminate\Auth\AuthenticationException) {
         } else {
-            dd('Other exception: ', $exception);
+            $message = 'Error inesperado de sistema';
+            if (config('app.debug'))
+                $message .= '<br> ' . $exception->getMessage();
+            else
+                $message .= '<!-- ' . $exception->getMessage() . ' -->';
+
+            return Inertia::render('Errors/500', [
+                'message' => $message,
+                'description' => 'Si persiste, por favor notificá al administrador',
+            ])
+                ->toResponse($request)
+                ->setStatusCode(500);
         }
 
         return parent::render($request, $exception);

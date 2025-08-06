@@ -35,6 +35,11 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        try {
+            $schoolGlobalId = School::specialGlobalId();
+        } catch (\Exception $e) {
+            throw new \Exception('Verificá la instalación de la aplicación <br>(no se encuentra la escuela "global")');
+        }
         $user = $request->user();
         $menuItems = $this->getMenuItems($user);
         $userMenuItems = $this->getUserMenuItems($user);
@@ -61,7 +66,7 @@ class HandleInertiaRequests extends Middleware
                 'userItems' => $userMenuItems,
             ],
             'constants' => [
-                'schoolGlobalId' => School::specialGlobalId(),
+                'schoolGlobalId' => $schoolGlobalId,
             ],
             'debug' => [
                 'guard' => Auth::getDefaultDriver(),

@@ -4,6 +4,14 @@ import { Link } from '@inertiajs/vue3';
 
 defineProps({
     status: Number,
+    message: {
+        type: String,
+        required: false,
+    },
+    description: {
+        type: String,
+        required: false,
+    },
 })
 </script>
 
@@ -18,9 +26,9 @@ defineProps({
                 </svg>
             </div>
 
-            <h1 class="error-page__title">404</h1>
-            <p class="error-page__message">Página no encontrada.</p>
-            <p class="error-page__description">La página que estás buscando no existe o ha sido movida.</p>
+            <h1 class="error-page__title">{{ status ?? 404 }}</h1>
+            <p class="error-page__message" v-html="message ?? 'Página no encontrada.'"></p>
+            <p class="error-page__description">{{ description ?? 'La página que estás buscando no existe o ha sido movida.' }}</p>
 
             <div class="error-page__actions">
                 <Link :href="route('dashboard')" class="error-page__button error-page__button--primary">
