@@ -20,12 +20,6 @@ class CourseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Check if we already have courses
-        $existingCourses = Course::count();
-        if ($existingCourses > 0) {
-            DB::table('courses')->truncate();
-        }
-
         $schoolLevels = SchoolLevel::all();
 
         if ($schoolLevels->isEmpty()) {
@@ -52,6 +46,11 @@ class CourseSeeder extends Seeder
             return;
         }
 
+        // Check if we already have courses
+        $existingCourses = Course::count();
+        if ($existingCourses > 0) {
+            DB::table('courses')->truncate();
+        }
         // Combine the schools
         $schools = collect([$defaultSchool])->merge($otherSchools);
 
@@ -97,11 +96,7 @@ class CourseSeeder extends Seeder
                 [
                     'grade' => 6,
                     'letters' => ['A', 'B', 'C'],
-                ],
-                [
-                    'grade' => 7,
-                    'letters' => ['A', 'B', 'C'],
-                ],
+                ]
             ],
             SchoolLevel::SECONDARY => [
                 [
@@ -132,9 +127,18 @@ class CourseSeeder extends Seeder
         ];
 
         $currentYear = Carbon::now()->year;
-        $startDate = Carbon::create($currentYear, 3, 1); // March 1st
-        $endDate = Carbon::create($currentYear, 12, 15); // December 15th
+        $startingYear = $currentYear - 3;
 
+        for ($year = $startingYear; $year <= $currentYear; $year++) {
+            $startDate = Carbon::create($year, 3, 1); // March 1st
+            $endDate = Carbon::create($year, 12, 15); // December 15th
+
+            $this->createCourses($schools, $coursesByLevel, $startDate, $endDate);
+        }
+    }
+
+    private function createCourses($schools, $coursesByLevel, $startDate, $endDate)
+    {
         foreach ($schools as $school) {
             $this->coursesBySchool[$school->code] = 0;
 
@@ -153,17 +157,16 @@ class CourseSeeder extends Seeder
 
             foreach ($schoolLevels as $level) {
                 if (isset($coursesByLevel[$level->code])) {
-                    $previousCourse = null;
-
                     foreach ($coursesByLevel[$level->code] as $courseData) {
                         foreach ($courseData['letters'] as $cIdx => $letter) {
                             foreach ($schoolShifts as $shift) {
                                 try {
+                                    $prevCourseId = $this->getPreviousCourseId($school, $level, $shift, $courseData['grade'], $letter, $startDate);
                                     $course = Course::create([
                                         'school_id' => $school->id,
                                         'school_level_id' => $level->id,
                                         'school_shift_id' => $shift->id,
-                                        'previous_course_id' => $previousCourse ? $previousCourse->id : null,
+                                        'previous_course_id' => $prevCourseId,
                                         'number' => $courseData['grade'],
                                         'letter' => $letter,
                                         'name' => $courseData['names'][$cIdx] ?? null,
@@ -174,11 +177,7 @@ class CourseSeeder extends Seeder
 
                                     $this->coursesCreated++;
                                     $this->coursesBySchool[$school->code]++;
-
-                                    // Store the first course of each grade as previous course for the next grade
-                                    if ($letter === 'A') {
-                                        $previousCourse = $course;
-                                    }
+                                    if ($prevCourseId) $this->deactivate($prevCourseId);
                                 } catch (\Exception $e) {
                                     $this->command->error("Error creating course: {$e->getMessage()}");
                                     $this->command->error("Details: School: {$school->name}, Level: {$level->name}, Grade: {$courseData['grade']}, Letter: {$letter}, Shift: {$shift->name}");
@@ -198,5 +197,35 @@ class CourseSeeder extends Seeder
         if ($finalCount !== $this->coursesCreated) {
             $this->command->error("Warning: Expected {$this->coursesCreated} courses but found {$finalCount} in database!");
         }
+    }
+
+    private function getPreviousCourseId($school, $level, $shift, $grade, $letter, $startDate): ?int
+    {
+        if ($grade === 1) return null;
+        $prevStartDateMin = \Carbon\Carbon::parse($startDate)->subYear()->toDateString();
+
+        $previousCourse = Course::where('school_id', $school->id)
+            ->where('school_level_id', $level->id)
+            ->where('school_shift_id', $shift->id)
+            ->where('number', $grade - 1)
+            ->where('letter', $letter)
+            ->where('start_date', '>=', $prevStartDateMin)
+            ->where('start_date', '<', $startDate)
+            ->select('id')
+            ->get()
+            ->first();
+        // if (!$previousCourse) {
+        //     $this->command->error("No previous course found for school: {$school->name}, level: {$level->name}, shift: {$shift->name}, grade: {$grade}, letter: {$letter}, start date: {$startDate}");
+        //     die();
+        //     return null;
+        // }
+        return $previousCourse ? $previousCourse->id : null;
+    }
+
+    private function deactivate($courseId)
+    {
+        $course = Course::find($courseId);
+        $course->active = false;
+        $course->save();
     }
 }
