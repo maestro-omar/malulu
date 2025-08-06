@@ -51,6 +51,12 @@ class SchoolPermission
     protected function hasPermissionToSchool($user, $permission, $schoolId): bool
     {
         $matrix = $user->permissionBySchoolDirect();
-        return isset($matrix[$permission]) && in_array($schoolId, $matrix[$permission]);
+        $splited = explode('|', $permission);
+        foreach ($splited as $p) {
+            if (isset($matrix[$p]) && in_array($schoolId, $matrix[$p])) {
+                return true;
+            }
+        }
+        return false;
     }
 }
