@@ -137,23 +137,23 @@ Breadcrumbs::for('file-subtypes.index', function (Trail $trail) {
 
 
 // 🏫 Niveles de escuela (desde una escuela)
-Breadcrumbs::for('courses.index', function (Trail $trail, School $school, SchoolLevel $schoolLevel) {
+Breadcrumbs::for('school.courses.index', function (Trail $trail, School $school, SchoolLevel $schoolLevel) {
     $trail->parent('schools.show', $school); // usa breadcrumb ya definido para la escuela
     $trail->push('Cursos de ' . $schoolLevel->name, route('courses.index', [$school, $schoolLevel]));
 });
 
-Breadcrumbs::for('courses.create', function (Trail $trail, School $school, SchoolLevel $schoolLevel) {
-    $trail->parent('courses.index', $school, $schoolLevel);
+Breadcrumbs::for('school.courses.create', function (Trail $trail, School $school, SchoolLevel $schoolLevel) {
+    $trail->parent('school.courses.index', $school, $schoolLevel);
     $trail->push('Crear curso');
 });
 
-Breadcrumbs::for('courses.show', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
-    $trail->parent('courses.index', $school, $schoolLevel);
+Breadcrumbs::for('school.courses.show', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
+    $trail->parent('school.courses.index', $school, $schoolLevel);
     $trail->push($course->start_date->format('Y') . ' - ' . $course->number . ' º ' . $course->letter, route('courses.show', [$school, $schoolLevel, $course]));
 });
 
-Breadcrumbs::for('courses.edit', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
-    $trail->parent('courses.show', $school, $schoolLevel, $course);
+Breadcrumbs::for('school.courses.edit', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
+    $trail->parent('school.courses.show', $school, $schoolLevel, $course);
     $trail->push("Editar {$course->name}");
 });
 

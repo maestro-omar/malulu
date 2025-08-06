@@ -52,7 +52,7 @@ class CourseController extends SchoolBaseController
             'year' => $request->year,
             'active' => $request->active,
             'shift' => $request->shift,
-            'breadcrumbs' => Breadcrumbs::generate('courses.index', $school, $schoolLevel),
+            'breadcrumbs' => Breadcrumbs::generate('school.courses.index', $school, $schoolLevel),
             'school' => $school,
             'selectedLevel' => $schoolLevel,
         ]);
@@ -72,7 +72,7 @@ class CourseController extends SchoolBaseController
             'courses' => $courses,
             'school' => $school,
             'selectedLevel' => $schoolLevel,
-            'breadcrumbs' => Breadcrumbs::generate('courses.create', $school, $schoolLevel),
+            'breadcrumbs' => Breadcrumbs::generate('school.courses.create', $school, $schoolLevel),
         ]);
     }
 
@@ -98,7 +98,7 @@ class CourseController extends SchoolBaseController
             'courses' => $courses,
             'school' => $school,
             'selectedLevel' => $schoolLevel,
-            'breadcrumbs' => Breadcrumbs::generate('courses.edit', $school, $schoolLevel, $course),
+            'breadcrumbs' => Breadcrumbs::generate('school.courses.edit', $school, $schoolLevel, $course),
         ]);
     }
 
@@ -126,7 +126,7 @@ class CourseController extends SchoolBaseController
             'course' => $course,
             'school' => $school,
             'selectedLevel' => $schoolLevel,
-            'breadcrumbs' => Breadcrumbs::generate('courses.show', $school, $schoolLevel, $course),
+            'breadcrumbs' => Breadcrumbs::generate('school.courses.show', $school, $schoolLevel, $course),
         ]);
     }
 }
