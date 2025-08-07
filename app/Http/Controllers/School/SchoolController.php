@@ -63,7 +63,7 @@ class SchoolController extends SchoolBaseController
         }
     }
 
-    public function edit(School $school)
+    public function edit(Request $request, School $school)
     {
         if ($school->name === School::GLOBAL) {
             return Inertia::render('Errors/404')

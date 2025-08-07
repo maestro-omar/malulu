@@ -78,10 +78,14 @@ class Handler extends ExceptionHandler
                 ->setStatusCode(404);
         } else {
             $message = 'Error inesperado de sistema';
+            $trace = $exception->getTrace();
+            $trace =  $trace[1] ?? [];
+            $trace = $trace ? ' <br>' . $trace['file'] . ' on line ' . $trace['line'] : '';
+            $trace = '<br> ' . $exception->getMessage() . $trace;
             if (config('app.debug'))
-                $message .= '<br> ' . $exception->getMessage();
+                $message .=  $trace;
             else
-                $message .= '<!-- ' . $exception->getMessage() . ' -->';
+                $message .= '<!-- ' . $trace . ' -->';
 
             return Inertia::render('Errors/500', [
                 'message' => $message,
