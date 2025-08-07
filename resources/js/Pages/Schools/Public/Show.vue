@@ -11,7 +11,7 @@
     <div class="school-public__container">
       <div class="school-public__card">
         <div class="school-public__section">
-          <EditableImage v-model="school.picture" type="picture" :model-id="school.cue" :can-edit="false" />
+          <EditableImage v-model="school.picture" type="picture" :model-id="school.slug" :can-edit="false" />
           <div class="school-public__grid school-public__grid--2 school-public__grid--md-3">
             <div>
               <label class="school-public__label">CUE</label>

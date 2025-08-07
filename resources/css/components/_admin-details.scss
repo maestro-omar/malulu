@@ -143,12 +143,6 @@
       border-radius: 0.375rem; // rounded-md
       object-fit: contain; // Maintain aspect ratio
     }
-
-    // Profile picture specific styling
-    .editable-image {
-      border-radius: 9999px; // rounded-full
-      object-fit: cover; // object-cover
-    }
   }
 
   &__logo {

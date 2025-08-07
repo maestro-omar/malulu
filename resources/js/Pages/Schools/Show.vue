@@ -47,7 +47,7 @@
                     <div class="admin-detail__field">
                       <label class="admin-detail__label">Logo</label>
                       <div class="admin-detail__image-container">
-                        <EditableImage v-model="school.logo" type="logo" :model-id="school.cue" :can-edit="true"
+                        <EditableImage v-model="school.logo" type="logo" :model-id="school.slug" :can-edit="true"
                           upload-route="schools.upload-image" delete-route="schools.delete-image"
                           delete-confirm-message="¿Está seguro que desea eliminar el logo?" />
                       </div>
@@ -56,7 +56,7 @@
                     <div class="admin-detail__field admin-detail__field--span-2">
                       <label class="admin-detail__label">Imagen Principal</label>
                       <div class="admin-detail__image-container">
-                        <EditableImage v-model="school.picture" type="picture" :model-id="school.cue" :can-edit="true"
+                        <EditableImage v-model="school.picture" type="picture" :model-id="school.slug" :can-edit="true"
                           image-class="admin-detail__picture" upload-route="schools.upload-image"
                           delete-route="schools.delete-image"
                           delete-confirm-message="¿Está seguro que desea eliminar la imagen principal?" />

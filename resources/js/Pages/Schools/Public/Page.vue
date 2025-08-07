@@ -14,11 +14,11 @@
             <div class="school-public__section">
               <div class="school-public__grid school-public__grid--3">
                 <div>
-                  <EditableImage v-model="school.logo" type="logo" :model-id="school.cue" :can-edit="false"
+                  <EditableImage v-model="school.logo" type="logo" :model-id="school.slug" :can-edit="false"
                     image-class="school-public__logo-img" />
                 </div>
                 <div class="school-public__grid-col-2">
-                  <EditableImage v-model="school.picture" type="picture" :model-id="school.cue" :can-edit="false" />
+                  <EditableImage v-model="school.picture" type="picture" :model-id="school.slug" :can-edit="false" />
                 </div>
               </div>
               <div class="school-public__field">
