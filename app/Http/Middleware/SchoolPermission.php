@@ -23,7 +23,7 @@ class SchoolPermission
         $user = Auth::user();
         $route = $request->route();
         $routeName = $route->getName();
-        $publicRoutes = ['schools.show'];
+        $publicRoutes = ['school.show'];
         if ($user->isSuperadmin() || ($routeName && in_array($routeName, $publicRoutes))) {
             //ok, go on
         } else {

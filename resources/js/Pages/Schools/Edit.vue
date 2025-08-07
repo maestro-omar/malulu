@@ -188,7 +188,7 @@
               </div>
             </div>
           </div>
-          <ActionButtons button-label="Actualizar Escuela" :cancel-href="route('schools.show', school.slug)"
+          <ActionButtons button-label="Actualizar Escuela" :cancel-href="route('school.show', school.slug)"
             :disabled="form.processing" />
         </form>
       </div>
@@ -218,6 +218,10 @@ const props = defineProps({
   managementTypes: Array,
   shifts: Array,
   breadcrumbs: Array,
+  flash: {
+    type: Object,
+    default: () => ({})
+  },
 });
 
 // Parse extra data if it's a string

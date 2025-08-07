@@ -6,7 +6,7 @@
     <template #header>
       <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles de la Escuela: ${school.short}`" :edit="{
         show: hasPermission($page.props, 'school.edit', school.id),
-        href: route('schools.edit', school.slug),
+        href: route('school.edit', school.slug),
         label: 'Editar'
       }" :del="{
         show: hasPermission($page.props, 'school.delete', school.id),
@@ -48,7 +48,7 @@
                       <label class="admin-detail__label">Logo</label>
                       <div class="admin-detail__image-container">
                         <EditableImage v-model="school.logo" type="logo" :model-id="school.slug" :can-edit="true"
-                          upload-route="schools.upload-image" delete-route="schools.delete-image"
+                          upload-route="school.upload-image" delete-route="school.delete-image"
                           delete-confirm-message="¿Está seguro que desea eliminar el logo?" />
                       </div>
                     </div>
@@ -57,8 +57,8 @@
                       <label class="admin-detail__label">Imagen Principal</label>
                       <div class="admin-detail__image-container">
                         <EditableImage v-model="school.picture" type="picture" :model-id="school.slug" :can-edit="true"
-                          image-class="admin-detail__picture" upload-route="schools.upload-image"
-                          delete-route="schools.delete-image"
+                          image-class="admin-detail__picture" upload-route="school.upload-image"
+                          delete-route="school.delete-image"
                           delete-confirm-message="¿Está seguro que desea eliminar la imagen principal?" />
                       </div>
                     </div>

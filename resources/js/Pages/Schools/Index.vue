@@ -75,10 +75,10 @@
                     </div>
                   </td>
                   <td class="table__td table__actions">
-                    <Link v-if="hasPermission($page.props, 'school.view')" :href="route('schools.show', school.slug)">
+                    <Link v-if="hasPermission($page.props, 'school.view')" :href="route('school.show', school.slug)">
                     Ver
                     </Link>
-                    <Link v-if="hasPermission($page.props, 'school.edit')" :href="route('schools.edit', school.slug)">
+                    <Link v-if="hasPermission($page.props, 'school.edit')" :href="route('school.edit', school.slug)">
                     Editar
                     </Link>
                     <Link v-if="hasPermission($page.props, 'school.delete')"
@@ -105,10 +105,10 @@
                   </div>
                 </div>
                 <div class="table__card-actions">
-                  <Link v-if="hasPermission($page.props, 'school.view')" :href="route('schools.show', school.slug)">
+                  <Link v-if="hasPermission($page.props, 'school.view')" :href="route('school.show', school.slug)">
                   Ver
                   </Link>
-                  <Link v-if="hasPermission($page.props, 'school.edit')" :href="route('schools.edit', school.slug)">
+                  <Link v-if="hasPermission($page.props, 'school.edit')" :href="route('school.edit', school.slug)">
                   Editar
                   </Link>
                   <Link v-if="hasPermission($page.props, 'school.delete')" :href="route('schools.destroy', school.slug)"

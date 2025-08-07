@@ -73,7 +73,7 @@ class SchoolController extends SchoolBaseController
 
         return $this->render($request, 'Schools/Edit', [
             'school' => $school->load(['locality', 'schoolLevels', 'managementType', 'shifts']),
-            'breadcrumbs' => Breadcrumbs::generate('schools.edit', $school),
+            'breadcrumbs' => Breadcrumbs::generate('school.edit', $school),
             'localities' => Locality::orderBy('order')->get(),
             'schoolLevels' => SchoolLevel::orderBy('id')->get(),
             'managementTypes' => SchoolManagementType::orderBy('id')->get(),
@@ -122,7 +122,7 @@ class SchoolController extends SchoolBaseController
 
         return $this->render(null, 'Schools/Show', [
             'school' => $school,
-            'breadcrumbs' => Breadcrumbs::generate('schools.show', $school),
+            'breadcrumbs' => Breadcrumbs::generate('school.show', $school),
         ]);
     }
 

@@ -15,7 +15,7 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::put('/', [SchoolController::class, 'update'])->name('school.update')->middleware('school.permission:school.edit');
         Route::get(__('routes.edit'), [SchoolController::class, 'edit'])->name('school.edit')->middleware('school.permission:school.edit');
         Route::post(__('routes.upload-image'), [SchoolController::class, 'uploadImage'])->name('school.upload-image')->middleware('school.permission:school.edit');
-        Route::post(__('routes.delete-image'), [SchoolController::class, 'deleteImage'])->name('school.delete-image')->middleware('school.permission:school.edit');
+        Route::delete(__('routes.delete-image'), [SchoolController::class, 'deleteImage'])->name('school.delete-image')->middleware('school.permission:school.edit');
 
         Route::get(__('routes.staff'), [UserController::class, 'staff'])->name('school.staff')->middleware('school.permission:staff.view');
 

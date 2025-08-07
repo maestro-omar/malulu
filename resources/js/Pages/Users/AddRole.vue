@@ -448,7 +448,7 @@ watch(selectedSchool, (newSchool) => {
   // If we have a school ID but no levels, we need to fetch them
   if (newSchool?.id && !newSchool.school_levels) {
     // Make an API call to get the school with its levels
-    axios.get(route("api.schools.show", newSchool.id)).then((response) => {
+    axios.get(route("api.school.show", newSchool.id)).then((response) => {
       const schoolWithLevels = response.data;
       selectedSchool.value = schoolWithLevels; // Update the selected school with levels
     });

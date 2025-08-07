@@ -227,7 +227,7 @@ class UserService
         }
 
         // Global admins have access to all schools
-        if ($user->hasRole('global admin')) {
+        if ($user->isSuperadmin()) {
             return true;
         }
 

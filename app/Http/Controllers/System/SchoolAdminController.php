@@ -67,15 +67,12 @@ class SchoolAdminController extends SystemBaseController
     public function edit(School $school)
     {
         if ($school->name === School::GLOBAL) {
-            return Inertia::render('Errors/403')
-                // ->toResponse($request)
-                ->setStatusCode(403);
-            // abort(403, 'Cannot edit GLOBAL school.');
+            throw new \Spatie\Permission\Exceptions\UnauthorizedException(403, 'No se puede editar escuela GLOBAL.', null, []);
         }
 
         return Inertia::render('Schools/Edit', [
             'school' => $school->load(['locality', 'schoolLevels', 'managementType', 'shifts']),
-            'breadcrumbs' => Breadcrumbs::generate('schools.edit', $school),
+            'breadcrumbs' => Breadcrumbs::generate('school.edit', $school),
             'localities' => Locality::orderBy('order')->get(),
             'schoolLevels' => SchoolLevel::orderBy('id')->get(),
             'managementTypes' => SchoolManagementType::orderBy('id')->get(),
@@ -124,7 +121,7 @@ class SchoolAdminController extends SystemBaseController
 
         return Inertia::render('Schools/Show', [
             'school' => $school,
-            'breadcrumbs' => Breadcrumbs::generate('schools.show', $school),
+            'breadcrumbs' => Breadcrumbs::generate('school.show', $school),
         ]);
     }
 
