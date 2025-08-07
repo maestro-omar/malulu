@@ -64,7 +64,7 @@ const submit = () => {
                                 <InputError class="admin-form__error" :message="form.errors.name" />
                             </div>
 
-                            <div class="admin-form__grid form__grid--2">
+                            <div class="admin-form__grid admin-form__grid--2">
                                 <div class="admin-form__field">
                                     <InputLabel for="firstname" value="Nombre" />
                                     <TextInput id="firstname" type="text" class="admin-form__input"
@@ -80,7 +80,7 @@ const submit = () => {
                                 </div>
                             </div>
 
-                            <div class="admin-form__grid form__grid--3">
+                            <div class="admin-form__grid admin-form__grid--3">
                                 <div class="admin-form__field">
                                     <InputLabel for="id_number" value="DNI" />
                                     <TextInput id="id_number" type="text" class="admin-form__input"
@@ -109,7 +109,7 @@ const submit = () => {
                     <div class="admin-form__card">
                         <h3 class="admin-form__card-title">Información de Contacto</h3>
                         <div class="admin-form__card-content">
-                            <div class="admin-form__grid form__grid--2">
+                            <div class="admin-form__grid admin-form__grid--2">
                                 <div class="admin-form__field">
                                     <InputLabel for="email" value="Correo electrónico" />
                                     <TextInput id="email" type="email" class="admin-form__input" v-model="form.email"
@@ -124,7 +124,7 @@ const submit = () => {
                                 </div>
                             </div>
 
-                            <div class="admin-form__grid form__grid--2">
+                            <div class="admin-form__grid admin-form__grid--2">
                                 <div class="admin-form__field">
                                     <InputLabel for="address" value="Dirección" />
                                     <TextInput id="address" type="text" class="admin-form__input"
@@ -140,7 +140,7 @@ const submit = () => {
                                 </div>
                             </div>
 
-                            <div class="admin-form__grid form__grid--2">
+                            <div class="admin-form__grid admin-form__grid--2">
                                 <div class="admin-form__field">
                                     <InputLabel for="province_id" value="Provincia" />
                                     <select id="province_id" class="admin-form__select" v-model="form.province_id">

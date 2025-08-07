@@ -17,7 +17,7 @@
       <div class="admin-form">
         <div class="admin-form__wrapper">
           <form @submit.prevent="submit" class="admin-form__container">
-            <div v-if="form.errors.error" class="admin-form__error form__error--main">
+            <div v-if="form.errors.error" class="admin-form__error admin-form__error--main">
               {{ form.errors.error }}
             </div>
             <!-- School Selection -->
@@ -66,7 +66,7 @@
                     }}
                   </div>
                 </div>
-                <div v-else class="admin-form__grid form__grid--3">
+                <div v-else class="admin-form__grid admin-form__grid--3">
                   <button type="button" @click="selectedLevel = null" :class="getLevelColorClasses(null)">
                     Sin especificar
                   </button>
@@ -97,7 +97,7 @@
                     {{ selectedRole.name }}
                   </div>
                 </div>
-                <div v-else class="admin-form__grid form__grid--4">
+                <div v-else class="admin-form__grid admin-form__grid--4">
                   <button type="button" v-for="role in filteredAvailableRoles" :key="role.id"
                     @click="selectedRole = role" :class="getRoleColorClasses(role)">
                     {{ role.name }}
@@ -110,13 +110,13 @@
             <!-- Generic Role Details (Start Date, Notes) -->
             <div v-if="selectedRole" class="admin-form__card">
               <h3 class="admin-form__card-title">Detalles del Rol</h3>
-              <div class="admin-form__card-content form__grid form__grid--2">
+              <div class="admin-form__card-content admin-form__grid admin-form__grid--2">
                 <div class="admin-form__field">
                   <InputLabel for="startDate" value="Fecha de Inicio" />
                   <TextInput id="startDate" type="date" class="admin-form__input" v-model="form.start_date" required />
                   <InputError class="admin-form__error" :message="form.errors.start_date" />
                 </div>
-                <div class="admin-form__field form__field--full">
+                <div class="admin-form__field admin-form__field--full">
                   <InputLabel for="notes" value="Notas" />
                   <textarea id="notes" class="admin-form__input" v-model="form.notes"></textarea>
                   <InputError class="admin-form__error" :message="form.errors.notes" />
@@ -125,9 +125,9 @@
             </div>
 
             <!-- Workers Specific Fields -->
-            <div v-if="showWorkerFields" class="admin-form__card form__card--worker">
+            <div v-if="showWorkerFields" class="admin-form__card admin-form__card--worker">
               <h3 class="admin-form__card-title">Detalles de cargo</h3>
-              <div class="admin-form__card-content form__grid form__grid--2">
+              <div class="admin-form__card-content admin-form__grid admin-form__grid--2">
                 <div>
                   <InputLabel for="jobStatus" value="Estado de Empleo" />
                   <SelectInput id="jobStatus" class="admin-form__input" v-model="form.worker_details.job_status_id">
@@ -168,9 +168,9 @@
             </div>
 
             <!-- Guardian Specific Fields -->
-            <div v-if="showGuardianFields" class="admin-form__card form__card--guardian">
+            <div v-if="showGuardianFields" class="admin-form__card admin-form__card--guardian">
               <h3 class="admin-form__card-title">Detalles de Tutor</h3>
-              <div class="admin-form__card-content form__grid form__grid--2">
+              <div class="admin-form__card-content admin-form__grid admin-form__grid--2">
                 <div>
                   <InputLabel for="relationshipType" value="Tipo de Relación" />
                   <SelectInput id="relationshipType" class="admin-form__input"
@@ -215,9 +215,9 @@
             </div>
 
             <!-- Student Specific Fields -->
-            <div v-if="showStudentFields" class="admin-form__card form__card--student">
+            <div v-if="showStudentFields" class="admin-form__card admin-form__card--student">
               <h3 class="admin-form__card-title">Detalles de Estudiante</h3>
-              <div class="admin-form__card-content form__grid">
+              <div class="admin-form__card-content admin-form__grid">
                 <div>
                   <InputLabel for="currentCourseId" value="ID de Curso Actual" />
                   <TextInput id="currentCourseId" type="number" class="admin-form__input"
@@ -228,7 +228,7 @@
               </div>
             </div>
 
-            <div v-if="isRoleAlreadyAssigned" class="admin-form__error form__error--main">
+            <div v-if="isRoleAlreadyAssigned" class="admin-form__error admin-form__error--main">
               Este rol ya está asignado a este usuario para la escuela
               seleccionada.
             </div>

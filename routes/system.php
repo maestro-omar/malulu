@@ -53,11 +53,6 @@ Route::prefix(__('routes.system'))->group(function () {
             Route::get(__('routes.schools'), [SchoolAdminController::class, 'index'])->name('schools.index');
             Route::get(__('routes.schools') . '/' . __('routes.create'), [SchoolAdminController::class, 'create'])->name('schools.create');
             Route::post(__('routes.schools'), [SchoolAdminController::class, 'store'])->name('schools.store');
-            Route::get(__('routes.schools') . '/{school}', [SchoolAdminController::class, 'show'])->name('schools.show');
-            Route::get(__('routes.schools') . '/{school}/' . __('routes.edit'), [SchoolAdminController::class, 'edit'])->name('schools.edit');
-            Route::put(__('routes.schools') . '/{school}', [SchoolAdminController::class, 'update'])->name('schools.update');
-            Route::post(__('routes.schools') . '/{school}/' . __('routes.upload-image'), [SchoolAdminController::class, 'uploadImage'])->name('schools.upload-image');
-            Route::post(__('routes.schools') . '/{school}/' . __('routes.delete-image'), [SchoolAdminController::class, 'deleteImage'])->name('schools.delete-image');
             Route::delete(__('routes.schools') . '/{school}', [SchoolAdminController::class, 'destroy'])->name('schools.destroy');
         });
 

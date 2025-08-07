@@ -7,7 +7,7 @@
             <div v-if="firstSchool" class="dashboard__header">
                 <h2 class="page-subtitle">
                     {{ firstSchool.name }}
-                    <Link :href="route('schools.show', { school: firstSchool.slug })" class="dashboard__school-link"
+                    <Link :href="route('school.show', { school: firstSchool.slug })" class="dashboard__school-link"
                         :title="`Ver ${firstSchool.short}`">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" width="20" height="20">

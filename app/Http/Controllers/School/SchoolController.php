@@ -54,7 +54,7 @@ class SchoolController extends SchoolBaseController
         try {
             $school = $this->schoolService->createSchool($request->all());
 
-            return redirect()->route('schools.index')
+            return redirect()->route('school.index')
                 ->with('success', 'School created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -66,10 +66,9 @@ class SchoolController extends SchoolBaseController
     public function edit(Request $request, School $school)
     {
         if ($school->name === School::GLOBAL) {
-            return Inertia::render('Errors/404')
-                // ->toResponse($request)
-                ->setStatusCode(404);
-            // abort(403, 'Cannot edit GLOBAL school.');
+            return Inertia::render('Errors/403', ['message' => 'No se puede editar escuela GLOBAL'])
+                ->toResponse($request)
+                ->setStatusCode(403);
         }
 
         return $this->render($request, 'Schools/Edit', [
@@ -87,7 +86,7 @@ class SchoolController extends SchoolBaseController
         try {
             $this->schoolService->updateSchool($school, $request->all());
 
-            return redirect()->route('schools.index')
+            return redirect()->route('school.index')
                 ->with('success', 'School updated successfully.');
         } catch (ValidationException $e) {
             return redirect()->back()
@@ -105,7 +104,7 @@ class SchoolController extends SchoolBaseController
         try {
             $this->schoolService->deleteSchool($school);
 
-            return redirect()->route('schools.index')
+            return redirect()->route('school.index')
                 ->with('success', 'School deleted successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -141,7 +140,7 @@ class SchoolController extends SchoolBaseController
         try {
             $this->schoolService->restoreSchool($id);
 
-            return redirect()->route('schools.trashed')
+            return redirect()->route('school.trashed')
                 ->with('success', 'School restored successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -154,7 +153,7 @@ class SchoolController extends SchoolBaseController
         try {
             $this->schoolService->forceDeleteSchool($id);
 
-            return redirect()->route('schools.trashed')
+            return redirect()->route('school.trashed')
                 ->with('success', 'School permanently deleted.');
         } catch (\Exception $e) {
             return redirect()->back()

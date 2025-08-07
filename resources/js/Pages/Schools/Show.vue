@@ -202,8 +202,6 @@ const props = defineProps({
   breadcrumbs: Array,
 });
 
-const { options: levelColors } = schoolLevelOptions()
-
 const destroy = () => {
   if (confirm('¿Está seguro que desea eliminar esta escuela?')) {
     router.delete(route('schools.destroy', props.school.slug));

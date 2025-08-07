@@ -36,7 +36,7 @@
                   {{ form.errors.email }}
                 </div>
               </div>
-              <div class="admin-form__grid form__grid--2">
+              <div class="admin-form__grid admin-form__grid--2">
                 <div class="admin-form__field">
                   <label class="admin-form__label">Contraseña</label>
                   <input

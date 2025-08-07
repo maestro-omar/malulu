@@ -11,7 +11,9 @@
     <div class="school-public__container">
       <div class="school-public__card">
         <div class="school-public__section">
-          <EditableImage v-model="school.picture" type="picture" :model-id="school.slug" :can-edit="false" />
+          <div v-if="school.picture" class="school-public__image-container">
+            <img :src="school.picture" class="school-public__image" />
+          </div>
           <div class="school-public__grid school-public__grid--2 school-public__grid--md-3">
             <div>
               <label class="school-public__label">CUE</label>
@@ -79,7 +81,6 @@
 </template>
 
 <script setup>
-import EditableImage from "@/Components/admin/EditableImage.vue";
 import EmailField from "@/Components/admin/EmailField.vue";
 import PhoneField from "@/Components/admin/PhoneField.vue";
 import ManagementTypeBadge from "@/Components/badges/ManagementTypeBadge.vue";
@@ -94,14 +95,6 @@ const props = defineProps({
   school: Object,
   breadcrumbs: Array,
 });
-
-const { options: levelColors } = schoolLevelOptions()
-
-const destroy = () => {
-  if (confirm('¿Está seguro que desea eliminar esta escuela?')) {
-    router.delete(route('schools.destroy', props.school.cue));
-  }
-};
 
 const copyToClipboard = (text) => {
   // Create a temporary input element

@@ -14,7 +14,7 @@
           <FlashMessages :flash="flash" />
           <div class="admin-form__card">
             <div class="admin-form__card-content">
-              <div class="admin-form__grid form__grid--2">
+              <div class="admin-form__grid admin-form__grid--2">
                 <div>
                   <h3 class="admin-form__card-title">Información de la Escuela</h3>
                   <div class="admin-form__card-content">
@@ -25,7 +25,7 @@
                       <InputError :message="form.errors.name" class="admin-form__error" />
                     </div>
 
-                    <div class="admin-form__grid form__grid--3">
+                    <div class="admin-form__grid admin-form__grid--3">
                       <div class="admin-form__field">
                         <InputLabel for="short" value="Nombre Corto" />
                         <TextInput id="short" type="text" class="admin-form__input" v-model="form.short" required />
@@ -45,7 +45,7 @@
                       </div>
                     </div>
 
-                    <div class="admin-form__grid form__grid--2">
+                    <div class="admin-form__grid admin-form__grid--2">
                       <div class="admin-form__field">
                         <InputLabel for="management_type" value="Tipo de Gestión" />
                         <select id="management_type" v-model="form.management_type_id" class="admin-form__select"
@@ -59,7 +59,7 @@
                       </div>
                     </div>
 
-                    <div class="admin-form__grid form__grid--2">
+                    <div class="admin-form__grid admin-form__grid--2">
                       <div class="admin-form__field">
                         <InputLabel value="Niveles" />
                         <div class="admin-form__checkbox-group">
@@ -67,7 +67,7 @@
                             <Checkbox :id="'level-' + level.id" :value="level.id"
                               v-model:checked="form.school_levels" />
                             <label :for="'level-' + level.id" class="admin-form__checkbox-label">
-                              {{ level.name }}
+                              <SchoolLevelBadge :level="level" />
                             </label>
                           </div>
                         </div>
@@ -80,7 +80,7 @@
                           <div v-for="shift in shifts" :key="shift.id" class="admin-form__checkbox-item">
                             <Checkbox :id="'shift-' + shift.id" :value="shift.id" v-model:checked="form.shifts" />
                             <label :for="'shift-' + shift.id" class="admin-form__checkbox-label">
-                              {{ shift.name }}
+                              <SchoolShiftBadge :shift="shift" />
                             </label>
                           </div>
                         </div>
@@ -106,7 +106,7 @@
                       <InputError :message="form.errors.address" class="admin-form__error" />
                     </div>
 
-                    <div class="admin-form__grid form__grid--2">
+                    <div class="admin-form__grid admin-form__grid--2">
                       <div class="admin-form__field">
                         <InputLabel for="zip_code" value="Código Postal" />
                         <TextInput id="zip_code" type="text" class="admin-form__input" v-model="form.zip_code" />
@@ -121,7 +121,7 @@
                       </div>
                     </div>
 
-                    <div class="admin-form__grid form__grid--2">
+                    <div class="admin-form__grid admin-form__grid--2">
                       <div class="admin-form__field">
                         <InputLabel for="phone" value="Teléfono" />
                         <TextInput id="phone" type="text" class="admin-form__input" v-model="form.phone" />
@@ -164,7 +164,7 @@
                     </div>
                     <div class="admin-form__social-remove">
                       <button type="button" @click="removeSocial(index)"
-                        class="admin-form__button form__button--danger">
+                        class="admin-form__button admin-form__button--danger">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                           <path fill-rule="evenodd"
                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -175,7 +175,7 @@
                   </div>
 
                   <div class="admin-form__field">
-                    <button type="button" @click="addSocial" class="admin-form__button form__button--secondary">
+                    <button type="button" @click="addSocial" class="admin-form__button admin-form__button--secondary">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd"
                           d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
@@ -204,6 +204,8 @@ import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
+import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
+import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -291,7 +293,7 @@ const submit = () => {
     }
   }
 
-  form.put(route('schools.update', props.school.id), {
+  form.put(route('schools.update', props.school.slug), {
     preserveScroll: true,
     onError: (errors) => {
       console.error('Validation errors:', errors);

@@ -11,11 +11,11 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
     Route::middleware('auth')->group(function () {
         // School Routes
 
-        Route::get('/', [SchoolController::class, 'show'])->name('schools.show')->middleware('school.permission:school.view');
-        Route::put('/', [SchoolController::class, 'update'])->name('schools.update')->middleware('school.permission:school.edit');
-        Route::get(__('routes.edit'), [SchoolController::class, 'edit'])->name('schools.edit')->middleware('school.permission:school.edit');
-        Route::post(__('routes.upload-image'), [SchoolController::class, 'uploadImage'])->name('schools.upload-image')->middleware('school.permission:school.edit');
-        Route::post(__('routes.delete-image'), [SchoolController::class, 'deleteImage'])->name('schools.delete-image')->middleware('school.permission:school.edit');
+        Route::get('/', [SchoolController::class, 'show'])->name('school.show')->middleware('school.permission:school.view');
+        Route::put('/', [SchoolController::class, 'update'])->name('school.update')->middleware('school.permission:school.edit');
+        Route::get(__('routes.edit'), [SchoolController::class, 'edit'])->name('school.edit')->middleware('school.permission:school.edit');
+        Route::post(__('routes.upload-image'), [SchoolController::class, 'uploadImage'])->name('school.upload-image')->middleware('school.permission:school.edit');
+        Route::post(__('routes.delete-image'), [SchoolController::class, 'deleteImage'])->name('school.delete-image')->middleware('school.permission:school.edit');
 
         Route::get(__('routes.staff'), [UserController::class, 'staff'])->name('school.staff')->middleware('school.permission:staff.view');
 

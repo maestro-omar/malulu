@@ -43,7 +43,7 @@ const submit = () => {
         <form @submit.prevent="submit" class="admin-form__container">
           <div class="admin-form__card">
             <div class="admin-form__card-content">
-              <div class="admin-form__grid form__grid--2">
+              <div class="admin-form__grid admin-form__grid--2">
                 <div class="admin-form__field">
                   <InputLabel for="code" value="Clave" />
                   <TextInput id="code" v-model="form.code" type="text" class="admin-form__input" required autofocus />
@@ -83,7 +83,7 @@ const submit = () => {
               <div class="admin-form__field">
                 <InputLabel for="config" value="Config (JSON libre)" />
                 <textarea id="config" v-model="form.config"
-                  class="admin-form__textarea form__textarea--code" rows="6"
+                  class="admin-form__textarea admin-form__textarea--code" rows="6"
                   placeholder='{ "key": "value" }'></textarea>
                 <InputError :message="form.errors.config" class="admin-form__error" />
               </div>

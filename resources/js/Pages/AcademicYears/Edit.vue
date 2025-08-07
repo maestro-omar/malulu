@@ -16,11 +16,11 @@
             <div class="admin-form__card-content">
               <div class="admin-form__field">
                 <InputLabel for="year" value="Año" />
-                <TextInput type="number" id="year" v-model="form.year" class="admin-form__input form__input--disabled"
+                <TextInput type="number" id="year" v-model="form.year" class="admin-form__input admin-form__input--disabled"
                   disabled />
               </div>
 
-              <div class="admin-form__grid form__grid--2">
+              <div class="admin-form__grid admin-form__grid--2">
                 <div class="admin-form__field">
                   <InputLabel for="start_date" value="Fecha de Inicio" />
                   <TextInput type="date" id="start_date" v-model="form.start_date" class="admin-form__input" />
@@ -34,7 +34,7 @@
                 </div>
               </div>
 
-              <div class="admin-form__grid form__grid--2">
+              <div class="admin-form__grid admin-form__grid--2">
                 <div class="admin-form__field">
                   <InputLabel for="winter_break_start" value="Inicio de Vacaciones de Invierno" />
                   <TextInput type="date" id="winter_break_start" v-model="form.winter_break_start"
