@@ -53,7 +53,13 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception): Response
     {
-        if (($exception instanceof AuthorizationException || $exception instanceof UnauthorizedException)
+        if (
+            $exception instanceof \Illuminate\Auth\AuthenticationException
+            || $exception instanceof \Illuminate\Validation\ValidationException
+        ) {
+            //expected exceptions that will be handled by the parent class
+            return parent::render($request, $exception);
+        } elseif (($exception instanceof AuthorizationException || $exception instanceof UnauthorizedException)
             && $request->expectsJson() === false
         ) {
             // dd($request);
@@ -70,7 +76,6 @@ class Handler extends ExceptionHandler
             ])
                 ->toResponse($request)
                 ->setStatusCode(404);
-        } elseif ($exception instanceof \Illuminate\Auth\AuthenticationException) {
         } else {
             $message = 'Error inesperado de sistema';
             if (config('app.debug'))
@@ -85,7 +90,5 @@ class Handler extends ExceptionHandler
                 ->toResponse($request)
                 ->setStatusCode(500);
         }
-
-        return parent::render($request, $exception);
     }
 }
