@@ -24,6 +24,7 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get(__('routes.student') . '/{idAndName}', [UserController::class, 'student'])->name('school.student.show')->middleware('school.permission:student.view');
         Route::get(__('routes.student') . '/{idAndName}/' . __('routes.edit'), [UserController::class, 'studentEdit'])->name('school.student.edit')->middleware('school.permission:student.edit');
         Route::put(__('routes.student') . '/{idAndName}/' . __('routes.edit'), [UserController::class, 'studentUpdate'])->name('school.student.update')->middleware('school.permission:student.edit');
+        Route::post(__('routes.student') . '/{idAndName}/' . __('routes.upload-image'), [UserController::class, 'uploadImage'])->name('school.student.upload-image')->middleware('school.permission:student.edit');
 
         Route::get(__('routes.guardians'), [UserController::class, 'guardians'])->name('school.guardians')->middleware('school.permission:guardians.view');
 

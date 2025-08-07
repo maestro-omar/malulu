@@ -44,7 +44,7 @@ class UserController extends SchoolBaseController
     public function student(Request $request, $schoolSlug, $studentIdAndName): Response
     {
         $this->setSchool($schoolSlug);
-        $student = $this->getStudentData($studentIdAndName);
+        $student = $this->getUserData($studentIdAndName);
 
         return $this->render($request, 'Users/BySchool/Student.Show', [
             'user' => $student,
@@ -57,7 +57,7 @@ class UserController extends SchoolBaseController
     public function studentEdit(Request $request, $schoolSlug, $studentIdAndName): Response
     {
         $this->setSchool($schoolSlug);
-        $student = $this->getStudentData($studentIdAndName);
+        $student = $this->getUserData($studentIdAndName);
 
         return Inertia::render('Users/BySchool/Student.Edit', [
             'school' => $this->school,
@@ -77,7 +77,7 @@ class UserController extends SchoolBaseController
     public function studentUpdate(Request $request, $schoolSlug, $studentIdAndName)
     {
         $this->setSchool($schoolSlug);
-        $student = $this->getStudent($studentIdAndName);
+        $student = $this->getUserFromUrlParameter($studentIdAndName);
         try {
             $this->userService->updateUser($student, $request->all());
             return redirect()->route('school.student.show', ['school' => $schoolSlug, 'idAndName' => $studentIdAndName])->with('success', 'Estudiante actualizado exitosamente.');
@@ -89,6 +89,22 @@ class UserController extends SchoolBaseController
             return redirect()->back()
                 ->withErrors(['error' => $e->getMessage()])
                 ->withInput();
+        }
+    }
+    /**
+     * Update the specified user in storage.
+     */
+    public function uploadImage(Request $request, $schoolSlug, $userIdAndName)
+    {
+        $this->setSchool($schoolSlug);
+        $user = $this->getUserFromUrlParameter($userIdAndName);
+        try {
+            if ($this->userService->updateUserImage($user, $request))
+                return back()->with('success', 'Imagen subida exitosamente');
+            else
+                return back()->with('error', 'Hubo un problema inesperado al subir la imagen');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
 
@@ -106,15 +122,15 @@ class UserController extends SchoolBaseController
         }
     }
 
-    private function getStudent(string $studentIdAndName)
+    private function getUserFromUrlParameter(string $studentIdAndName)
     {
         $id = (int) explode('-', $studentIdAndName)[0];
         return User::where('id', $id)->first();
     }
 
-    private function getStudentData(string $studentIdAndName)
+    private function getUserData(string $studentIdAndName)
     {
-        $student = $this->getStudent($studentIdAndName);
+        $student = $this->getUserFromUrlParameter($studentIdAndName);
         return $student ? $this->userService->getUserShowData($student) : null;
     }
 }

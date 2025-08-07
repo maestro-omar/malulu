@@ -61,6 +61,10 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  uploadFullRoute: {
+    type: String,
+    required: false,
+  },
   // The route name for deleting (without parameters)
   deleteRoute: {
     type: String,
@@ -108,7 +112,7 @@ const getImageClass = () => {
 };
 
 const openFileInput = () => {
-  if (!props.uploadRoute) return;
+  if (!props.uploadRoute && !props.uploadFullRoute) return;
   fileInput.value.click();
 };
 
@@ -124,7 +128,9 @@ const handleFileChange = (event) => {
       formData.append(key, value);
     });
 
-    router.post(route(props.uploadRoute, props.modelId), formData, {
+    const finalRoute = props.uploadFullRoute || route(props.uploadRoute, props.modelId);
+    
+    router.post(finalRoute, formData, {
       preserveScroll: true,
       onSuccess: () => {
         // Reset the input

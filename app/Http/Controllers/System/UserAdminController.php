@@ -259,39 +259,10 @@ class UserAdminController extends SystemBaseController
     public function uploadImage(Request $request, User $user)
     {
         try {
-            $request->validate([
-                'image' => 'required|image|max:2048', // Max 2MB
-                'type' => 'required|in:picture'
-            ]);
-
-            $image = $request->file('image');
-            $type = $request->input('type');
-
-            // Delete old image if exists
-            if ($type === 'picture' && $user->picture) {
-                $oldPath = str_replace('/storage/', '', $user->picture);
-                Storage::disk('public')->delete($oldPath);
-            }
-
-            // Generate timestamp and slugged filename
-            $timestamp = now()->format('YmdHis');
-            $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
-            $extension = $image->getClientOriginalExtension();
-            $sluggedName = Str::slug($originalName);
-            $newFilename = $timestamp . '_' . $sluggedName . '.' . $extension;
-
-            // Store new image with custom filename
-            $path = $image->storeAs('users/' . $user->id, $newFilename, 'public');
-
-            // Get the full URL for the stored image using the asset helper
-            $url = asset('storage/' . $path);
-
-            // Update user with new image path
-            $user->update([
-                $type => $url
-            ]);
-
-            return back()->with('success', 'Imagen subida exitosamente');
+            if ($this->userService->updateUserImage($user, $request))
+                return back()->with('success', 'Imagen subida exitosamente');
+            else
+                return back()->with('error', 'Hubo un problema inesperado al subir la imagen');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => $e->getMessage()]);
         }

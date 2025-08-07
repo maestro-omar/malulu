@@ -61,8 +61,8 @@ const destroy = () => {
                             <!-- Basic Information -->
                             <div class="admin-detail__section">
                                 <div class="admin-detail__image-container">
-                                    <EditableImage v-model="user.picture" type="picture" :model-id="user.id"
-                                        :can-edit="true" upload-route="users.upload-image"
+                                    <EditableImage v-model="user.picture" type="picture"
+                                        :can-edit="true" :upload-full-route="route_school_student(school, user, 'upload-image')"
                                         delete-route="users.delete-image"
                                         delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?" />
                                 </div>
