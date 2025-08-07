@@ -62,7 +62,6 @@ class Handler extends ExceptionHandler
         } elseif (($exception instanceof AuthorizationException || $exception instanceof UnauthorizedException)
             && $request->expectsJson() === false
         ) {
-            // dd($request);
             return Inertia::render('Errors/403')
                 ->toResponse($request)
                 ->setStatusCode(403);
@@ -78,9 +77,7 @@ class Handler extends ExceptionHandler
                 ->setStatusCode(404);
         } else {
             $message = 'Error inesperado de sistema';
-            $trace = $exception->getTrace();
-            $trace =  $trace[1] ?? [];
-            $trace = $trace ? ' <br>' . $trace['file'] . ' on line ' . $trace['line'] : '';
+            $trace = $this->parseTrace($exception);
             $trace = '<br> ' . $exception->getMessage() . $trace;
             if (config('app.debug'))
                 $message .=  $trace;
@@ -94,5 +91,15 @@ class Handler extends ExceptionHandler
                 ->toResponse($request)
                 ->setStatusCode(500);
         }
+    }
+    private function parseTrace($exception, $from = 0, $to = 2)
+    {
+        // dd($traceArray);
+        $traceArray = $exception->getTrace();
+        $trace = '';
+        for ($i = $from; $i <= $to; $i++) {
+            $trace .= ($traceArray[$i] ?? false) ? ' <br>' . $traceArray[$i]['file'] . ' on line ' . $traceArray[$i]['line'] : '';
+        }
+        return $trace;
     }
 }
