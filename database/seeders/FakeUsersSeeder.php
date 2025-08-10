@@ -387,11 +387,14 @@ class FakeUsersSeeder extends Seeder
                 if (empty($roleId)) dd("Sin role $roleCode");
                 // Determine if this role should have a school level
                 $schoolLevelId = null;
-                if (in_array($roleCode, [Role::GRADE_TEACHER, Role::ASSISTANT_TEACHER, Role::CURRICULAR_TEACHER, Role::SPECIAL_TEACHER, Role::PROFESSOR, Role::STUDENT])) {
+                if (in_array($roleCode, [Role::GRADE_TEACHER, Role::ASSISTANT_TEACHER, Role::CURRICULAR_TEACHER, Role::SPECIAL_TEACHER, Role::PROFESSOR])) {
                     // Get school levels for this school
                     if ($schoolLevels->isNotEmpty()) {
                         $schoolLevelId = $schoolLevels->random()->id;
                     }
+                }
+                if ($roleCode === Role::STUDENT) {
+                    $schoolLevelId = $this->getSchoolLevelIForStudentBasedOnAge($birthdate);
                 }
 
                 // echo "Trying to assign role to user_id: {$user->id}, school_id: {$school->id} \n";
@@ -423,13 +426,13 @@ class FakeUsersSeeder extends Seeder
             }
             $schoolLevel = $schoolLevels->random();
             if ($schoolLevel->code === SchoolLevel::KINDER) {
-                return $this->faker->dateTimeBetween('-6 years', '-2 years');
+                return $this->faker->dateTimeBetween('-5 years', '-2 years');
             } elseif ($schoolLevel->code === SchoolLevel::PRIMARY) {
-                return $this->faker->dateTimeBetween('-12 years', '-6 years');
+                return $this->faker->dateTimeBetween('-11 years', '-6 years');
             } elseif ($schoolLevel->code === SchoolLevel::SECONDARY) {
                 return $this->faker->dateTimeBetween('-18 years', '-12 years');
             }
-            return $this->faker->dateTimeBetween('-18 years', '-5 years');
+            dd('Unexpecte school level: ' . $schoolLevel->code);
         }
         return match ($roleCode) {
             Role::FORMER_STUDENT => $this->faker->dateTimeBetween('-30 years', '-19 years'),
@@ -474,16 +477,19 @@ class FakeUsersSeeder extends Seeder
             //     $query->where('school_level_id', $schoolLevelId);
             $age = $this->calculateAge($user->birthdate);
             if ($this->schoolLevelCodeById($schoolLevelId) === SchoolLevel::KINDER)
-                $query->where('number', $age);
+                $query->whereIn('number', [$age, $age + 1]);
             elseif ($this->schoolLevelCodeById($schoolLevelId) === SchoolLevel::PRIMARY)
-                $query->where('number', $age - 5);
+                $query->whereIn('number', [$age - 6, $age - 5]);
             elseif ($this->schoolLevelCodeById($schoolLevelId) === SchoolLevel::SECONDARY)
-                $query->where('number', $age - 12);
+                $query->whereIn('number', [$age - 11, $age - 10]);
         } elseif ($schoolLevelId) {
             $query->where('school_level_id', $schoolLevelId);
         }
 
         $last = $query->inRandomOrder()->first();
+        if (!$last && !empty($age)) {
+            throw new \Exception('Cant find course. School: ' . $school->slug . ' usr:' . $user->id . ' age: ' . $age . ' role:' . $roleCode . ' schoolLevelId:' . $schoolLevelId);
+        }
         return $last;
     }
 
@@ -632,5 +638,13 @@ class FakeUsersSeeder extends Seeder
             // Under 10
             return [55000000, 70000000];
         }
+    }
+
+    private function getSchoolLevelIForStudentBasedOnAge(\DateTime $birthdate): int
+    {
+        $age = $this->calculateAge($birthdate);
+        if ($age <= 5) return $this->schoolLevels->firstWhere('code', SchoolLevel::KINDER)->id;
+        if ($age <= 11) return $this->schoolLevels->firstWhere('code', SchoolLevel::PRIMARY)->id;
+        return $this->schoolLevels->firstWhere('code', SchoolLevel::SECONDARY)->id;
     }
 }

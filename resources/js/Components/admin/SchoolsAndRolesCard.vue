@@ -13,10 +13,7 @@
           :class="['schools-roles-card__school', { 'schools-roles-card__school--alternate': idx % 2 === 0 }]">
           <!-- School Header -->
           <div class="schools-roles-card__school-header">
-            <div>
-              <h4 class="schools-roles-card__school-name">{{ school.name }}</h4>
-              <p class="schools-roles-card__school-short">{{ school.short }}</p>
-            </div>
+            <h4 class="schools-roles-card__school-name">{{ school.name }}</h4>
           </div>
 
           <!-- Roles Summary -->

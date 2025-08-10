@@ -58,6 +58,7 @@
         @include mixins.fz(1.8); // text-base
         font-weight: variables.$font-normal-weight; // font-medium
         color: variables.$color-black-text; // text-gray-900
+        margin-bottom: 0; // mb-0
     }
 
     &__school-short {
@@ -69,7 +70,7 @@
         display: flex; // flex
         flex-wrap: wrap; // flex-wrap
         gap: 0.5rem; // gap-2
-        margin-bottom: 1rem; // mb-4
+        margin-bottom: 0.5rem;
     }
 
     &__role-item {

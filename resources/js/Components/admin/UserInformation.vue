@@ -39,7 +39,7 @@
           <!-- Email (if enabled) -->
           <div
             v-if="showContact"
-            class="admin-user-information__field admin-user-information__field--span-2"
+            class="admin-user-information__field"
           >
             <span class="admin-user-information__field-value">
               <EmailField id="userEmail" :email="user.email" class="admin-user-information__contact-field" />
