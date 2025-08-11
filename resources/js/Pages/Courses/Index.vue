@@ -54,21 +54,7 @@
               </div>
 
               <!-- Shift Filter -->
-              <div class="table__filter-group">
-                <label class="table__filter-label">Turno</label>
-                <div class="table__filter-buttons">
-                  <template v-for="([code, shiftData]) in filteredShiftOptions" :key="code">
-                    <button @click="selectedShift = code; triggerFilter();"
-                      :class="getShiftButtonClasses(code, selectedShift === code)">
-                      {{ shiftData.label }}
-                    </button>
-                  </template>
-                  <button @click="selectedShift = null; triggerFilter();"
-                    :class="getShiftButtonClasses('default', selectedShift === null)">
-                    Todos
-                  </button>
-                </div>
-              </div>
+              <SelectSchoolShift v-model="selectedShift" @update:modelValue="triggerFilter" :showAllOption="true" />
             </div>
           </div>
 
@@ -91,7 +77,7 @@
                   'table__tr--even': index % 2 === 0,
                   'table__tr--odd': index % 2 === 1
                 }">
-                  <td class="table__td table__td--center">{{ course.number + ' º ' + course.letter }}</td>
+                  <td class="table__td table__td--center">{{ course.nice_name }}</td>
                   <td class="table__td table__td--center">
                     <SchoolShiftBadge :shift="course.school_shift" />
                   </td>
@@ -99,7 +85,7 @@
                     <Link v-if="course.previous_course"
                       :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
                       class="table__link">
-                    {{ course.previous_course.number }} º {{ course.previous_course.letter }}
+                    {{ course.previous_course.nice_name }}
                     </Link>
                     <span v-else>-</span>
                   </td>
@@ -138,7 +124,7 @@
               <div class="table__card-header">
                 <div class="table__card-user">
                   <div class="table__card-info">
-                    <h3>{{ course.number + ' º ' + course.letter }}</h3>
+                    <h3>{{ course.nice_name }}</h3>
                     <p>
                       <SchoolShiftBadge :shift="course.school_shift" />
                     </p>
@@ -161,7 +147,7 @@
                   <Link v-if="course.previous_course"
                     :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
                     class="table__link">
-                  {{ course.previous_course.number }} º {{ course.previous_course.letter }}
+                  {{ course.previous_course.nice_name }}
                   </Link>
                   <span v-else>-</span>
                 </div>
@@ -205,8 +191,8 @@
 <script setup>
 import FlashMessages from '@/Components/admin/FlashMessages.vue'
 import Pagination from '@/Components/admin/Pagination.vue'
-import SchoolShiftBadge from '@/Components/badges/SchoolShiftBadge.vue'
-import { schoolShiftOptions } from '@/Composables/schoolShiftOptions'
+import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
+import SelectSchoolShift from '@/Components/admin/SelectSchoolShift.vue'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import { Head, Link, router } from '@inertiajs/vue3'
@@ -247,17 +233,6 @@ const selectedYear = ref(props.year || currentYear.value);
 const activeStatus = ref(props.active !== undefined ? props.active : null);
 const selectedShift = ref(props.shift || null);
 
-const { options: rawShiftOptions } = schoolShiftOptions();
-
-const filteredShiftOptions = computed(() => {
-  if (!rawShiftOptions.value || typeof rawShiftOptions.value !== 'object') {
-    return [];
-  }
-  return Object.entries(rawShiftOptions.value).filter(([, shiftData]) => {
-    return typeof shiftData === 'object' && shiftData !== null && shiftData.label;
-  });
-});
-
 // console.log('props.courses:', props.courses);
 
 // Debounce function and filter trigger
@@ -283,16 +258,6 @@ const triggerFilter = () => {
   }, 300);
 };
 
-const getShiftButtonClasses = (shiftCode, isActive) => {
-  const baseClasses = 'btn btn--sm';
 
-  // Direct concatenation with shift code
-  const shiftClass = `school-shift--${shiftCode || 'default'}`;
-
-  // For active state, use the shift class. For inactive, add a light variant
-  const stateClass = isActive ? shiftClass : `${shiftClass}-light`;
-
-  return `${baseClasses} ${stateClass}`;
-};
 
 </script>

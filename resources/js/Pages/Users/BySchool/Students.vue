@@ -158,7 +158,7 @@ const isAdmin = (user) => {
                                         <SchoolShiftBadge v-if="user.course" :shift="user.course.shift" />
                                     </td>
                                     <td class="table__td table__name">
-                                        {{ user.course ? user.course.number + user.course.letter : '' }}
+                                        {{ user.course ? user.course.nice_name : '' }}
                                     </td>
                                     <td class="table__td table__actions">
                                         <Link :href="route_school_student(school, user, 'show')">

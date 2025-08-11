@@ -1,10 +1,10 @@
 <template>
 
-  <Head :title="`Detalle del Curso ${course.number}º ${course.letter}`" />
+  <Head :title="`Detalle del Curso ${course.nice_name}`" />
 
   <AuthenticatedLayout>
     <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalle del Curso ${course.number}º ${course.letter}`" 
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalle del Curso ${course.nice_name}`" 
       :edit="{
         show: hasPermission($page.props, 'course.manage'),
         href: route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) }),
@@ -26,12 +26,8 @@
                 <h2 class="admin-detail__section-title">Información del Curso</h2>
                 <div class="admin-detail__field-grid">
                   <div class="admin-detail__field">
-                    <label class="admin-detail__label">Número de Curso:</label>
-                    <div class="admin-detail__value">{{ course.number }}</div>
-                  </div>
-                  <div class="admin-detail__field">
-                    <label class="admin-detail__label">Letra de Curso:</label>
-                    <div class="admin-detail__value">{{ course.letter }}</div>
+                    <label class="admin-detail__label">Curso:</label>
+                    <div class="admin-detail__value">{{ course.nice_name }}</div>
                   </div>
                   <div class="admin-detail__field">
                     <label class="admin-detail__label">Escuela:</label>
@@ -75,7 +71,7 @@
                       <Link v-if="course.previous_course"
                         :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
                         class="admin-detail__link">
-                      {{ course.previous_course.number }} º {{ course.previous_course.letter }}
+                      {{ course.previous_course.nice_name }}
                       </Link>
                       <span v-else>-</span>
                     </div>

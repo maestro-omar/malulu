@@ -160,9 +160,7 @@
                         <span class="schools-roles-card__field-label">Curso:</span>
                         <a class="schools-roles-card__field-value"
                           :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': getSchoolLevelCode(relationship.current_course.school_level_id), 'idAndName': getCourseSlug(relationship.current_course) })">
-                          {{ relationship.current_course.number }}°{{
-                            relationship.current_course.letter }} {{ relationship.current_course.name ?
-                            `[${relationship.current_course.name}]` : '' }}</a>
+                          {{ relationship.current_course.nice_name }}</a>
                       </div>
                       <div v-if="relationship.current_course.level" class="schools-roles-card__field">
                         <span class="schools-roles-card__field-label">Nivel:</span>

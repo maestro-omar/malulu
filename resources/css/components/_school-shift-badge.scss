@@ -5,34 +5,48 @@
 .school-shift--manana {
   background: variables.$color-shift-morning-bg;
   color: variables.$color-shift-morning-text;
+  border: 1px solid variables.$color-shift-morning-text;
 }
+
 .school-shift--tarde {
   background: variables.$color-shift-afternoon-bg;
   color: variables.$color-shift-afternoon-text;
+  border: 1px solid variables.$color-shift-afternoon-text;
 }
+
 .school-shift--noche {
   background: variables.$color-shift-night-bg;
   color: variables.$color-shift-night-text;
+  border: 1px solid variables.$color-shift-night-text;
 }
+
 .school-shift--default {
   background: variables.$color-shift-default-bg;
   color: variables.$color-shift-default-text;
+  border: 1px solid variables.$color-shift-default-text;
 }
 
 // Light variants for inactive state
 .school-shift--manana-light {
-  background: color.scale(variables.$color-shift-morning-bg, $lightness: 30%);
-  color: variables.$color-shift-morning-text;
+  background: color.scale(variables.$color-shift-morning-bg, $lightness: 60%);
+  color: variables.$color-text;
+  border: 0 none;
 }
+
 .school-shift--tarde-light {
-  background: color.scale(variables.$color-shift-afternoon-bg, $lightness: 30%);
-  color: variables.$color-shift-afternoon-text;
+  background: color.scale(variables.$color-shift-afternoon-bg, $lightness: 60%);
+  color: variables.$color-text;
+  border: 0 none;
 }
+
 .school-shift--noche-light {
-  background: color.scale(variables.$color-shift-night-bg, $lightness: 30%);
-  color: variables.$color-shift-night-text;
+  background: color.scale(variables.$color-shift-night-bg, $lightness: 60%);
+  color: variables.$color-text;
+  border: 0 none;
 }
+
 .school-shift--default-light {
-  background: color.scale(variables.$color-shift-default-bg, $lightness: 30%);
-  color: variables.$color-shift-default-text;
+  background: color.scale(variables.$color-shift-default-bg, $lightness: 60%);
+  color: variables.$color-text;
+  border: 0 none;
 }

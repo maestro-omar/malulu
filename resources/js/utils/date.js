@@ -34,4 +34,8 @@ export function calculateAge(birthdate) {
         age--;
     }
     return age;
-} 
+}
+
+export function getFullYear(date) {
+    return new Date(date).getFullYear();
+}

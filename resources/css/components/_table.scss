@@ -1,5 +1,6 @@
 @use "../abstracts/mixins";
 @use "../abstracts/variables";
+@use "sass:color";
 
 .table {
     &__wrapper {
@@ -204,14 +205,14 @@
         transition: background-color 0.2s;
 
         &:hover {
-            background: variables.$color-grey;
+            background: color.scale(variables.$color-orange, $lightness: 80%);
         }
 
         &--highlighted {
-            background: #eef2ff;
+            background: variables.$color-emerald;
 
             &:hover {
-                background: #e0e7ff;
+                background: color.scale(variables.$color-emerald, $lightness: 60%);
             }
         }
 
@@ -219,7 +220,7 @@
             background: variables.$color-grey;
 
             &:hover {
-                background: #f3f4f6;
+                background: color.scale(variables.$color-orange, $lightness: 80%);
             }
         }
 
@@ -227,7 +228,7 @@
             background: #fff;
 
             &:hover {
-                background: variables.$color-grey;
+                background: color.scale(variables.$color-orange, $lightness: 80%);
             }
         }
     }

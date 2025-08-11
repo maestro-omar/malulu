@@ -6,6 +6,7 @@
     &--inicial {
         background: variables.$color-level-initial-bg;
         color: variables.$color-level-initial-text;
+        border: 1px solid variables.$color-level-initial-text;
 
         &.school-level--darker {
             background: color.scale(variables.$color-level-initial-bg, $lightness: -30%);
@@ -16,6 +17,7 @@
     &--primaria {
         background: variables.$color-level-primary-bg;
         color: variables.$color-level-primary-text;
+        border: 1px solid variables.$color-level-primary-text;
 
         &.school-level--darker {
             background: color.scale(variables.$color-level-primary-bg, $lightness: -30%);
@@ -26,6 +28,7 @@
     &--secundaria {
         background: variables.$color-level-secondary-bg;
         color: variables.$color-level-secondary-text;
+        border: 1px solid variables.$color-level-secondary-text;
 
         &.school-level--darker {
             background: color.scale(variables.$color-level-secondary-bg, $lightness: -30%);
@@ -36,6 +39,7 @@
     &--default {
         background: variables.$color-level-default-bg;
         color: variables.$color-level-default-text;
+        border: 1px solid variables.$color-level-default-text;
 
         &.school-level--darker {
             background: color.scale(variables.$color-level-default-bg, $lightness: -30%);

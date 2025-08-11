@@ -160,7 +160,7 @@ Breadcrumbs::for('school.course.create', function (Trail $trail, School $school,
 
 Breadcrumbs::for('school.course.show', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
     $trail->parent('school.courses', $school, $schoolLevel);
-    $trail->push($course->start_date->format('Y') . ' - ' . $course->number . ' º ' . $course->letter, route('school.course.show', ['school' => $school, 'schoolLevel' => $schoolLevel, 'idAndLabel' => $course->id . '-' . $course->name]));
+    $trail->push($course->start_date->format('Y') . ' - ' . $course->nice_name, route('school.course.show', ['school' => $school, 'schoolLevel' => $schoolLevel, 'idAndLabel' => $course->id . '-' . $course->name]));
     // $trail->push($course->number . ' º ' . $course->letter, route('school.course.show', [$school, $schoolLevel, $course]));
 });
 

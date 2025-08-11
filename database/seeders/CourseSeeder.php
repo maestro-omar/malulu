@@ -34,9 +34,22 @@ class CourseSeeder extends Seeder
             return;
         }
 
-        // Get two other schools that are not the global school
+        // Get two other schools that are not the global school and have KINDER level
+        $kinder = School::where('code', '!=', '740058000')
+            ->where('code', '!=', School::GLOBAL)
+            ->whereHas('schoolLevels', function ($query) {
+                $query->where('code', SchoolLevel::KINDER);
+            })
+            ->first();
+
+        if (!$kinder) {
+            $this->command->error('No other schools found. Please run SchoolSeeder first.');
+            return;
+        }
+
         $otherSchools = School::where('code', '!=', '740058000')
             ->where('code', '!=', School::GLOBAL)
+            ->where('id', '!=', $kinder->id)
             ->inRandomOrder()
             ->take(2)
             ->get();
@@ -52,7 +65,7 @@ class CourseSeeder extends Seeder
             DB::table('courses')->truncate();
         }
         // Combine the schools
-        $schools = collect([$defaultSchool])->merge($otherSchools);
+        $schools = collect([$defaultSchool, $kinder])->merge($otherSchools);
 
         $coursesByLevel = [
             SchoolLevel::KINDER => [

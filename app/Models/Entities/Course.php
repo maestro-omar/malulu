@@ -45,6 +45,8 @@ class Course extends Model
         'active' => 'boolean',
     ];
 
+    protected $appends = ['nice_name'];
+
     /**
      * Get the school that owns the course.
      */
@@ -111,5 +113,15 @@ class Course extends Model
             ->whereNull('end_date')
             ->with(['roleRelationship.user', 'roleRelationship.studentRelationship'])
             ->get();
+    }
+
+
+    public function getNiceNameAttribute()
+    {
+        $level = $this->schoolLevel->code;
+        if ($level == SchoolLevel::KINDER)
+            return $this->number . ' años (' . $this->letter . ') - '. $this->name;
+        else
+            return $this->number . 'º' . $this->letter . ($this->name ? ' (' . $this->name . ')' : '');
     }
 }

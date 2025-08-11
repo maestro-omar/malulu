@@ -7,7 +7,7 @@ import TextInput from '@/Components/admin/TextInput.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { route_school_student } from '@/utils/routes';
-import { calculateAge } from '@/utils/strings.js';
+import { calculateAge } from '@/utils/date.js';
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 

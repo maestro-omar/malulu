@@ -87,15 +87,14 @@ class CourseController extends SchoolBaseController
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         // $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse']);
 
-        $schools = $this->schoolService->getSchools(new Request(), true);
-        $schoolLevels = $this->schoolLevelService->getSchoolLevels(new Request());
-        $schoolShifts = $this->schoolShiftService->getSchoolShifts(new Request());
+        // $schools = $this->schoolService->getSchools(new Request(), true);
+        $schoolLevels = $school->schoolLevels;
+        $schoolShifts = $school->shifts;
         $courses = $this->courseService->getCoursesForSchool($school->id, $schoolLevel->id, null, true);
-        $b = Breadcrumbs::generate('school.course.edit', $school, $schoolLevel, $course);
 
         return Inertia::render('Courses/Edit', [
             'course' => $course,
-            'schools' => $schools,
+            // 'schools' => $schools,
             'schoolLevels' => $schoolLevels,
             'schoolShifts' => $schoolShifts,
             'courses' => $courses,
