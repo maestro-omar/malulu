@@ -4,6 +4,7 @@
     <div class="table__filter-buttons">
       <template v-for="option in shiftOptions" :key="option.id">
         <button 
+          type="button"
           @click="handleShiftSelect(option.id)"
           :class="getShiftButtonClasses(option.code, modelValue === option.id)"
         >
@@ -12,6 +13,7 @@
       </template>
       <button 
         v-if="showAllOption" 
+        type="button"
         @click="handleShiftSelect(null)"
         :class="getShiftButtonClasses('default', modelValue === null)"
       >
