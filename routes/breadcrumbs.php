@@ -140,6 +140,12 @@ Breadcrumbs::for('file-subtypes.index', function (Trail $trail) {
     $trail->push('Subtipos de archivo', route('file-subtypes.index'));
 });
 
+// 📂 Subtipos de archivo
+Breadcrumbs::for('file-subtypes.edit', function (Trail $trail, $fileSubtype) {
+    $trail->parent('file-subtypes.index');
+    $trail->push('Subtipo de archivo', route('file-subtypes.edit', $fileSubtype));
+});
+
 
 // 🏫 Niveles de escuela (desde una escuela)
 Breadcrumbs::for('school.courses.index', function (Trail $trail, School $school, SchoolLevel $schoolLevel) {
