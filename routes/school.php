@@ -44,13 +44,13 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
 
 
         // Courses Routes
-        Route::get('{schoolLevel}/' . __('routes.courses') . '/{course}', [CourseController::class, 'show'])->name('courses.show')->middleware('school.permission:course.manage|student.me|child.course.view');
+        Route::get('{schoolLevel}/' . __('routes.courses'), [CourseController::class, 'index'])->name('school.courses')->middleware('school.permission:course.manage');
 
-        Route::get('{schoolLevel}/' . __('routes.courses'), [CourseController::class, 'index'])->name('courses.index')->middleware('school.permission:course.manage');
-        Route::get('{schoolLevel}/' . __('routes.courses') . '/' . __('routes.create'), [CourseController::class, 'create'])->name('courses.create')->middleware('school.permission:course.manage');
-        Route::post('{schoolLevel}/' . __('routes.courses'), [CourseController::class, 'store'])->name('courses.store')->middleware('school.permission:course.manage');
-        Route::get('{schoolLevel}/' . __('routes.courses') . '/{course}/' . __('routes.edit'), [CourseController::class, 'edit'])->name('courses.edit')->middleware('school.permission:course.manage');
-        Route::put('{schoolLevel}/' . __('routes.courses') . '/{course}', [CourseController::class, 'update'])->name('courses.update')->middleware('school.permission:course.manage');
-        Route::delete('{schoolLevel}/' . __('routes.courses') . '/{course}', [CourseController::class, 'destroy'])->name('courses.destroy')->middleware('school.permission:course.manage');
+        Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}', [CourseController::class, 'show'])->name('school.course.show')->middleware('school.permission:course.manage|student.me|child.course.view');
+        Route::get('{schoolLevel}/' . __('routes.course') . '/' . __('routes.create'), [CourseController::class, 'create'])->name('school.course.create')->middleware('school.permission:course.manage');
+        Route::post('{schoolLevel}/' . __('routes.course'), [CourseController::class, 'store'])->name('school.course.store')->middleware('school.permission:course.manage');
+        Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.edit'), [CourseController::class, 'edit'])->name('school.course.edit')->middleware('school.permission:course.manage');
+        Route::put('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}', [CourseController::class, 'update'])->name('school.course.update')->middleware('school.permission:course.manage');
+        Route::delete('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}', [CourseController::class, 'destroy'])->name('school.course.destroy')->middleware('school.permission:course.manage');
     });
 });

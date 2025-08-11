@@ -33,14 +33,10 @@
                   <InputError class="admin-form__error" :message="form.errors.school_id" />
                 </div>
                 <div v-if="selectedSchool" class="admin-form__info">
-                  <h4 class="admin-form__info-title">
-                    Detalles de la Escuela:
-                  </h4>
                   <p class="admin-form__info-text">
-                    Nombre: {{ selectedSchool.name }}
+                    {{ selectedSchool.name + ' (' + selectedSchool.address + ', ' + selectedSchool.locality.name + ')'}}
                   </p>
                   <p class="admin-form__info-text">
-                    Abreviatura: {{ selectedSchool.short }}
                   </p>
                 </div>
               </div>
@@ -196,7 +192,7 @@
                     " />
                   <InputError class="admin-form__error" :message="form.errors[
                     'guardian_details.emergency_contact_priority'
-                    ]
+                  ]
                     " />
                 </div>
                 <div>
@@ -207,8 +203,8 @@
                 </div>
                 <div>
                   <InputLabel for="studentId" value="ID de Estudiante" />
-                  <TextInput id="studentId" type="number" class="admin-form__input" v-model="form.guardian_details.student_id"
-                    placeholder="ID de estudiante" />
+                  <TextInput id="studentId" type="number" class="admin-form__input"
+                    v-model="form.guardian_details.student_id" placeholder="ID de estudiante" />
                   <InputError class="admin-form__error" :message="form.errors['guardian_details.student_id']" />
                 </div>
               </div>

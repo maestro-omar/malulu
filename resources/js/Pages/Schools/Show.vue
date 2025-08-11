@@ -16,7 +16,7 @@
         <template #additional-buttons>
           <Link v-for="level in school.school_levels" :key="level.id"
             v-if="hasPermission($page.props, 'course.manage', school.id)"
-            :href="route('courses.index', { school: school.slug, schoolLevel: level.code })"
+            :href="route('school.courses', { school: school.slug, schoolLevel: level.code })"
             :class="['admin-button', 'admin-button--top', `school-level--darker school-level--${level.code}`]">
           Cursos ({{ level.name }})
           </Link>

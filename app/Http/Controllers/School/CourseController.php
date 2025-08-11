@@ -52,7 +52,7 @@ class CourseController extends SchoolBaseController
             'year' => $request->year,
             'active' => $request->active,
             'shift' => $request->shift,
-            'breadcrumbs' => Breadcrumbs::generate('school.courses.index', $school, $schoolLevel),
+            'breadcrumbs' => Breadcrumbs::generate('school.courses', $school, $schoolLevel),
             'school' => $school,
             'selectedLevel' => $schoolLevel,
         ]);
@@ -72,23 +72,26 @@ class CourseController extends SchoolBaseController
             'courses' => $courses,
             'school' => $school,
             'selectedLevel' => $schoolLevel,
-            'breadcrumbs' => Breadcrumbs::generate('school.courses.create', $school, $schoolLevel),
+            'breadcrumbs' => Breadcrumbs::generate('school.course.create', $school, $schoolLevel),
         ]);
     }
 
     public function store(Request $request)
     {
         $this->courseService->createCourse($request->validated());
-
-        return redirect()->route('courses.index')->with('success', 'Course created successfully!');
+        return $this->goBackToIndex($request, 'Curso creado correctamente');
     }
 
-    public function edit(School $school, SchoolLevel $schoolLevel, Course $course)
+    public function edit(School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        // $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse']);
+
         $schools = $this->schoolService->getSchools(new Request(), true);
         $schoolLevels = $this->schoolLevelService->getSchoolLevels(new Request());
         $schoolShifts = $this->schoolShiftService->getSchoolShifts(new Request());
         $courses = $this->courseService->getCoursesForSchool($school->id, $schoolLevel->id, null, true);
+        $b = Breadcrumbs::generate('school.course.edit', $school, $schoolLevel, $course);
 
         return Inertia::render('Courses/Edit', [
             'course' => $course,
@@ -98,7 +101,7 @@ class CourseController extends SchoolBaseController
             'courses' => $courses,
             'school' => $school,
             'selectedLevel' => $schoolLevel,
-            'breadcrumbs' => Breadcrumbs::generate('school.courses.edit', $school, $schoolLevel, $course),
+            'breadcrumbs' => Breadcrumbs::generate('school.course.edit', $school, $schoolLevel, $course),
         ]);
     }
 
@@ -106,32 +109,47 @@ class CourseController extends SchoolBaseController
     {
         $this->courseService->updateCourse($course, $request->validated());
 
-        return redirect()->route('courses.index')->with('success', 'Course updated successfully!');
+        return $this->goBackToIndex($request, 'Curso actualizado correctamente');
     }
 
-    public function destroy(Course $course)
+    public function destroy(Request $request, Course $course)
     {
         $this->courseService->deleteCourse($course);
 
-        return redirect()->route('courses.index')->with('success', 'Course deleted successfully!');
+        return $this->goBackToIndex($request, 'Curso eliminado correctamente');
     }
 
-    public function show(School $school, SchoolLevel $schoolLevel, Course $course)
+    public function show(School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
         $user = auth()->user();
-        if ($user->hasPermissionToSchool('course.manage', $school->id)) {
+        if ($user->isSuperadmin() || $user->hasPermissionToSchool('course.manage', $school->id)) {
             $view = 'Courses/Show';
         } else {
             $view = 'Courses/ShowForStudent'; //or guardian
         }
-
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse']);
 
         return Inertia::render($view, [
             'course' => $course,
             'school' => $school,
             'selectedLevel' => $schoolLevel,
-            'breadcrumbs' => Breadcrumbs::generate('school.courses.show', $school, $schoolLevel, $course),
+            'breadcrumbs' => Breadcrumbs::generate('school.course.show', $school, $schoolLevel, $course),
         ]);
+    }
+
+    private function goBackToIndex(Request $request, string $message)
+    {
+        $school = School::find($request->school_id);
+        $schoolLevel = SchoolLevel::find($request->school_level_id);
+
+        return redirect()->route('school.courses', ['school' => $school->slug, 'schoolLevel' => $schoolLevel->code])->with('success', $message);
+    }
+
+
+    private function getCourseFromUrlParameter(string $idAndLabel)
+    {
+        $id = (int) explode('-', $idAndLabel)[0];
+        return Course::where('id', $id)->first();
     }
 }

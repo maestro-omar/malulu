@@ -39,6 +39,7 @@ export function getCourseSlug(course) {
   if (course.name && course.name.trim()) {
     slug += '-' + course.name;
   }
+  // slug += '-' +  course.start_date.format('Y');
 
   return slugify(slug);
 }

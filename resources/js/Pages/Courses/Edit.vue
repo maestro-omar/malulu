@@ -1,10 +1,11 @@
 <template>
   <AuthenticatedLayout>
 
-    <Head title="Cursos" />
+    <Head :title="`${school.short} - ${selectedLevel.name} - Editar curso ${course.number}º ${course.letter}`" />
     <template #header>
       <AdminHeader :breadcrumbs="breadcrumbs"
-        :title="`Editar Curso para ${school.name} (Nivel: ${selectedLevel.name})`"></AdminHeader>
+        :title="`${school.short} - ${selectedLevel.name} - Editar curso ${course.number}º ${course.letter}`">
+      </AdminHeader>
     </template>
 
     <div class="container">
@@ -68,7 +69,7 @@
           </div>
 
           <ActionButtons button-label="Guardar Cambios"
-            :cancel-href="route('courses.index', { school: school.slug, schoolLevel: selectedLevel.code })"
+            :cancel-href="route('school.courses', { school: school.slug, schoolLevel: selectedLevel.code })"
             :disabled="form.processing" />
         </form>
       </div>

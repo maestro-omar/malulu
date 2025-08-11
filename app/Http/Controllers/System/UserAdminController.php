@@ -195,7 +195,7 @@ class UserAdminController extends SystemBaseController
 
         return Inertia::render('Users/AddRole', [
             'user' => $userData,
-            'allSchools' => \App\Models\Entities\School::with('schoolLevels')->get(),
+            'allSchools' => \App\Models\Entities\School::with(['schoolLevels', 'locality'])->get(),
             'assignedSchools' => $userData['schools'],
             'availableRoles' => \Spatie\Permission\Models\Role::all(),
             'roleRelationships' => $userData['roleRelationships'],

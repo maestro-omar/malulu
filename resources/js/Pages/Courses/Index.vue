@@ -1,12 +1,12 @@
 <template>
 
-  <Head title="Cursos" />
+  <Head :title="`${school.short} - Cursos de ${selectedLevel.name}`" />
 
   <AuthenticatedLayout>
     <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Cursos de ${school.short} - ${selectedLevel.name}`">
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`${school.short} - Cursos de ${selectedLevel.name}`">
         <template #additional-buttons>
-          <Link :href="route('courses.create', { school: school.slug, schoolLevel: selectedLevel.code })"
+          <Link :href="route('school.course.create', { school: school.slug, schoolLevel: selectedLevel.code })"
             class="admin-button admin-button--top admin-button--blue">
           Agregar Nuevo Curso
           </Link>
@@ -97,7 +97,7 @@
                   </td>
                   <td class="table__td table__td--center">
                     <Link v-if="course.previous_course"
-                      :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
+                      :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
                       class="table__link">
                     {{ course.previous_course.number }} º {{ course.previous_course.letter }}
                     </Link>
@@ -116,11 +116,11 @@
                   </td>
                   <td class="table__td table__actions">
                     <Link
-                      :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })">
+                      :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) })">
                     Ver
                     </Link>
                     <Link
-                      :href="route('courses.edit', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })">
+                      :href="route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) })">
                     Editar
                     </Link>
                   </td>
@@ -146,11 +146,11 @@
                 </div>
                 <div class="table__card-actions">
                   <Link
-                    :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })">
+                    :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) })">
                   Ver
                   </Link>
                   <Link
-                    :href="route('courses.edit', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })">
+                    :href="route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) })">
                   Editar
                   </Link>
                 </div>
@@ -159,7 +159,7 @@
                 <div class="table__card-label">Curso Anterior:</div>
                 <div class="table__card-content">
                   <Link v-if="course.previous_course"
-                    :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
+                    :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
                     class="table__link">
                   {{ course.previous_course.number }} º {{ course.previous_course.letter }}
                   </Link>
@@ -212,6 +212,7 @@ import AdminHeader from '@/Sections/AdminHeader.vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
 import { formatDate } from '../../utils/date'
+import { getCourseSlug } from '../../utils/strings'
 
 const props = defineProps({
   courses: {
@@ -269,7 +270,7 @@ const triggerFilter = () => {
 
   filterTimeout = setTimeout(() => {
     router.get(
-      route('courses.index', {
+      route('school.courses', {
         school: props.school.slug,
         schoolLevel: props.selectedLevel.code,
         year: selectedYear.value,

@@ -4,7 +4,16 @@
 
   <AuthenticatedLayout>
     <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalle del Curso ${course.number}º ${course.letter}`">
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalle del Curso ${course.number}º ${course.letter}`" 
+      :edit="{
+        show: hasPermission($page.props, 'course.manage'),
+        href: route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) }),
+        label: 'Editar'
+      }" :del="{
+        show: hasPermission($page.props, 'course.manage'),
+        onClick: destroy,
+        label: 'Eliminar'
+      }">
       </AdminHeader>
     </template>
 
@@ -64,7 +73,7 @@
                     <label class="admin-detail__label">Curso Anterior:</label>
                     <div class="admin-detail__value">
                       <Link v-if="course.previous_course"
-                        :href="route('courses.show', { school: school.slug, schoolLevel: selectedLevel.code, course: course.previous_course.id })"
+                        :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
                         class="admin-detail__link">
                       {{ course.previous_course.number }} º {{ course.previous_course.letter }}
                       </Link>
@@ -73,19 +82,6 @@
                   </div>
                 </div>
               </div>
-
-              <div class="admin-detail__actions">
-                <Link v-if="hasPermission($page.props, 'school.edit', school.id)"
-                  :href="route('courses.edit', { school: school.slug, schoolLevel: selectedLevel.code, course: course.id })"
-                  class="admin-detail__link admin-detail__link--primary">
-                Editar Curso
-                </Link>
-                <Link :href="route('courses.index', { school: school.slug, schoolLevel: selectedLevel.code })"
-                  class="admin-detail__link admin-detail__link--secondary">
-                Volver al Listado
-                </Link>
-              </div>
-
             </div>
           </div>
         </div>
@@ -102,6 +98,7 @@ import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue'
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
 import { formatDate } from '../../utils/date'
 import { hasPermission } from '@/utils/permissions';
+import { getCourseSlug } from '../../utils/strings'
 
 const props = defineProps({
   course: {
