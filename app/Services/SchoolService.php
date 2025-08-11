@@ -16,6 +16,11 @@ class SchoolService
 {
     use PaginationTrait;
 
+    public function getSchool(int $schoolId)
+    {
+        return School::findOrFail($schoolId);
+    }
+
     /**
      * Get schools with filters
      */

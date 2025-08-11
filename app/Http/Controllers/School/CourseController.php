@@ -118,6 +118,24 @@ class CourseController extends SchoolBaseController
         return $this->goBackToIndex($request, 'Curso eliminado correctamente');
     }
 
+    public function search(Request $request, School $school, SchoolLevel $schoolLevel)
+    {
+        $request->merge([
+            'school_level_id' => $schoolLevel->id,
+            'school_id' => $school->id,
+            'year' => $request->input('year', date('Y')),
+            'active' => $request->has('active') ? $request->boolean('active') : null,
+            'shift' => $request->input('school_shift_id'),
+        ]);
+
+        $courses = $this->courseService->getCourses($request, $school->id);
+
+        // Return only courses data since schoolShifts are static and passed as props
+        return back()->with([
+            'courses' => $courses
+        ]);
+    }
+
     public function show(School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
         $user = auth()->user();

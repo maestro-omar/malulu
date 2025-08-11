@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 
 const model = defineModel({
-    type: [String, Number],
+    type: [String, Number, null],
     required: true,
 });
 
@@ -18,9 +18,5 @@ defineExpose({ focus: () => input.value.focus() });
 </script>
 
 <template>
-    <input
-        class="admin-form__input"
-        v-model="model"
-        ref="input"
-    />
+    <input class="admin-form__input" v-model="model" ref="input" />
 </template>

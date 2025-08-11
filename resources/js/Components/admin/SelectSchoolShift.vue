@@ -1,6 +1,6 @@
 <template>
   <div class="table__filter-group">
-    <label class="table__filter-label">{{ label }}</label>
+    <label v-if="!hideLabel" class="table__filter-label">{{ label }}</label>
     <div class="table__filter-buttons">
       <template v-for="option in shiftOptions" :key="option.id">
         <button 
@@ -41,6 +41,10 @@ const props = defineProps({
   showAllOption: {
     type: Boolean,
     default: false
+  },
+  hideLabel: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -76,13 +80,4 @@ const getShiftButtonClasses = (shiftCode, isActive) => {
 const handleShiftSelect = (id) => {
   emit('update:modelValue', id)
 }
-
-// Debug logging
-onMounted(() => {
-  console.log('SelectSchoolShift mounted:', {
-    modelValue: props.modelValue,
-    options: props.options,
-    shiftOptions: shiftOptions.value
-  })
-})
 </script>

@@ -22,9 +22,9 @@ class SchoolShiftService
             });
         }
 
-        if ($active !== null) {
-            $query->where('active', $active);
-        }
+        // if ($active !== null) {
+        //     $query->where('active', $active);
+        // }
 
         return $query->orderBy('name')->get();
     }

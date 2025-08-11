@@ -31,9 +31,8 @@
 
                 <div class="admin-form__field">
                   <InputLabel for="previous_course_id" value="Curso Anterior" />
-                  <SelectInput id="previous_course_id" v-model="form.previous_course_id" :options="courses"
-                    option-value="id" option-label="full_name" :show-default-option="true"
-                    default-option-label="Ninguno" class="admin-form__input" />
+                  <CoursePopoverSelect v-model="form.previous_course_id" :school="school" :schoolLevel="selectedLevel"
+                    :schoolShift="form.school_shift_id" :schoolShifts="schoolShifts" :startDate="form.start_date" />
                   <InputError class="admin-form__error" :message="form.errors.previous_course_id" />
                 </div>
               </div>
@@ -93,6 +92,7 @@
 <script setup>
 import ActionButtons from '@/Components/admin/ActionButtons.vue'
 import CheckboxWithLabel from '@/Components/admin/CheckboxWithLabel.vue'
+import CoursePopoverSelect from '@/Components/admin/CoursePopoverSelect.vue'
 import FlashMessages from '@/Components/admin/FlashMessages.vue'
 import InputError from '@/Components/admin/InputError.vue'
 import InputLabel from '@/Components/admin/InputLabel.vue'
@@ -104,6 +104,7 @@ import AdminHeader from '@/Sections/AdminHeader.vue'
 import { formatDateForInput } from '@/utils/date'
 import { getFullYear } from '@/utils/date'
 import { Head, useForm } from '@inertiajs/vue3'
+import { getCourseSlug } from '@/utils/strings'
 
 const props = defineProps({
   course: {
@@ -118,7 +119,6 @@ const props = defineProps({
   flash: Object,
 })
 
-console.log('debug', props.schoolShifts);
 
 const form = useForm({
   school_id: props.school.id,
@@ -126,18 +126,19 @@ const form = useForm({
   school_shift_id: props.course.school_shift_id,
   previous_course_id: props.course.previous_course_id,
   number: props.course.number,
-  letter: props.course.letter,
-  name: props.course.name,
+  letter: props.course.letter || '',
+  name: props.course.name || '',
   start_date: formatDateForInput(props.course.start_date),
-  end_date: formatDateForInput(props.course.end_date),
+  end_date: formatDateForInput(props.course.end_date) || '',
   active: props.course.active,
 })
 
 const submit = () => {
-  form.put(route('courses.update', { school: props.school.slug, schoolLevel: props.selectedLevel.code, course: props.course.id }))
+  console.log('submit', form.all());
+  // form.put(route('school.course.update', { 'school': props.school.slug, 'schoolLevel': props.selectedLevel.code, 'idAndLabel': getCourseSlug(props.course) }))
 }
 
 const triggerShiftSelected = () => {
-  console.log('shiftSelected', form.school_shift_id)
+  console.log('shiftSelected', form.school_shift_id);
 }
 </script>

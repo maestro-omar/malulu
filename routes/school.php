@@ -52,5 +52,8 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.edit'), [CourseController::class, 'edit'])->name('school.course.edit')->middleware('school.permission:course.manage');
         Route::put('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}', [CourseController::class, 'update'])->name('school.course.update')->middleware('school.permission:course.manage');
         Route::delete('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}', [CourseController::class, 'destroy'])->name('school.course.destroy')->middleware('school.permission:course.manage');
+
+        // Course Search for Popover
+        Route::post('{schoolLevel}/courses/search', [CourseController::class, 'search'])->name('school.courses.search')->middleware('school.permission:course.manage');
     });
 });
