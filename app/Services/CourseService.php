@@ -9,7 +9,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use App\Models\Relations\StudentCourse;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CourseService
 {
@@ -18,6 +18,15 @@ class CourseService
      */
     public function getCourses(Request $request, ?int $schoolId = null)
     {
+        $expectedFilters = ['search', 'school_level_id', 'school_id', 'year', 'active', 'shift', 'school_shift_id'];
+        //     {"school_id":2
+        //         "school_level_id":2
+        //         "school_shift_id":1
+        //         "start_date":"2025-03-01"
+        //         "year":2025
+        //         "active":false
+        //         "shift":1} 
+
         $query = Course::query()
             ->with(['school', 'schoolLevel', 'schoolShift', 'previousCourse'])
             ->when($request->input('search'), function ($query, $search) {
@@ -41,9 +50,17 @@ class CourseService
             ->when($request->input('school_level_id'), function ($query, $schoolLevelId) {
                 $query->where('school_level_id', $schoolLevelId);
             })
-            ->when($request->input('shift'), function ($query, $schoolShiftCode) {
-                $query->whereHas('schoolShift', function ($q) use ($schoolShiftCode) {
-                    $q->where('code', $schoolShiftCode);
+            ->when($request->input('school_shift_id'), function ($query, $shiftId) {
+                $query->where('school_shift_id', $shiftId);
+            })
+            ->when($request->input('shift'), function ($query, $shift) {
+                $query->whereHas('schoolShift', function ($q) use ($shift) {
+                    // If shift is numeric (ID), search by ID, otherwise search by code
+                    if (is_numeric($shift)) {
+                        $q->where('id', (int) $shift);
+                    } else {
+                        $q->where('code', $shift);
+                    }
                 });
             })
             ->when($request->input('active') !== null, function ($query) use ($request) {
@@ -55,9 +72,13 @@ class CourseService
 
         $courses = $query->orderBy('number')->orderBy('letter')->paginate(10);
 
-        return $courses->appends($request->only(['search', 'school_level_id', 'school_id', 'year', 'active', 'shift']))->through(function ($course) use ($request) {
+        $result = $courses->appends($request->only($expectedFilters))->through(function ($course) use ($request) {
             return $course;
         })->withQueryString()->toArray();
+
+        Log::debug('getCourses input', $request->only($expectedFilters), $courses);
+
+        return $result;
     }
 
     /**

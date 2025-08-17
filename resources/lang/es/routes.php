@@ -36,6 +36,7 @@ return [
     'file-subtypes' => 'subtipos-archivo',
     'provinces' => 'provincias',
 
+    'search' => 'buscar',
     // School routes slugs
     // 'school' is a parameter, not a slug to translate
     'pages' => 'paginas',

@@ -54,6 +54,6 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::delete('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}', [CourseController::class, 'destroy'])->name('school.course.destroy')->middleware('school.permission:course.manage');
 
         // Course Search for Popover
-        Route::post('{schoolLevel}/courses/search', [CourseController::class, 'search'])->name('school.courses.search')->middleware('school.permission:course.manage');
+        Route::post('{schoolLevel}/' . __('routes.course') . '/' . __('routes.search'), [CourseController::class, 'search'])->name('school.courses.search')->middleware('school.permission:course.manage');
     });
 });

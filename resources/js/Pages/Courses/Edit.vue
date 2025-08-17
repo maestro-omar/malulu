@@ -23,16 +23,16 @@
 
               <div class="admin-form__grid admin-form__grid--3">
                 <div class="admin-form__field">
-                  <SelectSchoolShift v-model="form.school_shift_id" :options="schoolShifts"
+                  <SelectSchoolShift ref="mainShiftSelect" v-model="form.school_shift_id" :options="schoolShifts"
                     @update:modelValue="triggerShiftSelected" :showAllOption="false" />
 
                   <InputError class="admin-form__error" :message="form.errors.school_shift_id" />
                 </div>
 
                 <div class="admin-form__field">
-                  <InputLabel for="previous_course_id" value="Curso Anterior" />
-                  <CoursePopoverSelect v-model="form.previous_course_id" :school="school" :schoolLevel="selectedLevel"
-                    :schoolShift="form.school_shift_id" :schoolShifts="schoolShifts" :startDate="form.start_date" />
+                  <InputLabel value="Curso Anterior" />
+                  <CoursePopoverSelect v-model="form.previous_course_id" :lastSaved="form.previousCourse" :school="school" :schoolLevel="selectedLevel"
+                    :schoolShift="form.school_shift_id" :schoolShifts="schoolShifts" :startDate="form.start_date" :currentCourse="course" />
                   <InputError class="admin-form__error" :message="form.errors.previous_course_id" />
                 </div>
               </div>
@@ -101,6 +101,7 @@ import SelectSchoolShift from '@/Components/admin/SelectSchoolShift.vue'
 import TextInput from '@/Components/admin/TextInput.vue'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
+import { ref } from 'vue'
 import { formatDateForInput } from '@/utils/date'
 import { getFullYear } from '@/utils/date'
 import { Head, useForm } from '@inertiajs/vue3'
@@ -117,10 +118,12 @@ const props = defineProps({
   selectedLevel: Object,
   breadcrumbs: Array,
   flash: Object,
+  previousCourse: Object,
 })
 
 
 const form = useForm({
+  previousCourse: props.previousCourse,
   school_id: props.school.id,
   school_level_id: props.selectedLevel.id,
   school_shift_id: props.course.school_shift_id,
@@ -133,12 +136,15 @@ const form = useForm({
   active: props.course.active,
 })
 
+
+// Refs for component instances
+const mainShiftSelect = ref(null)
+
 const submit = () => {
-  console.log('submit', form.all());
-  // form.put(route('school.course.update', { 'school': props.school.slug, 'schoolLevel': props.selectedLevel.code, 'idAndLabel': getCourseSlug(props.course) }))
+  form.put(route('school.course.update', { 'school': props.school.slug, 'schoolLevel': props.selectedLevel.code, 'idAndLabel': getCourseSlug(props.course) }))
 }
 
-const triggerShiftSelected = () => {
-  console.log('shiftSelected', form.school_shift_id);
+const triggerShiftSelected = (value) => {
+  console.log('mainShiftSelected', value);
 }
 </script>

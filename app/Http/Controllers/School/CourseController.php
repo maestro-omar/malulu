@@ -15,6 +15,8 @@ use App\Models\Entities\School;
 use App\Models\Catalogs\SchoolLevel;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
+use Illuminate\Support\Facades\Log;
+
 class CourseController extends SchoolBaseController
 {
     protected $courseService;
@@ -86,6 +88,7 @@ class CourseController extends SchoolBaseController
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         // $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse']);
+        $course->load(['previousCourse']);
 
         // $schools = $this->schoolService->getSchools(new Request(), true);
         $schoolLevels = $school->schoolLevels;
@@ -94,6 +97,7 @@ class CourseController extends SchoolBaseController
 
         return Inertia::render('Courses/Edit', [
             'course' => $course,
+            'previousCourse' => $course->previousCourse,
             // 'schools' => $schools,
             'schoolLevels' => $schoolLevels,
             'schoolShifts' => $schoolShifts,
@@ -124,14 +128,18 @@ class CourseController extends SchoolBaseController
             'school_level_id' => $schoolLevel->id,
             'school_id' => $school->id,
             'year' => $request->input('year', date('Y')),
-            'active' => $request->has('active') ? $request->boolean('active') : null,
-            'shift' => $request->input('school_shift_id'),
+            'active' => $request->input('active'),
         ]);
 
         $courses = $this->courseService->getCourses($request, $school->id);
 
-        // Return only courses data since schoolShifts are static and passed as props
-        return back()->with([
+        // Log::debug('🔍 search', [
+        //     'courses_count' => count($courses),
+        //     'request_data' => $request->all()
+        // ]);
+
+        // Return simple JSON response
+        return response()->json([
             'courses' => $courses
         ]);
     }
