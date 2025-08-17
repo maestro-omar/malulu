@@ -42,11 +42,11 @@ class CourseController extends SchoolBaseController
             'school_level_id' => $schoolLevel->id,
             'school_id' => $school->id,
             'year' => $request->input('year', date('Y')),
-            'active' => $request->has('active') ? $request->boolean('active') : null,
-            'shift' => $request->input('shift'),
+            'active' => $request->input('active'),
         ]);
-
+        
         $courses = $this->courseService->getCourses($request, $school->id);
+        $schoolShifts = $school->shifts;
 
         return Inertia::render('Courses/Index', [
             'courses' => $courses,
@@ -57,6 +57,7 @@ class CourseController extends SchoolBaseController
             'breadcrumbs' => Breadcrumbs::generate('school.courses', $school, $schoolLevel),
             'school' => $school,
             'selectedLevel' => $schoolLevel,
+            'schoolShifts' => $schoolShifts,
         ]);
     }
 

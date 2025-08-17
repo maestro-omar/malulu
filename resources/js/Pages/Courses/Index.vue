@@ -54,7 +54,7 @@
               </div>
 
               <!-- Shift Filter -->
-              <SelectSchoolShift v-model="selectedShift" @update:modelValue="triggerFilter" :showAllOption="true" />
+              <SelectSchoolShift v-model="selectedShift" @update:modelValue="triggerFilter" :options="schoolShifts" :showAllOption="true" />
             </div>
           </div>
 
@@ -209,6 +209,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  schoolShifts: {
+    type: Array,
+    required: true,
+  },
   selectedLevel: {
     type: Object,
     required: true,
@@ -230,7 +234,7 @@ const props = defineProps({
 
 const currentYear = computed(() => new Date().getFullYear());
 const selectedYear = ref(props.year || currentYear.value);
-const activeStatus = ref(props.active !== undefined ? props.active : null);
+const activeStatus = ref(props.active !== undefined ? props.active : true);
 const selectedShift = ref(props.shift || null);
 
 // console.log('props.courses:', props.courses);
