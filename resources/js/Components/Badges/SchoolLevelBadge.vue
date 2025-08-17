@@ -15,7 +15,14 @@ const props = defineProps({
   }
 });
 
-const { options } = schoolLevelOptions()
-
-const label = computed(() => options.value[props.level.code]?.label ?? props.level.name)
+const label = computed(() => {
+  // If level.name exists and has a value, use it directly
+  if (props.level.name && props.level.name.trim()) {
+    return props.level.name
+  }
+  
+  // Only use the composable as fallback when name is not available
+  const { options } = schoolLevelOptions()
+  return options.value[props.level.code]?.label ?? props.level.name
+})
 </script>
