@@ -73,6 +73,21 @@ class CourseController extends SchoolBaseController
         ]);
     }
 
+    public function createNext(Request $request, School $school, SchoolLevel $schoolLevel)
+    {
+
+        $courses = $this->courseService->calculateNextCourses($request, $school, $schoolLevel);
+        $schoolShifts = $school->shifts;
+
+        return Inertia::render('Courses/CreateNext', [
+            'courses' => $courses,
+            'breadcrumbs' => Breadcrumbs::generate('school.courses.create-next', $school, $schoolLevel),
+            'school' => $school,
+            'selectedLevel' => $schoolLevel,
+            'schoolShifts' => $schoolShifts,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $newCourse = $this->courseService->createCourse($request->all());

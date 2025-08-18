@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Entities\Course;
+use App\Models\Entities\School;
+use App\Models\Catalogs\SchoolLevel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -18,7 +20,7 @@ class CourseService
      */
     public function getCourses(Request $request, ?int $schoolId = null)
     {
-        $expectedFilters = ['search', 'school_level_id', 'school_id', 'year', 'active', 'shift', 'school_shift_id'];
+        $expectedFilters = ['search', 'school_level_id', 'school_id', 'year', 'active', 'shift', 'school_shift_id', 'no_next', 'page_size'];
         //     {"school_id":2
         //         "school_level_id":2
         //         "school_shift_id":1
@@ -68,14 +70,30 @@ class CourseService
             })
             ->when($request->input('year'), function ($query, $year) {
                 $query->whereYear('start_date', $year);
+            })
+            ->when($request->input('no_next'), function ($query) {
+                $query->whereDoesntHave('nextCourses');
             });
 
-        $courses = $query->orderBy('number')->orderBy('letter')->paginate(10);
+        $courses = $query->orderBy('number')->orderBy('letter');
 
-        $result = $courses->appends($request->only($expectedFilters))->through(function ($course) use ($request) {
-            return $course;
-        })->withQueryString()->toArray();
+        if ($request->input('no_paginate')) {
+            $paginate = false;
+        } elseif ($request->input('page_size')) {
+            $paginate = true;
+            $courses = $courses->paginate($request->input('page_size'));
+        } else {
+            $paginate = true;
+            $courses = $courses->paginate(10);
+        }
 
+        if ($paginate) {
+            $result = $courses->appends($request->only($expectedFilters))->through(function ($course) use ($request) {
+                return $course;
+            })->withQueryString()->toArray();
+        } else {
+            $result = $courses->get()->toArray();
+        }
         Log::debug('getCourses input', $request->only($expectedFilters), $courses);
 
         return $result;
@@ -123,7 +141,7 @@ class CourseService
             ],
             'start_date' => [
                 'required',
-                'date', 
+                'date',
                 'before_or_equal:' . $lastDayOfNextTwoYears,
             ],
             'end_date' => [
@@ -307,5 +325,46 @@ class CourseService
         foreach ($teacherCourses as $teacherCourse) {
             dd($teacherCourse->course);
         }
+    }
+
+    public function calculateNextCourses(Request $request, School $school, SchoolLevel $schoolLevel)
+    {
+        $year = date('Y');
+        $request->merge([
+            'school_level_id' => $schoolLevel->id,
+            'school_id' => $school->id,
+            'year' => $year,
+            'active' => true,
+            'no_next' => true,
+            'no_paginate' => true,
+        ]);
+
+        $courses = $this->getCourses($request, $school->id);
+
+        $nextCourses = [];
+        foreach ($courses as $course) {
+            $nextCourse = $this->calculateNextCourse($course);
+            $nextCourses[$course['id']] = $nextCourse;
+        }
+
+        return $courses;
+    }
+
+    private function calculateNextCourse(Course $course)
+    {
+        throw new \Exception('Not implemented - Developing');
+        $startDate =  new \DateTime($course->start_date);
+        $number = $course->number;
+        $letter = $course->letter;
+        $nextNumber = $number + 1;
+        $nextLetter = $letter;
+        $nextCourseExists = Course::where('number', $nextNumber)
+            ->where('letter', $nextLetter)
+            ->where('school_id', $course->school_id)
+            ->where('school_level_id', $course->school_level_id)
+            // ->where('school_shift_id', $course->school_shift_id)
+            // ->where('active', true)
+            ->first();
+        return $nextCourse;
     }
 }

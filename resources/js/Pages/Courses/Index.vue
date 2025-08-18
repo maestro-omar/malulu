@@ -10,6 +10,10 @@
             class="admin-button admin-button--top admin-button--blue">
           Agregar Nuevo Curso
           </Link>
+          <Link :href="route('school.course.create-next', { school: school.slug, schoolLevel: selectedLevel.code })"
+            class="admin-button admin-button--top admin-button--indigo">
+          Crear cursos siguientes
+          </Link>
         </template>
       </AdminHeader>
     </template>

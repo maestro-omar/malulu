@@ -25,6 +25,7 @@ return [
     'restore' => 'restaurar',
     'force-delete' => 'eliminar-permanentemente',
     'create' => 'crear',
+    'create-next' => 'crear-siguientes',
     'edit' => 'editar',
     'new-role' => 'nuevo-rol',
     'store-role' => 'guardar-rol', // For the store-role endpoint
