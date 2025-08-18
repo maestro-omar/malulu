@@ -44,7 +44,7 @@ watch(search, () => {
 });
 
 // Debug log when component receives props
-console.log('Users data received:', props.users);
+// console.log('Users data received:', props.users);
 
 const deleteUser = (id) => {
     if (confirm('¿Está seguro de eliminar este usuario?')) {

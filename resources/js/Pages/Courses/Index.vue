@@ -54,7 +54,8 @@
               </div>
 
               <!-- Shift Filter -->
-              <SelectSchoolShift v-model="selectedShift" @update:modelValue="triggerFilter" :options="schoolShifts" :showAllOption="true" />
+              <SelectSchoolShift v-model="selectedShift" @update:modelValue="triggerFilter" :options="schoolShifts"
+                :showAllOption="true" />
             </div>
           </div>
 
@@ -66,6 +67,7 @@
                   <th class="table__th table__th--center">Curso</th>
                   <th class="table__th table__th--center">Turno</th>
                   <th class="table__th table__th--center">Curso Anterior</th>
+                  <th class="table__th table__th--center">Curso/s siguiente/s</th>
                   <th class="table__th">Fecha de Inicio</th>
                   <th class="table__th">Fecha de Fin</th>
                   <th class="table__th table__th--center">Activo</th>
@@ -85,9 +87,19 @@
                     <Link v-if="course.previous_course"
                       :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
                       class="table__link">
-                    {{ course.previous_course.nice_name }}
+                    {{ course.previous_course.nice_name + ' (' + getFullYear(course.previous_course.start_date) + ')' }}
                     </Link>
                     <span v-else>-</span>
+                  </td>
+                  <td class="table__td table__td--center">
+                    <span v-if="course.next_courses.length === 0">-</span>
+                    <span v-else v-for="nextCourse in course.next_courses" :key="nextCourse.id">
+                      <Link
+                        :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(nextCourse) })"
+                        class="table__link">
+                      {{ nextCourse.nice_name + ' (' + getFullYear(nextCourse.start_date) + ')' }}
+                      </Link>
+                    </span>
                   </td>
                   <td class="table__td">{{ formatDate(course.start_date) }}</td>
                   <td class="table__td">{{ course.end_date ? formatDate(course.end_date) : '-' }}</td>
@@ -197,7 +209,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
-import { formatDate } from '../../utils/date'
+import { formatDate, getFullYear } from '../../utils/date'
 import { getCourseSlug } from '../../utils/strings'
 
 const props = defineProps({

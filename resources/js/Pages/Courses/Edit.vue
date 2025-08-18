@@ -145,6 +145,6 @@ const submit = () => {
 }
 
 const triggerShiftSelected = (value) => {
-  console.log('mainShiftSelected', value);
+  // console.log('mainShiftSelected', value);
 }
 </script>

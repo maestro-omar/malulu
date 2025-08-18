@@ -28,7 +28,7 @@ class CourseService
         //         "shift":1} 
 
         $query = Course::query()
-            ->with(['school', 'schoolLevel', 'schoolShift', 'previousCourse'])
+            ->with(['school', 'schoolLevel', 'schoolShift', 'previousCourse', 'nextCourses'])
             ->when($request->input('search'), function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('number', 'like', "%{$search}%")

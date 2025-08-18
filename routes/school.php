@@ -37,7 +37,7 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::post(__('routes.pages'), [SchoolPageController::class, 'store'])->name('school-pages.store')->middleware('school.permission:school-page.manage');
         Route::get(__('routes.pages') . '/{schoolPage}', [SchoolPageController::class, 'show'])->name('school-pages.show')->middleware('school.permission:school-page.manage');
         Route::get(__('routes.pages') . '/{schoolPage}/' . __('routes.edit'), [SchoolPageController::class, 'edit'])->name('school-pages.edit')->middleware('school.permission:school-page.manage');
-        Route::put(__('routes.pages') . '/{schoolPage}', [SchoolPageController::class, 'update'])->name('school-pages.update')->middleware('school.permission:school-page.manage');
+        Route::put(__('routes.pages') . '/{schoolPage}/' . __('routes.edit'), [SchoolPageController::class, 'update'])->name('school-pages.update')->middleware('school.permission:school-page.manage');
         Route::delete(__('routes.pages') . '/{schoolPage}', [SchoolPageController::class, 'destroy'])->name('school-pages.destroy')->middleware('school.permission:school-page.manage');
 
 
@@ -50,7 +50,7 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get('{schoolLevel}/' . __('routes.course') . '/' . __('routes.create'), [CourseController::class, 'create'])->name('school.course.create')->middleware('school.permission:course.manage');
         Route::post('{schoolLevel}/' . __('routes.course'), [CourseController::class, 'store'])->name('school.course.store')->middleware('school.permission:course.manage');
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.edit'), [CourseController::class, 'edit'])->name('school.course.edit')->middleware('school.permission:course.manage');
-        Route::put('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}', [CourseController::class, 'update'])->name('school.course.update')->middleware('school.permission:course.manage');
+        Route::put('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.edit'), [CourseController::class, 'update'])->name('school.course.update')->middleware('school.permission:course.manage');
         Route::delete('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}', [CourseController::class, 'destroy'])->name('school.course.destroy')->middleware('school.permission:course.manage');
 
         // Course Search for Popover

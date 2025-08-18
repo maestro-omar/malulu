@@ -111,7 +111,7 @@ class CourseController extends SchoolBaseController
 
     public function update(Request $request, Course $course)
     {
-        $this->courseService->updateCourse($course, $request->validated());
+        $this->courseService->updateCourse($course, $request->all());
 
         return $this->goBackToIndex($request, 'Curso actualizado correctamente');
     }
