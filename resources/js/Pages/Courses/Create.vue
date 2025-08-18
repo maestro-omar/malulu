@@ -1,126 +1,143 @@
 <template>
   <AuthenticatedLayout>
 
-    <Head title="Cursos" />
+    <Head
+      :title="`${school.short} - ${selectedLevel.name} - Crear curso`" />
     <template #header>
       <AdminHeader :breadcrumbs="breadcrumbs"
-        :title="`Crear Nuevo Curso para ${school.name} (Nivel: ${selectedLevel.name})`"></AdminHeader>
+        :title="`${school.short} - ${selectedLevel.name} - Crear curso`">
+      </AdminHeader>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div>
-            <form @submit.prevent="submit">
+    <div class="container">
+      <div class="admin-form__wrapper">
+        <form @submit.prevent="submit" class="admin-form__container">
+          <!-- Flash Messages -->
+          <FlashMessages :flash="flash" />
+          <div class="admin-form__card">
+            <div class="admin-form__card-content">
               <!-- Hidden School ID Field -->
               <input type="hidden" v-model="form.school_id" />
               <!-- Hidden School Level ID Field -->
               <input type="hidden" v-model="form.school_level_id" />
 
-              <!-- Flash Messages -->
-              <FlashMessages :flash="flash" />
+              <div class="admin-form__grid admin-form__grid--3">
+                <div class="admin-form__field">
+                  <SelectSchoolShift ref="mainShiftSelect" v-model="form.school_shift_id" :options="schoolShifts"
+                    @update:modelValue="triggerShiftSelected" :showAllOption="false" />
 
-              <div class="mb-4">
-                <InputLabel for="school_shift_id" value="Turno Escolar" />
-                <SelectInput id="school_shift_id" v-model="form.school_shift_id" :options="schoolShifts"
-                  option-value="id" option-label="name" class="mt-1 block w-full" required />
-                <InputError class="mt-2" :message="form.errors.school_shift_id" />
+                  <InputError class="admin-form__error" :message="form.errors.school_shift_id" />
+                </div>
+
+                <div class="admin-form__field">
+                  <InputLabel value="Curso Anterior" />
+                  <CoursePopoverSelect v-model="form.previous_course_id" :lastSaved="form.previousCourse" :school="school" :schoolLevel="selectedLevel"
+                    :schoolShift="form.school_shift_id" :schoolShifts="schoolShifts" :startDate="form.start_date" :currentCourse="null" />
+                  <InputError class="admin-form__error" :message="form.errors.previous_course_id" />
+                </div>
               </div>
 
-              <div class="mb-4">
-                <InputLabel for="previous_course_id" value="Curso Anterior" />
-                <SelectInput id="previous_course_id" v-model="form.previous_course_id" :options="courses"
-                  option-value="id" option-label="full_name" :show-default-option="true" default-option-label="Ninguno"
-                  class="mt-1 block w-full" />
-                <InputError class="mt-2" :message="form.errors.previous_course_id" />
+              <div class="admin-form__grid admin-form__grid--3">
+                <div class="admin-form__field">
+                  <InputLabel for="number" value="Número" />
+                  <TextInput id="number" type="number" v-model="form.number" class="admin-form__input" required />
+                  <InputError class="admin-form__error" :message="form.errors.number" />
+                </div>
+
+                <div class="admin-form__field">
+                  <InputLabel for="letter" value="Letra" />
+                  <TextInput id="letter" type="text" v-model="form.letter" class="admin-form__input" required />
+                  <InputError class="admin-form__error" :message="form.errors.letter" />
+                </div>
+
+                <div class="admin-form__field">
+                  <InputLabel for="name" value="Nombre (opcional)" />
+                  <TextInput id="name" type="text" v-model="form.name" class="admin-form__input" />
+                  <InputError class="admin-form__error" :message="form.errors.name" />
+                </div>
               </div>
 
-              <div class="mb-4">
-                <InputLabel for="number" value="Número" />
-                <TextInput id="number" type="number" v-model="form.number" class="mt-1 block w-full" required />
-                <InputError class="mt-2" :message="form.errors.number" />
+              <div class="admin-form__grid admin-form__grid--3">
+                <div class="admin-form__field">
+                  <InputLabel for="start_date" value="Fecha de Inicio" />
+                  <TextInput id="start_date" type="date" v-model="form.start_date" class="admin-form__input" required />
+                  <InputError class="admin-form__error" :message="form.errors.start_date" />
+                </div>
+
+                <div class="admin-form__field">
+                  <InputLabel for="end_date" value="Fecha de Fin" />
+                  <TextInput id="end_date" type="date" v-model="form.end_date" class="admin-form__input" />
+                  <InputError class="admin-form__error" :message="form.errors.end_date" />
+                </div>
               </div>
 
-              <div class="mb-4">
-                <InputLabel for="letter" value="Letra" />
-                <TextInput id="letter" type="text" v-model="form.letter" class="mt-1 block w-full" required />
-                <InputError class="mt-2" :message="form.errors.letter" />
-              </div>
-
-              <div class="mb-4">
-                <InputLabel for="name" value="Nombre (opcional)" />
-                <TextInput id="name" type="text" v-model="form.name" class="mt-1 block w-full" />
-                <InputError class="mt-2" :message="form.errors.name" />
-              </div>
-              <div class="mb-4">
-                <InputLabel for="start_date" value="Fecha de Inicio" />
-                <TextInput id="start_date" type="date" v-model="form.start_date" class="mt-1 block w-full" required />
-                <InputError class="mt-2" :message="form.errors.start_date" />
-              </div>
-
-              <div class="mb-4">
-                <InputLabel for="end_date" value="Fecha de Fin" />
-                <TextInput id="end_date" type="date" v-model="form.end_date" class="mt-1 block w-full" />
-                <InputError class="mt-2" :message="form.errors.end_date" />
-              </div>
-
-              <div class="mb-4">
+              <div class="admin-form__field">
                 <CheckboxWithLabel id="active" v-model="form.active">
                   Activo
                 </CheckboxWithLabel>
-                <InputError class="mt-2" :message="form.errors.active" />
+                <InputError class="admin-form__error" :message="form.errors.active" />
               </div>
-
-              <div class="flex items-center justify-between mt-4">
-                <PrimaryButton :disabled="form.processing">
-                  Crear Curso
-                </PrimaryButton>
-                <CancelLink :href="route('school.courses', { school: school.slug, schoolLevel: selectedLevel.code })" />
-              </div>
-            </form>
+            </div>
           </div>
-        </div>
+
+          <ActionButtons button-label="Crear Curso"
+            :cancel-href="route('school.courses', { school: school.slug, schoolLevel: selectedLevel.code })"
+            :disabled="form.processing" />
+        </form>
       </div>
     </div>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import CancelLink from '@/Components/admin/CancelLink.vue'
+import ActionButtons from '@/Components/admin/ActionButtons.vue'
 import CheckboxWithLabel from '@/Components/admin/CheckboxWithLabel.vue'
+import CoursePopoverSelect from '@/Components/admin/CoursePopoverSelect.vue'
 import FlashMessages from '@/Components/admin/FlashMessages.vue'
 import InputError from '@/Components/admin/InputError.vue'
 import InputLabel from '@/Components/admin/InputLabel.vue'
-import PrimaryButton from '@/Components/admin/PrimaryButton.vue'
 import SelectInput from '@/Components/admin/SelectInput.vue'
+import SelectSchoolShift from '@/Components/admin/SelectSchoolShift.vue'
 import TextInput from '@/Components/admin/TextInput.vue'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
+import { ref } from 'vue'
+import { formatDateForInput } from '@/utils/date'
+import { getFullYear } from '@/utils/date'
 import { Head, useForm } from '@inertiajs/vue3'
+import { getCourseSlug } from '@/utils/strings'
 
 const props = defineProps({
   school: Object,
-  schools: Array,
-  schoolLevels: Array,
   schoolShifts: Array,
-  courses: Array,
   selectedLevel: Object,
   breadcrumbs: Array,
+  flash: Object,
 })
+
 
 const form = useForm({
   school_id: props.school.id,
   school_level_id: props.selectedLevel.id,
   school_shift_id: '',
-  previous_course_id: null,
+  previous_course_id: '',
   number: '',
   letter: '',
+  name: '',
   start_date: '',
   end_date: '',
   active: true,
 })
 
+
+// Refs for component instances
+const mainShiftSelect = ref(null)
+
 const submit = () => {
-  form.post(route('courses.store', { school: props.school.slug, schoolLevel: props.selectedLevel.code }))
+  form.post(route('school.course.store', { 'school': props.school.slug, 'schoolLevel': props.selectedLevel.code }))
+}
+
+const triggerShiftSelected = (value) => {
+  // console.log('mainShiftSelected', value);
 }
 </script>

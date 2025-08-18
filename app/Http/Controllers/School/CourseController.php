@@ -63,16 +63,14 @@ class CourseController extends SchoolBaseController
 
     public function create(School $school, SchoolLevel $schoolLevel)
     {
-        $schools = $this->schoolService->getSchools(new Request(), true);
-        $schoolLevels = $this->schoolLevelService->getSchoolLevels(new Request());
-        $schoolShifts = $this->schoolShiftService->getSchoolShifts(new Request(), true);
-        $courses = $this->courseService->getCoursesForSchool($school->id, $schoolLevel->id, null, true);
+        $schoolShifts = $school->shifts;
+        // $courses = $this->courseService->getCoursesForSchool($school->id, $schoolLevel->id, null, true);
 
         return Inertia::render('Courses/Create', [
-            'schools' => $schools,
-            'schoolLevels' => $schoolLevels,
+            // 'schools' => [],
+            // 'schoolLevels' => [],
+            // 'courses' => $courses,
             'schoolShifts' => $schoolShifts,
-            'courses' => $courses,
             'school' => $school,
             'selectedLevel' => $schoolLevel,
             'breadcrumbs' => Breadcrumbs::generate('school.course.create', $school, $schoolLevel),
@@ -81,7 +79,7 @@ class CourseController extends SchoolBaseController
 
     public function store(Request $request)
     {
-        $this->courseService->createCourse($request->validated());
+        $this->courseService->createCourse($request->all());
         return $this->goBackToIndex($request, 'Curso creado correctamente');
     }
 
@@ -178,6 +176,11 @@ class CourseController extends SchoolBaseController
     private function getCourseFromUrlParameter(string $idAndLabel)
     {
         $id = (int) explode('-', $idAndLabel)[0];
-        return Course::where('id', $id)->first();
+        $course = $id ? Course::where('id', $id)->first() : null;
+        if (!$course) {
+            // if (!$course) throw new \Exception('Curso no encontrado');
+            abort(404, 'Curso no encontrado');
+        }
+        return $course;
     }
 }
