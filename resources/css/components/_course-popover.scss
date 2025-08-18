@@ -324,6 +324,37 @@
     flex-shrink: 0;
   }
 
+  &__item-description {
+    @include mixins.fz(1.3);
+    color: variables.$color-grey-dark;
+    font-style: italic;
+  }
+
+  &__item-current {
+    margin-top: 0.25rem;
+  }
+
+  &__current-legend {
+    @include mixins.fz(1.2);
+    color: variables.$color-brand;
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  &__item--no-course {
+    background-color: color.scale(variables.$color-grey, $lightness: 95%);
+    border-left: 3px solid variables.$color-grey-dark;
+
+    &:hover {
+      background-color: color.scale(variables.$color-grey, $lightness: 90%);
+    }
+
+    &--selected {
+      background-color: color.scale(variables.$color-brand, $lightness: 90%);
+      border-left: 3px solid variables.$color-brand;
+    }
+  }
+
   &__select-btn {
     background-color: variables.$color-brand;
     color: white;
@@ -342,6 +373,10 @@
     &:focus {
       outline: none;
       box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+
+    &--no-course {
+      background-color: variables.$color-purple;
     }
   }
 

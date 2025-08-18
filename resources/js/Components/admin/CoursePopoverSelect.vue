@@ -7,7 +7,7 @@
                     {{ selectedCourse.nice_name }}
                 </span>
                 <span v-else class="course-popover__placeholder">
-                    Seleccionar curso anterior
+                    Sin curso anterior
                 </span>
             </div>
             <svg class="course-popover__trigger-icon" :class="{ 'course-popover__trigger-icon--open': isOpen }"
@@ -21,7 +21,7 @@
         <div v-if="isOpen" class="course-popover__content">
             <!-- Header -->
             <div class="course-popover__header">
-                <h3 class="course-popover__title">Seleccionar Curso Anterior</h3>
+                <h3 class="course-popover__title">Seleccionar Curso Anterior (opcional)</h3>
                 <button @click="closePopover" class="course-popover__close">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -90,6 +90,25 @@
                 <div style="background: #f0f0f0; padding: 10px; margin-bottom: 10px; font-size: 12px;">
                     Debug: {{ filteredCourses.length }} courses found
                 </div>
+                
+                <!-- "Sin curso anterior" option -->
+                <div class="course-popover__item course-popover__item--no-course"
+                    :class="{ 'course-popover__item--selected': selectedCourse === null }">
+                    <div class="course-popover__item-content">
+                        <div class="course-popover__item-main" @click="selectNoCourse">
+                            <div class="course-popover__item-details">
+                                <span class="course-popover__item-description">No asignar curso previo</span>
+                            </div>
+                        </div>
+                        <div class="course-popover__item-actions">
+                            <button @click="selectNoCourse" class="course-popover__select-btn course-popover__select-btn--no-course">
+                                Sin curso anterior
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course items -->
                 <div v-for="course in filteredCourses" :key="course.id" class="course-popover__item"
                     :class="{ 'course-popover__item--selected': selectedCourse?.id === course.id }">
                     <div class="course-popover__item-content">
@@ -109,10 +128,15 @@
                                         {{ course.active ? 'Activo' : 'Inactivo' }}
                                     </span>
                                 </div>
+                                <!-- Show "curso actual" legend for the course being edited -->
+                                <div v-if="props.currentCourse?.id === course.id" class="course-popover__item-current">
+                                    <span class="course-popover__current-legend">- curso actual -</span>
+                                </div>
                             </div>
                         </div>
                         <div class="course-popover__item-actions">
-                            <button @click="selectCourse(course)" class="course-popover__select-btn">
+                            <!-- Hide select button for current course being edited -->
+                            <button v-if="props.currentCourse?.id !== course.id" @click="selectCourse(course)" class="course-popover__select-btn">
                                 Seleccionar
                             </button>
                         </div>
@@ -406,6 +430,14 @@ const filterCourses = () => {
 const selectCourse = (course) => {
     selectedCourse.value = course
     emit('update:modelValue', course.id)
+    // Clear original value since we made a selection
+    originalSelectedCourse.value = null
+    closePopover()
+}
+
+const selectNoCourse = () => {
+    selectedCourse.value = null
+    emit('update:modelValue', null)
     // Clear original value since we made a selection
     originalSelectedCourse.value = null
     closePopover()
