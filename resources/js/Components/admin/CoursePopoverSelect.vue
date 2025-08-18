@@ -226,7 +226,7 @@ const props = defineProps({
     }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'courseSelected'])
 
 // Refs
 const popoverRef = ref(null)
@@ -430,6 +430,7 @@ const filterCourses = () => {
 const selectCourse = (course) => {
     selectedCourse.value = course
     emit('update:modelValue', course.id)
+    emit('courseSelected', course)
     // Clear original value since we made a selection
     originalSelectedCourse.value = null
     closePopover()
@@ -438,6 +439,7 @@ const selectCourse = (course) => {
 const selectNoCourse = () => {
     selectedCourse.value = null
     emit('update:modelValue', null)
+    emit('courseSelected', null)
     // Clear original value since we made a selection
     originalSelectedCourse.value = null
     closePopover()

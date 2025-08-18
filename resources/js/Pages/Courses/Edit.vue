@@ -31,8 +31,16 @@
 
                 <div class="admin-form__field">
                   <InputLabel value="Curso Anterior" />
-                  <CoursePopoverSelect v-model="form.previous_course_id" :lastSaved="form.previousCourse" :school="school" :schoolLevel="selectedLevel"
-                    :schoolShift="form.school_shift_id" :schoolShifts="schoolShifts" :startDate="form.start_date" :currentCourse="course" />
+                  <CoursePopoverSelect 
+                    v-model="form.previous_course_id" 
+                    :lastSaved="form.previousCourse" 
+                    :school="school" 
+                    :schoolLevel="selectedLevel"
+                    :schoolShift="form.school_shift_id" 
+                    :schoolShifts="schoolShifts" 
+                    :startDate="form.start_date" 
+                    :currentCourse="course"
+                    @courseSelected="handleCourseSelected" />
                   <InputError class="admin-form__error" :message="form.errors.previous_course_id" />
                 </div>
               </div>
@@ -62,6 +70,9 @@
                   <InputLabel for="start_date" value="Fecha de Inicio" />
                   <TextInput id="start_date" type="date" v-model="form.start_date" class="admin-form__input" required />
                   <InputError class="admin-form__error" :message="form.errors.start_date" />
+                  <div v-if="selectedPreviousCourse && selectedPreviousCourse.end_date" class="admin-form__help-text">
+                    Fin del curso anterior: {{ formatDateForDisplay(selectedPreviousCourse.end_date) }}
+                  </div>
                 </div>
 
                 <div class="admin-form__field">
@@ -101,7 +112,7 @@ import SelectSchoolShift from '@/Components/admin/SelectSchoolShift.vue'
 import TextInput from '@/Components/admin/TextInput.vue'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { formatDateForInput } from '@/utils/date'
 import { getFullYear } from '@/utils/date'
 import { Head, useForm } from '@inertiajs/vue3'
@@ -136,12 +147,26 @@ const form = useForm({
   active: props.course.active,
 })
 
+// Reactive reference to store the selected previous course data
+const selectedPreviousCourse = ref(null)
+
+// Helper function to format date for display
+const formatDateForDisplay = (date) => {
+  if (!date) return ''
+  return new Date(date).toLocaleDateString('es-ES')
+}
+
 
 // Refs for component instances
 const mainShiftSelect = ref(null)
 
 const submit = () => {
   form.put(route('school.course.update', { 'school': props.school.slug, 'schoolLevel': props.selectedLevel.code, 'idAndLabel': getCourseSlug(props.course) }))
+}
+
+// Handle course selection from CoursePopoverSelect
+const handleCourseSelected = (course) => {
+  selectedPreviousCourse.value = course
 }
 
 const triggerShiftSelected = (value) => {

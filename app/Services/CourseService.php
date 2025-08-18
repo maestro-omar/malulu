@@ -86,6 +86,8 @@ class CourseService
      */
     public function validateCourseData(array $data, ?Course $course = null)
     {
+        $data['letter'] = strtoupper($data['letter'] ?? '');
+        $lastDayOfNextTwoYears = now()->addYears(2)->endOfYear()->toDateString();
         $rules = [
             'school_id' => [
                 'required',
@@ -121,7 +123,8 @@ class CourseService
             ],
             'start_date' => [
                 'required',
-                'date'
+                'date', 
+                'before_or_equal:' . $lastDayOfNextTwoYears,
             ],
             'end_date' => [
                 'nullable',

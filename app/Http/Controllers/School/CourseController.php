@@ -64,12 +64,8 @@ class CourseController extends SchoolBaseController
     public function create(School $school, SchoolLevel $schoolLevel)
     {
         $schoolShifts = $school->shifts;
-        // $courses = $this->courseService->getCoursesForSchool($school->id, $schoolLevel->id, null, true);
 
         return Inertia::render('Courses/Create', [
-            // 'schools' => [],
-            // 'schoolLevels' => [],
-            // 'courses' => $courses,
             'schoolShifts' => $schoolShifts,
             'school' => $school,
             'selectedLevel' => $schoolLevel,
@@ -79,8 +75,8 @@ class CourseController extends SchoolBaseController
 
     public function store(Request $request)
     {
-        $this->courseService->createCourse($request->all());
-        return $this->goBackToIndex($request, 'Curso creado correctamente');
+        $newCourse = $this->courseService->createCourse($request->all());
+        return redirect()->route('school.course.show', ['school' => $newCourse->school->slug, 'schoolLevel' => $newCourse->schoolLevel->code, 'idAndLabel' => $newCourse->idAndLabel])->with('success', 'Curso creado correctamente');
     }
 
     public function edit(School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
