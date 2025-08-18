@@ -44,7 +44,7 @@ class CourseController extends SchoolBaseController
             'year' => $request->input('year', date('Y')),
             'active' => $request->input('active'),
         ]);
-        
+
         $courses = $this->courseService->getCourses($request, $school->id);
         $schoolShifts = $school->shifts;
 
@@ -109,11 +109,13 @@ class CourseController extends SchoolBaseController
         ]);
     }
 
-    public function update(Request $request, Course $course)
+    public function update(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         $this->courseService->updateCourse($course, $request->all());
-
-        return $this->goBackToIndex($request, 'Curso actualizado correctamente');
+        $school = $course->school;
+        $schoolLevel = $course->schoolLevel;
+        return redirect()->route('school.course.show', ['school' => $school->slug, 'schoolLevel' => $schoolLevel->code, 'idAndLabel' => $course->idAndLabel])->with('success', 'Curso actualizado correctamente');
     }
 
     public function destroy(Request $request, Course $course)

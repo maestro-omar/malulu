@@ -31,6 +31,7 @@ export function slugify(text) {
 
 export function getCourseSlug(course) {
   if (!course) return '';
+  if (course.id_and_label) return course.id_and_label;
 
   // Build the base slug with ID, number and letter
   let slug = course.id + '-' + course.number + course.letter;
@@ -39,11 +40,12 @@ export function getCourseSlug(course) {
   if (course.name && course.name.trim()) {
     slug += '-' + course.name;
   }
+  slug += '-' + 'tttttesting';
   // slug += '-' +  course.start_date.format('Y');
 
   return slugify(slug);
 }
 
-export function  formatDate(date)  {
+export function formatDate(date) {
   return new Date(date).toLocaleDateString();
 }

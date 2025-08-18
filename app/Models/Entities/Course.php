@@ -11,6 +11,7 @@ use App\Models\Relations\StudentCourse;
 use App\Models\Entities\School;
 use App\Models\Catalogs\SchoolLevel;
 use App\Models\Catalogs\SchoolShift;
+use Illuminate\Support\Str;
 
 class Course extends Model
 {
@@ -45,7 +46,7 @@ class Course extends Model
         'active' => 'boolean',
     ];
 
-    protected $appends = ['nice_name'];
+    protected $appends = ['nice_name', 'id_and_label'];
 
     /**
      * Get the school that owns the course.
@@ -120,8 +121,21 @@ class Course extends Model
     {
         $level = $this->schoolLevel->code;
         if ($level == SchoolLevel::KINDER)
-            return $this->number . ' años (' . $this->letter . ') - '. $this->name;
+            return $this->number . ' años (' . $this->letter . ') - ' . $this->name;
         else
             return $this->number . 'º' . $this->letter . ($this->name ? ' (' . $this->name . ')' : '');
+    }
+
+    public function getIdAndLabelAttribute()
+    {
+        // Build the label with ID, number and letter
+        $label = $this->id . '-' . $this->number . $this->letter;
+
+        // Add the course name only if it exists and is not null
+        if ($this->name && trim($this->name)) {
+            $label .= '-' . $this->name;
+        }
+
+        return Str::slug($label);
     }
 }
