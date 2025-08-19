@@ -158,6 +158,11 @@ Breadcrumbs::for('school.course.create', function (Trail $trail, School $school,
     $trail->push('Crear curso');
 });
 
+Breadcrumbs::for('school.courses.create-next', function (Trail $trail, School $school, SchoolLevel $schoolLevel) {
+    $trail->parent('school.courses', $school, $schoolLevel);
+    $trail->push('Crear cursos siguientes');
+});
+
 Breadcrumbs::for('school.course.show', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
     $trail->parent('school.courses', $school, $schoolLevel);
     $trail->push($course->start_date->format('Y') . ' - ' . $course->nice_name, route('school.course.show', ['school' => $school, 'schoolLevel' => $schoolLevel, 'idAndLabel' => $course->idAndLabel]));

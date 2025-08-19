@@ -8,11 +8,23 @@ use App\Models\Entities\Course;
 use App\Models\Catalogs\SchoolLevel;
 use App\Models\Entities\AcademicYear;
 use App\Helpers\DateHelper;
+use App\Services\AcademicYearService;
+use DateTime;
 
 trait CourseNext
 {
-    public function calculateNextCourses(Request $request, School $school, SchoolLevel $schoolLevel, bool $doCreate)
+    public function calculateNextCourses(Request $request, School $school, SchoolLevel $schoolLevel, bool $doCreate, bool $limitNumbers = true)
     {
+        $minSchoolLevelNumber = $limitNumbers ? Course::where('school_id', $school->id)
+            ->where('school_level_id', $schoolLevel->id)
+            ->min('number')
+            : null;
+
+        $maxSchoolLevelNumber = $limitNumbers ? Course::where('school_id', $school->id)
+            ->where('school_level_id', $schoolLevel->id)
+            ->max('number')
+            : null;
+
         $year = date('Y');
         $request->merge([
             'no_next' => true, //important
@@ -25,42 +37,127 @@ trait CourseNext
 
         $courses = $this->getCourses($request, $school->id);
 
-        $nextCourses = [];
-        foreach ($courses as $course) {
-            $nextCourse = $this->calculateNextCourse($course, $doCreate);
-            if ($doCreate) {
-                $nextCourses[$course['id']] = $nextCourse['existing'] ? $nextCourse['existing'] : $this->createCourse($nextCourse['create']);
+        foreach ($courses as $idx =>  $course) {
+            if ($course['number'] >= $maxSchoolLevelNumber) {
+                unset($courses[$idx]);
             } else {
-                $nextCourses[$course['id']] = $nextCourse;
+                $nextCourse = $this->calculateNextCourse($course, $doCreate);
+                $courses[$idx]['to_set'] = $doCreate
+                    ? ($nextCourse['existing'] ? $nextCourse['existing'] : $this->createCourse($nextCourse['create']))
+                    : $nextCourse;
+                $courses[$idx]['to_duplicate'] = ($course['number'] == $minSchoolLevelNumber) ?
+                    $this->calculateSameCourseNextYear($course) : null;
             }
         }
 
-        return $nextCourses;
+        return $courses;
     }
 
-    private function calculateNextCourse(Course $course, bool $mustSearchForAvailableLetter)
+    private function calculateSameCourseNextYear(array $courseData)
     {
-        // throw new \Exception('Not implemented - Developing');
+        $currentEndDate = ($courseData['end_date'] ?? '') ? $courseData['end_date'] : $this->guessEndDate(new \DateTime($courseData['start_date']));
+        $aux =  $this->calculateStartDate(new \DateTime($currentEndDate));
+        $newStartDate = $aux->format('Y-m-d');
+        $endDateLimit = $aux;
+        $endDateLimit->add(new \DateInterval('P1Y'));
+        $nextNumber = $courseData['number']; //will be the same number
+        $nextLetter = $courseData['letter'];
 
-        $currentEndDate = $this->getOrGuessEndDate($course);
-        $newStartDate =  $this->calculateStartDate($currentEndDate);
-        $endDateLimit = $newStartDate->add(new \DateInterval('P1Y'));
-        $nextNumber = $course->number + 1;
-        $nextLetter = $course->letter;
-
-        $posibleNextCourses = Course::where('school_id', $course->school_id)
-            ->where('school_level_id', $course->school_level_id)
+        $posibleNextCourses = Course::where('school_id', $courseData['school_id'])
+            ->where('school_level_id', $courseData['school_level_id'])
             ->where('number', $nextNumber)
             ->where('letter', $nextLetter)
-            ->where('start_date', '>=', $newStartDate)
-            ->where(function ($query) use ($endDateLimit) {
-                $query->where('end_date', '<', $endDateLimit)
-                    ->orWhereNull('end_date');
+            // Check if the course in DB intersects with the desired date range
+            ->where(function ($query) use ($newStartDate, $endDateLimit) {
+                $query
+                    // DB row starts within our range
+                    ->whereBetween('start_date', [$newStartDate, $endDateLimit->format('Y-m-d')])
+                    // OR our range starts within the DB row's range
+                    ->orWhere(function ($q) use ($newStartDate) {
+                        $q->where('start_date', '<=', $newStartDate)
+                            ->where(function ($q2) use ($newStartDate) {
+                                $q2->where('end_date', '>=', $newStartDate)
+                                    ->orWhere(function ($q3) use ($newStartDate) {
+                                        // If end_date is null, treat as one year from start_date
+                                        $q3->whereNull('end_date')
+                                            ->whereRaw("DATE_ADD(start_date, INTERVAL 1 YEAR) >= ?", $newStartDate);
+                                    });
+                            });
+                    });
             })
             ->get();
+        // if ($nextLetter == 'B' and $nextNumber === 4) {
+        //     dd('debug posibleNextCourses', $posibleNextCourses, $newStartDate, $endDateLimit);
+        // }
 
         if ($posibleNextCourses->count() > 0) {
-            $sameShiftCourses = $posibleNextCourses->where('school_shift_id', $course->school_shift_id);
+            return null;
+
+            // $sameShiftCourses = $posibleNextCourses->where('school_shift_id', $courseData['school_shift_id']);
+            // if ($sameShiftCourses->count() > 1) {
+            //     $sameShiftCourses = $sameShiftCourses->where('active', true);
+            // }
+            // if ($sameShiftCourses->count() === 1) {
+            //     $nextCourseExists = $sameShiftCourses->first();
+            //     return ['existing' => $nextCourseExists, 'create' => null];
+            // }
+        }
+
+        $newData = [
+            'number' => $nextNumber,
+            'letter' => $nextLetter,
+            'start_date' => $newStartDate,
+            'end_date' => $this->guessEndDate(new \DateTime($newStartDate)),
+            'active' => true,
+            'school_id' => $courseData['school_id'],
+            'name' => $courseData['name'],
+            'school_level_id' => $courseData['school_level_id'],
+            'school_shift_id' => $courseData['school_shift_id'],
+            'previous_course_id' => null,
+        ];
+        $courseNew = new Course($newData);
+        return $courseNew;
+    }
+
+    private function calculateNextCourse(array $courseData, bool $mustSearchForAvailableLetter)
+    {
+        $currentEndDate = ($courseData['end_date'] ?? '') ? $courseData['end_date'] : $this->guessEndDate(new \DateTime($courseData['start_date']));
+        $aux =  $this->calculateStartDate(new \DateTime($currentEndDate));
+        $newStartDate = $aux->format('Y-m-d');
+        $endDateLimit = $aux;
+        $endDateLimit->add(new \DateInterval('P1Y'));
+        $nextNumber = $courseData['number'] + 1;
+        $nextLetter = $courseData['letter'];
+
+        $posibleNextCourses = Course::where('school_id', $courseData['school_id'])
+            ->where('school_level_id', $courseData['school_level_id'])
+            ->where('number', $nextNumber)
+            ->where('letter', $nextLetter)
+            // Check if the course in DB intersects with the desired date range
+            ->where(function ($query) use ($newStartDate, $endDateLimit) {
+                $query
+                    // DB row starts within our range
+                    ->whereBetween('start_date', [$newStartDate, $endDateLimit->format('Y-m-d')])
+                    // OR our range starts within the DB row's range
+                    ->orWhere(function ($q) use ($newStartDate) {
+                        $q->where('start_date', '<=', $newStartDate)
+                            ->where(function ($q2) use ($newStartDate) {
+                                $q2->where('end_date', '>=', $newStartDate)
+                                    ->orWhere(function ($q3) use ($newStartDate) {
+                                        // If end_date is null, treat as one year from start_date
+                                        $q3->whereNull('end_date')
+                                            ->whereRaw("DATE_ADD(start_date, INTERVAL 1 YEAR) >= ?", $newStartDate);
+                                    });
+                            });
+                    });
+            })
+            ->get();
+        // if ($nextLetter == 'B' and $nextNumber === 4) {
+        //     dd('debug posibleNextCourses', $posibleNextCourses, $newStartDate, $endDateLimit);
+        // }
+
+        if ($posibleNextCourses->count() > 0) {
+            $sameShiftCourses = $posibleNextCourses->where('school_shift_id', $courseData['school_shift_id']);
             if ($sameShiftCourses->count() > 1) {
                 $sameShiftCourses = $sameShiftCourses->where('active', true);
             }
@@ -74,59 +171,56 @@ trait CourseNext
             'number' => $nextNumber,
             'letter' => $nextLetter,
             'start_date' => $newStartDate,
-            'end_date' => $endDateLimit,
+            'end_date' => $this->guessEndDate(new \DateTime($newStartDate)),
             'active' => true,
-            'school_id' => $course->school_id,
-            'school_level_id' => $course->school_level_id,
-            'school_shift_id' => $course->school_shift_id,
-            'previous_course_id' => $course->id,
+            'school_id' => $courseData['school_id'],
+            'school_level_id' => $courseData['school_level_id'],
+            'school_shift_id' => $courseData['school_shift_id'],
+            'previous_course_id' => $courseData['id'],
         ];
+        $newData['name'] = $courseData['name'] ? $this->searchForNextCourseName($newData) : '';
         $newData['letter'] = $mustSearchForAvailableLetter ? $this->searchForAvailableLetterOnNextCourse($newData) : $nextLetter;
-
-        return ['existing' => null, 'create' => $newData];
+        $courseNew = new Course($newData);
+        return ['existing' => null, 'create' => $courseNew];
     }
 
-    private function getOrGuessEndDate(Course $course): \DateTime
+    private function guessEndDate(\DateTime $startDate): string
     {
-        if ($course->end_date) {
-            return $course->end_date;
-        }
-        $academicYear = AcademicYear::findByDate(new \DateTime($course->start_date));
+        $academicYear = AcademicYear::findByDate($startDate);
         if (!$academicYear) {
-            $academicYear = AcademicYear::findOrCreateByYear($course->start_date->format('Y'));
+            $academicYear = AcademicYearService::findOrCreateByYear($startDate->format('Y'));
         }
 
-        $courseTimeToEnd = $academicYear->end_date->diff(new \DateTime($course->start_date));
+        $courseTimeToEnd = $academicYear->end_date->diff($startDate);
         if ($courseTimeToEnd->days > (30 * 7)) {
-            return $academicYear->end_date;
+            return $academicYear->end_date->format('Y-m-d');
         }
 
         $nextAcademicYear = $academicYear->getNext();
         if (!$nextAcademicYear) {
-            $nextAcademicYear = AcademicYear::findOrCreateByYear($course->start_date->format('Y') + 1);
+            $nextAcademicYear = AcademicYearService::findOrCreateByYear($startDate->format('Y') + 1);
         }
 
-        return $nextAcademicYear->end_date;
+        return $nextAcademicYear->end_date->format('Y-m-d');
     }
 
-    private function calculateStartDate(\DateTime $prevEndDate)
+    private function calculateStartDate(\DateTime $prevEndDate): \DateTime
     {
-        /* 
-        Busco el ciclo lectivo en el que estoy. ¿No hay? Creo uno automáticamente para el año en curso.
-        Si termino mucho antes de la fecha de fin de ciclo lectivo (más de un mes antes), el inicio del nuevo curso será el dia siguiente (pero si es sábado o domingo, buscaré el lunes inmediato)
-        Si termino cerca de la fecha de fin de ciclo lectivo (como máximo, un mes antes), el inicio del nuevo curso será el inicio del próximo ciclo lectivo. ¿Y si no hay aún un próximo ciclo lectivo? Entonces debo crear el nuevo ciclo lectivo y coger su fecha de inicio 
-    */
+        /*
+        Search for the academic year in which I am. If there is none, I create one automatically for the current year.
+        If I finish much earlier than the end date of the academic year (more than a month before), the start date of the new course will be the next day (but if it is Saturday or Sunday, I will search for the next Monday)
+        If I finish close to the end date of the academic year (at most, a month before), the start date of the new course will be the start date of the next academic year. If there is no next academic year, I must create it and take its start date
+        */
 
         $academicYear = AcademicYear::findByDate($prevEndDate);
-        if (!$academicYear) $academicYear = AcademicYear::findOrCreateByYear($prevEndDate->format('Y'));
-
+        if (!$academicYear) $academicYear = AcademicYearService::findOrCreateByYear($prevEndDate->format('Y'));
         $courseTimeToEnd = $academicYear->end_date->diff($prevEndDate);
         if ($courseTimeToEnd->days > 30)
-            return DateHelper::tomorrowOrMondayIfWeekend(\DateTimeImmutable::createFromMutable($prevEndDate));
+            return \DateTime::createFromImmutable(DateHelper::tomorrowOrMondayIfWeekend(\DateTimeImmutable::createFromMutable($prevEndDate)));
 
         $nextAcademicYear = $academicYear->getNext();
-        if (!$nextAcademicYear) $nextAcademicYear = AcademicYear::findOrCreateByYear($prevEndDate->format('Y') + 1);
-        return $nextAcademicYear->start_date;
+        if (!$nextAcademicYear) $nextAcademicYear = AcademicYearService::findOrCreateByYear($prevEndDate->format('Y') + 1);
+        return new DateTime($nextAcademicYear->start_date);
     }
 
     private function searchForAvailableLetterOnNextCourse(array $newCourseData)
@@ -157,5 +251,17 @@ trait CourseNext
                 throw new \Exception('Too many letters');
             }
         }
+    }
+
+    private function searchForNextCourseName(array $newCourseData)
+    {
+        $name = Course::select('name')
+            ->where('school_id', $newCourseData['school_id'])
+            ->where('school_level_id', $newCourseData['school_level_id'])
+            ->where('number', $newCourseData['number'])
+            ->where('letter', $newCourseData['letter'])
+            ->orderBy('start_date', 'desc')
+            ->first();
+        return $name ? $name->name : '';
     }
 }

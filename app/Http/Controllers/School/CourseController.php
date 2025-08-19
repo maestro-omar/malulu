@@ -75,8 +75,8 @@ class CourseController extends SchoolBaseController
 
     public function createNext(Request $request, School $school, SchoolLevel $schoolLevel)
     {
-
-        $courses = $this->courseService->calculateNextCourses($request, $school, $schoolLevel);
+        $doCreate = false;
+        $courses = $this->courseService->calculateNextCourses($request, $school, $schoolLevel, $doCreate);
         $schoolShifts = $school->shifts;
 
         return Inertia::render('Courses/CreateNext', [
