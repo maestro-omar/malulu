@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Storage;
 
 class SchoolSeeder extends Seeder
 {
+    const SIMPLE_LUCIO_LUCERO = true;
+
     private array $schoolLevels;
     private array $localities;
     private array $managementTypes;
@@ -37,7 +39,7 @@ class SchoolSeeder extends Seeder
             Storage::disk('public')->put($logoDest, file_get_contents($logoSource));
         }
 
-        $schools = [
+        $mainSchools = [
             [
                 'code' => School::GLOBAL,
                 'name' => School::GLOBAL,
@@ -80,11 +82,14 @@ class SchoolSeeder extends Seeder
                     ]
                 ],
                 'extra' => null,
-                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
+                'levels' => self::SIMPLE_LUCIO_LUCERO ? [SchoolLevel::PRIMARY] : [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
                 'shifts' => [SchoolShift::MORNING, SchoolShift::AFTERNOON],
                 'picture' => '/storage/' . $pictureDest,
                 'logo' => '/storage/' . $logoDest,
             ],
+        ];
+        
+        $otherSchools = self::SIMPLE_LUCIO_LUCERO ? [] : [
             [
                 'code' => '740058100',
                 'name' => 'Centro Educativo n°1 Juan Pascual Pringles',
@@ -96,7 +101,7 @@ class SchoolSeeder extends Seeder
                 'email' => '',
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058100',
-                'management_type_id' => $this->managementTypes[ SchoolManagementType::PUBLIC],
+                'management_type_id' => $this->managementTypes[SchoolManagementType::PUBLIC],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
@@ -113,7 +118,7 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058050',
-                'management_type_id' => $this->managementTypes[ SchoolManagementType::PRIVATE],
+                'management_type_id' => $this->managementTypes[SchoolManagementType::PRIVATE],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::KINDER],
@@ -130,7 +135,7 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058500',
-                'management_type_id' => $this->managementTypes[ SchoolManagementType::GENERATIVE],
+                'management_type_id' => $this->managementTypes[SchoolManagementType::GENERATIVE],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
@@ -147,7 +152,7 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058040',
-                'management_type_id' => $this->managementTypes[ SchoolManagementType::SELF_MANAGED],
+                'management_type_id' => $this->managementTypes[SchoolManagementType::SELF_MANAGED],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::KINDER],
@@ -164,7 +169,7 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058600',
-                'management_type_id' => $this->managementTypes[ SchoolManagementType::PUBLIC],
+                'management_type_id' => $this->managementTypes[SchoolManagementType::PUBLIC],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
@@ -181,7 +186,7 @@ class SchoolSeeder extends Seeder
                 'email' => null,
                 'coordinates' => '-33.3017,-66.3378',
                 'cue' => '740058700',
-                'management_type_id' => $this->managementTypes[ SchoolManagementType::PUBLIC],
+                'management_type_id' => $this->managementTypes[SchoolManagementType::PUBLIC],
                 'social' => null,
                 'extra' => null,
                 'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
@@ -189,7 +194,7 @@ class SchoolSeeder extends Seeder
             ],
         ];
 
-        foreach ($schools as $school) {
+        foreach (array_merge($mainSchools, $otherSchools) as $school) {
             $levels = $school['levels'];
             $shifts = $school['shifts'] ?? [];
             unset($school['levels'], $school['shifts']); // Remove levels and shifts from the school data before creating

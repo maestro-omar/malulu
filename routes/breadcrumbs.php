@@ -158,7 +158,7 @@ Breadcrumbs::for('school.course.create', function (Trail $trail, School $school,
     $trail->push('Crear curso');
 });
 
-Breadcrumbs::for('school.courses.create-next', function (Trail $trail, School $school, SchoolLevel $schoolLevel) {
+Breadcrumbs::for('school.course.create-next', function (Trail $trail, School $school, SchoolLevel $schoolLevel) {
     $trail->parent('school.courses', $school, $schoolLevel);
     $trail->push('Crear cursos siguientes');
 });

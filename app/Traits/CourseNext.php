@@ -15,6 +15,11 @@ trait CourseNext
 {
     public function calculateNextCourses(Request $request, School $school, SchoolLevel $schoolLevel, bool $doCreate, bool $limitNumbers = true)
     {
+        // Process the form data
+        $assignExisting = $doCreate ? $request->input('assign_existing', []) : [];
+        $createNext = $doCreate ? $request->input('create_next', []) : [];
+        $duplicateInitial = $doCreate ? $request->input('duplicate_initial', []) : [];
+
         $minSchoolLevelNumber = $limitNumbers ? Course::where('school_id', $school->id)
             ->where('school_level_id', $schoolLevel->id)
             ->min('number')
@@ -41,12 +46,28 @@ trait CourseNext
             if ($course['number'] >= $maxSchoolLevelNumber) {
                 unset($courses[$idx]);
             } else {
-                $nextCourse = $this->calculateNextCourse($course, $doCreate);
-                $courses[$idx]['to_set'] = $doCreate
-                    ? ($nextCourse['existing'] ? $nextCourse['existing'] : $this->createCourse($nextCourse['create']))
-                    : $nextCourse;
-                $courses[$idx]['to_duplicate'] = ($course['number'] == $minSchoolLevelNumber) ?
+                $doCreateThis = $doCreate && in_array($course['id'], $createNext);
+                $nextCourse = $this->calculateNextCourse($course, $doCreateThis);
+
+                if ($doCreate) {
+                    if ($nextCourse['existing'] && in_array($course['id'], $assignExisting)) {
+                        $ok = $this->updatePrevCourse($nextCourse['existing'], $course['id']);
+                        $courses[$idx]['to_set']['updated'] = $ok ? $nextCourse['existing'] : null;
+                    } elseif ($nextCourse['create'] && $doCreateThis) {
+                        $courses[$idx]['to_set']['created'] = $this->createCourse($nextCourse['create']->toArray());
+                    }
+                } else {
+                    $courses[$idx]['to_set'] = $nextCourse;
+                }
+
+
+                $toDuplicateCourse = ($course['number'] == $minSchoolLevelNumber) ?
                     $this->calculateSameCourseNextYear($course) : null;
+                if ($toDuplicateCourse && $doCreate && in_array($course['id'], $duplicateInitial)) {
+                    $courses[$idx]['to_set']['duplicated'] = $this->createCourse($toDuplicateCourse->toArray());
+                } else {
+                    $courses[$idx]['to_duplicate'] = $toDuplicateCourse;
+                }
             }
         }
 
@@ -263,5 +284,11 @@ trait CourseNext
             ->orderBy('start_date', 'desc')
             ->first();
         return $name ? $name->name : '';
+    }
+
+    private function updatePrevCourse(Course $nextCourse, int $prevCourseId): bool
+    {
+        $nextCourse->previous_course_id = $prevCourseId;
+        return $nextCourse->save();
     }
 }

@@ -81,11 +81,26 @@ class CourseController extends SchoolBaseController
 
         return Inertia::render('Courses/CreateNext', [
             'courses' => $courses,
-            'breadcrumbs' => Breadcrumbs::generate('school.courses.create-next', $school, $schoolLevel),
+            'breadcrumbs' => Breadcrumbs::generate('school.course.create-next', $school, $schoolLevel),
             'school' => $school,
             'selectedLevel' => $schoolLevel,
             'schoolShifts' => $schoolShifts,
         ]);
+    }
+
+    public function storeNext(Request $request, School $school, SchoolLevel $schoolLevel)
+    {
+        $doCreate = true;
+        $result = $this->courseService->calculateNextCourses($request, $school, $schoolLevel, $doCreate);
+
+        Log::debug('🔍 storeNext', [
+            'result' => $result
+        ]);
+
+        return redirect()->route('school.courses', [
+            'school' => $school->slug,
+            'schoolLevel' => $schoolLevel->code
+        ])->with('success', 'Cursos creados correctamente');
     }
 
     public function store(Request $request)
