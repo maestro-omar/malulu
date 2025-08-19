@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use App\Models\Entities\Course;
-use App\Models\Entities\School;
-use App\Models\Catalogs\SchoolLevel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -12,9 +10,12 @@ use Illuminate\Validation\ValidationException;
 use App\Models\Relations\StudentCourse;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
+use App\Traits\CourseNext;
 
 class CourseService
 {
+    use CourseNext;
+
     /**
      * Get courses with filters
      */
@@ -323,48 +324,7 @@ class CourseService
         if (!is_array($teacherCourses))
             $teacherCourses = $teacherCourses->all();
         foreach ($teacherCourses as $teacherCourse) {
-            dd($teacherCourse->course);
+            dd('parseTeacherCourses', $teacherCourse->course);
         }
-    }
-
-    public function calculateNextCourses(Request $request, School $school, SchoolLevel $schoolLevel)
-    {
-        $year = date('Y');
-        $request->merge([
-            'school_level_id' => $schoolLevel->id,
-            'school_id' => $school->id,
-            'year' => $year,
-            'active' => true,
-            'no_next' => true,
-            'no_paginate' => true,
-        ]);
-
-        $courses = $this->getCourses($request, $school->id);
-
-        $nextCourses = [];
-        foreach ($courses as $course) {
-            $nextCourse = $this->calculateNextCourse($course);
-            $nextCourses[$course['id']] = $nextCourse;
-        }
-
-        return $courses;
-    }
-
-    private function calculateNextCourse(Course $course)
-    {
-        throw new \Exception('Not implemented - Developing');
-        $startDate =  new \DateTime($course->start_date);
-        $number = $course->number;
-        $letter = $course->letter;
-        $nextNumber = $number + 1;
-        $nextLetter = $letter;
-        $nextCourseExists = Course::where('number', $nextNumber)
-            ->where('letter', $nextLetter)
-            ->where('school_id', $course->school_id)
-            ->where('school_level_id', $course->school_level_id)
-            // ->where('school_shift_id', $course->school_shift_id)
-            // ->where('active', true)
-            ->first();
-        return $nextCourse;
     }
 }

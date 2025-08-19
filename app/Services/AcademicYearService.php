@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use App\Helpers\DateHelper;
 
 class AcademicYearService
 {
@@ -97,5 +98,36 @@ class AcademicYearService
     {
         $academicYear = AcademicYear::onlyTrashed()->findOrFail($id);
         return $academicYear->forceDelete();
+    }
+
+    public static function isSummerOnDecember(): bool
+    {
+        return config('malulu.summer_on_december');
+    }
+
+    public static function findOrCreateByYear(int $year): AcademicYear
+    {
+        $exists = AcademicYear::findByYear($year);
+        if ($exists) return $exists;
+        if (self::isSummerOnDecember()) {
+            $startDate = DateHelper::findMonday(new \DateTimeImmutable($year . '-02-27'));
+            $endDate = DateHelper::findFriday(new \DateTimeImmutable($year . '-12-15'));
+            $winterBreakStartDate = DateHelper::findMonday(new \DateTimeImmutable($year . '-07-05'));
+            $winterBreakEndDate =  $winterBreakStartDate->add(new \DateInterval('P14D'));
+        } else {
+            $startDate = DateHelper::findMonday(new \DateTimeImmutable($year . '-08-27'));
+            $endDate = DateHelper::findFriday(new \DateTimeImmutable(($year + 1) . '-06-15'));
+            $winterBreakStartDate = DateHelper::findMonday(new \DateTimeImmutable($year . '-12-20'));
+            $winterBreakEndDate =  $winterBreakStartDate->add(new \DateInterval('P14D'));
+        }
+        $data = [
+            'active' => true,
+            'year' => $year,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'winter_break_start' => $winterBreakStartDate,
+            'winter_break_end' => $winterBreakEndDate,
+        ];
+        return AcademicYear::create($data);
     }
 }

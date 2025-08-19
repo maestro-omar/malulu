@@ -75,7 +75,14 @@ class AcademicYear extends Model
      */
     public function courses()
     {
-        return $this->hasMany(Course::class);
+        return Course::where(function ($query) {
+            $query->where('start_date', '>=', $this->start_date)
+                ->where('start_date', '<=', $this->end_date);
+        })->orWhere(function ($query) {
+            $query->whereNotNull('end_date')
+                ->where('end_date', '>=', $this->start_date)
+                ->where('end_date', '<=', $this->end_date);
+        })->get();
     }
 
     /**
@@ -122,5 +129,18 @@ class AcademicYear extends Model
     public function isWinterBreak(\DateTime $date): bool
     {
         return $date >= $this->winter_break_start && $date <= $this->winter_break_end;
+    }
+
+
+    public static function findByDate(\DateTime $date)
+    {
+        return self::where('start_date', '<=', $date)
+            ->where('end_date', '>=', $date)
+            ->first();
+    }
+
+    public function getNext()
+    {
+        return self::findByYear($this->year + 1);
     }
 }
