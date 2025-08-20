@@ -2,7 +2,7 @@
 import EmailField from '@/Components/admin/EmailField.vue';
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
-import RoleBadge from '@/Components/badges/RoleBadge.vue';
+import RoleBadge from '@/Components/Badges/RoleBadge.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';

@@ -223,10 +223,11 @@
 </template>
 
 <script setup>
-import RoleBadge from '@/Components/badges/RoleBadge.vue';
-import SchoolLevelBadge from '@/Components/badges/SchoolLevelBadge.vue';
+import RoleBadge from '@/Components/Badges/RoleBadge.vue';
+import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import { schoolLevelOptions } from '@/Composables/schoolLevelOptions';
-import { formatDate, getCourseSlug } from '@/utils/strings';
+import { getCourseSlug } from '@/utils/strings';
+import { formatDate } from '@/utils/date';
 import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 

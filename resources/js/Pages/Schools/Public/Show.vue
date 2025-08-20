@@ -83,9 +83,9 @@
 <script setup>
 import EmailField from "@/Components/admin/EmailField.vue";
 import PhoneField from "@/Components/admin/PhoneField.vue";
-import ManagementTypeBadge from "@/Components/badges/ManagementTypeBadge.vue";
-import SchoolLevelBadge from "@/Components/badges/SchoolLevelBadge.vue";
-import SchoolShiftBadge from "@/Components/badges/SchoolShiftBadge.vue";
+import ManagementTypeBadge from "@/Components/Badges/ManagementTypeBadge.vue";
+import SchoolLevelBadge from "@/Components/Badges/SchoolLevelBadge.vue";
+import SchoolShiftBadge from "@/Components/Badges/SchoolShiftBadge.vue";
 import { schoolLevelOptions } from '@/Composables/schoolLevelOptions';
 import SchoolLayout from '@/Layouts/SchoolLayout.vue';
 import GuestHeader from "@/Sections/GuestHeader.vue";

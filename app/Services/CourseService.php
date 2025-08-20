@@ -327,4 +327,83 @@ class CourseService
             dd('parseTeacherCourses', $teacherCourse->course);
         }
     }
+
+
+    public function getStudents(Course $course)
+    {
+        $students = $course->courseStudents->load(['roleRelationship.user', 'endReason']);
+        // student_relationships OMAR PREGUNTA ¿esta relacion es redundante? ¿estuvo hecha para facilitar búsquedas?
+        $parsedStudents = $students->map(function ($oneRel) {
+            return $this->parseRelatedStudent($oneRel);
+        }, $students);
+        $parsedStudents = $parsedStudents->sortBy([['rel.end_date'], ['user.lastname'], ['user.firstname']]);
+        return $parsedStudents->values()->all();
+    }
+
+    public function getTeachers(Course $course)
+    {
+        $teachers = $course->courseTeachers->load(['roleRelationship.user',]);
+        $parsedTeachers =  $teachers->map(function ($oneRel) {
+            return $this->parseRelatedTeacher($oneRel);
+        });
+        $parsedTeachers = $parsedTeachers->sortBy([['rel.in_charge'], ['user.lastname'], ['user.firstname']]);
+        return $parsedTeachers;
+    }
+
+    private function parseRelatedStudent(object $studentRel)
+    {
+        $user = $studentRel->roleRelationship->user->load(['province']);
+        $student = [
+            "rel_id" => $studentRel->id,
+            "id" => $user->id,
+            "photo" => $user->photo,
+            "name" => $user->name,
+            "firstname" => $user->firstname,
+            "lastname" => $user->lastname,
+            "id_number" => $user->id_number,
+            "gender" => $user->gender,
+            "birthdate" => $user->birthdate->format('Y-m-d'),
+            "age" => $user->birthdate->diffInYears(now()),
+            "phone" => $user->phone,
+            "address" => $user->address,
+            "locality" => $user->locality,
+            "province" => $user->province->name,
+            "nationality" => $user->nationality,
+            "picture" => $user->picture,
+            "rel_start_date" => $studentRel->start_date->format('Y-m-d'),
+            "rel_end_date" => $studentRel->end_date ? $studentRel->end_date->format('Y-m-d') : null,
+            "rel_end_reason" => $studentRel->end_reason_id ? $studentRel->endReason->name : null,
+            "rel_notes" => $studentRel->notes,
+            "rel_custom_fields" => $studentRel->custom_fields,
+        ];
+        return $student;
+    }
+
+    private function parseRelatedTeacher(object $teacherRel)
+    {
+        $user = $teacherRel->roleRelationship->user->load(['province']);
+        $teacher = [
+            "rel_id" => $teacherRel->id,
+            "id" => $user->id,
+            "photo" => $user->photo,
+            "name" => $user->name,  
+            "firstname" => $user->firstname,
+            "lastname" => $user->lastname,
+            "id_number" => $user->id_number,
+            "gender" => $user->gender,
+            "birthdate" => $user->birthdate->format('Y-m-d'),
+            "age" => $user->birthdate->diffInYears(now()),
+            "phone" => $user->phone,
+            "address" => $user->address,
+            "locality" => $user->locality,
+            "province" => $user->province->name,
+            "nationality" => $user->nationality,
+            "picture" => $user->picture,
+            "rel_start_date" => $teacherRel->start_date->format('Y-m-d'),
+            "rel_end_date" => $teacherRel->end_date ? $teacherRel->end_date->format('Y-m-d') : null,
+            "rel_in_charge" => $teacherRel->in_charge,
+            "rel_notes" => $teacherRel->notes,
+        ];
+        return $teacher;
+    }
 }

@@ -135,9 +135,9 @@
 <script setup>
 import Pagination from '@/Components/admin/Pagination.vue';
 import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
-import ManagementTypeBadge from '@/Components/badges/ManagementTypeBadge.vue';
-import SchoolLevelBadge from '@/Components/badges/SchoolLevelBadge.vue';
-import SchoolShiftBadge from '@/Components/badges/SchoolShiftBadge.vue';
+import ManagementTypeBadge from '@/Components/Badges/ManagementTypeBadge.vue';
+import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
+import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import GuestHeader from '@/Sections/GuestHeader.vue';
 import { Head, Link, router } from '@inertiajs/vue3';

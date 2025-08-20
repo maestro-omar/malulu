@@ -142,7 +142,7 @@
 <script setup>
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
-import SchoolLevelBadge from '@/Components/badges/SchoolLevelBadge.vue';
+import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/utils/permissions';

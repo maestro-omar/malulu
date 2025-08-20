@@ -99,7 +99,7 @@ class Course extends Model
     /**
      * Get the teacher courses (assignments) for this course.
      */
-    public function teacherCourses(): HasMany
+    public function courseTeachers(): HasMany
     {
         return $this->hasMany(TeacherCourse::class);
     }

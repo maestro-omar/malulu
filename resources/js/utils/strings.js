@@ -29,6 +29,16 @@ export function slugify(text) {
 }
 
 
+export function getUserSlug(user) {
+  if (!user) return '';
+  if (user.id_and_name) return user.id_and_name;
+
+  // Build the base slug with ID, number and letter
+  let slug = user.id + '-' + user.lastname + '-' + user.firstname;
+
+  return slugify(slug);
+}
+
 export function getCourseSlug(course) {
   if (!course) return '';
   if (course.id_and_label) return course.id_and_label;
@@ -44,8 +54,4 @@ export function getCourseSlug(course) {
   // slug += '-' +  course.start_date.format('Y');
 
   return slugify(slug);
-}
-
-export function formatDate(date) {
-  return new Date(date).toLocaleDateString();
 }

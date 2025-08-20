@@ -182,9 +182,15 @@ class CourseController extends SchoolBaseController
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse']);
 
+        
+        $students = $this->courseService->getStudents($course);
+        $teachers = $this->courseService->getTeachers($course);
+
         return Inertia::render($view, [
             'course' => $course,
             'school' => $school,
+            'students' => $students,
+            'teachers' => $teachers,
             'selectedLevel' => $schoolLevel,
             'breadcrumbs' => Breadcrumbs::generate('school.course.show', $school, $schoolLevel, $course),
         ]);
