@@ -4,24 +4,29 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use Illuminate\Support\Facades\Log;
+// use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Entities\School;
-use App\Models\Catalogs\Role;
-use Spatie\Permission\Models\Permission;
+// use App\Models\Catalogs\Role;
+// use Spatie\Permission\Models\Permission;
 use App\Services\UserContextService;
+
 
 class HandleInertiaRequests extends Middleware
 {
     /**
-     * The root template that is loaded on the first page visit.
+     * The root template that's loaded on the first page visit.
+     *
+     * @see https://inertiajs.com/server-side-setup#root-template
      *
      * @var string
      */
     protected $rootView = 'app';
 
     /**
-     * Determine the current asset version.
+     * Determines the current asset version.
+     *
+     * @see https://inertiajs.com/asset-versioning
      */
     public function version(Request $request): string|null
     {
@@ -30,6 +35,8 @@ class HandleInertiaRequests extends Middleware
 
     /**
      * Define the props that are shared by default.
+     *
+     * @see https://inertiajs.com/shared-data
      *
      * @return array<string, mixed>
      */
@@ -47,6 +54,8 @@ class HandleInertiaRequests extends Middleware
         // dd($flash);
         return [
             ...parent::share($request),
+            //
+            'appName' => config('app.name', 'Malulu'),
             'auth' => [
                 'user' => $user ? [
                     'id' => $user->id,
@@ -84,13 +93,12 @@ class HandleInertiaRequests extends Middleware
             return [];
         }
 
-        $items = [
-            [
-                'name' => 'Inicio',
-                'route' => 'dashboard',
-                'icon' => 'home',
-            ],
-        ];
+        $items = [];
+        // $items[] =[
+        //         'name' => 'Inicio',
+        //         'route' => 'dashboard',
+        //         'icon' => 'home',
+        //     ];
 
         // Add more menu items based on user permissions
         if ($user->can('user.manage')) {

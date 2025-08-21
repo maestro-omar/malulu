@@ -1,50 +1,52 @@
+<template>
+  <AuthLayout :title="pageTitle">
+    <q-page class="auth__container">
+
+      <Head :title="pageTitle" />
+
+      <q-card class="auth__card">
+        <q-card-section class="auth__header">
+          <h4 class="auth__header-title">{{ pageTitle }}</h4>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="auth__content">
+          <div class="auth__description">
+            This is a secure area of the application. Please confirm your password before continuing.
+          </div>
+
+          <q-form @submit="submit" class="auth__form">
+            <q-input v-model="form.password" type="password" label="Password" :error="!!form.errors.password"
+              :error-message="form.errors.password" required autocomplete="current-password" autofocus outlined dense />
+          </q-form>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="between">
+          <q-btn type="submit" :loading="form.processing" color="primary" label="Confirm" @click="submit" unelevated
+            class="auth__button" />
+        </q-card-actions>
+      </q-card>
+    </q-page>
+  </AuthLayout>
+</template>
+
 <script setup>
-import MinimalAuthLayout from '@/Layouts/MinimalAuthLayout.vue';
-import InputError from '@/Components/admin/InputError.vue';
-import InputLabel from '@/Components/admin/InputLabel.vue';
-import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
-import TextInput from '@/Components/admin/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import AuthLayout from '@/Layout/AuthLayout.vue';
+
+const pageTitle = ref('Confirm Password');
 
 const form = useForm({
-    password: '',
+  password: '',
 });
 
 const submit = () => {
-    form.post(route('password.confirm'), {
-        onFinish: () => form.reset(),
-    });
+  form.post(route('password.confirm'), {
+    onFinish: () => form.reset(),
+  });
 };
 </script>
-
-<template>
-    <MinimalAuthLayout>
-        <Head title="Confirm Password" />
-
-        <div class="auth__description">
-            This is a secure area of the application. Please confirm your password before continuing.
-        </div>
-
-        <form @submit.prevent="submit" class="auth__form">
-            <div class="auth__field">
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="admin-form__input--full-width"
-                    v-model="form.password"
-                    required
-                    autocomplete="current-password"
-                    autofocus
-                />
-                <InputError :message="form.errors.password" />
-            </div>
-
-            <div class="auth__actions">
-                <PrimaryButton :processing="form.processing">
-                    Confirm
-                </PrimaryButton>
-            </div>
-        </form>
-    </MinimalAuthLayout>
-</template>

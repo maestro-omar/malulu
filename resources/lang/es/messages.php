@@ -27,7 +27,8 @@ return [
     'not_registered' => '¿No estás registrado?',
 
     'trouble_clicking_button' => 'Si tienes problemas para hacer clic en el botón ":actionText", copia y pega la URL de abajo en tu navegador web:',
-    'All rights reserved.' => '¡Todos los derechos reservados!',
+    'all_rights_reserved' => '¡Todos los derechos reservados!',
+    'all_rights_reserved_bis' => '¡Todos los derechos reservados!!',
 
     'password-reset' => [
         'subject' => 'Recuperá tu contraseña',

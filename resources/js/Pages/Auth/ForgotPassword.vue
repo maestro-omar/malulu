@@ -1,67 +1,63 @@
+<template>
+  <AuthLayout :title="pageTitle">
+    <q-page class="auth__container">
+
+      <Head :title="pageTitle" />
+
+      <q-card class="auth__card">
+        <q-card-section class="auth__header">
+          <h4 class="auth__header-title">{{ pageTitle }}</h4>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="auth__content">
+          <div class="auth__description">
+            ¿Olvidaste tu contraseña? No hay problema. Solo dinos tu dirección de correo electrónico y te enviaremos un
+            enlace
+            para restablecer tu contraseña que te permitirá elegir una nueva.
+          </div>
+
+          <div v-if="status" class="auth__status" v-html="status"></div>
+
+          <q-form @submit="submit" class="auth__form">
+            <q-input v-model="form.email" type="email" label="Correo electrónico" :error="!!form.errors.email"
+              :error-message="form.errors.email" required autofocus autocomplete="username" outlined dense />
+          </q-form>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="between">
+          <Link :href="route('login')" class="auth__link">
+          ¿Recuerdas tu contraseña?
+          </Link>
+
+          <q-btn type="submit" :loading="form.processing" color="primary" label="Enviar" @click="submit" unelevated />
+        </q-card-actions>
+      </q-card>
+    </q-page>
+  </AuthLayout>
+</template>
+
 <script setup>
-import MinimalAuthLayout from '@/Layouts/MinimalAuthLayout.vue';
-import InputError from '@/Components/admin/InputError.vue';
-import InputLabel from '@/Components/admin/InputLabel.vue';
-import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
-import TextInput from '@/Components/admin/TextInput.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
-import { watch } from 'vue';
+import { ref } from 'vue';
+import AuthLayout from '@/Layout/AuthLayout.vue';
 
 defineProps({
-    status: {
-        type: String,
-    },
+  status: {
+    type: String,
+  },
 });
 
+const pageTitle = ref('Olvidé mi Contraseña');
+
 const form = useForm({
-    email: '',
+  email: '',
 });
 
 const submit = () => {
-    form.post(route('password.email'));
+  form.post(route('password.email'));
 };
 </script>
-
-<template>
-    <MinimalAuthLayout>
-        <Head title="Olvidé mi Contraseña" />
-
-        <div class="auth__description">
-            ¿Olvidaste tu contraseña? No hay problema. Solo dinos tu dirección de correo electrónico y te enviaremos un enlace
-            para restablecer tu contraseña que te permitirá elegir una nueva.
-        </div>
-
-        <div v-if="status" class="auth__status" v-html="status"></div>
-
-        <form @submit.prevent="submit" class="auth__form">
-            <div class="auth__field">
-                <InputLabel for="email" value="Correo electrónico" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="admin-form__input--full-width"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-
-                <InputError :message="form.errors.email" />
-            </div>
-
-            <div class="auth__actions">
-                <Link
-                    :href="route('login')"
-                    class="auth__link"
-                >
-                    ¿Recuerdas tu contraseña?
-                </Link>
-
-                <PrimaryButton :processing="form.processing">
-                    Enviar
-                </PrimaryButton>
-            </div>
-        </form>
-    </MinimalAuthLayout>
-</template>

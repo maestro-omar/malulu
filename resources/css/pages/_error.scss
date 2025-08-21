@@ -1,0 +1,132 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+@use "sass:color";
+
+.error {
+  &__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: variables.$color-grey;
+  }
+
+  &__card {
+    width: 400px;
+    max-width: 90vw;
+    box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background: white;
+    padding: 2rem;
+  }
+
+  &__content {
+    text-align: center;
+  }
+
+  &__icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+
+    &-svg {
+      width: 80px;
+      height: 80px;
+      color: variables.$color-rose;
+    }
+
+    &--warning {
+      .error__icon-svg {
+        color: variables.$color-yellow;
+      }
+    }
+
+    &--error {
+      .error__icon-svg {
+        color: variables.$color-rose;
+      }
+    }
+  }
+
+  &__title {
+    @include mixins.fz(3);
+    @include mixins.lh(3);
+    font-weight: 700;
+    color: variables.$color-rose;
+    margin: 0 0 1rem 0;
+    line-height: 1;
+
+    &--warning {
+      color: variables.$color-yellow;
+    }
+
+    &--error {
+      color: variables.$color-rose;
+    }
+  }
+
+  &__message {
+    @include mixins.fz(1.6);
+    @include mixins.lh(1.6);
+    color: variables.$color-black-text;
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+  }
+
+  &__description {
+    @include mixins.fz(1.6);
+    @include mixins.lh(1.6);
+    color: variables.$color-text;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.5;
+  }
+
+  &__help {
+    @include mixins.fz(1.6);
+    @include mixins.lh(1.6);
+    color: variables.$color-secondary;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.4;
+  }
+
+  &__actions {
+    margin-top: 1.5rem;
+  }
+
+  &__button {
+    background-color: variables.$color-primary;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    @include mixins.fz(1.6);
+    @include mixins.lh(1.6);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+
+    &:hover {
+      background-color: color.scale(variables.$color-primary, $lightness: -10%);
+      text-decoration: none;
+      color: white;
+    }
+
+    &--primary {
+      background-color: variables.$color-primary;
+
+      &:hover {
+        background-color: color.scale(variables.$color-primary, $lightness: -10%);
+      }
+    }
+
+    &--secondary {
+      background-color: variables.$color-secondary;
+
+      &:hover {
+        background-color: color.scale(variables.$color-secondary, $lightness: -10%);
+      }
+    }
+  }
+}

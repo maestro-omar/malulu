@@ -20,5 +20,6 @@ return [
         'user' => 'Hubo un error al enviar el email de recuperación. Verificá que la dirección ingresada sea correcta.',
         'reseted' => 'Se actualizó la contraseña.',
         'throttled' => 'Demasiados intentos. Por favor esperá antes de volver a intentalo.',
+        'token' => 'El token de restablecimiento de contraseña no es válido.',
     ],
 ];

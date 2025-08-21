@@ -1,263 +1,195 @@
+<template>
+  <AuthLayout :title="pageTitle">
+    <q-page class="auth__container">
+
+      <Head :title="pageTitle" />
+
+      <q-card class="auth__card" style="width: 500px;">
+        <q-card-section class="auth__header">
+          <h4 class="auth__header-title">{{ pageTitle }}</h4>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="auth__content">
+          <q-form @submit="submit" class="auth__form">
+            <q-input v-model="form.name" type="text" label="Nombre Completo" :error="!!form.errors.name"
+              :error-message="form.errors.name" required autofocus autocomplete="name" outlined dense />
+
+            <div class="auth__row">
+              <div class="auth__col">
+                <q-input v-model="form.firstname" type="text" label="Nombre" :error="!!form.errors.firstname"
+                  :error-message="form.errors.firstname" required autocomplete="given-name" outlined dense />
+              </div>
+
+              <div class="auth__col">
+                <q-input v-model="form.lastname" type="text" label="Apellido" :error="!!form.errors.lastname"
+                  :error-message="form.errors.lastname" required autocomplete="family-name" outlined dense />
+              </div>
+            </div>
+
+            <q-input v-model="form.id_number" type="text" label="DNI" :error="!!form.errors.id_number"
+              :error-message="form.errors.id_number" required outlined dense />
+
+            <q-input v-model="form.birthdate" type="date" label="Fecha de Nacimiento" :error="!!form.errors.birthdate"
+              :error-message="form.errors.birthdate" required outlined dense />
+
+            <q-input v-model="form.email" type="email" label="Email" :error="!!form.errors.email"
+              :error-message="form.errors.email" required autocomplete="username" outlined dense />
+
+            <q-input v-model="form.phone" type="tel" label="Teléfono" :error="!!form.errors.phone"
+              :error-message="form.errors.phone" required autocomplete="tel" outlined dense />
+
+            <q-input v-model="form.address" type="text" label="Dirección" :error="!!form.errors.address"
+              :error-message="form.errors.address" required autocomplete="street-address" outlined dense />
+
+            <q-input v-model="form.locality" type="text" label="Localidad" :error="!!form.errors.locality"
+              :error-message="form.errors.locality" required outlined dense />
+
+            <div class="auth__row">
+              <div class="auth__col">
+                <q-select v-model="form.province_id" :options="provinces" option-label="name" option-value="id"
+                  label="Provincia" :error="!!form.errors.province_id" :error-message="form.errors.province_id" required
+                  outlined dense emit-value map-options>
+                  <template v-slot:prepend>
+                    <q-icon name="location_on" />
+                  </template>
+                </q-select>
+              </div>
+
+              <div class="auth__col">
+                <q-select v-model="form.country_id" :options="countries" option-label="name" option-value="id"
+                  label="País" :error="!!form.errors.country_id" :error-message="form.errors.country_id" required
+                  outlined dense emit-value map-options>
+                  <template v-slot:prepend>
+                    <q-icon name="public" />
+                  </template>
+                </q-select>
+              </div>
+            </div>
+
+            <q-input v-model="form.nationality" type="text" label="Nacionalidad" :error="!!form.errors.nationality"
+              :error-message="form.errors.nationality" required outlined dense />
+
+            <q-input v-model="form.password" type="password" label="Contraseña" :error="!!form.errors.password"
+              :error-message="form.errors.password" required autocomplete="new-password" outlined dense />
+
+            <q-input v-model="form.password_confirmation" type="password" label="Confirmar Contraseña"
+              :error="!!form.errors.password_confirmation" :error-message="form.errors.password_confirmation" required
+              autocomplete="new-password" outlined dense />
+          </q-form>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="between">
+          <Link :href="route('login')" class="auth__link">
+          ¿Ya está registrado?
+          </Link>
+
+          <q-btn type="submit" :loading="form.processing" color="primary" label="Registrarse" @click="submit" unelevated
+            class="auth__button" />
+        </q-card-actions>
+      </q-card>
+    </q-page>
+  </AuthLayout>
+</template>
+
+<style scoped>
+.auth__container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.auth__card {
+  box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.1);
+}
+
+.auth__header {
+  text-align: center;
+  padding-bottom: 16px;
+}
+
+.auth__header-title {
+  margin-bottom: 0;
+}
+
+.auth__content {
+  padding: 16px 0;
+}
+
+.auth__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth__field {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth__row {
+  display: flex;
+  gap: 16px;
+}
+
+.auth__col {
+  flex: 1;
+}
+
+.auth__link {
+  color: #1976d2;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.auth__button {
+  width: 100%;
+}
+</style>
+
 <script setup>
-import MinimalAuthLayout from '@/Layouts/MinimalAuthLayout.vue';
-import InputError from '@/Components/admin/InputError.vue';
-import InputLabel from '@/Components/admin/InputLabel.vue';
-import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
-import TextInput from '@/Components/admin/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import SelectInput from '@/Components/admin/SelectInput.vue';
+import { ref } from 'vue';
+import AuthLayout from '@/Layout/AuthLayout.vue';
 
 const props = defineProps({
-    provinces: {
-        type: Array,
-        required: true
-    },
-    countries: {
-        type: Array,
-        required: true
-    }
+  provinces: {
+    type: Array,
+    required: true
+  },
+  countries: {
+    type: Array,
+    required: true
+  }
 });
 
+const pageTitle = ref('Registro');
+
 const form = useForm({
-    name: '',
-    firstname: '',
-    lastname: '',
-    id_number: '',
-    birthdate: '',
-    email: '',
-    phone: '',
-    address: '',
-    locality: '',
-    province_id: '',
-    country_id: '',
-    nationality: '',
-    password: '',
-    password_confirmation: '',
+  name: '',
+  firstname: '',
+  lastname: '',
+  id_number: '',
+  birthdate: '',
+  email: '',
+  phone: '',
+  address: '',
+  locality: '',
+  province_id: '',
+  country_id: '',
+  nationality: '',
+  password: '',
+  password_confirmation: '',
 });
 
 const submit = () => {
-    form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
-    });
+  form.post(route('register'), {
+    onFinish: () => form.reset('password', 'password_confirmation'),
+  });
 };
 </script>
-
-<template>
-    <MinimalAuthLayout>
-        <Head title="Register" />
-
-        <form @submit.prevent="submit" class="auth__form">
-            <div class="auth__field">
-                <InputLabel for="name" value="Nombre Completo" />
-                <TextInput
-                    id="name"
-                    type="text"
-                    name="name"
-                    v-model="form.name"
-                    class="admin-form__input--full-width"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
-                <InputError :message="form.errors.name" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="firstname" value="Nombre" />
-                <TextInput
-                    id="firstname"
-                    type="text"
-                    name="firstname"
-                    v-model="form.firstname"
-                    class="admin-form__input--full-width"
-                    required
-                    autocomplete="given-name"
-                />
-                <InputError :message="form.errors.firstname" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="lastname" value="Apellido" />
-                <TextInput
-                    id="lastname"
-                    type="text"
-                    name="lastname"
-                    v-model="form.lastname"
-                    class="admin-form__input--full-width"
-                    required
-                    autocomplete="family-name"
-                />
-                <InputError :message="form.errors.lastname" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="id_number" value="DNI" />
-                <TextInput
-                    id="id_number"
-                    type="text"
-                    name="id_number"
-                    v-model="form.id_number"
-                    class="admin-form__input--full-width"
-                    required
-                />
-                <InputError :message="form.errors.id_number" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="birthdate" value="Fecha de Nacimiento" />
-                <TextInput
-                    id="birthdate"
-                    type="date"
-                    name="birthdate"
-                    v-model="form.birthdate"
-                    class="admin-form__input--full-width"
-                    required
-                />
-                <InputError :message="form.errors.birthdate" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    type="email"
-                    name="email"
-                    v-model="form.email"
-                    class="admin-form__input--full-width"
-                    required
-                    autocomplete="username"
-                />
-                <InputError :message="form.errors.email" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="phone" value="Teléfono" />
-                <TextInput
-                    id="phone"
-                    type="tel"
-                    name="phone"
-                    v-model="form.phone"
-                    class="admin-form__input--full-width"
-                    required
-                    autocomplete="tel"
-                />
-                <InputError :message="form.errors.phone" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="address" value="Dirección" />
-                <TextInput
-                    id="address"
-                    type="text"
-                    name="address"
-                    v-model="form.address"
-                    class="admin-form__input--full-width"
-                    required
-                    autocomplete="street-address"
-                />
-                <InputError :message="form.errors.address" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="locality" value="Localidad" />
-                <TextInput
-                    id="locality"
-                    type="text"
-                    name="locality"
-                    v-model="form.locality"
-                    class="admin-form__input--full-width"
-                    required
-                />
-                <InputError :message="form.errors.locality" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="province_id" value="Provincia" />
-                <SelectInput
-                    id="province_id"
-                    name="province_id"
-                    v-model="form.province_id"
-                    class="admin-form__input--full-width"
-                    required
-                >
-                    <option value="">Seleccione una provincia</option>
-                    <option v-for="province in provinces" :key="province.id" :value="province.id">
-                        {{ province.name }}
-                    </option>
-                </SelectInput>
-                <InputError :message="form.errors.province_id" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="country_id" value="País" />
-                <SelectInput
-                    id="country_id"
-                    name="country_id"
-                    v-model="form.country_id"
-                    class="admin-form__input--full-width"
-                    required
-                >
-                    <option value="">Seleccione un país</option>
-                    <option v-for="country in countries" :key="country.id" :value="country.id">
-                        {{ country.name }}
-                    </option>
-                </SelectInput>
-                <InputError :message="form.errors.country_id" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="nationality" value="Nacionalidad" />
-                <TextInput
-                    id="nationality"
-                    type="text"
-                    name="nationality"
-                    v-model="form.nationality"
-                    class="admin-form__input--full-width"
-                    required
-                />
-                <InputError :message="form.errors.nationality" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="password" value="Contraseña" />
-                <TextInput
-                    id="password"
-                    type="password"
-                    name="password"
-                    v-model="form.password"
-                    class="admin-form__input--full-width"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError :message="form.errors.password" />
-            </div>
-
-            <div class="auth__field">
-                <InputLabel for="password_confirmation" value="Confirmar Contraseña" />
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    name="password_confirmation"
-                    v-model="form.password_confirmation"
-                    class="admin-form__input--full-width"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError :message="form.errors.password_confirmation" />
-            </div>
-
-            <div class="auth__actions">
-                <Link
-                    :href="route('login')"
-                    class="auth__link"
-                >
-                    ¿Ya está registrado?
-                </Link>
-
-                <PrimaryButton :processing="form.processing">
-                    Registrarse
-                </PrimaryButton>
-            </div>
-        </form>
-    </MinimalAuthLayout>
-</template>

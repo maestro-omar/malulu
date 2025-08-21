@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+import { quasar, transformAssetUrls } from '@quasar/vite-plugin';
+import { fileURLToPath } from 'url';
 import path from 'path';
 
 export default defineConfig({
@@ -17,6 +19,14 @@ export default defineConfig({
                 },
             },
         }),
+
+        // @quasar/plugin-vite options list:
+        // https://github.com/quasarframework/quasar/blob/dev/vite-plugin/index.d.ts
+        quasar({
+            sassVariables: fileURLToPath(
+                new URL('./resources/css/quasar-variables.sass', import.meta.url)
+            )
+        })
     ],
     server: {
         hmr: {

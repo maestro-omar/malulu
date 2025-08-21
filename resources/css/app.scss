@@ -1,7 +1,3 @@
-// Abstracts
-@use 'abstracts/variables';
-@use 'abstracts/mixins';
-@use 'abstracts/functions';
 
 // Base
 @use 'base/reset';
@@ -11,60 +7,8 @@
 @use 'base/form';
 @use 'base/form-normalize';
 
-// Components
-@use 'components/buttons';
-@use 'components/forms';
-@use 'components/badge';
-@use 'components/role-badge';
-@use 'components/school-level-badge';
-@use 'components/school-shift-badge';
-@use 'components/management-type-badge';
 
-// Admin Components
-@use 'components/admin-button';
-@use 'components/admin-navigation';
-@use 'components/admin-nav-link';
-@use 'components/admin-nav-breadcrumbs';
-@use 'components/admin-dropdown';
-@use 'components/admin-modals';
-@use 'components/admin-misc';
-@use 'components/action-buttons';
-@use 'components/user-info';
-@use 'components/editable-image';
-@use 'components/flash-messages';
-@use 'components/shift-badge';
-@use 'components/app-logo';
-@use 'components/language-switcher';
-@use 'components/pagination';
-@use 'components/admin-checkbox-with-label';
-@use 'components/table';
-@use 'components/admin-details';
-@use 'components/phone-field';
-@use 'components/email-field';
-@use 'components/schools-roles-card';
-@use 'components/user-information';
-@use 'components/admin-form';
-@use 'components/course-popover';
-
-// Layouts
-@use 'layouts/header';
-@use 'layouts/footer';
-@use 'layouts/authenticated';
-@use 'layouts/guest';
-@use 'layouts/guest-header';
-@use 'layouts/minimal-auth';
-@use 'layouts/error-layout';
-@use 'layouts/school';
-
-// Pages
-@use 'pages/dashboard';
-@use 'pages/auth';
-@use 'pages/admin';
-@use 'pages/user-create';
-@use 'pages/welcome';
-@use 'pages/delete-user';
-@use 'pages/province-show';
-@use 'pages/error-page';
-@use 'pages/schools';
-@use 'pages/school-public';
-@use 'pages/schools-public';
+@use 'pages/auth.scss';
+@use 'pages/error.scss';
+@use 'pages/welcome.scss';
+@use 'pages/dashboard.scss';
