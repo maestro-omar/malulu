@@ -27,11 +27,11 @@ Este proyecto utiliza:
 
 ### 🌐 Frontend (SPA)
 
-- **Vite** (`^4.5`) – Bundler moderno
+- **Vite** (`^5.0`) – Bundler moderno
 - **Vue 3.4** – Framework progresivo y reactivo
+- **Quasar** – Framwork
 - **Inertia.js** (`^0.6.8`) – Integración Laravel + Vue sin necesidad de API REST
 - **SASS** – Preprocesador CSS con metodología BEM para estilos modulares y mantenibles
-
 ---
 
 ## 🛠️ Requisitos
@@ -57,4 +57,5 @@ php artisan migrate --seed
 
 # Frontend
 npm install
+npm run build
 npm run dev --hosts

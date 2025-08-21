@@ -9,6 +9,12 @@ use App\Models\Catalogs\District;
 use App\Models\Catalogs\Locality;
 use App\Models\Entities\Course;
 
+use App\Models\Entities\User;
+
+function breadcrumbsGetUser(): User
+{
+    return auth()->user();
+}
 
 // 🏠 Dashboard base
 Breadcrumbs::for('dashboard', function (Trail $trail) {
@@ -59,7 +65,7 @@ Breadcrumbs::for('schools.create', function (Trail $trail) {
 });
 
 Breadcrumbs::for('school.edit', function (Trail $trail, $school) {
-    $user = auth()->user();
+    $user = breadcrumbsGetUser();
     if ($user->isSuperadmin())
         $trail->parent('school.show', $school);
     else
@@ -68,7 +74,7 @@ Breadcrumbs::for('school.edit', function (Trail $trail, $school) {
 });
 
 Breadcrumbs::for('school.show', function (Trail $trail, $school) {
-    $user = auth()->user();
+    $user = breadcrumbsGetUser();
     if ($user->isSuperadmin())
         $trail->parent('schools.index');
     else
