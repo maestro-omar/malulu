@@ -401,6 +401,30 @@ class User extends Authenticatable
             ->toArray();
     }
 
+    /**
+     * Get all available relationship types.
+     */
+    public static function gendersShort(): array
+    {
+        $map = [
+            self::GENDER_MALE => 'Masc',
+            self::GENDER_FEMALE => 'Fem',
+            self::GENDER_TRANS => 'Trans',
+            self::GENDER_FLUID => 'Fluido',
+            self::GENDER_NOBINARY => 'No-bin',
+            self::GENDER_OTHER => 'Otro'
+        ];
+
+        return collect(self::getFilteredConstants())
+            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
+            ->toArray();
+    }
+
+    public static function getGenderName(string $gender, bool $short = false): string
+    {
+        return $short ? self::gendersShort()[$gender] ?? ucfirst($gender) : self::genders()[$gender] ?? ucfirst($gender);
+    }
+
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new CustomResetPassword($token));

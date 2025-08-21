@@ -5,8 +5,10 @@
       :columnDefs="columnDefs"
       :defaultColDef="defaultColDef"
       :pagination="true"
-      :paginationPageSize="10"
+      :paginationPageSize="30"
       :domLayout="'autoHeight'"
+      :rowSelection="'single'"
+      :suppressRowClickSelection="true"
       @grid-ready="onGridReady"
     >
     </ag-grid-vue>
@@ -17,10 +19,13 @@
 import { ref, computed } from 'vue';
 import { AgGridVue } from 'ag-grid-vue3';
 import { router } from '@inertiajs/vue3';
+import noImage from "@images/no-image-person.png";
 
 // Import AG Grid styles
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+
+
 
 const props = defineProps({
   students: { type: Array, default: () => [] },
@@ -40,14 +45,31 @@ const defaultColDef = ref({
 
 const columnDefs = computed(() => [
   {
+    headerName: '#',
+    field: 'rowNumber',
+    width: 50,
+    valueGetter: (params) => {
+      // Get the current display position (1-based)
+      if (params.node && typeof params.node.rowIndex === 'number') {
+        return params.node.rowIndex + 1;
+      }
+      return 1;
+    },
+    sortable: false,
+    filter: false,
+    pinned: 'left',
+    cellClass: 'row-number-cell',
+  },
+  {
     headerName: 'Foto',
     field: 'photo',
     width: 80,
-    cellRenderer: (params) => {
-      if (params.value) {
-        return `<img src="${params.value}" alt="Foto" class="w-8 h-8 rounded-full object-cover" />`;
-      }
-      return `<img src="/img/no-image-person.png" alt="Sin foto" class="w-8 h-8 rounded-full object-cover" />`;
+    cellRenderer: 'agImageCellRenderer',
+    cellRendererParams: {
+      defaultImage: noImage,
+      width: 40,
+      height: 40,
+      borderRadius: '50%',
     },
     sortable: false,
     filter: false,
@@ -63,7 +85,7 @@ const columnDefs = computed(() => [
     width: 150,
   },
   {
-    headerName: 'Número de Identificación',
+    headerName: 'DNI',
     field: 'id_number',
     width: 180,
   },
@@ -71,12 +93,9 @@ const columnDefs = computed(() => [
     headerName: 'Género',
     field: 'gender',
     width: 100,
-    cellRenderer: (params) => {
-      return params.value === 'M' ? 'Masculino' : params.value === 'F' ? 'Femenino' : params.value;
-    },
   },
   {
-    headerName: 'Fecha de Nacimiento',
+    headerName: 'Fec nac',
     field: 'birthdate',
     width: 150,
     valueFormatter: (params) => {
@@ -90,10 +109,9 @@ const columnDefs = computed(() => [
     headerName: 'Edad',
     field: 'age',
     width: 80,
-    type: 'numericColumn',
   },
   {
-    headerName: 'Fecha de Inicio',
+    headerName: 'Inscripto',
     field: 'rel_start_date',
     width: 150,
     valueFormatter: (params) => {
@@ -137,6 +155,15 @@ const columnDefs = computed(() => [
 const onGridReady = (params) => {
   gridApi.value = params.api;
   params.api.sizeColumnsToFit();
+  
+  // Refresh row numbers when data changes
+  params.api.addEventListener('sortChanged', () => {
+    params.api.refreshCells({ force: true });
+  });
+  
+  params.api.addEventListener('filterChanged', () => {
+    params.api.refreshCells({ force: true });
+  });
 };
 
 // Expose grid API for parent components if needed
@@ -144,33 +171,3 @@ defineExpose({
   gridApi,
 });
 </script>
-
-<style scoped>
-/* Custom styles for the grid */
-:deep(.ag-theme-alpine) {
-  --ag-header-height: 50px;
-  --ag-row-height: 50px;
-  --ag-header-background-color: #f8fafc;
-  --ag-header-foreground-color: #374151;
-  --ag-border-color: #e5e7eb;
-  --ag-row-hover-color: #f3f4f6;
-}
-
-:deep(.ag-header-cell) {
-  font-weight: 600;
-  font-size: 14px;
-}
-
-:deep(.ag-cell) {
-  font-size: 14px;
-  padding: 8px;
-}
-
-:deep(.ag-row) {
-  border-bottom: 1px solid #e5e7eb;
-}
-
-:deep(.ag-row:hover) {
-  background-color: #f3f4f6;
-}
-</style>

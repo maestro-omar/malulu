@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Entities\Course;
+use App\Models\Entities\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -361,7 +362,7 @@ class CourseService
             "firstname" => $user->firstname,
             "lastname" => $user->lastname,
             "id_number" => $user->id_number,
-            "gender" => $user->gender,
+            "gender" => User::getGenderName($user->gender, true),
             "birthdate" => $user->birthdate->format('Y-m-d'),
             "age" => $user->birthdate->diffInYears(now()),
             "phone" => $user->phone,
@@ -390,7 +391,7 @@ class CourseService
             "firstname" => $user->firstname,
             "lastname" => $user->lastname,
             "id_number" => $user->id_number,
-            "gender" => $user->gender,
+            "gender" => User::getGenderName($user->gender, true),
             "birthdate" => $user->birthdate->format('Y-m-d'),
             "age" => $user->birthdate->diffInYears(now()),
             "phone" => $user->phone,
