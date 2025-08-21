@@ -25,10 +25,11 @@ class ProvinceService
         });
     }
 
-    public function createProvince(array $data)
-    {
-        return Province::create($data);
-    }
+    // public function createProvince(array $data)
+    // {
+    //     $validated = $this->validateProvinceData($data);
+    //     return Province::create($validated);
+    // }
 
     public function updateProvince(Province $province, array $data)
     {

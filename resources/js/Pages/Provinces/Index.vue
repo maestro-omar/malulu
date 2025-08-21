@@ -1,91 +1,138 @@
 <template>
-
     <Head title="Provincias" />
 
-    <AuthenticatedLayout>
-        <template #header>
-            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Provincias`" />
-        </template>
-
-        <div class="container">
+    <AuthenticatedLayout title="Provincias">
+        <q-page class="q-pa-md">
             <!-- Flash Messages -->
             <FlashMessages :flash="flash" />
 
-            <div class="table__wrapper">
-                <div class="table__container">
-                    <!-- Desktop Table View -->
-                    <div class="table__desktop">
-                        <table class="table__table">
-                            <thead class="table__thead">
-                                <tr>
-                                    <th class="table__th">Escudo</th>
-                                    <th class="table__th">Nombre</th>
-                                    <th class="table__th">Título</th>
-                                    <th class="table__th">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="table__tbody">
-                                <tr v-for="(province, index) in provinces" :key="province.id" :class="{
-                                    'table__tr--even': index % 2 === 0,
-                                    'table__tr--odd': index % 2 === 1
-                                }">
-                                    <td class="table__td table__logo">
-                                        <img v-if="province.logo1" :src="province.logo1" alt="Escudo" />
-                                    </td>
-                                    <td class="table__td table__name">{{ province.name }}</td>
-                                    <td class="table__td table__title">{{ province.title }}</td>
-                                    <td class="table__td table__actions">
-                                        <Link :href="route('provinces.show', province.code)">Ver</Link>
-                                        <Link :href="route('provinces.edit', province.code)">Editar</Link>
-                                        <button @click="deleteProvince(province.id)">Eliminar</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+            <!-- Quasar Table -->
+            <q-table
+                :rows="provinces"
+                :columns="columns"
+                row-key="id"
+                :pagination="{ rowsPerPage: 10 }"
+                class="provinces-table"
+            >
+                <!-- Custom header -->
 
-                    <!-- Mobile Card View -->
-                    <div class="table__mobile">
-                        <div v-for="(province, index) in provinces" :key="province.id" :class="{
-                            'table__card--even': index % 2 === 0,
-                            'table__card--odd': index % 2 === 1
-                        }" class="table__card">
-                            <div class="table__card-header">
-                                <div class="table__card-user">
-                                    <img v-if="province.logo1" :src="province.logo1" alt="Escudo" />
-                                    <div class="table__card-info">
-                                        <h3>{{ province.name }}</h3>
-                                        <p>{{ province.title }}</p>
-                                    </div>
-                                </div>
-                                <div class="table__card-actions">
-                                    <Link :href="route('provinces.show', province.code)">Ver</Link>
-                                    <Link :href="route('provinces.edit', province.code)">Editar</Link>
-                                    <button @click="deleteProvince(province.id)">Eliminar</button>
-                                </div>
-                            </div>
+                <!-- Custom cell for logo -->
+                <template #body-cell-logo="props">
+                    <q-td :props="props">
+                        <q-avatar v-if="props.row.logo1" size="40px">
+                            <img :src="props.row.logo1" alt="Escudo" />
+                        </q-avatar>
+                        <q-avatar v-else size="40px" color="grey-3">
+                            <q-icon name="image" color="grey-6" />
+                        </q-avatar>
+                    </q-td>
+                </template>
+
+                <!-- Custom cell for actions -->
+                <template #body-cell-actions="props">
+                    <q-td :props="props">
+                        <div class="row items-center q-gutter-sm">
+                            <q-btn
+                                flat
+                                round
+                                color="primary"
+                                icon="visibility"
+                                size="sm"
+                                :href="route('provinces.show', props.row.code)"
+                                title="Ver"
+                            />
+                            <q-btn
+                                flat
+                                round
+                                color="secondary"
+                                icon="edit"
+                                size="sm"
+                                :href="route('provinces.edit', props.row.code)"
+                                title="Editar"
+                            />
+                            <q-btn
+                                flat
+                                round
+                                color="negative"
+                                icon="delete"
+                                size="sm"
+                                @click="deleteProvince(props.row.id)"
+                                title="Eliminar"
+                            />
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </q-td>
+                </template>
+            </q-table>
+        </q-page>
     </AuthenticatedLayout>
 </template>
 
 <script setup>
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import AdminHeader from '@/Sections/AdminHeader.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { useQuasar } from 'quasar';
+
+const page = usePage();
+const $q = useQuasar();
 
 defineProps({
     provinces: Array,
     breadcrumbs: Array
 });
 
-const deleteProvince = (id) => {
-    if (confirm('¿Está seguro que desea eliminar esta provincia?')) {
-        router.delete(route('provinces.destroy', id));
+// Table columns definition
+const columns = [
+    {
+        name: 'logo',
+        label: 'Escudo',
+        field: 'logo1',
+        align: 'center',
+        sortable: false,
+        style: 'width: 80px'
+    },
+    {
+        name: 'name',
+        required: true,
+        label: 'Nombre',
+        align: 'left',
+        field: 'name',
+        sortable: true
+    },
+    {
+        name: 'title',
+        label: 'Título',
+        field: 'title',
+        align: 'left',
+        sortable: true
+    },
+    {
+        name: 'actions',
+        label: 'Acciones',
+        field: 'actions',
+        align: 'center',
+        sortable: false,
+        style: 'width: 120px'
     }
+];
+
+const deleteProvince = (id) => {
+    $q.dialog({
+        title: 'Confirmar eliminación',
+        message: '¿Está seguro que desea eliminar esta provincia?',
+        cancel: true,
+        persistent: true
+    }).onOk(() => {
+        router.delete(route('provinces.destroy', id));
+    });
 };
 </script>
+
+<style lang="scss" scoped>
+.provinces-table {
+    .q-table__top {
+        border-bottom: 1px solid #e0e0e0;
+    }
+}
+</style>
