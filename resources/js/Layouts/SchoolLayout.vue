@@ -1,5 +1,5 @@
 <script setup>
-import ApplicationLogo from '@/Components/admin/ApplicationLogo.vue';
+import SystemLogo from '@/Components/SystemLogo.vue';
 import Dropdown from '@/Components/admin/Dropdown.vue';
 import DropdownLink from '@/Components/admin/DropdownLink.vue';
 import NavLink from '@/Components/admin/NavLink.vue';
@@ -43,7 +43,7 @@ const headerStyles = computed(() => {
 // Get logo component or image
 const logoComponent = computed(() => {
     if (!school || !school.logo) {
-        return ApplicationLogo;
+        return SystemLogo;
     }
     return null;
 });

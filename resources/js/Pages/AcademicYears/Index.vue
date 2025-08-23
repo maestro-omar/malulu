@@ -1,110 +1,126 @@
 <template>
-
   <Head title="Ciclos lectivos" />
 
-  <AuthenticatedLayout>
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Ciclos Lectivos`" :add="{
-        show: hasPermission($page.props, 'superadmin', null),
-        href: route('academic-years.create'),
-        label: 'Nuevo'
-      }">
-      </AdminHeader>
-    </template>
-
-    <div class="container">
+  <AuthenticatedLayout title="Ciclos Lectivos">
+    <AdminHeader :breadcrumbs="breadcrumbs" title="Ciclos Lectivos" :add="{
+      show: hasPermission($page.props, 'superadmin', null),
+      href: route('academic-years.create'),
+      label: 'Nuevo'
+    }">
+    </AdminHeader>
+    <q-page class="q-pa-md">
       <!-- Flash Messages -->
       <FlashMessages :flash="flash" />
 
-      <div class="table__wrapper">
-        <div class="table__container">
-          <!-- Desktop Table View -->
-          <div class="table__desktop">
-            <table class="table__table">
-              <thead class="table__thead">
-                <tr>
-                  <th class="table__th">Año</th>
-                  <th class="table__th">Fecha de Inicio</th>
-                  <th class="table__th">Fecha de Fin</th>
-                  <th class="table__th">Vacaciones de Invierno</th>
-                  <th class="table__th">Acciones</th>
-                </tr>
-              </thead>
-              <tbody class="table__tbody">
-                <tr v-for="(year, index) in academicYears" :key="year.id" :class="{
-                  'table__tr--even': index % 2 === 0,
-                  'table__tr--odd': index % 2 === 1
-                }">
-                  <td class="table__td table__year">{{ year.year }}</td>
-                  <td class="table__td table__date">{{ formatDate(year.start_date) }}</td>
-                  <td class="table__td table__date">{{ formatDate(year.end_date) }}</td>
-                  <td class="table__td table__break">
-                    {{ formatDate(year.winter_break_start) }} - {{ formatDate(year.winter_break_end) }}
-                  </td>
-                  <td class="table__td table__actions">
-                    <Link :href="route('academic-years.edit', year.id)">
-                    Editar
-                    </Link>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      <!-- Quasar Table -->
+      <q-table 
+        class="mll-table mll-table--academic-years striped-table" 
+        dense 
+        :rows="academicYears" 
+        :columns="columns" 
+        row-key="id" 
+        :pagination="{ rowsPerPage: 30 }"
+      >
 
-          <!-- Mobile Card View -->
-          <div class="table__mobile">
-            <div v-for="(year, index) in academicYears" :key="year.id" :class="{
-              'table__card--even': index % 2 === 0,
-              'table__card--odd': index % 2 === 1
-            }" class="table__card">
-              <div class="table__card-header">
-                <div class="table__card-user">
-                  <div class="table__card-info">
-                    <h3>{{ year.year }}</h3>
-                    <p>Ciclo Lectivo</p>
-                  </div>
-                </div>
-                <div class="table__card-actions">
-                  <Link :href="route('academic-years.edit', year.id)">
-                  Editar
-                  </Link>
-                </div>
-              </div>
-              <div class="table__card-section">
-                <div class="table__card-label">Fecha de Inicio:</div>
-                <div class="table__card-content">{{ formatDate(year.start_date) }}</div>
-              </div>
-              <div class="table__card-section">
-                <div class="table__card-label">Fecha de Fin:</div>
-                <div class="table__card-content">{{ formatDate(year.end_date) }}</div>
-              </div>
-              <div class="table__card-section">
-                <div class="table__card-label">Vacaciones de Invierno:</div>
-                <div class="table__card-content">
-                  {{ formatDate(year.winter_break_start) }} - {{ formatDate(year.winter_break_end) }}
-                </div>
-              </div>
+        <!-- Custom cell for dates -->
+        <template #body-cell-start_date="props">
+          <q-td :props="props">
+            {{ formatDate(props.row.start_date) }}
+          </q-td>
+        </template>
+
+        <template #body-cell-end_date="props">
+          <q-td :props="props">
+            {{ formatDate(props.row.end_date) }}
+          </q-td>
+        </template>
+
+        <template #body-cell-winter_break="props">
+          <q-td :props="props">
+            {{ formatDate(props.row.winter_break_start) }} - {{ formatDate(props.row.winter_break_end) }}
+          </q-td>
+        </template>
+
+        <!-- Custom cell for actions -->
+        <template #body-cell-actions="props">
+          <q-td :props="props">
+            <div class="row items-center q-gutter-sm">
+              <q-btn
+                flat
+                round
+                color="secondary"
+                icon="edit"
+                size="sm"
+                :href="route('academic-years.edit', props.row.id)"
+                title="Editar"
+              />
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </q-td>
+        </template>
+      </q-table>
+    </q-page>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
-import { hasPermission } from '@/utils/permissions';
-import { Head, Link } from '@inertiajs/vue3';
-import { formatDate } from '../../utils/date';
+import { hasPermission } from '@/Utils/permissions';
+import { Head, usePage } from '@inertiajs/vue3';
+import { formatDate } from '@/Utils/date';
+
+const page = usePage();
 
 defineProps({
   academicYears: {
     type: Array,
     required: true
   },
-  breadcrumbs: Array
-})
+  breadcrumbs: Array,
+  flash: Object || null
+});
+
+// Table columns definition
+const columns = [
+  {
+    name: 'year',
+    required: true,
+    label: 'Año',
+    align: 'center',
+    field: 'year',
+    sortable: true,
+    style: 'width: 80px'
+  },
+  {
+    name: 'start_date',
+    label: 'Fecha de Inicio',
+    field: 'start_date',
+    align: 'center',
+    sortable: true
+  },
+  {
+    name: 'end_date',
+    label: 'Fecha de Fin',
+    field: 'end_date',
+    align: 'center',
+    sortable: true
+  },
+  {
+    name: 'winter_break',
+    label: 'Vacaciones de Invierno',
+    field: 'winter_break_start',
+    align: 'center',
+    sortable: false
+  },
+  {
+    name: 'actions',
+    label: 'Acciones',
+    field: 'actions',
+    align: 'center',
+    sortable: false,
+    classes: 'mll-table__cell-actions',
+    headerClasses: 'mll-table__cell-actions-header'
+  }
+];
 </script>

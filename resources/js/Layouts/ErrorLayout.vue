@@ -1,5 +1,5 @@
 <script setup>
-import ApplicationLogo from '@/Components/admin/ApplicationLogo.vue';
+import SystemLogo from '@/Components/SystemLogo.vue';
 import { Link } from '@inertiajs/vue3';
 
 defineProps({
@@ -20,7 +20,7 @@ defineProps({
             <header class="error-layout__header">
                 <div class="error-layout__header-container">
                     <Link href="/" class="error-layout__logo-link">
-                    <ApplicationLogo class="error-layout__logo" />
+                    <SystemLogo class="error-layout__logo" />
                     </Link>
 
                     <div v-if="canLogin" class="error-layout__nav">

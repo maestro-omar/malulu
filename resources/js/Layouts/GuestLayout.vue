@@ -1,5 +1,5 @@
 <script setup>
-import ApplicationLogo from '@/Components/admin/ApplicationLogo.vue';
+import SystemLogo from '@/Components/SystemLogo.vue';
 import { usePage, Link } from '@inertiajs/vue3';
 const page = usePage();
 const user = page.props.auth.user;
@@ -23,7 +23,7 @@ defineProps({
                 <div class="guest-layout__header-container">
                     <div class="guest-layout__header-logo-container">
                         <Link href="/">
-                            <ApplicationLogo class="guest-layout__header-logo" />
+                            <SystemLogo class="guest-layout__header-logo" />
                         </Link>
                     </div>
                     <div class="guest-layout__header-main-container">

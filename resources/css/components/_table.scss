@@ -1,0 +1,44 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+@use "sass:color";
+
+.mll-table {
+  margin: 0 auto;
+
+  &--provinces {
+    max-width: 800px;
+  }
+
+  &--file-subtypes {
+    max-width: 800px;
+  }
+
+  &__cell-actions {
+    .row {
+      justify-content: space-around;
+    }
+
+    &-header {
+      text-align: center;
+    }
+  }
+
+  thead {
+    background-color: variables.$color-grey-dark;
+    @include mixins.fz(1.2);
+    font-weight: variables.$font-normal-weight;
+    color: white;
+  }
+
+  tbody {
+    tr:nth-child(even) {
+      background-color: variables.$color-grey;
+      /* light grey */
+    }
+
+    tr:nth-child(odd) {
+      background-color: white;
+      /* white */
+    }
+  }
+}

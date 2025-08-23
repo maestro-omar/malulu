@@ -18,7 +18,7 @@ function breadcrumbsGetUser(): User
 
 // 🏠 Dashboard base
 Breadcrumbs::for('dashboard', function (Trail $trail) {
-    $trail->push('Inicio', route('dashboard'));
+    $trail->push('Inicio', route('dashboard'),['icon' => 'home']);
 });
 
 // 👤 Perfil
@@ -131,7 +131,7 @@ Breadcrumbs::for('provinces.edit', function (Trail $trail, $province) {
 // 📁 Tipos de archivo
 Breadcrumbs::for('file-types.index', function (Trail $trail) {
     $trail->parent('dashboard');
-    $trail->push('Tipos de archivo', route('file-types.index'));
+    $trail->push('Tipos de archivo', route('file-types.index'), ['icon' => 'topic']);
 });
 
 // 📁 Tipos de archivo
@@ -143,7 +143,7 @@ Breadcrumbs::for('file-types.edit', function (Trail $trail) {
 // 📂 Subtipos de archivo
 Breadcrumbs::for('file-subtypes.index', function (Trail $trail) {
     $trail->parent('file-types.index');
-    $trail->push('Subtipos de archivo', route('file-subtypes.index'));
+    $trail->push('Subtipos de archivo', route('file-subtypes.index'), ['icon' => 'subdirectory_arrow_right']);
 });
 
 // 📂 Subtipos de archivo

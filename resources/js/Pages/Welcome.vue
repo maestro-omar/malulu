@@ -1,5 +1,5 @@
 <script setup>
-import ApplicationLogo from '@/Components/admin/ApplicationLogo.vue';
+import SystemLogo from '@/Components/SystemLogo.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
 defineProps({
@@ -42,7 +42,7 @@ const appName = import.meta.env.VITE_APP_NAME || 'Malulu'
 
         <div class="welcome__main">
             <div class="welcome__logo">
-                <ApplicationLogo />
+                <SystemLogo />
             </div>
             <div class="welcome__title">
                 <h1>{{ appName }}</h1>

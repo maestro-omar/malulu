@@ -1,0 +1,60 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
+// Admin Header Layout Utilities
+.mll-sub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    & &__content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 5px 0;
+    }
+
+    & &__title-and-buttons {
+        display: flex;
+        flex-direction: row;
+
+    }
+
+    & &__title {
+        max-width: 80%;
+        flex-shrink: 0;
+        margin: 0;
+        display: flex;
+        align-items: center; // Vertically center text/content
+        @include mixins.fz(2.6);
+        @include mixins.lh(2.6);
+    }
+
+    & &__actions {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: column;
+        gap: 0.5rem; // space-y-2
+
+        @media (min-width: 768px) {
+            // md: breakpoint
+            margin-left: 20px;
+            flex-direction: row;
+            gap: 1rem; // md:space-x-4
+
+            // Reset vertical spacing on md+
+            >* {
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+
+            &--more {
+                border-top: 1px solid variables.$color-grey-dark;
+
+                padding-top: 15px;
+                margin: 15px 0;
+            }
+        }
+    }
+}

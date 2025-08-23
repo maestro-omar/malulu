@@ -1,70 +1,44 @@
 <template>
-    <Head title="Provincias" />
 
-    <AuthenticatedLayout title="Provincias">
-        <q-page class="q-pa-md">
-            <!-- Flash Messages -->
-            <FlashMessages :flash="flash" />
+  <Head title="Provincias" />
 
-            <!-- Quasar Table -->
-            <q-table
-                :rows="provinces"
-                :columns="columns"
-                row-key="id"
-                :pagination="{ rowsPerPage: 10 }"
-                class="provinces-table"
-            >
-                <!-- Custom header -->
+  <AuthenticatedLayout title="Provincias">
+    <q-page class="q-pa-md">
+      <!-- Flash Messages -->
+      <FlashMessages :flash="flash" />
 
-                <!-- Custom cell for logo -->
-                <template #body-cell-logo="props">
-                    <q-td :props="props">
-                        <q-avatar v-if="props.row.logo1" size="40px">
-                            <img :src="props.row.logo1" alt="Escudo" />
-                        </q-avatar>
-                        <q-avatar v-else size="40px" color="grey-3">
-                            <q-icon name="image" color="grey-6" />
-                        </q-avatar>
-                    </q-td>
-                </template>
+      <!-- Quasar Table -->
+      <q-table class="mll-table mll-table--provinces striped-table" dense :rows="provinces" :columns="columns" row-key="id" :pagination="{ rowsPerPage: 30 }">
+        <!-- Custom header -->
 
-                <!-- Custom cell for actions -->
-                <template #body-cell-actions="props">
-                    <q-td :props="props">
-                        <div class="row items-center q-gutter-sm">
-                            <q-btn
-                                flat
-                                round
-                                color="primary"
-                                icon="visibility"
-                                size="sm"
-                                :href="route('provinces.show', props.row.code)"
-                                title="Ver"
-                            />
-                            <q-btn
-                                flat
-                                round
-                                color="secondary"
-                                icon="edit"
-                                size="sm"
-                                :href="route('provinces.edit', props.row.code)"
-                                title="Editar"
-                            />
-                            <q-btn
-                                flat
-                                round
-                                color="negative"
-                                icon="delete"
-                                size="sm"
-                                @click="deleteProvince(props.row.id)"
-                                title="Eliminar"
-                            />
-                        </div>
-                    </q-td>
-                </template>
-            </q-table>
-        </q-page>
-    </AuthenticatedLayout>
+        <!-- Custom cell for logo -->
+        <template #body-cell-logo="props">
+          <q-td :props="props">
+            <q-avatar v-if="props.row.logo1" size="40px">
+              <img :src="props.row.logo1" alt="Escudo" />
+            </q-avatar>
+            <q-avatar v-else size="40px" color="grey-3">
+              <q-icon name="image" color="grey-6" />
+            </q-avatar>
+          </q-td>
+        </template>
+
+        <!-- Custom cell for actions -->
+        <template #body-cell-actions="props">
+          <q-td :props="props">
+            <div class="row items-center q-gutter-sm">
+              <q-btn flat round color="primary" icon="visibility" size="sm"
+                :href="route('provinces.show', props.row.code)" title="Ver" />
+              <q-btn flat round color="secondary" icon="edit" size="sm" :href="route('provinces.edit', props.row.code)"
+                title="Editar" />
+              <q-btn flat round color="negative" icon="delete" size="sm" @click="deleteProvince(props.row.id)"
+                title="Eliminar" />
+            </div>
+          </q-td>
+        </template>
+      </q-table>
+    </q-page>
+  </AuthenticatedLayout>
 </template>
 
 <script setup>
@@ -78,61 +52,63 @@ const page = usePage();
 const $q = useQuasar();
 
 defineProps({
-    provinces: Array,
-    breadcrumbs: Array
+  provinces: Array,
+  breadcrumbs: Array,
+  flash: Object || null
 });
 
 // Table columns definition
 const columns = [
-    {
-        name: 'logo',
-        label: 'Escudo',
-        field: 'logo1',
-        align: 'center',
-        sortable: false,
-        style: 'width: 80px'
-    },
-    {
-        name: 'name',
-        required: true,
-        label: 'Nombre',
-        align: 'left',
-        field: 'name',
-        sortable: true
-    },
-    {
-        name: 'title',
-        label: 'Título',
-        field: 'title',
-        align: 'left',
-        sortable: true
-    },
-    {
-        name: 'actions',
-        label: 'Acciones',
-        field: 'actions',
-        align: 'center',
-        sortable: false,
-        style: 'width: 120px'
-    }
+  {
+    name: 'logo',
+    label: 'Escudo',
+    field: 'logo1',
+    align: 'center',
+    sortable: false,
+    style: 'width: 80px'
+  },
+  {
+    name: 'name',
+    required: true,
+    label: 'Nombre',
+    align: 'left',
+    field: 'name',
+    sortable: true
+  },
+  {
+    name: 'title',
+    label: 'Título',
+    field: 'title',
+    align: 'left',
+    sortable: false
+  },
+  {
+    name: 'actions',
+    label: 'Acciones',
+    field: 'actions',
+    align: 'center',
+    sortable: false,
+    classes: 'mll-table__cell-actions',
+    headerClasses: 'mll-table__cell-actions-header'
+  }
 ];
 
 const deleteProvince = (id) => {
-    $q.dialog({
-        title: 'Confirmar eliminación',
-        message: '¿Está seguro que desea eliminar esta provincia?',
-        cancel: true,
-        persistent: true
-    }).onOk(() => {
-        router.delete(route('provinces.destroy', id));
-    });
+  $q.dialog({
+    title: 'Confirmar eliminación',
+    message: '¿Está seguro que desea eliminar esta provincia?',
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    router.delete(route('provinces.destroy', id));
+  });
 };
 </script>
 
 <style lang="scss" scoped>
 .provinces-table {
-    .q-table__top {
-        border-bottom: 1px solid #e0e0e0;
-    }
+  .q-table__top {
+    border-bottom: 1px solid #e0e0e0;
+  }
 }
 </style>

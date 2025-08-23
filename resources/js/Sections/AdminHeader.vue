@@ -1,32 +1,33 @@
 <template>
-  <div class="admin-header">
-    <div class="admin-header__content">
+
+  <q-toolbar class="bg-accent text-white mll-sub-header">
+    <div class="mll-sub-header__content">
       <Breadcrumb v-if="breadcrumbs" :breadcrumbs="breadcrumbs" />
-      <div class="admin-header__title-and-buttons">
-        <h2 class="admin-header__title page-subtitle">
+      <div class="mll-sub-header__title-and-buttons">
+        <q-toolbar-title class="mll-sub-header__title">
           {{ title }}
-        </h2>
-        <div class="admin-header__actions">
-          <Link v-if="add && add.show" :href="add.href" class="admin-button admin-button--top admin-button--indigo">
-          {{ add.label || 'Nuevo' }}
-          </Link>
-          <Link v-if="trashed && trashed.show" :href="trashed.href"
-            class="admin-button admin-button--top admin-button--gray">
-          {{ trashed.label || 'Eliminados' }}
-          </Link>
-          <Link v-if="edit && edit.show" :href="edit.href" class="admin-button admin-button--top admin-button--blue">
-          {{ edit.label || 'Editar' }}
-          </Link>
-          <button v-if="del && del.show" @click="del.onClick" class="admin-button admin-button--top admin-button--red">
-            {{ del.label || 'Eliminar' }}
-          </button>
+        </q-toolbar-title>
+        <div class="mll-sub-header__actions">
+            <q-btn v-if="add && add.show" :href="add.href" color="green" size="md" :label="add.label || 'Nuevo'" />
+
+            <Link v-if="trashed && trashed.show" :href="trashed.href"
+              class="admin-button admin-button--top admin-button--gray">
+            {{ trashed.label || 'Eliminados' }}
+            </Link>
+            <Link v-if="edit && edit.show" :href="edit.href" class="admin-button admin-button--top admin-button--blue">
+            {{ edit.label || 'Editar' }}
+            </Link>
+            <button v-if="del && del.show" @click="del.onClick"
+              class="admin-button admin-button--top admin-button--red">
+              {{ del.label || 'Eliminar' }}
+            </button>
         </div>
       </div>
-      <div v-if="hasAdditionalButtons" class="admin-header__actions admin-header__actions--more">
+      <div v-if="hasAdditionalButtons" class="mll-sub-header__actions mll-sub-header__actions--more">
         <slot name="additional-buttons"></slot>
       </div>
     </div>
-  </div>
+  </q-toolbar>
 </template>
 
 <script setup>

@@ -7,7 +7,7 @@
           <q-avatar>
             <SystemLogo :href="route('dashboard')" />
           </q-avatar>
-          {{ title }}
+          {{ page.props.appName }}
         </q-toolbar-title>
 
         {{ page.props.auth.user.name }} <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
@@ -48,6 +48,7 @@
 </template>
 
 <script setup>
+//OMAR IMPORTANTE: rediseñar con https://quasar.dev/layout/gallery/google-photos
 import SystemLogo from '@/Components/SystemLogo.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';

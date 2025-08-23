@@ -1,5 +1,5 @@
 <script setup>
-import ApplicationLogo from '@/Components/admin/ApplicationLogo.vue';
+import SystemLogo from '@/Components/SystemLogo.vue';
 import { Link } from '@inertiajs/vue3';
 </script>
 
@@ -7,7 +7,7 @@ import { Link } from '@inertiajs/vue3';
     <div class="minimal-auth-layout">
         <div>
             <Link href="/">
-            <ApplicationLogo class="minimal-auth-layout__logo" />
+            <SystemLogo class="minimal-auth-layout__logo" />
             </Link>
         </div>
 

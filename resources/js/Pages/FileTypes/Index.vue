@@ -1,126 +1,146 @@
 <template>
+  <Head title="Tipos de Archivo" />
 
-    <Head title="Tipos de Archivo" />
+  <AuthenticatedLayout title="Tipos de Archivo">
+    <q-page class="q-pa-md">
+      <!-- Flash Messages -->
+      <FlashMessages :flash="flash" />
 
-    <AuthenticatedLayout>
-        <template #header>
-            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Tipos de Archivo`" :add="{
-                show: hasPermission($page.props, 'superadmin', null),
-                href: route('file-types.create'),
-                label: 'Nuevo'
-            }">
-            </AdminHeader>
+      <!-- Quasar Table -->
+      <q-table 
+        class="mll-table mll-table--file-types striped-table" 
+        dense 
+        :rows="fileTypes" 
+        :columns="columns" 
+        row-key="id" 
+        :pagination="{ rowsPerPage: 30 }"
+      >
+        <!-- Custom header -->
+        <template #top>
+          <div class="row items-center justify-between q-mb-md">
+            <h4 class="q-ma-none">Tipos de Archivo</h4>
+            <q-btn
+              v-if="hasPermission($page.props, 'superadmin', null)"
+              color="primary"
+              icon="add"
+              label="Nuevo"
+              :href="route('file-types.create')"
+            />
+          </div>
         </template>
 
-        <div class="container">
-            <!-- Flash Messages -->
-            <FlashMessages :flash="flash" />
+        <!-- Custom cell for status -->
+        <template #body-cell-status="props">
+          <q-td :props="props">
+            <q-chip
+              :color="props.row.active ? 'positive' : 'negative'"
+              text-color="white"
+              size="sm"
+              :label="props.row.active ? 'Activo' : 'Inactivo'"
+            />
+          </q-td>
+        </template>
 
-            <div class="table__wrapper">
-                <div class="table__container">
-                    <!-- Desktop Table View -->
-                    <div class="table__desktop">
-                        <table class="table__table">
-                            <thead class="table__thead">
-                                <tr>
-                                    <th class="table__th">Clave</th>
-                                    <th class="table__th">Nombre</th>
-                                    <th class="table__th">Relacionado Con</th>
-                                    <th class="table__th">Estado</th>
-                                    <th class="table__th">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="table__tbody">
-                                <tr v-for="(fileType, index) in fileTypes" :key="fileType.id" :class="{
-                                    'table__tr--even': index % 2 === 0,
-                                    'table__tr--odd': index % 2 === 1
-                                }">
-                                    <td class="table__td">{{ fileType.code }}</td>
-                                    <td class="table__td">{{ fileType.name }}</td>
-                                    <td class="table__td">{{ fileType.relate_with }}</td>
-                                    <td class="table__td">
-                                        <span :class="{
-                                            'table__status': true,
-                                            'table__status--active': fileType.active,
-                                            'table__status--inactive': !fileType.active,
-                                        }">
-                                            {{ fileType.active ? 'Activo' : 'Inactivo' }}
-                                        </span>
-                                    </td>
-                                    <td class="table__td table__actions">
-                                        <Link :href="route('file-types.edit', fileType.id)">
-                                        Editar
-                                        </Link>
-                                        <button v-if="fileType.can_delete" @click="deleteFileType(fileType.id)">
-                                            Eliminar
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Mobile Card View -->
-                    <div class="table__mobile">
-                        <div v-for="(fileType, index) in fileTypes" :key="fileType.id" :class="{
-                            'table__card--even': index % 2 === 0,
-                            'table__card--odd': index % 2 === 1
-                        }" class="table__card">
-                            <div class="table__card-header">
-                                <div class="table__card-user">
-                                    <div class="table__card-info">
-                                        <h3>{{ fileType.name }}</h3>
-                                        <p>{{ fileType.code }}</p>
-                                    </div>
-                                </div>
-                                <div class="table__card-actions">
-                                    <Link :href="route('file-types.edit', fileType.id)">
-                                    Editar
-                                    </Link>
-                                    <button v-if="fileType.can_delete" @click="deleteFileType(fileType.id)">
-                                        Eliminar
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="table__card-section">
-                                <div class="table__card-label">Relacionado Con:</div>
-                                <div class="table__card-content">{{ fileType.relate_with }}</div>
-                            </div>
-                            <div class="table__card-section">
-                                <div class="table__card-label">Estado:</div>
-                                <div class="table__card-content">
-                                    <span :class="{
-                                        'table__status': true,
-                                        'table__status--active': fileType.active,
-                                        'table__status--inactive': !fileType.active,
-                                    }">
-                                        {{ fileType.active ? 'Activo' : 'Inactivo' }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Custom cell for actions -->
+        <template #body-cell-actions="props">
+          <q-td :props="props">
+            <div class="row items-center q-gutter-sm">
+              <q-btn
+                flat
+                round
+                color="secondary"
+                icon="edit"
+                size="sm"
+                :href="route('file-types.edit', props.row.id)"
+                title="Editar"
+              />
+              <q-btn
+                v-if="props.row.can_delete"
+                flat
+                round
+                color="negative"
+                icon="delete"
+                size="sm"
+                @click="deleteFileType(props.row.id)"
+                title="Eliminar"
+              />
             </div>
-        </div>
-    </AuthenticatedLayout>
+          </q-td>
+        </template>
+      </q-table>
+    </q-page>
+  </AuthenticatedLayout>
 </template>
 
 <script setup>
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import AdminHeader from '@/Sections/AdminHeader.vue';
-import { hasPermission } from '@/utils/permissions';
-import { Head, Link, router } from '@inertiajs/vue3';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
+import { hasPermission } from '@/Utils/permissions';
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { useQuasar } from 'quasar';
+
+const page = usePage();
+const $q = useQuasar();
 
 defineProps({
-    fileTypes: Array,
-    breadcrumbs: Array
+  fileTypes: Array,
+  breadcrumbs: Array,
+  flash: Object || null
 });
 
+// Table columns definition
+const columns = [
+  {
+    name: 'code',
+    required: true,
+    label: 'Clave',
+    align: 'left',
+    field: 'code',
+    sortable: true
+  },
+  {
+    name: 'name',
+    required: true,
+    label: 'Nombre',
+    align: 'left',
+    field: 'name',
+    sortable: true
+  },
+  {
+    name: 'relate_with',
+    label: 'Relacionado Con',
+    field: 'relate_with',
+    align: 'left',
+    sortable: true
+  },
+  {
+    name: 'status',
+    label: 'Estado',
+    field: 'active',
+    align: 'center',
+    sortable: true,
+    classes: 'mll-table__cell-status',
+    headerClasses: 'mll-table__cell-status-header'
+  },
+  {
+    name: 'actions',
+    label: 'Acciones',
+    field: 'actions',
+    align: 'center',
+    sortable: false,
+    classes: 'mll-table__cell-actions',
+    headerClasses: 'mll-table__cell-actions-header'
+  }
+];
+
 const deleteFileType = (id) => {
-    if (confirm('¿Está seguro que desea eliminar este tipo de archivo?')) {
-        router.delete(route('file-types.destroy', id));
-    }
+  $q.dialog({
+    title: 'Confirmar eliminación',
+    message: '¿Está seguro que desea eliminar este tipo de archivo?',
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    router.delete(route('file-types.destroy', id));
+  });
 };
 </script>
