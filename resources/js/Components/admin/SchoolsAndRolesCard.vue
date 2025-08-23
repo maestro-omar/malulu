@@ -226,8 +226,8 @@
 import RoleBadge from '@/Components/Badges/RoleBadge.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import { schoolLevelOptions } from '@/Composables/schoolLevelOptions';
-import { getCourseSlug } from '@/utils/strings';
-import { formatDate } from '@/utils/date';
+import { getCourseSlug } from '@/Utils/strings';
+import { formatDate } from '@/Utils/date';
 import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 

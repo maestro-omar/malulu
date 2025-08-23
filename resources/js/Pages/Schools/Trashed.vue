@@ -145,7 +145,7 @@ import Pagination from '@/Components/admin/Pagination.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
-import { hasPermission } from '@/utils/permissions';
+import { hasPermission } from '@/Utils/permissions';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({

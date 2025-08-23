@@ -6,9 +6,9 @@ import PhoneField from '@/Components/admin/PhoneField.vue';
 import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
-import { hasPermission } from '@/utils/permissions';
-import { route_school_student } from '@/utils/routes';
-import { calculateAge } from '@/utils/date';
+import { hasPermission } from '@/Utils/permissions';
+import { route_school_student } from '@/Utils/routes';
+import { calculateAge } from '@/Utils/date';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 

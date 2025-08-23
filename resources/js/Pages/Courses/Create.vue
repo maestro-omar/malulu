@@ -113,10 +113,10 @@ import TextInput from '@/Components/admin/TextInput.vue'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import { ref, computed } from 'vue'
-import { formatDateForInput } from '@/utils/date'
-import { getFullYear } from '@/utils/date'
+import { formatDateForInput } from '@/Utils/date'
+import { getFullYear } from '@/Utils/date'
 import { Head, useForm } from '@inertiajs/vue3'
-import { getCourseSlug } from '@/utils/strings'
+import { getCourseSlug } from '@/Utils/strings'
 
 const props = defineProps({
   school: Object,

@@ -82,7 +82,7 @@ import InputLabel from "@/Components/admin/InputLabel.vue";
 import EmailField from "@/Components/admin/EmailField.vue";
 import PhoneField from "@/Components/admin/PhoneField.vue";
 import SchoolsAndRolesCard from "@/Components/admin/SchoolsAndRolesCard.vue";
-import { formatDateShort, calculateAge } from "@/utils/date";
+import { formatDateShort, calculateAge } from "@/Utils/date";
 
 const props = defineProps({
   user: { type: Object, required: true },

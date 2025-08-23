@@ -73,7 +73,7 @@
 import EditableImage from '@/Components/admin/EditableImage.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
-import { hasPermission } from '@/utils/permissions';
+import { hasPermission } from '@/Utils/permissions';
 import { Head, router } from '@inertiajs/vue3';
 
 const props = defineProps({

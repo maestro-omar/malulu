@@ -194,7 +194,7 @@ import SchoolShiftBadge from "@/Components/Badges/SchoolShiftBadge.vue";
 import { schoolLevelOptions } from '@/Composables/schoolLevelOptions';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import AdminHeader from "@/Sections/AdminHeader.vue";
-import { hasPermission } from '@/utils/permissions';
+import { hasPermission } from '@/Utils/permissions';
 import { Head, Link, router } from "@inertiajs/vue3";
 
 const props = defineProps({

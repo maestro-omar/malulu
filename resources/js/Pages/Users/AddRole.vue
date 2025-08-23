@@ -250,14 +250,14 @@ import TextInput from "@/Components/admin/TextInput.vue";
 import InputError from "@/Components/admin/InputError.vue";
 import SchoolsAndRolesCard from "@/Components/admin/SchoolsAndRolesCard.vue";
 import EditableImage from "@/Components/admin/EditableImage.vue";
-import { formatDateShort, calculateAge } from "@/utils/date.js";
+import { formatDateShort, calculateAge } from "@/Utils/date.js";
 import axios from "axios";
 import UserInformation from "@/Components/admin/UserInformation.vue";
 import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
 import { roleOptions } from "@/Composables/roleOptions";
 import { schoolLevelOptions } from "@/Composables/schoolLevelOptions";
 import AdminHeader from '@/Sections/AdminHeader.vue';
-import { hasPermission } from '@/utils/permissions';
+import { hasPermission } from '@/Utils/permissions';
 
 const props = defineProps({
   user: Object,

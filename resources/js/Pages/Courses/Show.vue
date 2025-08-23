@@ -117,7 +117,7 @@ import AdminHeader from '@/Sections/AdminHeader.vue'
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue'
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
 import { formatDate } from '../../utils/date'
-import { hasPermission } from '@/utils/permissions';
+import { hasPermission } from '@/Utils/permissions';
 import { getCourseSlug } from '../../utils/strings';
 import StudentsTable from '@/Components/admin/StudentsTable.vue';
 import TeachersTable from '@/Components/admin/TeachersTable.vue';

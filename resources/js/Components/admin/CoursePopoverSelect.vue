@@ -189,7 +189,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import SelectSchoolShift from '@/Components/admin/SelectSchoolShift.vue'
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
-import { formatDate } from '@/utils/date'
+import { formatDate } from '@/Utils/date'
 
 const props = defineProps({
     modelValue: {
