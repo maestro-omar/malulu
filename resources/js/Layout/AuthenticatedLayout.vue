@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHr lpr fFr">
 
     <q-header reveal elevated class="bg-primary text-white" height-hint="98">
       <q-toolbar>
@@ -17,9 +17,18 @@
         <q-route-tab v-for="item in page.props.menu.items" :href="route(item.route)" :active="route().current(item.route)"
           :label="item.name" />
       </q-tabs>
+
+      <!-- AdminHeader slot -->
+      <slot name="admin-header" />
     </q-header>
 
     <q-drawer v-model="rightDrawerOpen" side="right" overlay elevated>
+      <!-- drawer header with close button -->
+      <q-toolbar class="bg-primary text-white">
+        <q-toolbar-title>Menú</q-toolbar-title>
+        <q-btn flat round dense icon="close" @click="rightDrawerOpen = false" />
+      </q-toolbar>
+      
       <!-- drawer content -->
       <q-list>
         <template v-for="item in page.props.menu.userItems" :key="item.route || 'separator'">
@@ -50,6 +59,7 @@
 <script setup>
 //OMAR IMPORTANTE: rediseñar con https://quasar.dev/layout/gallery/google-photos
 import SystemLogo from '@/Components/SystemLogo.vue';
+import AdminHeader from '@/Sections/AdminHeader.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 

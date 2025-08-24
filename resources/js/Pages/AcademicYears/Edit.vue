@@ -3,7 +3,9 @@
   <Head title="Ciclos lectivos" />
 
   <AuthenticatedLayout>
-    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Ciclo Lectivo ${props.academicYear.year}`"></AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Ciclo Lectivo ${props.academicYear.year}`"></AdminHeader>
+    </template>
 
     <div class="container">
       <div class="admin-form__wrapper">

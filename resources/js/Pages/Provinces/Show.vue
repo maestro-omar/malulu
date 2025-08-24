@@ -2,15 +2,17 @@
 
     <Head :title="`Detalles de la Provincia: ${province.name}`" />
     <AuthenticatedLayout>
-        <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles de la Provincia: ${province.name}`" :edit="{
-            show: hasPermission($page.props, 'province.manage'),
-            href: route('provinces.edit', province.code),
-            label: 'Editar'
-        }" :del="{
-            show: hasPermission($page.props, 'province.manage'),
-            onClick: destroy,
-            label: 'Eliminar'
-        }" />
+        <template #admin-header>
+            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles de la Provincia: ${province.name}`" :edit="{
+                show: hasPermission($page.props, 'province.manage'),
+                href: route('provinces.edit', province.code),
+                label: 'Editar'
+            }" :del="{
+                show: hasPermission($page.props, 'province.manage'),
+                onClick: destroy,
+                label: 'Eliminar'
+            }" />
+        </template>
         <div class="province-show">
             <div class="province-show__container">
                 <div class="province-show__card">

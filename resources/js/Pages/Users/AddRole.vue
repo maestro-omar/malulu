@@ -3,7 +3,9 @@
   <Head :title="`Añadir Rol a ${user.name}`" />
 
   <AuthenticatedLayout>
-    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Añadir Rol a ${user.name}`"></AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Añadir Rol a ${user.name}`"></AdminHeader>
+    </template>
 
     <div class="container container--as-card">
       <UserInformation :user="user" :show-picture="true" :show-roles="true" :show-contact="true"

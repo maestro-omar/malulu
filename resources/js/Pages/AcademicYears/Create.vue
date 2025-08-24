@@ -2,7 +2,9 @@
   <AuthenticatedLayout>
 
     <Head title="Ciclos lectivos" />
-    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Nuevo Ciclo Lectivo`"></AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Nuevo Ciclo Lectivo`"></AdminHeader>
+    </template>
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

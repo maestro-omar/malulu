@@ -1,7 +1,9 @@
 <template>
   <AuthenticatedLayout>
     <Head title="Crear Usuario" />
-    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Crear Usuario`"></AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Crear Usuario`"></AdminHeader>
+    </template>
 
     <div class="container">
       <div class="admin-form__wrapper">

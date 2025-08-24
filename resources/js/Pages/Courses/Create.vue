@@ -3,9 +3,11 @@
 
     <Head
       :title="`${school.short} - ${selectedLevel.name} - Crear curso`" />
-    <AdminHeader :breadcrumbs="breadcrumbs"
-      :title="`${school.short} - ${selectedLevel.name} - Crear curso`">
-    </AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs"
+        :title="`${school.short} - ${selectedLevel.name} - Crear curso`">
+      </AdminHeader>
+    </template>
 
     <div class="container">
       <div class="admin-form__wrapper">

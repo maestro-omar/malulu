@@ -3,14 +3,18 @@
   <Head title="Provincias" />
 
   <AuthenticatedLayout title="Provincias">
-    <AdminHeader :breadcrumbs="breadcrumbs" title="Provincias">
-    </AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" title="Provincias">
+      </AdminHeader>
+    </template>
+
     <q-page class="q-pa-md">
       <!-- Flash Messages -->
       <FlashMessages :flash="flash" />
 
       <!-- Quasar Table -->
-      <q-table class="mll-table mll-table--small-width striped-table" dense :rows="provinces" :columns="columns" row-key="id" :pagination="{ rowsPerPage: 30 }">
+      <q-table class="mll-table mll-table--small-width striped-table" dense :rows="provinces" :columns="columns"
+        row-key="id" :pagination="{ rowsPerPage: 24 }">
 
         <!-- Custom cell for logo -->
         <template #body-cell-logo="props">
@@ -28,11 +32,16 @@
         <template #body-cell-actions="props">
           <q-td :props="props">
             <div class="row items-center q-gutter-sm">
+              <!-- View button - always visible -->
               <q-btn flat round color="primary" icon="visibility" size="sm"
                 :href="route('provinces.show', props.row.code)" title="Ver" />
+
+              <!-- Edit button - always visible -->
               <q-btn flat round color="secondary" icon="edit" size="sm" :href="route('provinces.edit', props.row.code)"
                 title="Editar" />
-              <q-btn flat round color="negative" icon="delete" size="sm" @click="deleteProvince(props.row.id)"
+
+              <!-- Delete button - always visible -->
+              <q-btn flat round color="negative" icon="delete" size="sm" @click="deleteProvince(props.row.code)"
                 title="Eliminar" />
             </div>
           </q-td>
@@ -51,7 +60,7 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { useQuasar } from 'quasar';
 
-const page = usePage();
+const $page = usePage();
 const $q = useQuasar();
 
 defineProps({
@@ -96,14 +105,14 @@ const columns = [
   }
 ];
 
-const deleteProvince = (id) => {
+const deleteProvince = (code) => {
   $q.dialog({
     title: 'Confirmar eliminación',
     message: '¿Está seguro que desea eliminar esta provincia?',
     cancel: true,
     persistent: true
   }).onOk(() => {
-    router.delete(route('provinces.destroy', id));
+    router.delete(route('provinces.destroy', code));
   });
 };
 </script>

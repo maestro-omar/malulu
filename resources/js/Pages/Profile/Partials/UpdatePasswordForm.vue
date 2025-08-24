@@ -1,8 +1,4 @@
 <script setup>
-import InputError from '@/Components/admin/InputError.vue';
-import InputLabel from '@/Components/admin/InputLabel.vue';
-import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
-import TextInput from '@/Components/admin/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -34,64 +30,79 @@ const updatePassword = () => {
 </script>
 
 <template>
-    <section>
-        <header>
-            <h2 class="admin-form__card-title">Actualizar Contraseña</h2>
-            <p class="admin-form__card-description">
-                Asegúrese de que su cuenta utilice una contraseña larga y aleatoria para mantenerse segura.
-            </p>
-        </header>
+    <q-card-section>
+        <div class="text-h6 q-mb-md">Actualizar Contraseña</div>
+        <p class="text-body2 text-grey-7 q-mb-lg">
+            Asegúrese de que su cuenta utilice una contraseña larga y aleatoria para mantenerse segura.
+        </p>
 
-        <form @submit.prevent="updatePassword" class="admin-form__container">
-            <div class="admin-form__field">
-                <InputLabel for="current_password" value="Contraseña Actual" />
-                <TextInput
-                    id="current_password"
+        <form @submit.prevent="updatePassword">
+            <div class="q-mb-md">
+                <q-input
                     ref="currentPasswordInput"
                     v-model="form.current_password"
+                    label="Contraseña Actual"
                     type="password"
-                    class="admin-form__input"
+                    outlined
+                    dense
+                    :error="!!form.errors.current_password"
+                    :error-message="form.errors.current_password"
                     autocomplete="current-password"
                 />
-                <InputError :message="form.errors.current_password" class="admin-form__error" />
             </div>
 
-            <div class="admin-form__field">
-                <InputLabel for="password" value="Nueva Contraseña" />
-                <TextInput
-                    id="password"
+            <div class="q-mb-md">
+                <q-input
                     ref="passwordInput"
                     v-model="form.password"
+                    label="Nueva Contraseña"
                     type="password"
-                    class="admin-form__input"
+                    outlined
+                    dense
+                    :error="!!form.errors.password"
+                    :error-message="form.errors.password"
                     autocomplete="new-password"
                 />
-                <InputError :message="form.errors.password" class="admin-form__error" />
             </div>
 
-            <div class="admin-form__field">
-                <InputLabel for="password_confirmation" value="Confirmar Contraseña" />
-                <TextInput
-                    id="password_confirmation"
+            <div class="q-mb-md">
+                <q-input
                     v-model="form.password_confirmation"
+                    label="Confirmar Contraseña"
                     type="password"
-                    class="admin-form__input"
+                    outlined
+                    dense
+                    :error="!!form.errors.password_confirmation"
+                    :error-message="form.errors.password_confirmation"
                     autocomplete="new-password"
                 />
-                <InputError :message="form.errors.password_confirmation" class="admin-form__error" />
             </div>
 
-            <div class="admin-form__actions">
-                <PrimaryButton :disabled="form.processing">Guardar</PrimaryButton>
-                <Transition
+            <div class="row items-center q-gutter-sm">
+                <q-btn
+                    type="submit"
+                    :loading="form.processing"
+                    :disable="form.processing"
+                    color="primary"
+                    unelevated
+                    label="Guardar"
+                />
+                
+                <q-transition
                     enter-active-class="transition ease-in-out"
                     enter-from-class="opacity-0"
                     leave-active-class="transition ease-in-out"
                     leave-to-class="opacity-0"
                 >
-                    <p v-if="form.recentlySuccessful" class="admin-form__success-message">Guardado.</p>
-                </Transition>
+                    <q-chip
+                        v-if="form.recentlySuccessful"
+                        color="positive"
+                        text-color="white"
+                        icon="check"
+                        label="Guardado"
+                    />
+                </q-transition>
             </div>
         </form>
-    </section>
+    </q-card-section>
 </template>

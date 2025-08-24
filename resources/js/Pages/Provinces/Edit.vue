@@ -34,7 +34,9 @@ const submit = () => {
   <Head :title="`Editar Provincia: ${props.province.name}`" />
 
   <AuthenticatedLayout>
-    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Provincia: ${props.province.name}`" />
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Provincia: ${props.province.name}`" />
+    </template>
 
     <div class="container">
       <div class="admin-form__wrapper">

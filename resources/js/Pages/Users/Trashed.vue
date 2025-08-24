@@ -33,14 +33,16 @@ const forceDeleteUser = (id) => {
     <Head title="Usuarios Eliminados" />
 
     <AuthenticatedLayout>
-        <AdminHeader :breadcrumbs="breadcrumbs" :title="`Usuarios Eliminados`">
-            <template #additional-buttons>
-                <Link :href="route('users.index')"
-                    class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
-                Volver a Usuarios
-                </Link>
-            </template>
-        </AdminHeader>
+        <template #admin-header>
+            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Usuarios Eliminados`">
+                <template #additional-buttons>
+                    <Link :href="route('users.index')"
+                        class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+                    Volver a Usuarios
+                    </Link>
+                </template>
+            </AdminHeader>
+        </template>
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

@@ -1,8 +1,4 @@
 <script setup>
-import InputError from '@/Components/admin/InputError.vue';
-import InputLabel from '@/Components/admin/InputLabel.vue';
-import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
-import TextInput from '@/Components/admin/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 
 defineProps({
@@ -23,73 +19,95 @@ const form = useForm({
 </script>
 
 <template>
-    <section>
-        <header>
-            <h2 class="admin-form__card-title">Información del Perfil</h2>
-            <p class="admin-form__card-description">
-                Actualice la información del perfil y la dirección de correo electrónico de su cuenta.
-            </p>
-        </header>
+    <q-card-section>
+        <div class="text-h6 q-mb-md">Información del Perfil</div>
+        <p class="text-body2 text-grey-7 q-mb-lg">
+            Actualice la información del perfil y la dirección de correo electrónico de su cuenta.
+        </p>
 
-        <form @submit.prevent="form.patch(route('profile.update'))" class="admin-form__container">
-            <div class="admin-form__field">
-                <InputLabel for="name" value="Nombre" />
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="admin-form__input"
+        <form @submit.prevent="form.patch(route('profile.update'))">
+            <div class="q-mb-md">
+                <q-input
                     v-model="form.name"
-                    required
+                    label="Nombre"
+                    outlined
+                    dense
+                    :error="!!form.errors.name"
+                    :error-message="form.errors.name"
                     autofocus
                     autocomplete="name"
-                />
-                <InputError class="admin-form__error" :message="form.errors.name" />
-            </div>
-
-            <div class="admin-form__field">
-                <InputLabel for="email" value="Correo Electrónico" />
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="admin-form__input"
-                    v-model="form.email"
                     required
-                    autocomplete="username"
                 />
-                <InputError class="admin-form__error" :message="form.errors.email" />
             </div>
 
-            <div v-if="mustVerifyEmail && user.email_verified_at === null" class="admin-form__field">
-                <p class="admin-form__verify-message">
+            <div class="q-mb-md">
+                <q-input
+                    v-model="form.email"
+                    label="Correo Electrónico"
+                    type="email"
+                    outlined
+                    dense
+                    :error="!!form.errors.email"
+                    :error-message="form.errors.email"
+                    autocomplete="username"
+                    required
+                />
+            </div>
+
+            <div v-if="mustVerifyEmail && user.email_verified_at === null" class="q-mb-md">
+                <q-banner class="bg-orange-1 text-orange-8">
+                    <template v-slot:avatar>
+                        <q-icon name="warning" color="orange" />
+                    </template>
                     Su dirección de correo electrónico no está verificada.
-                    <Link
-                        :href="route('verification.send')"
-                        method="post"
-                        as="button"
-                        class="admin-form__verify-link"
-                    >
-                        Haga clic aquí para reenviar el correo de verificación.
-                    </Link>
-                </p>
-                <div
+                    <template v-slot:action>
+                        <q-btn
+                            :href="route('verification.send')"
+                            method="post"
+                            as="button"
+                            flat
+                            color="orange"
+                            label="Reenviar verificación"
+                        />
+                    </template>
+                </q-banner>
+                
+                <q-banner
                     v-show="status === 'verification-link-sent'"
-                    class="admin-form__verify-success"
+                    class="bg-positive-1 text-positive-8 q-mt-sm"
                 >
+                    <template v-slot:avatar>
+                        <q-icon name="check_circle" color="positive" />
+                    </template>
                     Se ha enviado un nuevo enlace de verificación a su dirección de correo electrónico.
-                </div>
+                </q-banner>
             </div>
 
-            <div class="admin-form__actions">
-                <PrimaryButton :disabled="form.processing">Guardar</PrimaryButton>
-                <Transition
+            <div class="row items-center q-gutter-sm">
+                <q-btn
+                    type="submit"
+                    :loading="form.processing"
+                    :disable="form.processing"
+                    color="primary"
+                    unelevated
+                    label="Guardar"
+                />
+                
+                <q-transition
                     enter-active-class="transition ease-in-out"
                     enter-from-class="opacity-0"
                     leave-active-class="transition ease-in-out"
                     leave-to-class="opacity-0"
                 >
-                    <p v-if="form.recentlySuccessful" class="admin-form__success-message">Guardado.</p>
-                </Transition>
+                    <q-chip
+                        v-if="form.recentlySuccessful"
+                        color="positive"
+                        text-color="white"
+                        icon="check"
+                        label="Guardado"
+                    />
+                </q-transition>
             </div>
         </form>
-    </section>
+    </q-card-section>
 </template>

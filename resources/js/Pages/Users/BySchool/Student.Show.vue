@@ -38,16 +38,18 @@ const destroy = () => {
     <Head :title="`Usuario: ${user.name}`" />
 
     <AuthenticatedLayout>
-        <AdminHeader :breadcrumbs="breadcrumbs" :title="`Estudiante ${user.firstname} ${user.lastname}`" :edit="{
-            show: hasPermission($page.props, 'student.edit'),
-            href: route_school_student(school, user, 'edit'),
-            label: 'Editar'
-        }" :del="{
-            show: hasPermission($page.props, 'student.delete'),
-            onClick: destroy,
-            label: 'Eliminar'
-        }">
-        </AdminHeader>
+        <template #admin-header>
+            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Estudiante ${user.firstname} ${user.lastname}`" :edit="{
+                show: hasPermission($page.props, 'student.edit'),
+                href: route_school_student(school, user, 'edit'),
+                label: 'Editar'
+            }" :del="{
+                show: hasPermission($page.props, 'student.delete'),
+                onClick: destroy,
+                label: 'Eliminar'
+            }">
+            </AdminHeader>
+        </template>
         <!-- Flash Messages -->
         <FlashMessages :flash="flash" />
 

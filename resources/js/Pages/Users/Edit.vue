@@ -44,7 +44,9 @@ const submit = () => {
     <Head :title="`Editar Usuario: ${props.user.name}`" />
 
     <AuthenticatedLayout>
-        <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Usuario: ${props.user.name}`"></AdminHeader>
+        <template #admin-header>
+            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Usuario: ${props.user.name}`"></AdminHeader>
+        </template>
 
         <div class="container">
             <div class="admin-form__wrapper">

@@ -4,7 +4,7 @@ import '../css/app.scss';
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { Quasar } from 'quasar'
+import { Quasar, Dialog } from 'quasar'
 import quasarLang from 'quasar/lang/es'
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
@@ -24,14 +24,16 @@ createInertiaApp({
     const app = createApp({ render: () => h(App, props) })
       .use(plugin)
       .use(Quasar, {
-        plugins: {}, // import Quasar plugins and add here
+        plugins: {
+          Dialog
+        }, // import Quasar plugins and add here
         lang: quasarLang,
       })
       .use(ZiggyVue)
-    
+
     // Make appName available globally
     app.config.globalProperties.$appName = appName
-    
+
     app.mount(el)
   },
 })

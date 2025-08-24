@@ -3,9 +3,11 @@
 
     <Head
       :title="`${school.short} - ${selectedLevel.name} - Editar curso ${getFullYear(course.start_date)} - ${course.nice_name}`" />
-    <AdminHeader :breadcrumbs="breadcrumbs"
-      :title="`${school.short} - ${selectedLevel.name} - Editar curso ${getFullYear(course.start_date)} - ${course.nice_name}`">
-    </AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs"
+        :title="`${school.short} - ${selectedLevel.name} - Editar curso ${getFullYear(course.start_date)} - ${course.nice_name}`">
+      </AdminHeader>
+    </template>
 
     <div class="container">
       <div class="admin-form__wrapper">

@@ -3,33 +3,35 @@
   <Head title="Detalles de la Escuela" />
 
   <AuthenticatedLayout>
-    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles de la Escuela: ${school.short}`" :edit="{
-      show: hasPermission($page.props, 'school.edit', school.id),
-      href: route('school.edit', school.slug),
-      label: 'Editar'
-    }" :del="{
-      show: hasPermission($page.props, 'school.delete', school.id),
-      onClick: destroy,
-      label: 'Eliminar'
-    }">
-      <template #additional-buttons>
-        <q-btn v-for="level in school.school_levels" :key="level.id"
-          v-if="hasPermission($page.props, 'course.manage', school.id)"
-          :href="route('school.courses', { school: school.slug, schoolLevel: level.code })" size="sm"
-          :class="`q-mr-smschool-level--darker school-level--${level.code}`">
-          Cursos ({{ level.name }})
-        </q-btn>
-        <q-btn size="sm" :href="route('school.students', { school: school.slug })" color="positive" >
-          Estudiantes
-        </q-btn>
-        <q-btn size="sm" :href="route('school.guardians', { school: school.slug })" color="blue-grey" >
-          Madres/padres
-        </q-btn>
-        <q-btn size="sm" :href="route('school.staff', { school: school.slug })" color="orange" >
-          Personal
-        </q-btn>
-      </template>
-    </AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles de la Escuela: ${school.short}`" :edit="{
+        show: hasPermission($page.props, 'school.edit', school.id),
+        href: route('school.edit', school.slug),
+        label: 'Editar'
+      }" :del="{
+        show: hasPermission($page.props, 'school.delete', school.id),
+        onClick: destroy,
+        label: 'Eliminar'
+      }">
+        <template #additional-buttons>
+          <q-btn v-for="level in school.school_levels" :key="level.id"
+            v-if="hasPermission($page.props, 'course.manage', school.id)"
+            :href="route('school.courses', { school: school.slug, schoolLevel: level.code })" size="sm"
+            :class="`q-mr-smschool-level--darker school-level--${level.code}`">
+            Cursos ({{ level.name }})
+          </q-btn>
+          <q-btn size="sm" :href="route('school.students', { school: school.slug })" color="positive" >
+            Estudiantes
+          </q-btn>
+          <q-btn size="sm" :href="route('school.guardians', { school: school.slug })" color="blue-grey" >
+            Madres/padres
+          </q-btn>
+          <q-btn size="sm" :href="route('school.staff', { school: school.slug })" color="orange" >
+            Personal
+          </q-btn>
+        </template>
+      </AdminHeader>
+    </template>
 
     <q-page class="q-pa-md">
       <q-card class="school-detail__card">

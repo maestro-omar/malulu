@@ -3,17 +3,19 @@
     <Head :title="`Usuario: ${user.name}`" />
 
     <AuthenticatedLayout>
-        <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles del usuario ${user.firstname} ${user.lastname}`"
-            :edit="{
-                show: hasPermission($page.props, 'user.manage'),
-                href: route('users.edit', { 'user': user.id }),
-                label: 'Editar'
-            }" :del="{
+        <template #admin-header>
+            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles del usuario ${user.firstname} ${user.lastname}`"
+                :edit="{
                     show: hasPermission($page.props, 'user.manage'),
-                    onClick: destroy,
-                    label: 'Eliminar'
-                }">
-        </AdminHeader>
+                    href: route('users.edit', { 'user': user.id }),
+                    label: 'Editar'
+                }" :del="{
+                        show: hasPermission($page.props, 'user.manage'),
+                        onClick: destroy,
+                        label: 'Eliminar'
+                    }">
+            </AdminHeader>
+        </template>
 
         <div class="container">
             <div class="admin-detail__wrapper">

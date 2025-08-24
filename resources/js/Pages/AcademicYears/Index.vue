@@ -1,26 +1,24 @@
 <template>
+
   <Head title="Ciclos lectivos" />
 
   <AuthenticatedLayout title="Ciclos Lectivos">
-    <AdminHeader :breadcrumbs="breadcrumbs" title="Ciclos Lectivos" :add="{
-      show: hasPermission($page.props, 'superadmin', null),
-      href: route('academic-years.create'),
-      label: 'Nuevo'
-    }">
-    </AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" title="Ciclos Lectivos" :add="{
+        show: hasPermission($page.props, 'superadmin', null),
+        href: route('academic-years.create'),
+        label: 'Nuevo'
+      }">
+      </AdminHeader>
+    </template>
+
     <q-page class="q-pa-md">
       <!-- Flash Messages -->
       <FlashMessages :flash="flash" />
 
       <!-- Quasar Table -->
-      <q-table 
-        class="mll-table mll-table--small-width striped-table" 
-        dense 
-        :rows="academicYears" 
-        :columns="columns" 
-        row-key="id" 
-        :pagination="{ rowsPerPage: 30 }"
-      >
+      <q-table class="mll-table mll-table--small-width striped-table" dense :rows="academicYears" :columns="columns"
+        row-key="id" :pagination="{ rowsPerPage: 30 }">
 
         <!-- Custom cell for dates -->
         <template #body-cell-start_date="props">
@@ -45,14 +43,26 @@
         <template #body-cell-actions="props">
           <q-td :props="props">
             <div class="row items-center q-gutter-sm">
-              <q-btn
-                flat
-                round
-                color="secondary"
-                icon="edit"
+              <!-- View button - always visible -->
+              <q-btn 
+                flat 
+                round 
+                color="primary" 
+                icon="visibility" 
                 size="sm"
-                :href="route('academic-years.edit', props.row.id)"
-                title="Editar"
+                :href="route('academic-years.show', props.row.id)" 
+                title="Ver" 
+              />
+              
+              <!-- Edit button - always visible -->
+              <q-btn 
+                flat 
+                round 
+                color="secondary" 
+                icon="edit" 
+                size="sm"
+                :href="route('academic-years.edit', props.row.id)" 
+                title="Editar" 
               />
             </div>
           </q-td>
@@ -70,7 +80,7 @@ import { hasPermission } from '@/Utils/permissions';
 import { Head, usePage } from '@inertiajs/vue3';
 import { formatDate } from '@/Utils/date';
 
-const page = usePage();
+const $page = usePage();
 
 defineProps({
   academicYears: {

@@ -3,13 +3,15 @@
   <Head title="Escuelas Eliminadas" />
 
   <AuthenticatedLayout>
-    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Escuelas Eliminadas`">
-      <template #additional-buttons>
-        <Link :href="route('schools.index')" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
-        Volver a Escuelas
-        </Link>
-      </template>
-    </AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Escuelas Eliminadas`">
+        <template #additional-buttons>
+          <Link :href="route('schools.index')" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+          Volver a Escuelas
+          </Link>
+        </template>
+      </AdminHeader>
+    </template>
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

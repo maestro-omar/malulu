@@ -3,18 +3,20 @@
   <Head :title="`${school.short} - Cursos de ${selectedLevel.name}`" />
 
   <AuthenticatedLayout>
-    <AdminHeader :breadcrumbs="breadcrumbs" :title="`${school.short} - Cursos de ${selectedLevel.name}`">
-      <template #additional-buttons>
-        <Link :href="route('school.course.create', { school: school.slug, schoolLevel: selectedLevel.code })"
-          class="admin-button admin-button--top admin-button--blue">
-        Agregar Nuevo Curso
-        </Link>
-        <Link :href="route('school.course.create-next', { school: school.slug, schoolLevel: selectedLevel.code })"
-          class="admin-button admin-button--top admin-button--indigo">
-        Crear cursos siguientes
-        </Link>
-      </template>
-    </AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`${school.short} - Cursos de ${selectedLevel.name}`">
+        <template #additional-buttons>
+          <Link :href="route('school.course.create', { school: school.slug, schoolLevel: selectedLevel.code })"
+            class="admin-button admin-button--top admin-button--blue">
+          Agregar Nuevo Curso
+          </Link>
+          <Link :href="route('school.course.create-next', { school: school.slug, schoolLevel: selectedLevel.code })"
+            class="admin-button admin-button--top admin-button--indigo">
+          Crear cursos siguientes
+          </Link>
+        </template>
+      </AdminHeader>
+    </template>
 
     <div class="container">
       <!-- Flash Messages -->

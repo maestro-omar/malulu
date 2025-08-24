@@ -3,25 +3,31 @@
     <Head title="Tu perfil de usuario" />
 
     <AuthenticatedLayout>
-        <AdminHeader :breadcrumbs="breadcrumbs" title="Tu perfil de usuario"></AdminHeader>
-
-        <div class="container">
-            <div class="admin-form__wrapper">
-                <div class="admin-form__card">
-                    <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status" />
+        <template #admin-header>
+            <AdminHeader :breadcrumbs="breadcrumbs" title="Tu perfil de usuario"></AdminHeader>
+        </template>
+        <q-page class="q-pa-md flex flex-center">
+            <div class="">
+                <div class="row">
+                    <q-card class="col-12">
+                        <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status" />
+                    </q-card>
                 </div>
+                <div class="row q-mt-md">
+                    <q-card class="col-12">
+                        <UpdatePasswordForm />
+                    </q-card>
 
-                <div class="admin-form__card">
-                    <UpdatePasswordForm />
+                    <!--
+                    <div class="col-12">
+                        <q-card class="profile-form__card">
+                            <DeleteUserForm />
+                        </q-card>
+                    </div>
+                    -->
                 </div>
-
-                <!--
-                <div class="admin-form__card">
-                    <DeleteUserForm />
-                </div>
-                -->
             </div>
-        </div>
+        </q-page>
     </AuthenticatedLayout>
 </template>
 

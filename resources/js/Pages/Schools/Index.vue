@@ -3,16 +3,19 @@
   <Head title="Escuelas" />
 
   <AuthenticatedLayout title="Escuelas">
-    <AdminHeader :breadcrumbs="breadcrumbs" title="Listado de Escuelas" :add="{
-      show: hasPermission($page.props, 'superadmin', null),
-      href: route('schools.create'),
-      label: 'Nueva escuela'
-    }" :trashed="{
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" title="Listado de Escuelas" :add="{
+        show: hasPermission($page.props, 'superadmin', null),
+        href: route('schools.create'),
+        label: 'Nueva escuela'
+      }" :trashed="{
       show: hasPermission($page.props, 'superadmin', null),
       href: route('schools.trashed'),
       label: 'Eliminadas'
     }">
-    </AdminHeader>
+      </AdminHeader>
+    </template>
+
     <q-page class="q-pa-md">
       <!-- Flash Messages -->
       <FlashMessages :flash="flash" />
@@ -20,32 +23,17 @@
       <!-- Search and Filter Controls -->
       <div class="row q-mb-md q-gutter-x-md">
         <div class="col-5">
-          <q-input
-            v-model="search"
-            dense
-            outlined
-            placeholder="Buscar escuelas..."
-            @update:model-value="handleSearch"
-            clearable
-          >
+          <q-input v-model="search" dense outlined placeholder="Buscar escuelas..." @update:model-value="handleSearch"
+            clearable>
             <template v-slot:prepend>
               <q-icon name="search" />
             </template>
           </q-input>
         </div>
         <div class="col-5">
-          <q-select
-            v-model="selectedLocality"
-            :options="localities"
-            option-label="name"
-            option-value="id"
-            dense
-            outlined
-            placeholder="Filtrar por localidad..."
-            label="Localidad"
-            @update:model-value="handleLocalityChange"
-            clearable
-          >
+          <q-select v-model="selectedLocality" :options="localities" option-label="name" option-value="id" dense
+            outlined placeholder="Filtrar por localidad..." label="Localidad" @update:model-value="handleLocalityChange"
+            clearable>
             <template v-slot:prepend>
               <q-icon name="location_on" />
             </template>
@@ -93,12 +81,41 @@
         <template #body-cell-actions="props">
           <q-td :props="props">
             <div class="row items-center q-gutter-sm">
-              <q-btn v-if="hasPermission($page.props, 'school.view')" flat round color="primary" icon="visibility"
-                size="sm" :href="route('school.show', props.row.slug)" title="Ver" />
-              <q-btn v-if="hasPermission($page.props, 'school.edit')" flat round color="secondary" icon="edit" size="sm"
-                :href="route('school.edit', props.row.slug)" title="Editar" />
-              <q-btn v-if="hasPermission($page.props, 'school.delete')" flat round color="negative" icon="delete"
-                size="sm" @click="deleteSchool(props.row.slug)" title="Eliminar" />
+              <!-- View button - always visible but disabled when not allowed -->
+              <q-btn 
+                flat 
+                round 
+                :color="hasPermission($page.props, 'school.view') ? 'primary' : 'grey'" 
+                icon="visibility"
+                size="sm" 
+                :disable="!hasPermission($page.props, 'school.view')"
+                :href="hasPermission($page.props, 'school.view') ? route('school.show', props.row.slug) : '#'" 
+                :title="hasPermission($page.props, 'school.view') ? 'Ver' : 'No tienes permisos para ver esta escuela'" 
+              />
+              
+              <!-- Edit button - always visible but disabled when not allowed -->
+              <q-btn 
+                flat 
+                round 
+                :color="hasPermission($page.props, 'school.edit') ? 'secondary' : 'grey'" 
+                icon="edit" 
+                size="sm"
+                :disable="!hasPermission($page.props, 'school.edit')"
+                :href="hasPermission($page.props, 'school.edit') ? route('school.edit', props.row.slug) : '#'" 
+                :title="hasPermission($page.props, 'school.edit') ? 'Editar' : 'No tienes permisos para editar esta escuela'" 
+              />
+              
+              <!-- Delete button - always visible but disabled when not allowed -->
+              <q-btn 
+                flat 
+                round 
+                :color="hasPermission($page.props, 'school.delete') ? 'negative' : 'grey'" 
+                icon="delete"
+                size="sm" 
+                :disable="!hasPermission($page.props, 'school.delete')"
+                @click="hasPermission($page.props, 'school.delete') ? deleteSchool(props.row.slug) : null" 
+                :title="hasPermission($page.props, 'school.delete') ? 'Eliminar' : 'No tienes permisos para eliminar esta escuela'" 
+              />
             </div>
           </q-td>
         </template>
@@ -119,7 +136,7 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
 import { useQuasar } from 'quasar';
 
-const page = usePage();
+const $page = usePage();
 const $q = useQuasar();
 
 const props = defineProps({
@@ -128,7 +145,7 @@ const props = defineProps({
   localities: Array,
   breadcrumbs: Array,
   flash: Object || null
-  });
+});
 
 // Table columns definition
 const columns = [

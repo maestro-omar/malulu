@@ -69,11 +69,13 @@ const isAdmin = (user) => {
     <Head title="Estudiantes" />
 
     <AuthenticatedLayout>
-        <AdminHeader :breadcrumbs="breadcrumbs" :title="`Listado de estudiantes`" :add="{
-            show: hasPermission($page.props, 'student.create'),
-            href: route('school.students.create', { 'school': school.slug }),
-            label: 'Nuevo'
-        }" />
+        <template #admin-header>
+            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Listado de estudiantes`" :add="{
+                show: hasPermission($page.props, 'student.create'),
+                href: route('school.students.create', { 'school': school.slug }),
+                label: 'Nuevo'
+            }" />
+        </template>
 
         <div class="container">
             <!-- Flash Messages -->

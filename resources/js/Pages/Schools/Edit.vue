@@ -3,7 +3,9 @@
   <Head title="Editar Escuela" />
 
   <AuthenticatedLayout>
-    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Escuela ${props.school.short}`"></AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Escuela ${props.school.short}`"></AdminHeader>
+    </template>
 
     <div class="container">
       <div class="admin-form__wrapper">

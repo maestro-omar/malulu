@@ -3,16 +3,18 @@
   <Head :title="`Detalle del Curso ${course.nice_name}`" />
 
   <AuthenticatedLayout>
-    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalle del Curso ${course.nice_name}`" :edit="{
-      show: hasPermission($page.props, 'course.manage'),
-      href: route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) }),
-      label: 'Editar'
-    }" :del="{
-      show: hasPermission($page.props, 'course.manage'),
-      onClick: destroy,
-      label: 'Eliminar'
-    }">
-    </AdminHeader>
+    <template #admin-header>
+      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalle del Curso ${course.nice_name}`" :edit="{
+        show: hasPermission($page.props, 'course.manage'),
+        href: route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) }),
+        label: 'Editar'
+      }" :del="{
+        show: hasPermission($page.props, 'course.manage'),
+        onClick: destroy,
+        label: 'Eliminar'
+      }">
+      </AdminHeader>
+    </template>
 
     <div class="container">
       <div class="admin-detail__wrapper">

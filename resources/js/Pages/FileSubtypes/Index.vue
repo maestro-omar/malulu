@@ -3,12 +3,15 @@
     <Head title="Subtipos de Archivo" />
 
     <AuthenticatedLayout title="Subtipos de Archivo">
-        <AdminHeader :breadcrumbs="breadcrumbs" title="Subtipos de Archivo" :add="{
-            show: hasPermission($page.props, 'superadmin', null),
-            href: route('file-subtypes.create'),
-            label: 'Nuevo'
-        }">
-        </AdminHeader>
+        <template #admin-header>
+            <AdminHeader :breadcrumbs="breadcrumbs" title="Subtipos de Archivo" :add="{
+                show: hasPermission($page.props, 'superadmin', null),
+                href: route('file-subtypes.create'),
+                label: 'Nuevo'
+            }">
+            </AdminHeader>
+        </template>
+
         <q-page class="q-pa-md">
             <!-- Flash Messages -->
             <FlashMessages :flash="flash" />
@@ -20,10 +23,39 @@
                 <template #body-cell-actions="props">
                     <q-td :props="props">
                         <div class="row items-center q-gutter-sm">
-                            <q-btn flat round color="secondary" icon="edit" size="sm"
-                                :href="route('file-subtypes.edit', props.row.id)" title="Editar" />
-                            <q-btn v-if="props.row.can_delete" flat round color="negative" icon="delete" size="sm"
-                                @click="deleteFileSubtype(props.row.id)" title="Eliminar" />
+                            <!-- View button - always visible -->
+                            <q-btn 
+                                flat 
+                                round 
+                                color="primary" 
+                                icon="visibility" 
+                                size="sm"
+                                :href="route('file-subtypes.show', props.row.id)" 
+                                title="Ver" 
+                            />
+                            
+                            <!-- Edit button - always visible -->
+                            <q-btn 
+                                flat 
+                                round 
+                                color="secondary" 
+                                icon="edit" 
+                                size="sm"
+                                :href="route('file-subtypes.edit', props.row.id)" 
+                                title="Editar" 
+                            />
+                            
+                            <!-- Delete button - always visible but disabled when not allowed -->
+                            <q-btn 
+                                flat 
+                                round 
+                                :color="props.row.can_delete ? 'negative' : 'grey'" 
+                                icon="delete" 
+                                size="sm"
+                                :disable="!props.row.can_delete"
+                                @click="props.row.can_delete ? deleteFileSubtype(props.row.id) : null" 
+                                :title="props.row.can_delete ? 'Eliminar' : 'No se puede eliminar este subtipo de archivo'" 
+                            />
                         </div>
                     </q-td>
                 </template>
@@ -40,7 +72,7 @@ import { hasPermission } from '@/Utils/permissions';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { useQuasar } from 'quasar';
 
-const page = usePage();
+const $page = usePage();
 const $q = useQuasar();
 
 defineProps({
@@ -80,7 +112,7 @@ const columns = [
         field: 'order',
         align: 'center',
         sortable: true,
-        style: 'width: 80px'
+        style: 'width: 60px'
     },
     {
         name: 'actions',
@@ -90,7 +122,7 @@ const columns = [
         sortable: false,
         classes: 'mll-table__cell-actions',
         headerClasses: 'mll-table__cell-actions-header',
-        style: 'width: 120px'
+        style: 'width: 150px'
     }
 ];
 
