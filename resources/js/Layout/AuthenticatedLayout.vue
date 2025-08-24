@@ -1,7 +1,7 @@
 <template>
-  <q-layout view="hHr lpr fFr">
-
-    <q-header reveal elevated class="bg-primary text-white" height-hint="98">
+  <q-layout view="hHh lpr fFr">
+    <!-- Header with only toolbar -->
+    <q-header elevated class="bg-primary text-white" height-hint="64">
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
@@ -9,38 +9,30 @@
           </q-avatar>
           {{ page.props.appName }}
         </q-toolbar-title>
+        <q-tabs>
+          <q-route-tab v-for="item in page.props.menu.items" :key="item.route" :href="route(item.route)"
+            :active="route().current(item.route)" :label="item.name" />
+        </q-tabs>
 
-        {{ page.props.auth.user.name }} <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
+
+        {{ page.props.auth.user.name }}
+        <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
-
-      <q-tabs align="left">
-        <q-route-tab v-for="item in page.props.menu.items" :href="route(item.route)" :active="route().current(item.route)"
-          :label="item.name" />
-      </q-tabs>
-
-      <!-- AdminHeader slot -->
-      <slot name="admin-header" />
     </q-header>
 
+    <!-- Drawer -->
     <q-drawer v-model="rightDrawerOpen" side="right" overlay elevated>
-      <!-- drawer header with close button -->
-      <q-toolbar class="bg-primary text-white">
-        <q-toolbar-title>Menú</q-toolbar-title>
-        <q-btn flat round dense icon="close" @click="rightDrawerOpen = false" />
-      </q-toolbar>
-      
-      <!-- drawer content -->
-      <q-list>
+      <q-btn flat round dense size="10px" icon="close" class="absolute-top-right q-ma-xs"
+        @click="rightDrawerOpen = false" />
+      <q-list class="q-mt-lg">
         <template v-for="item in page.props.menu.userItems" :key="item.route || 'separator'">
           <template v-if="item.type === 'separator'">
             <q-separator />
           </template>
           <template v-else>
-            <q-item :clickable="item.route !== 'logout.get'" v-ripple :class="[
-              'authenticated-layout__responsive-settings-item',
-              headerStyles.textColor,
-              headerStyles.hoverColor
-            ]" :href="route(item.route)">
+            <q-item :clickable="item.route !== 'logout.get'" v-ripple
+              :class="['authenticated-layout__responsive-settings-item', headerStyles.textColor, headerStyles.hoverColor]"
+              :href="route(item.route)">
               <q-item-section>
                 <q-item-label>{{ item.name }}</q-item-label>
               </q-item-section>
@@ -50,11 +42,18 @@
       </q-list>
     </q-drawer>
 
+    <!-- Page container -->
     <q-page-container>
+
+      <!-- AdminHeader slot -->
+      <slot name="admin-header" />
+
+      <!-- Page content -->
       <slot />
     </q-page-container>
   </q-layout>
 </template>
+
 
 <script setup>
 //OMAR IMPORTANTE: rediseñar con https://quasar.dev/layout/gallery/google-photos
