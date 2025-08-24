@@ -31,10 +31,11 @@ class SchoolAdminController extends SystemBaseController
 
     public function index(Request $request)
     {
+        $filters = $request->all();
         return Inertia::render('Schools/Index', [
             'schools' => $this->schoolService->getSchools($request),
             'localities' => Locality::orderBy('order')->get(),
-            'search' => $request->search,
+            'filters' => $filters,
             'breadcrumbs' => Breadcrumbs::generate('schools.index'),
         ]);
     }

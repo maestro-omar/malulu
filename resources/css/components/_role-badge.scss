@@ -1,6 +1,7 @@
 @use "../abstracts/variables";
 
-.role {
+.q-chip.role {
+
     // Role Badge Color Modifiers
     &--superadmin {
         background: variables.$color-role-superadmin-bg;

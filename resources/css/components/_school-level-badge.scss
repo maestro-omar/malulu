@@ -2,7 +2,7 @@
 @use "sass:color";
 
 // School Level Badge Color Modifiers
-.school-level {
+.q-chip.school-level {
     &--inicial {
         background: variables.$color-level-initial-bg;
         color: variables.$color-level-initial-text;

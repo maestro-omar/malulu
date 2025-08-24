@@ -1,7 +1,7 @@
 <template>
-  <span :class="['badge', 'badge--school-level', 'school-level--' + (level.code || 'default')]">
+  <q-chip :class="['school-level--' + (level.code || 'default')]" :title="level.name" :size="size">
     {{ label }}
-  </span>
+  </q-chip>
 </template>
 
 <script setup>
@@ -12,6 +12,10 @@ const props = defineProps({
   level: {
     type: Object,
     required: true
+  },
+  size: {
+    type: String,
+    default: 'sm'
   }
 });
 

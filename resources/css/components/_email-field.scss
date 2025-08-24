@@ -1,0 +1,56 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
+// Email Field Component
+
+.email-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &__text {
+    margin: 0;
+    @include mixins.fz(1.5);
+    color: variables.$color-blue;
+  }
+
+  &__email {
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+      color: variables.$color-teal;
+    }
+
+    &:focus {
+      outline: none;
+      color: variables.$color-teal;
+    }
+  }
+
+  &__placeholder {
+    color: variables.$color-gray;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: variables.$color-blue;
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+      color: variables.$color-teal;
+    }
+
+    &:focus {
+      outline: none;
+      color: variables.$color-teal;
+    }
+  }
+
+  &__icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}

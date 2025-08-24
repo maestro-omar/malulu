@@ -8,19 +8,12 @@
           {{ title }}
         </q-toolbar-title>
         <div class="mll-sub-header__actions">
-            <q-btn v-if="add && add.show" :href="add.href" color="green" size="md" :label="add.label || 'Nuevo'" />
+          <q-btn v-if="add && add.show" :href="add.href" color="green" size="md" :label="add.label || 'Nuevo'" />
 
-            <Link v-if="trashed && trashed.show" :href="trashed.href"
-              class="admin-button admin-button--top admin-button--gray">
-            {{ trashed.label || 'Eliminados' }}
-            </Link>
-            <Link v-if="edit && edit.show" :href="edit.href" class="admin-button admin-button--top admin-button--blue">
-            {{ edit.label || 'Editar' }}
-            </Link>
-            <button v-if="del && del.show" @click="del.onClick"
-              class="admin-button admin-button--top admin-button--red">
-              {{ del.label || 'Eliminar' }}
-            </button>
+          <q-btn v-if="trashed && trashed.show" :href="trashed.href" color="grey-6" size="md"
+            :label="trashed.label || 'Eliminados'" />
+          <q-btn v-if="edit && edit.show" :href="edit.href" color="primary" size="md" :label="edit.label || 'Editar'" />
+          <q-btn v-if="del && del.show" @click="del.onClick" color="red" size="md" :label="del.label || 'Eliminar'" />
         </div>
       </div>
       <div v-if="hasAdditionalButtons" class="mll-sub-header__actions mll-sub-header__actions--more">

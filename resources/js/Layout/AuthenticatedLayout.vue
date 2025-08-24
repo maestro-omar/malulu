@@ -14,7 +14,7 @@
       </q-toolbar>
 
       <q-tabs align="left">
-        <q-route-tab v-for="item in page.props.menu.items" :to="route(item.route)" :active="route().current(item.route)"
+        <q-route-tab v-for="item in page.props.menu.items" :href="route(item.route)" :active="route().current(item.route)"
           :label="item.name" />
       </q-tabs>
     </q-header>

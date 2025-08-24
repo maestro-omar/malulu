@@ -1,28 +1,35 @@
 @use "../abstracts/variables";
 
-// Management Type Badge Color Modifiers
-.management-type--publica {
-  background: variables.$color-management-public-bg;
-  color: variables.$color-management-public-text;
-  border: 1px solid variables.$color-management-public-text;
-}
-.management-type--privada {
-  background: variables.$color-management-private-bg;
-  color: variables.$color-management-private-text;
-  border: 1px solid variables.$color-management-private-text;
-}
-.management-type--generativa {
-  background: variables.$color-management-generative-bg;
-  color: variables.$color-management-generative-text;
-  border: 1px solid variables.$color-management-generative-text;
-}
-.management-type--autogestionada {
-  background: variables.$color-management-self-managed-bg;
-  color: variables.$color-management-self-managed-text;
-  border: 1px solid variables.$color-management-self-managed-text;
-}
-.management-type--default {
-  background: variables.$color-management-default-bg;
-  color: variables.$color-management-default-text;
-  border: 1px solid variables.$color-management-default-text;
+.q-chip.management-type {
+
+  // Management Type Badge Color Modifiers
+  &--publica {
+    background: variables.$color-management-public-bg;
+    color: variables.$color-management-public-text;
+    border: 1px solid variables.$color-management-public-text;
+  }
+
+  &--privada {
+    background: variables.$color-management-private-bg;
+    color: variables.$color-management-private-text;
+    border: 1px solid variables.$color-management-private-text;
+  }
+
+  &--generativa {
+    background: variables.$color-management-generative-bg;
+    color: variables.$color-management-generative-text;
+    border: 1px solid variables.$color-management-generative-text;
+  }
+
+  &--autogestionada {
+    background: variables.$color-management-self-managed-bg;
+    color: variables.$color-management-self-managed-text;
+    border: 1px solid variables.$color-management-self-managed-text;
+  }
+
+  &--default {
+    background: variables.$color-management-default-bg;
+    color: variables.$color-management-default-text;
+    border: 1px solid variables.$color-management-default-text;
+  }
 }

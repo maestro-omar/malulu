@@ -2,173 +2,195 @@
 
   <Head title="Escuelas" />
 
-  <AuthenticatedLayout>
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Listado de Escuelas`" :add="{
-        show: hasPermission($page.props, 'superadmin', null),
-        href: route('schools.create'),
-        label: 'Nueva escuela'
-      }" :trashed="{
-        show: hasPermission($page.props, 'superadmin', null),
-        href: route('schools.trashed'),
-        label: 'Eliminadas'
-      }">
-      </AdminHeader>
-    </template>
-
-    <div class="container">
+  <AuthenticatedLayout title="Escuelas">
+    <AdminHeader :breadcrumbs="breadcrumbs" title="Listado de Escuelas" :add="{
+      show: hasPermission($page.props, 'superadmin', null),
+      href: route('schools.create'),
+      label: 'Nueva escuela'
+    }" :trashed="{
+      show: hasPermission($page.props, 'superadmin', null),
+      href: route('schools.trashed'),
+      label: 'Eliminadas'
+    }">
+    </AdminHeader>
+    <q-page class="q-pa-md">
       <!-- Flash Messages -->
       <FlashMessages :flash="flash" />
 
-      <div class="table__wrapper">
-        <div class="table__container">
-          <!-- Search Filter -->
-          <div class="table__search">
-            <input type="text" v-model="search" @input="handleSearch" placeholder="Buscar escuelas..." />
-            <button v-if="search" @click="clearSearch" class="table__search-clear">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Locality Filter -->
-          <div class="table__filter">
-            <SearchableDropdown v-model="selectedLocality" :options="localities" placeholder="Filtrar por localidad..."
-              @update:modelValue="handleLocalityChange" />
-          </div>
-
-          <!-- Desktop Table View -->
-          <div class="table__desktop">
-            <table class="table__table">
-              <thead class="table__thead">
-                <tr>
-                  <th class="table__th">Nombre</th>
-                  <th class="table__th">CUE</th>
-                  <th class="table__th">Localidad</th>
-                  <th class="table__th">Niveles</th>
-                  <th class="table__th">Acciones</th>
-                </tr>
-              </thead>
-              <tbody class="table__tbody">
-                <tr v-for="(school, index) in schools.data.filter(s => s.name !== 'GLOBAL')" :key="school.id" :class="{
-                  'table__tr--even': index % 2 === 0,
-                  'table__tr--odd': index % 2 === 1
-                }">
-                  <td class="table__td table__name">
-                    <div class="table__name-primary">{{ school.name }}</div>
-                    <div class="table__name-secondary">
-                      {{ school.short }}
-                      <ManagementTypeBadge :mtype="school.management_type" :key="school.management_type.id" />
-                      <SchoolShiftBadge v-for="shift in school.shifts" :key="shift.id" :shift="shift" />
-                    </div>
-                  </td>
-                  <td class="table__td table__cue">
-                    {{ school.cue }}
-                  </td>
-                  <td class="table__td table__locality">
-                    {{ school.locality?.name }}
-                  </td>
-                  <td class="table__td table__levels">
-                    <div class="table__badges">
-                      <SchoolLevelBadge v-for="level in school.school_levels" :key="level.id" :level="level" />
-                    </div>
-                  </td>
-                  <td class="table__td table__actions">
-                    <Link v-if="hasPermission($page.props, 'school.view')" :href="route('school.show', school.slug)">
-                    Ver
-                    </Link>
-                    <Link v-if="hasPermission($page.props, 'school.edit')" :href="route('school.edit', school.slug)">
-                    Editar
-                    </Link>
-                    <Link v-if="hasPermission($page.props, 'school.delete')"
-                      :href="route('schools.destroy', school.slug)" method="delete" as="button">
-                    Eliminar
-                    </Link>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Mobile Card View -->
-          <div class="table__mobile">
-            <div v-for="(school, index) in schools.data.filter(s => s.name !== 'GLOBAL')" :key="school.id" :class="{
-              'table__card--even': index % 2 === 0,
-              'table__card--odd': index % 2 === 1
-            }" class="table__card">
-              <div class="table__card-header">
-                <div class="table__card-user">
-                  <div class="table__card-info">
-                    <h3>{{ school.name }}</h3>
-                    <p>{{ school.short }}</p>
-                  </div>
-                </div>
-                <div class="table__card-actions">
-                  <Link v-if="hasPermission($page.props, 'school.view')" :href="route('school.show', school.slug)">
-                  Ver
-                  </Link>
-                  <Link v-if="hasPermission($page.props, 'school.edit')" :href="route('school.edit', school.slug)">
-                  Editar
-                  </Link>
-                  <Link v-if="hasPermission($page.props, 'school.delete')" :href="route('schools.destroy', school.slug)"
-                    method="delete" as="button">
-                  Eliminar
-                  </Link>
-                </div>
-              </div>
-              <div class="table__card-section">
-                <div class="table__card-label">CUE:</div>
-                <div class="table__card-content">{{ school.cue }}</div>
-              </div>
-              <div class="table__card-section">
-                <div class="table__card-label">Localidad:</div>
-                <div class="table__card-content">{{ school.locality?.name }}</div>
-              </div>
-              <div class="table__card-section">
-                <div class="table__card-label">Niveles:</div>
-                <div class="table__card-content">
-                  <SchoolLevelBadge v-for="level in school.school_levels" :key="level.id" :level="level" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pagination -->
-          <div class="table__pagination">
-            <div class="table__pagination-info">
-              Mostrando {{ schools.from }} a {{ schools.to }} de {{ schools.total }} resultados
-            </div>
-            <Pagination :links="schools.links" />
-          </div>
+      <!-- Search and Filter Controls -->
+      <div class="row q-mb-md q-gutter-x-md">
+        <div class="col-5">
+          <q-input
+            v-model="search"
+            dense
+            outlined
+            placeholder="Buscar escuelas..."
+            @update:model-value="handleSearch"
+            clearable
+          >
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </div>
+        <div class="col-5">
+          <q-select
+            v-model="selectedLocality"
+            :options="localities"
+            option-label="name"
+            option-value="id"
+            dense
+            outlined
+            placeholder="Filtrar por localidad..."
+            label="Localidad"
+            @update:model-value="handleLocalityChange"
+            clearable
+          >
+            <template v-slot:prepend>
+              <q-icon name="location_on" />
+            </template>
+          </q-select>
         </div>
       </div>
-    </div>
+
+      <!-- Quasar Table -->
+      <q-table class="mll-table striped-table" dense :rows="filteredSchools" :columns="columns" row-key="id"
+        :pagination="{ rowsPerPage: 30 }">
+        <!-- Custom cell for name -->
+        <template #body-cell-name="props">
+          <q-td :props="props">
+            <div class="column q-gutter-xs">
+              <div class="text-weight-medium">{{ props.row.name }}</div>
+              <div class="row items-center q-gutter-xs">
+                <div class="text-caption text-grey-6">{{ props.row.short }}</div>
+                <ManagementTypeBadge :mtype="props.row.management_type" :key="props.row.management_type.id" />
+                <SchoolShiftBadge v-for="shift in props.row.shifts" :key="shift.id" :shift="shift" />
+              </div>
+            </div>
+          </q-td>
+        </template>
+
+        <!-- Custom cell for locality -->
+        <template #body-cell-locality="props">
+          <q-td :props="props">
+            {{ props.row.locality?.name || '-' }}
+            <div class="row items-center q-gutter-sm">
+              <div class="text-caption text-grey-6">{{ props.row.address }}</div>
+            </div>
+          </q-td>
+        </template>
+
+        <!-- Custom cell for levels -->
+        <template #body-cell-levels="props">
+          <q-td :props="props">
+            <div class="row q-gutter-xs">
+              <SchoolLevelBadge v-for="level in props.row.school_levels" :key="level.id" :level="level" />
+            </div>
+          </q-td>
+        </template>
+
+        <!-- Custom cell for actions -->
+        <template #body-cell-actions="props">
+          <q-td :props="props">
+            <div class="row items-center q-gutter-sm">
+              <q-btn v-if="hasPermission($page.props, 'school.view')" flat round color="primary" icon="visibility"
+                size="sm" :href="route('school.show', props.row.slug)" title="Ver" />
+              <q-btn v-if="hasPermission($page.props, 'school.edit')" flat round color="secondary" icon="edit" size="sm"
+                :href="route('school.edit', props.row.slug)" title="Editar" />
+              <q-btn v-if="hasPermission($page.props, 'school.delete')" flat round color="negative" icon="delete"
+                size="sm" @click="deleteSchool(props.row.slug)" title="Eliminar" />
+            </div>
+          </q-td>
+        </template>
+      </q-table>
+    </q-page>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
-import Pagination from '@/Components/admin/Pagination.vue';
-import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
 import ManagementTypeBadge from '@/Components/Badges/ManagementTypeBadge.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
-import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { ref, watch, computed } from 'vue';
+import { useQuasar } from 'quasar';
+
+const page = usePage();
+const $q = useQuasar();
 
 const props = defineProps({
   schools: Object,
   filters: Object,
   localities: Array,
-  breadcrumbs: Array
+  breadcrumbs: Array,
+  flash: Object || null
+  });
+
+// Table columns definition
+const columns = [
+  {
+    name: 'name',
+    required: true,
+    label: 'Nombre',
+    align: 'left',
+    field: 'name',
+    sortable: true
+  },
+  {
+    name: 'cue',
+    required: true,
+    label: 'CUE',
+    align: 'left',
+    field: 'cue',
+    sortable: true
+  },
+  {
+    name: 'locality',
+    label: 'Localidad',
+    field: 'locality',
+    align: 'left',
+    sortable: true
+  },
+  {
+    name: 'levels',
+    label: 'Niveles',
+    field: 'school_levels',
+    align: 'left',
+    sortable: false
+  },
+  {
+    name: 'actions',
+    label: 'Acciones',
+    field: 'actions',
+    align: 'center',
+    sortable: false,
+    classes: 'mll-table__cell-actions',
+    headerClasses: 'mll-table__cell-actions-header',
+    style: 'width: 150px'
+  }
+];
+
+// Filter out GLOBAL schools and apply locality filter
+const filteredSchools = computed(() => {
+  let schools = props.schools?.data || [];
+
+  // Filter out GLOBAL schools
+  schools = schools.filter(s => s.name !== 'GLOBAL');
+
+  // Apply locality filter if selected
+  if (selectedLocality.value) {
+    schools = schools.filter(s => s.locality?.id === selectedLocality.value.id);
+  }
+
+  return schools;
 });
 
-const search = ref(props.filters?.search || '');
-const selectedLocality = ref(props.localities?.find(l => l.id === props.filters?.locality_id) || null);
+const search = ref(page.props.filters?.search || '');
+const selectedLocality = ref(props.localities?.find(l => l.id == page.props.filters?.locality_id) || null);
 let searchTimeout = null;
 
 const handleSearch = () => {
@@ -189,7 +211,6 @@ const handleSearch = () => {
 };
 
 const handleLocalityChange = () => {
-  console.log('Selected locality:', selectedLocality.value);
   router.get(
     route('schools.index'),
     {
@@ -209,12 +230,28 @@ const clearSearch = () => {
   );
 };
 
+const deleteSchool = (slug) => {
+  $q.dialog({
+    title: 'Confirmar eliminación',
+    message: '¿Está seguro que desea eliminar esta escuela?',
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    router.delete(route('schools.destroy', slug));
+  });
+};
+
+// Watch for changes in search
 watch(search, (value) => {
   handleSearch();
 });
 
-// Debugging info (can be removed later)
-console.log("=== Debug Info ===");
-console.log("Localities:", props.localities);
-console.log('schools:', props.schools.data[0])
+// Watch for changes in page props filters to update local variables
+watch(() => page.props.filters, (newFilters) => {
+  if (newFilters) {
+    search.value = newFilters.search || '';
+    const locality = props.localities?.find(l => l.id == newFilters.locality_id);
+    selectedLocality.value = locality || null;
+  }
+}, { immediate: true });
 </script>

@@ -2,32 +2,25 @@
   <Head title="Tipos de Archivo" />
 
   <AuthenticatedLayout title="Tipos de Archivo">
+    <AdminHeader :breadcrumbs="breadcrumbs" title="Tipos de Archivo" :add="{
+      show: hasPermission($page.props, 'superadmin', null),
+      href: route('file-types.create'),
+      label: 'Nuevo'
+    }">
+    </AdminHeader>
     <q-page class="q-pa-md">
       <!-- Flash Messages -->
       <FlashMessages :flash="flash" />
 
       <!-- Quasar Table -->
       <q-table 
-        class="mll-table mll-table--file-types striped-table" 
+        class="mll-table mll-table--small-width striped-table" 
         dense 
         :rows="fileTypes" 
         :columns="columns" 
         row-key="id" 
         :pagination="{ rowsPerPage: 30 }"
       >
-        <!-- Custom header -->
-        <template #top>
-          <div class="row items-center justify-between q-mb-md">
-            <h4 class="q-ma-none">Tipos de Archivo</h4>
-            <q-btn
-              v-if="hasPermission($page.props, 'superadmin', null)"
-              color="primary"
-              icon="add"
-              label="Nuevo"
-              :href="route('file-types.create')"
-            />
-          </div>
-        </template>
 
         <!-- Custom cell for status -->
         <template #body-cell-status="props">
@@ -75,6 +68,7 @@
 <script setup>
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
+import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { useQuasar } from 'quasar';

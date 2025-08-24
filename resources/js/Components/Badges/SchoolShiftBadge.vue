@@ -1,7 +1,7 @@
 <template>
-  <span :class="['badge', 'badge--school-shift', 'school-shift--' + (shift.code || 'default')]">
+  <q-chip :class="['school-shift--' + (shift.code || 'default')]" :title="shift.name" :size="size">
     {{ label }}
-  </span>
+  </q-chip>
 </template>
 
 <script setup>
@@ -12,6 +12,10 @@ const props = defineProps({
   shift: {
     type: Object,
     required: true
+  },
+  size: {
+    type: String,
+    default: 'sm'
   }
 });
 

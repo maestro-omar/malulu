@@ -14,7 +14,7 @@
 
       <!-- Quasar Table -->
       <q-table 
-        class="mll-table mll-table--academic-years striped-table" 
+        class="mll-table mll-table--small-width striped-table" 
         dense 
         :rows="academicYears" 
         :columns="columns" 

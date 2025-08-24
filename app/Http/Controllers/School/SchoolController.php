@@ -30,10 +30,11 @@ class SchoolController extends SchoolBaseController
 
     public function index(Request $request)
     {
+        $filters = $request->all();
         return $this->render($request, 'Schools/Index', [
             'schools' => $this->schoolService->getSchools($request),
             'localities' => Locality::orderBy('order')->get(),
-            'search' => $request->search,
+            'filters' => $filters,
             'breadcrumbs' => Breadcrumbs::generate('schools.index'),
         ]);
     }

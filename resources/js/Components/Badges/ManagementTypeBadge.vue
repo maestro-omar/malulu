@@ -1,7 +1,7 @@
 <template>
-  <span :class="['badge', 'badge--management-type', 'management-type--' + (mtype.code || 'default')]" :title="mtype.name">
+  <q-chip :class="['management-type--' + (mtype.code || 'default')]" :title="mtype.name" :size="size">
     {{ label }}
-  </span>
+  </q-chip>
 </template>
 
 <script setup>
@@ -12,6 +12,10 @@ const props = defineProps({
   mtype: {
     type: Object,
     required: true
+  },
+  size: {
+    type: String,
+    default: 'sm'
   }
 });
 

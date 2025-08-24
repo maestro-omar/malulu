@@ -14,11 +14,8 @@
             <FlashMessages :flash="flash" />
 
             <!-- Quasar Table -->
-            <q-table class="mll-table mll-table--file-subtypes striped-table" dense :rows="fileSubtypes"
+            <q-table class="mll-table mll-table--small-width striped-table" dense :rows="fileSubtypes"
                 :columns="columns" row-key="id" :pagination="{ rowsPerPage: 30 }">
-                <!-- Custom header -->
-
-
                 <!-- Custom cell for actions -->
                 <template #body-cell-actions="props">
                     <q-td :props="props">

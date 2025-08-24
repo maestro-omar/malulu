@@ -1,7 +1,7 @@
 <template>
-  <span :class="['badge', 'badge--role', 'role--' + (role.code || 'default')]" :title="role.name">
+  <q-chip :class="['role--' + (role.code || 'default')]" :title="role.name" :size="size">
     {{ label }}
-  </span>
+  </q-chip>
 </template>
 
 <script setup>
@@ -12,6 +12,10 @@ const props = defineProps({
   role: {
     type: Object,
     required: true
+  },
+  size: {
+    type: String,
+    default: 'sm'
   }
 });
 

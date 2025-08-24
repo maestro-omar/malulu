@@ -3,13 +3,14 @@
   <Head title="Provincias" />
 
   <AuthenticatedLayout title="Provincias">
+    <AdminHeader :breadcrumbs="breadcrumbs" title="Provincias">
+    </AdminHeader>
     <q-page class="q-pa-md">
       <!-- Flash Messages -->
       <FlashMessages :flash="flash" />
 
       <!-- Quasar Table -->
-      <q-table class="mll-table mll-table--provinces striped-table" dense :rows="provinces" :columns="columns" row-key="id" :pagination="{ rowsPerPage: 30 }">
-        <!-- Custom header -->
+      <q-table class="mll-table mll-table--small-width striped-table" dense :rows="provinces" :columns="columns" row-key="id" :pagination="{ rowsPerPage: 30 }">
 
         <!-- Custom cell for logo -->
         <template #body-cell-logo="props">
@@ -44,6 +45,8 @@
 <script setup>
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
+import AdminHeader from '@/Sections/AdminHeader.vue';
+import { hasPermission } from '@/Utils/permissions';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { useQuasar } from 'quasar';
