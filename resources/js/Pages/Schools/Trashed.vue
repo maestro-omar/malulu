@@ -3,15 +3,13 @@
   <Head title="Escuelas Eliminadas" />
 
   <AuthenticatedLayout>
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Escuelas Eliminadas`">
-        <template #additional-buttons>
-          <Link :href="route('schools.index')" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
-          Volver a Escuelas
-          </Link>
-        </template>
-      </AdminHeader>
-    </template>
+    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Escuelas Eliminadas`">
+      <template #additional-buttons>
+        <Link :href="route('schools.index')" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+        Volver a Escuelas
+        </Link>
+      </template>
+    </AdminHeader>
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -143,7 +141,7 @@
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
 import { Head, Link, router } from '@inertiajs/vue3';

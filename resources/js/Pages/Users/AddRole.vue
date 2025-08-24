@@ -3,9 +3,7 @@
   <Head :title="`Añadir Rol a ${user.name}`" />
 
   <AuthenticatedLayout>
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Añadir Rol a ${user.name}`"></AdminHeader>
-    </template>
+    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Añadir Rol a ${user.name}`"></AdminHeader>
 
     <div class="container container--as-card">
       <UserInformation :user="user" :show-picture="true" :show-roles="true" :show-contact="true"
@@ -240,7 +238,7 @@
 
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import AuthenticatedLayout from "@/Layout/AuthenticatedLayout.vue";
 import { ref, computed, watch } from "vue";
 import ActionButtons from "@/Components/admin/ActionButtons.vue";
 import SearchableDropdown from "@/Components/admin/SearchableDropdown.vue";

@@ -1,9 +1,7 @@
 <template>
   <AuthenticatedLayout>
     <Head title="Crear Usuario" />
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Crear Usuario`"></AdminHeader>
-    </template>
+    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Crear Usuario`"></AdminHeader>
 
     <div class="container">
       <div class="admin-form__wrapper">
@@ -102,7 +100,7 @@
 import CancelLink from '@/Components/admin/CancelLink.vue';
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import AuthenticatedLayout from "@/Layout/AuthenticatedLayout.vue";
 import AdminHeader from "@/Sections/AdminHeader.vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 

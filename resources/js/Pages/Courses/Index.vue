@@ -3,20 +3,18 @@
   <Head :title="`${school.short} - Cursos de ${selectedLevel.name}`" />
 
   <AuthenticatedLayout>
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`${school.short} - Cursos de ${selectedLevel.name}`">
-        <template #additional-buttons>
-          <Link :href="route('school.course.create', { school: school.slug, schoolLevel: selectedLevel.code })"
-            class="admin-button admin-button--top admin-button--blue">
-          Agregar Nuevo Curso
-          </Link>
-          <Link :href="route('school.course.create-next', { school: school.slug, schoolLevel: selectedLevel.code })"
-            class="admin-button admin-button--top admin-button--indigo">
-          Crear cursos siguientes
-          </Link>
-        </template>
-      </AdminHeader>
-    </template>
+    <AdminHeader :breadcrumbs="breadcrumbs" :title="`${school.short} - Cursos de ${selectedLevel.name}`">
+      <template #additional-buttons>
+        <Link :href="route('school.course.create', { school: school.slug, schoolLevel: selectedLevel.code })"
+          class="admin-button admin-button--top admin-button--blue">
+        Agregar Nuevo Curso
+        </Link>
+        <Link :href="route('school.course.create-next', { school: school.slug, schoolLevel: selectedLevel.code })"
+          class="admin-button admin-button--top admin-button--indigo">
+        Crear cursos siguientes
+        </Link>
+      </template>
+    </AdminHeader>
 
     <div class="container">
       <!-- Flash Messages -->
@@ -209,7 +207,7 @@ import FlashMessages from '@/Components/admin/FlashMessages.vue'
 import Pagination from '@/Components/admin/Pagination.vue'
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
 import SelectSchoolShift from '@/Components/admin/SelectSchoolShift.vue'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'

@@ -1,49 +1,63 @@
 @use "../abstracts/variables";
 @use "sass:color";
 
-// School Level Badge Color Modifiers
+// Mixin for school level styles (with border)
+@mixin school-level-styles-with-border($bg-color, $text-color) {
+    background: $bg-color;
+    color: $text-color;
+    border: 1px solid $text-color;
+
+    &.school-level--darker {
+        background: color.scale($bg-color, $lightness: -30%);
+        // color: color.scale($text-color, $lightness: -40%);
+    }
+}
+
+// Mixin for school level styles (without border)
+@mixin school-level-styles-no-border($bg-color, $text-color) {
+    background: $bg-color;
+    color: $text-color;
+
+    &.school-level--darker {
+        background: color.scale($bg-color, $lightness: -30%);
+        // color: color.scale($text-color, $lightness: -40%);
+    }
+}
+
+// School Level Badge Color Modifiers for q-chip
 .q-chip.school-level {
     &--inicial {
-        background: variables.$color-level-initial-bg;
-        color: variables.$color-level-initial-text;
-        border: 1px solid variables.$color-level-initial-text;
-
-        &.school-level--darker {
-            background: color.scale(variables.$color-level-initial-bg, $lightness: -30%);
-            // color: color.scale(variables.$color-level-initial-text, $lightness: -40%);
-        }
+        @include school-level-styles-with-border(variables.$color-level-initial-bg, variables.$color-level-initial-text);
     }
 
     &--primaria {
-        background: variables.$color-level-primary-bg;
-        color: variables.$color-level-primary-text;
-        border: 1px solid variables.$color-level-primary-text;
-
-        &.school-level--darker {
-            background: color.scale(variables.$color-level-primary-bg, $lightness: -30%);
-            // color: color.scale(variables.$color-level-primary-text, $lightness: -40%);
-        }
+        @include school-level-styles-with-border(variables.$color-level-primary-bg, variables.$color-level-primary-text);
     }
 
     &--secundaria {
-        background: variables.$color-level-secondary-bg;
-        color: variables.$color-level-secondary-text;
-        border: 1px solid variables.$color-level-secondary-text;
-
-        &.school-level--darker {
-            background: color.scale(variables.$color-level-secondary-bg, $lightness: -30%);
-            // color: color.scale(variables.$color-level-secondary-text, $lightness: -40%);
-        }
+        @include school-level-styles-with-border(variables.$color-level-secondary-bg, variables.$color-level-secondary-text);
     }
 
     &--default {
-        background: variables.$color-level-default-bg;
-        color: variables.$color-level-default-text;
-        border: 1px solid variables.$color-level-default-text;
+        @include school-level-styles-with-border(variables.$color-level-default-bg, variables.$color-level-default-text);
+    }
+}
 
-        &.school-level--darker {
-            background: color.scale(variables.$color-level-default-bg, $lightness: -30%);
-            // color: color.scale(variables.$color-level-default-text, $lightness: -40%);
-        }
+// School Level Button Color Modifiers for q-btn
+.q-btn.school-level {
+    &--inicial {
+        @include school-level-styles-no-border(variables.$color-level-initial-bg, variables.$color-level-initial-text);
+    }
+
+    &--primaria {
+        @include school-level-styles-no-border(variables.$color-level-primary-bg, variables.$color-level-primary-text);
+    }
+
+    &--secundaria {
+        @include school-level-styles-no-border(variables.$color-level-secondary-bg, variables.$color-level-secondary-text);
+    }
+
+    &--default {
+        @include school-level-styles-no-border(variables.$color-level-default-bg, variables.$color-level-default-text);
     }
 }

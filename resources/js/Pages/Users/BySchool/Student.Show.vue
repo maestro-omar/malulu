@@ -4,7 +4,7 @@ import EmailField from '@/Components/admin/EmailField.vue';
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import PhoneField from '@/Components/admin/PhoneField.vue';
 import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
 import { route_school_student } from '@/Utils/routes';
@@ -38,18 +38,16 @@ const destroy = () => {
     <Head :title="`Usuario: ${user.name}`" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Estudiante ${user.firstname} ${user.lastname}`" :edit="{
-                show: hasPermission($page.props, 'student.edit'),
-                href: route_school_student(school, user, 'edit'),
-                label: 'Editar'
-            }" :del="{
-                show: hasPermission($page.props, 'student.delete'),
-                onClick: destroy,
-                label: 'Eliminar'
-            }">
-            </AdminHeader>
-        </template>
+        <AdminHeader :breadcrumbs="breadcrumbs" :title="`Estudiante ${user.firstname} ${user.lastname}`" :edit="{
+            show: hasPermission($page.props, 'student.edit'),
+            href: route_school_student(school, user, 'edit'),
+            label: 'Editar'
+        }" :del="{
+            show: hasPermission($page.props, 'student.delete'),
+            onClick: destroy,
+            label: 'Eliminar'
+        }">
+        </AdminHeader>
         <!-- Flash Messages -->
         <FlashMessages :flash="flash" />
 

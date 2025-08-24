@@ -2,17 +2,15 @@
 
     <Head :title="`Detalles de la Provincia: ${province.name}`" />
     <AuthenticatedLayout>
-        <template #header>
-            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles de la Provincia: ${province.name}`" :edit="{
-                show: hasPermission($page.props, 'province.manage'),
-                href: route('provinces.edit', province.code),
-                label: 'Editar'
-            }" :del="{
-                show: hasPermission($page.props, 'province.manage'),
-                onClick: destroy,
-                label: 'Eliminar'
-            }" />
-        </template>
+        <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles de la Provincia: ${province.name}`" :edit="{
+            show: hasPermission($page.props, 'province.manage'),
+            href: route('provinces.edit', province.code),
+            label: 'Editar'
+        }" :del="{
+            show: hasPermission($page.props, 'province.manage'),
+            onClick: destroy,
+            label: 'Eliminar'
+        }" />
         <div class="province-show">
             <div class="province-show__container">
                 <div class="province-show__card">
@@ -71,7 +69,7 @@
 
 <script setup>
 import EditableImage from '@/Components/admin/EditableImage.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
 import { Head, router } from '@inertiajs/vue3';

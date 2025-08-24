@@ -3,18 +3,16 @@
   <Head :title="`Detalle del Curso ${course.nice_name}`" />
 
   <AuthenticatedLayout>
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalle del Curso ${course.nice_name}`" :edit="{
-        show: hasPermission($page.props, 'course.manage'),
-        href: route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) }),
-        label: 'Editar'
-      }" :del="{
-        show: hasPermission($page.props, 'course.manage'),
-        onClick: destroy,
-        label: 'Eliminar'
-      }">
-      </AdminHeader>
-    </template>
+    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalle del Curso ${course.nice_name}`" :edit="{
+      show: hasPermission($page.props, 'course.manage'),
+      href: route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) }),
+      label: 'Editar'
+    }" :del="{
+      show: hasPermission($page.props, 'course.manage'),
+      onClick: destroy,
+      label: 'Eliminar'
+    }">
+    </AdminHeader>
 
     <div class="container">
       <div class="admin-detail__wrapper">
@@ -112,7 +110,7 @@
 
 <script setup>
 import { Link, Head } from '@inertiajs/vue3'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue'
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'

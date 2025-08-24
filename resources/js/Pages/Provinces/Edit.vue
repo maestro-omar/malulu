@@ -1,6 +1,6 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
@@ -34,9 +34,7 @@ const submit = () => {
   <Head :title="`Editar Provincia: ${props.province.name}`" />
 
   <AuthenticatedLayout>
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Provincia: ${props.province.name}`" />
-    </template>
+    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Provincia: ${props.province.name}`" />
 
     <div class="container">
       <div class="admin-form__wrapper">

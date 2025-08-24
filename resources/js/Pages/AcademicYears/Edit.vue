@@ -3,9 +3,7 @@
   <Head title="Ciclos lectivos" />
 
   <AuthenticatedLayout>
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Ciclo Lectivo ${props.academicYear.year}`"></AdminHeader>
-    </template>
+    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Ciclo Lectivo ${props.academicYear.year}`"></AdminHeader>
 
     <div class="container">
       <div class="admin-form__wrapper">
@@ -66,7 +64,7 @@ import FlashMessages from '@/Components/admin/FlashMessages.vue'
 import InputError from '@/Components/admin/InputError.vue'
 import InputLabel from '@/Components/admin/InputLabel.vue'
 import TextInput from '@/Components/admin/TextInput.vue'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import { Head, useForm } from '@inertiajs/vue3'
 

@@ -1,11 +1,9 @@
 <template>
     <AuthenticatedLayout>
         <Head title="Editar Tipo de Archivo" />
-        <template #header>
-            <h2 class="page-subtitle">
-                Editar Tipo de Archivo
-            </h2>
-        </template>
+        <h2 class="page-subtitle">
+            Editar Tipo de Archivo
+        </h2>
 
         <div class="container">
             <div class="admin-form__wrapper">
@@ -73,7 +71,7 @@
 
 <script setup>
 import { useForm, Link, Head } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
 import InputError from '@/Components/admin/InputError.vue';

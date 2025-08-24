@@ -4,7 +4,7 @@ import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { route_school_student } from '@/Utils/routes';
 import { calculateAge } from '@/Utils/date.js';
@@ -60,9 +60,7 @@ const submit = () => {
     <Head :title="`Editar Estudiante: ${user.name}`" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Estudiante: ${user.name}`"></AdminHeader>
-        </template>
+        <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Estudiante: ${user.name}`"></AdminHeader>
 
         <div class="container">
             <div class="admin-form__wrapper">

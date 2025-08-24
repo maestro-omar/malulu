@@ -5,7 +5,7 @@ import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import Pagination from '@/Components/admin/Pagination.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
 import { route_school_student } from '@/Utils/routes';
@@ -69,13 +69,11 @@ const isAdmin = (user) => {
     <Head title="Estudiantes" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Listado de estudiantes`" :add="{
-                show: hasPermission($page.props, 'student.create'),
-                href: route('school.students.create', { 'school': school.slug }),
-                label: 'Nuevo'
-            }" />
-        </template>
+        <AdminHeader :breadcrumbs="breadcrumbs" :title="`Listado de estudiantes`" :add="{
+            show: hasPermission($page.props, 'student.create'),
+            href: route('school.students.create', { 'school': school.slug }),
+            label: 'Nuevo'
+        }" />
 
         <div class="container">
             <!-- Flash Messages -->

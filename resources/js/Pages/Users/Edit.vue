@@ -4,7 +4,7 @@ import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
@@ -44,9 +44,7 @@ const submit = () => {
     <Head :title="`Editar Usuario: ${props.user.name}`" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Usuario: ${props.user.name}`"></AdminHeader>
-        </template>
+        <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Usuario: ${props.user.name}`"></AdminHeader>
 
         <div class="container">
             <div class="admin-form__wrapper">

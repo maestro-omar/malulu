@@ -3,9 +3,7 @@
   <Head :title="pageTitle" />
 
   <GuestLayout>
-    <template #header>
-      <GuestHeader :breadcrumbs="breadcrumbs" :title="pageTitle" />
-    </template>
+    <GuestHeader :breadcrumbs="breadcrumbs" :title="pageTitle" />
 
     <div class="schools-public">
       <div class="schools-public__container">

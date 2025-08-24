@@ -16,18 +16,26 @@
 
     & &__title-and-buttons {
         display: flex;
-        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        max-width: 100%;
+        flex-basis: 100%;
 
+        @include mixins.mq(sm) {
+            flex-direction: row;
+        }
     }
 
     & &__title {
-        max-width: 80%;
-        flex-shrink: 0;
         margin: 0;
         display: flex;
         align-items: center; // Vertically center text/content
         @include mixins.fz(2.6);
         @include mixins.lh(2.6);
+
+        @include mixins.mq(sm) {}
     }
 
     & &__actions {
@@ -37,7 +45,13 @@
         flex-direction: column;
         gap: 0.5rem; // space-y-2
 
-        @media (min-width: 768px) {
+        &--more {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid variables.$color-grey-dark;
+        }
+
+        @include mixins.mq(sm) {
             // md: breakpoint
             margin-left: 20px;
             flex-direction: row;
@@ -50,8 +64,6 @@
             }
 
             &--more {
-                border-top: 1px solid variables.$color-grey-dark;
-
                 padding-top: 15px;
                 margin: 15px 0;
             }

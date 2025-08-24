@@ -1,11 +1,9 @@
 <template>
     <AuthenticatedLayout>
         <Head title="Editar Subtipo de Archivo" />
-        <template #header>
-            <h2 class="page-subtitle">
-                Editar Subtipo de Archivo
-            </h2>
-        </template>
+        <h2 class="page-subtitle">
+            Editar Subtipo de Archivo
+        </h2>
 
         <div class="container">
             <div class="admin-form__wrapper">

@@ -1,11 +1,9 @@
 <template>
   <AuthenticatedLayout>
     <Head title="Crear Tipo de Archivo" />
-    <template #header>
-      <h2 class="page-subtitle">
-        Crear Tipo de Archivo
-      </h2>
-    </template>
+    <h2 class="page-subtitle">
+      Crear Tipo de Archivo
+    </h2>
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

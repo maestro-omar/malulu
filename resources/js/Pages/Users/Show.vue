@@ -1,46 +1,19 @@
-<script setup>
-import EditableImage from '@/Components/admin/EditableImage.vue';
-import EmailField from '@/Components/admin/EmailField.vue';
-import PhoneField from '@/Components/admin/PhoneField.vue';
-import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import AdminHeader from '@/Sections/AdminHeader.vue';
-import { hasPermission } from '@/Utils/permissions';
-import { Head, router, usePage } from '@inertiajs/vue3';
-
-const props = defineProps({
-    user: Object,
-    genders: Object,
-    breadcrumbs: Array,
-});
-
-const page = usePage();
-
-const destroy = () => {
-    if (confirm("¿Está seguro que desea eliminar este usuario?")) {
-        router.delete(route("users.destroy", props.user.id));
-    }
-};
-</script>
-
 <template>
 
     <Head :title="`Usuario: ${user.name}`" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles del usuario ${user.firstname} ${user.lastname}`"
-                :edit="{
-                    show: hasPermission($page.props, 'user.manage'),
-                    href: route('users.edit', { 'user': user.id }),
-                    label: 'Editar'
-                }" :del="{
+        <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles del usuario ${user.firstname} ${user.lastname}`"
+            :edit="{
+                show: hasPermission($page.props, 'user.manage'),
+                href: route('users.edit', { 'user': user.id }),
+                label: 'Editar'
+            }" :del="{
                     show: hasPermission($page.props, 'user.manage'),
                     onClick: destroy,
                     label: 'Eliminar'
                 }">
-            </AdminHeader>
-        </template>
+        </AdminHeader>
 
         <div class="container">
             <div class="admin-detail__wrapper">
@@ -176,3 +149,28 @@ const destroy = () => {
         </div>
     </AuthenticatedLayout>
 </template>
+
+<script setup>
+import EditableImage from '@/Components/admin/EditableImage.vue';
+import EmailField from '@/Components/admin/EmailField.vue';
+import PhoneField from '@/Components/admin/PhoneField.vue';
+import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
+import AdminHeader from '@/Sections/AdminHeader.vue';
+import { hasPermission } from '@/Utils/permissions';
+import { Head, router, usePage } from '@inertiajs/vue3';
+
+const props = defineProps({
+    user: Object,
+    genders: Object,
+    breadcrumbs: Array,
+});
+
+const page = usePage();
+
+const destroy = () => {
+    if (confirm("¿Está seguro que desea eliminar este usuario?")) {
+        router.delete(route("users.destroy", props.user.id));
+    }
+};
+</script>

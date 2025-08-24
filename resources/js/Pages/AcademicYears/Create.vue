@@ -2,9 +2,7 @@
   <AuthenticatedLayout>
 
     <Head title="Ciclos lectivos" />
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Nuevo Ciclo Lectivo`"></AdminHeader>
-    </template>
+    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Nuevo Ciclo Lectivo`"></AdminHeader>
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -99,7 +97,7 @@
 import CancelLink from "@/Components/admin/CancelLink.vue";
 import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import AuthenticatedLayout from "@/Layout/AuthenticatedLayout.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 
 const form = useForm({

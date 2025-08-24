@@ -18,7 +18,7 @@ function breadcrumbsGetUser(): User
 
 // 🏠 Dashboard base
 Breadcrumbs::for('dashboard', function (Trail $trail) {
-    $trail->push('Inicio', route('dashboard'),['icon' => 'home']);
+    $trail->push('Inicio', route('dashboard'), ['icon' => 'trip_origin']);
 });
 
 // 👤 Perfil
@@ -30,7 +30,7 @@ Breadcrumbs::for('profile.edit', function (Trail $trail) {
 // 👥 Usuarios
 Breadcrumbs::for('users.index', function (Trail $trail) {
     $trail->parent('dashboard');
-    $trail->push('Usuarios', route('users.index'));
+    $trail->push('Usuarios', route('users.index'), ['icon' => 'group']);
 });
 
 Breadcrumbs::for('users.create', function (Trail $trail) {
@@ -56,7 +56,7 @@ Breadcrumbs::for('users.show', function (Trail $trail, $user) {
 // 🏫 Escuelas
 Breadcrumbs::for('schools.index', function (Trail $trail) {
     $trail->parent('dashboard');
-    $trail->push('Escuelas', route('schools.index'));
+    $trail->push('Escuelas', route('schools.index'), ['icon' => 'home']);
 });
 
 Breadcrumbs::for('schools.create', function (Trail $trail) {
@@ -99,7 +99,7 @@ Breadcrumbs::for('schools.student.edit', function (Trail $trail, $school, $stude
 // 📅 Ciclos lectivos
 Breadcrumbs::for('academic-years.index', function (Trail $trail) {
     $trail->parent('dashboard');
-    $trail->push('Ciclos lectivos', route('academic-years.index'));
+    $trail->push('Ciclos lectivos', route('academic-years.index'), ['icon' => 'calendar_month']);
 });
 
 Breadcrumbs::for('academic-years.create', function (Trail $trail) {
@@ -114,7 +114,7 @@ Breadcrumbs::for('academic-years.edit', function (Trail $trail, $year) {
 
 Breadcrumbs::for('provinces.index', function (Trail $trail) {
     $trail->parent('dashboard');
-    $trail->push('Provincias', route('provinces.index'));
+    $trail->push('Provincias', route('provinces.index'), ['icon' => 'location_city']);
 });
 
 Breadcrumbs::for('provinces.show', function (Trail $trail, $province) {
@@ -185,7 +185,7 @@ Breadcrumbs::for('school.course.edit', function (Trail $trail, School $school, S
 
 // 🏫 Escuelas públicas (público general)
 Breadcrumbs::for('public-schools.index', function (Trail $trail) {
-    $trail->push('Escuelas públicas', route('schools.public-index'));
+    $trail->push('Escuelas públicas', route('schools.public-index'), ['icon' => 'trip_origin']);
 });
 
 Breadcrumbs::for('public-schools.byProvince', function (Trail $trail, $province) {

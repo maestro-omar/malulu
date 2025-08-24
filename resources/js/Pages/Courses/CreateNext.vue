@@ -3,11 +3,9 @@
     <Head :title="`${school.short} - Crear próximos cursos de ${selectedLevel.name}`" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <AdminHeader :breadcrumbs="breadcrumbs"
-                :title="`${school.short} - Crear próximos cursos de ${selectedLevel.name}`">
-            </AdminHeader>
-        </template>
+        <AdminHeader :breadcrumbs="breadcrumbs"
+            :title="`${school.short} - Crear próximos cursos de ${selectedLevel.name}`">
+        </AdminHeader>
 
         <div class="container">
             <!-- Flash Messages -->
@@ -125,7 +123,7 @@ import ActionButtons from '@/Components/admin/ActionButtons.vue'
 import FlashMessages from '@/Components/admin/FlashMessages.vue'
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
 import SelectSchoolShift from '@/Components/admin/SelectSchoolShift.vue'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import { Head, Link, router, useForm } from '@inertiajs/vue3'
 import { computed, ref, onMounted } from 'vue'

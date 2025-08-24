@@ -3,10 +3,8 @@
   <Head :title="`Escuela: ${school.short}`" />
 
   <SchoolLayout>
-    <template #header>
-      <GuestHeader :title="school.name">
-      </GuestHeader>
-    </template>
+    <GuestHeader :title="school.name">
+    </GuestHeader>
 
     <div class="school-public__container">
       <div class="school-public__card">

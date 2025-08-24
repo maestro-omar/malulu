@@ -3,9 +3,7 @@
   <Head title="Editar Escuela" />
 
   <AuthenticatedLayout>
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Escuela ${props.school.short}`"></AdminHeader>
-    </template>
+    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Escuela ${props.school.short}`"></AdminHeader>
 
     <div class="container">
       <div class="admin-form__wrapper">
@@ -206,7 +204,7 @@ import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';

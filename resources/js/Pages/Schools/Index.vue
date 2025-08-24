@@ -153,7 +153,7 @@ const columns = [
     label: 'Localidad',
     field: 'locality',
     align: 'left',
-    sortable: true
+    sortable: false
   },
   {
     name: 'levels',

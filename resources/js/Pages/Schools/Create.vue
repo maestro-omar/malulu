@@ -2,9 +2,7 @@
   <AuthenticatedLayout>
 
     <Head title="Crear Escuela" />
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Crear Escuela`"></AdminHeader>
-    </template>
+    <AdminHeader :breadcrumbs="breadcrumbs" :title="`Crear Escuela`"></AdminHeader>
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -131,7 +129,7 @@ import InputLabel from "@/Components/admin/InputLabel.vue";
 import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
 import SearchableDropdown from "@/Components/admin/SearchableDropdown.vue";
 import TextInput from "@/Components/admin/TextInput.vue";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import AuthenticatedLayout from "@/Layout/AuthenticatedLayout.vue";
 import AdminHeader from "@/Sections/AdminHeader.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import { ref } from 'vue';

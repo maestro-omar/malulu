@@ -3,11 +3,9 @@
 
     <Head
       :title="`${school.short} - ${selectedLevel.name} - Editar curso ${getFullYear(course.start_date)} - ${course.nice_name}`" />
-    <template #header>
-      <AdminHeader :breadcrumbs="breadcrumbs"
-        :title="`${school.short} - ${selectedLevel.name} - Editar curso ${getFullYear(course.start_date)} - ${course.nice_name}`">
-      </AdminHeader>
-    </template>
+    <AdminHeader :breadcrumbs="breadcrumbs"
+      :title="`${school.short} - ${selectedLevel.name} - Editar curso ${getFullYear(course.start_date)} - ${course.nice_name}`">
+    </AdminHeader>
 
     <div class="container">
       <div class="admin-form__wrapper">
@@ -110,7 +108,7 @@ import InputLabel from '@/Components/admin/InputLabel.vue'
 import SelectInput from '@/Components/admin/SelectInput.vue'
 import SelectSchoolShift from '@/Components/admin/SelectSchoolShift.vue'
 import TextInput from '@/Components/admin/TextInput.vue'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import { ref, computed } from 'vue'
 import { formatDateForInput } from '@/Utils/date'
