@@ -10,7 +10,7 @@
 
   &__text {
     margin: 0;
-    @include mixins.fz(1.5);
+    // @include mixins.fz(1.5);
     color: variables.$color-blue;
   }
 

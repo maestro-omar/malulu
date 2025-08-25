@@ -29,7 +29,7 @@
         <template #body-cell-actions="props">
           <q-td :props="props">
             <div class="row items-center q-gutter-sm">
-              <!-- View button - always visible -->
+              <!-- View button - always visible
               <q-btn 
                 flat 
                 round 
@@ -39,7 +39,7 @@
                 :href="route('file-types.show', props.row.id)" 
                 title="Ver" 
               />
-              
+               -->
               <!-- Edit button - always visible -->
               <q-btn 
                 flat 
@@ -52,7 +52,7 @@
               />
               
               <!-- Delete button - always visible but disabled when not allowed -->
-              <q-btn 
+              <!-- <q-btn 
                 flat 
                 round 
                 :color="props.row.can_delete ? 'negative' : 'grey'" 
@@ -61,7 +61,7 @@
                 :disable="!props.row.can_delete"
                 @click="props.row.can_delete ? deleteFileType(props.row.id) : null" 
                 :title="props.row.can_delete ? 'Eliminar' : 'No se puede eliminar este tipo de archivo'" 
-              />
+              /> -->
             </div>
           </q-td>
         </template>

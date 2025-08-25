@@ -4,7 +4,7 @@
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader  :title="`Editar Ciclo Lectivo ${props.academicYear.year}`"></AdminHeader>
+      <AdminHeader :title="`Editar Ciclo Lectivo ${props.academicYear.year}`"></AdminHeader>
     </template>
 
     <template #main-page-content>
@@ -15,8 +15,8 @@
               <div class="admin-form__card-content">
                 <div class="admin-form__field">
                   <InputLabel for="year" value="Año" />
-                  <TextInput type="number" id="year" v-model="form.year" class="admin-form__input admin-form__input--disabled"
-                    disabled />
+                  <TextInput type="number" id="year" v-model="form.year"
+                    class="admin-form__input admin-form__input--disabled" disabled />
                 </div>
 
                 <div class="admin-form__grid admin-form__grid--2">
@@ -74,7 +74,6 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  breadcrumbs: Array
 })
 
 const formatDate = (date) => {

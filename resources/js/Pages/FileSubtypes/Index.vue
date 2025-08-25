@@ -21,7 +21,7 @@
                     <q-td :props="props">
                         <div class="row items-center q-gutter-sm">
                             <!-- View button - always visible -->
-                            <q-btn 
+                            <!-- <q-btn 
                                 flat 
                                 round 
                                 color="primary" 
@@ -29,7 +29,7 @@
                                 size="sm"
                                 :href="route('file-subtypes.show', props.row.id)" 
                                 title="Ver" 
-                            />
+                            /> -->
                             
                             <!-- Edit button - always visible -->
                             <q-btn 

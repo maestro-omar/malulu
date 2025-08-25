@@ -1,10 +1,9 @@
 <template>
-
   <Head :title="`Detalle del Curso ${course.nice_name}`" />
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader  :title="`Detalle del Curso ${course.nice_name}`" :edit="{
+      <AdminHeader :title="`Detalle del Curso ${course.nice_name}`" :edit="{
         show: hasPermission($page.props, 'course.manage'),
         href: route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) }),
         label: 'Editar'
@@ -17,95 +16,89 @@
     </template>
 
     <template #main-page-content>
-      <div class="container">
-        <div class="admin-detail__wrapper">
-          <div class="admin-detail__card">
-            <div class="admin-detail__content">
-
-              <div class="admin-detail__section">
-                <h2 class="admin-detail__section-title">Información del Curso</h2>
-                <div class="admin-detail__field-grid">
-                  <div class="admin-detail__field">
-                    <label class="admin-detail__label">Curso:</label>
-                    <div class="admin-detail__value">{{ course.nice_name }}</div>
+      <div class="q-pa-md">
+        <div class="row q-col-gutter-md">
+          <div class="col-12">
+            <!-- Course Information Card -->
+            <q-card class="q-mb-md">
+              <q-card-section>
+                <div class="text-h3 q-mb-md">Información del Curso</div>
+                <div class="row q-col-gutter-md">
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="Curso" :value="course.nice_name" type="text" />
                   </div>
-                  <div class="admin-detail__field">
-                    <label class="admin-detail__label">Escuela:</label>
-                    <div class="admin-detail__value">{{ course.school.name }} ({{ course.school.cue }})</div>
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="Escuela" :value="`${course.school.name} (${course.school.cue})`" type="text" />
                   </div>
-                  <div class="admin-detail__field">
-                    <label class="admin-detail__label">Nivel Escolar:</label>
-                    <div class="admin-detail__badge-container">
-                      <SchoolLevelBadge :level="course.school_level" />
-                    </div>
+                  <div class="col-12 col-md-6">
+                    <q-item>
+                      <q-item-section>
+                        <q-item-label caption class="text-h5">Nivel Escolar</q-item-label>
+                        <q-item-label class="text-h4">
+                          <SchoolLevelBadge :level="course.school_level" />
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
                   </div>
-                  <div class="admin-detail__field">
-                    <label class="admin-detail__label">Turno:</label>
-                    <div class="admin-detail__badge-container">
-                      <SchoolShiftBadge :shift="course.school_shift" />
-                    </div>
+                  <div class="col-12 col-md-6">
+                    <q-item>
+                      <q-item-section>
+                        <q-item-label caption class="text-h5">Turno</q-item-label>
+                        <q-item-label class="text-h4">
+                          <SchoolShiftBadge :shift="course.school_shift" />
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
                   </div>
-                  <div class="admin-detail__field">
-                    <label class="admin-detail__label">Fecha de Inicio:</label>
-                    <div class="admin-detail__value">{{ formatDate(course.start_date) }}</div>
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="Fecha de Inicio" :value="course.start_date" type="date" />
                   </div>
-                  <div class="admin-detail__field">
-                    <label class="admin-detail__label">Fecha de Fin:</label>
-                    <div class="admin-detail__value">{{ course.end_date ? formatDate(course.end_date) : '-' }}</div>
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="Fecha de Fin" :value="course.end_date" type="date" />
                   </div>
-                  <div class="admin-detail__field">
-                    <label class="admin-detail__label">Estado:</label>
-                    <div class="admin-detail__value">
-                      <span :class="{
-                        'admin-detail__status': true,
-                        'admin-detail__status--active': course.active,
-                        'admin-detail__status--inactive': !course.active,
-                      }">
-                        {{ course.active ? 'Activo' : 'Inactivo' }}
-                      </span>
-                    </div>
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="Estado" :value="course.active" type="status" />
                   </div>
-                  <div class="admin-detail__field">
-                    <label class="admin-detail__label">Curso Anterior:</label>
-                    <div class="admin-detail__value">
-                      <Link v-if="course.previous_course"
-                        :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
-                        class="admin-detail__link">
-                      {{ course.previous_course.nice_name }}
-                      </Link>
-                      <span v-else>-</span>
-                    </div>
+                  <div class="col-12 col-md-6">
+                    <q-item>
+                      <q-item-section>
+                        <q-item-label caption class="text-h5">Curso Anterior</q-item-label>
+                        <q-item-label class="text-h4">
+                          <Link v-if="course.previous_course"
+                            :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
+                            class="text-primary">
+                            {{ course.previous_course.nice_name }}
+                          </Link>
+                          <span v-else>-</span>
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
+              </q-card-section>
+            </q-card>
 
-          <div class="admin-detail__card admin-detail__card--mt">
-            <div class="admin-detail__content">
-              <div class="admin-detail__section">
-                <h2 class="admin-detail__section-title">Docentes</h2>
+            <!-- Teachers Card -->
+            <q-card class="q-mb-md">
+              <q-card-section>
+                <div class="text-h3 q-mb-md">Docentes</div>
                 <TeachersTable :teachers="teachers" />
-              </div>
-            </div>
-          </div>
+              </q-card-section>
+            </q-card>
 
-
-          <div class="admin-detail__card admin-detail__card--mt">
-            <div class="admin-detail__content">
-              <div class="admin-detail__section">
-                <h2 class="admin-detail__section-title">Estudiantes</h2>
+            <!-- Students Card -->
+            <q-card>
+              <q-card-section>
+                <div class="text-h3 q-mb-md">Estudiantes</div>
                 <StudentsTable 
                   :students="students" 
                   :courseId="getCourseSlug(course)"
                   :schoolLevel="selectedLevel.code"
                   :schoolSlug="school.slug"
                 />
-              </div>
-            </div>
+              </q-card-section>
+            </q-card>
           </div>
-
-
         </div>
       </div>
     </template>
@@ -116,11 +109,11 @@
 import { Link, Head } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
+import DataFieldShow from '@/Components/DataFieldShow.vue'
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue'
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
-import { formatDate } from '../../utils/date'
 import { hasPermission } from '@/Utils/permissions';
-import { getCourseSlug } from '../../utils/strings';
+import { getCourseSlug } from '@/Utils/strings';
 import StudentsTable from '@/Components/admin/StudentsTable.vue';
 import TeachersTable from '@/Components/admin/TeachersTable.vue';
 
@@ -145,6 +138,15 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-  
 })
+
+const destroy = () => {
+  if (confirm("¿Está seguro que desea eliminar este curso?")) {
+    router.delete(route("school.course.destroy", { 
+      'school': props.school.slug, 
+      'schoolLevel': props.selectedLevel.code, 
+      'idAndLabel': getCourseSlug(props.course) 
+    }))
+  }
+}
 </script>
