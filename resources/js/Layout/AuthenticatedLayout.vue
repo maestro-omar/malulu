@@ -18,6 +18,8 @@
         {{ $page.props.auth.user.name }}
         <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
+      <!-- AdminHeader slot -->
+      <slot name="admin-header" />
     </q-header>
 
     <!-- Drawer -->
@@ -43,23 +45,13 @@
     </q-drawer>
 
     <q-page-container>
-      <!-- AdminHeader slot -->
-      <q-page-sticky expand position="top">
-        <slot name="admin-header" />
-      </q-page-sticky>
-
       <q-page :class="pageClass">
 
-        <!-- Page content with padding for sticky header -->
-        <div style="padding-top: 60px;">
-          <!-- Flash Messages -->
-          <FlashMessages :flash="flash" />
+        <!-- Flash Messages -->
+        <FlashMessages :flash="flash" />
 
-          <slot name="main-page-content" />
-        </div>
-
-
-
+        <slot name="main-page-content" />
+        
       </q-page>
     </q-page-container>
   </q-layout>
