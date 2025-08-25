@@ -4,7 +4,7 @@ import '../css/app.scss';
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { Quasar, Dialog } from 'quasar'
+import { Quasar, Dialog, Notify } from 'quasar'
 import quasarLang from 'quasar/lang/es'
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
@@ -25,7 +25,8 @@ createInertiaApp({
       .use(plugin)
       .use(Quasar, {
         plugins: {
-          Dialog
+          Dialog,
+          Notify
         }, // import Quasar plugins and add here
         lang: quasarLang,
       })

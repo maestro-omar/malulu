@@ -2,7 +2,7 @@
 
   <Head title="Tu perfil de usuario" />
 
-  <AuthenticatedLayout pageClass="q-pa-md flex flex-center">
+  <AuthenticatedLayout pageClass="q-pa-md row justify-center">
     <template #admin-header>
       <AdminHeader  title="Tu perfil de usuario"></AdminHeader>
     </template>

@@ -9,7 +9,6 @@ import AdminHeader from '@/Sections/AdminHeader.vue';
 
 const props = defineProps({
   province: Object,
-  breadcrumbs: Array
 });
 
 const form = useForm({

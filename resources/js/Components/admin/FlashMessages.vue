@@ -1,7 +1,14 @@
-<script setup>
-import { ref } from 'vue';
+<template>
+  <!-- This component now uses Quasar notifications instead of HTML template -->
+</template>
 
-defineProps({
+<script setup>
+import { ref, watch, onMounted } from 'vue';
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar();
+
+const props = defineProps({
   flash: {
     type: Object,
     required: true,
@@ -11,6 +18,26 @@ defineProps({
 const showSuccess = ref(true);
 const showError = ref(true);
 
+const showNotification = (message, type) => {
+  $q.notify({
+    message: message,
+    type: type,
+    position: 'top',
+    timeout: 5000,
+    multiLine: true,
+    group: false,
+    actions: [
+      {
+        label: 'Cerrar',
+        color: 'white',
+        handler: () => {
+          // Notification will be dismissed
+        }
+      }
+    ]
+  });
+};
+
 const dismissSuccess = () => {
   showSuccess.value = false;
 };
@@ -18,24 +45,26 @@ const dismissSuccess = () => {
 const dismissError = () => {
   showError.value = false;
 };
+
+// Watch for flash messages and show notifications
+watch(() => props.flash, (newFlash) => {
+  if (newFlash?.success && showSuccess.value) {
+    showNotification(newFlash.success, 'positive');
+  }
+  
+  if (newFlash?.error && showError.value) {
+    showNotification(newFlash.error, 'negative');
+  }
+}, { immediate: true, deep: true });
+
+// Show notifications on mount if flash messages exist
+onMounted(() => {
+  if (props.flash?.success && showSuccess.value) {
+    showNotification(props.flash.success, 'positive');
+  }
+  
+  if (props.flash?.error && showError.value) {
+    showNotification(props.flash.error, 'negative');
+  }
+});
 </script>
-
-<template>
-  <Transition name="flash-slide" appear>
-    <div v-if="flash?.error && showError"
-      class="flash-messages__message flash-messages__message--error flash-messages__message--dismissible" role="alert"
-      @click="dismissError">
-      <span class="flash-messages__text">{{ flash.error }}</span>
-      <button class="flash-messages__close" aria-label="Cerrar mensaje">×</button>
-    </div>
-  </Transition>
-
-  <Transition name="flash-slide" appear>
-    <div v-if="flash?.success && showSuccess"
-      class="flash-messages__message flash-messages__message--success flash-messages__message--dismissible" role="alert"
-      @click="dismissSuccess">
-      <span class="flash-messages__text">{{ flash.success }}</span>
-      <button class="flash-messages__close" aria-label="Cerrar mensaje">×</button>
-    </div>
-  </Transition>
-</template>
