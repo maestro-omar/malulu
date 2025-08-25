@@ -4,33 +4,24 @@
 
   <AuthenticatedLayout title="Usuarios">
     <template #admin-header>
-      <AdminHeader :breadcrumbs="breadcrumbs" title="Listado de usuarios" :add="{
+      <AdminHeader  title="Listado de usuarios" :add="{
         show: hasPermission($page.props, 'user.manage'),
         href: route('users.create'),
         label: 'Nuevo usuario'
       }" :trashed="{
-        show: hasPermission($page.props, 'user.manage'),
-        href: route('users.trashed'),
-        label: 'Eliminados'
-      }">
+    show: hasPermission($page.props, 'user.manage'),
+    href: route('users.trashed'),
+    label: 'Eliminados'
+  }">
       </AdminHeader>
     </template>
-    
-    <q-page class="q-pa-md">
-      <!-- Flash Messages -->
-      <FlashMessages :flash="flash" />
 
+    <template #main-page-content>
       <!-- Search Filter -->
       <div class="row q-mb-md">
         <div class="col-12 col-md-6">
-          <q-input
-            v-model="search"
-            dense
-            outlined
-            placeholder="Buscar usuarios..."
-            @update:model-value="handleSearch"
-            clearable
-          >
+          <q-input v-model="search" dense outlined placeholder="Buscar usuarios..."
+            @update:model-value="handleSearch" clearable>
             <template v-slot:prepend>
               <q-icon name="search" />
             </template>
@@ -39,16 +30,8 @@
       </div>
 
       <!-- Quasar Table -->
-      <q-table 
-        class="mll-table mll-table--users striped-table" 
-        dense 
-        :rows="users.data" 
-        :columns="columns" 
-        row-key="id" 
-        :pagination="{ rowsPerPage: 30 }"
-        :filter="search"
-        :filter-method="customFilter"
-      >
+      <q-table class="mll-table mll-table--users striped-table" dense :rows="users.data" :columns="columns"
+        row-key="id" :pagination="{ rowsPerPage: 30 }" :filter="search" :filter-method="customFilter">
         <!-- Custom cell for photo -->
         <template #body-cell-photo="props">
           <q-td :props="props">
@@ -69,15 +52,9 @@
         <template #body-cell-schools="props">
           <q-td :props="props">
             <div class="row q-gutter-xs">
-              <q-chip 
-                v-for="school in props.row.schools" 
-                :key="school.id" 
-                size="sm" 
-                :color="schoolColors[school.id] || 'primary'"
-                text-color="white"
-                :label="school.short"
-                :title="school.name"
-              />
+              <q-chip v-for="school in props.row.schools" :key="school.id" size="sm"
+                :color="schoolColors[school.id] || 'primary'" text-color="white" :label="school.short"
+                :title="school.name" />
             </div>
           </q-td>
         </template>
@@ -86,11 +63,7 @@
         <template #body-cell-roles="props">
           <q-td :props="props">
             <div class="row q-gutter-xs">
-              <RoleBadge 
-                v-for="role in getUniqueRoles(props.row.roles)" 
-                :key="role.id"
-                :role="role" 
-              />
+              <RoleBadge v-for="role in getUniqueRoles(props.row.roles)" :key="role.id" :role="role" />
             </div>
           </q-td>
         </template>
@@ -100,50 +73,30 @@
           <q-td :props="props">
             <div class="row items-center q-gutter-sm">
               <!-- View button - always visible -->
-              <q-btn 
-                flat 
-                round 
-                color="primary" 
-                icon="visibility" 
-                size="sm"
-                :href="route('users.show', props.row.id)" 
-                title="Ver" 
-              />
-              
+              <q-btn flat round color="primary" icon="visibility" size="sm"
+                :href="route('users.show', props.row.id)" title="Ver" />
+
               <!-- Edit button - always visible but disabled when not allowed -->
-              <q-btn 
-                flat 
-                round 
-                :color="canEditUser(props.row) ? 'secondary' : 'grey'" 
-                icon="edit" 
-                size="sm"
-                :disable="!canEditUser(props.row)"
-                :href="canEditUser(props.row) ? route('users.edit', props.row.id) : '#'" 
-                :title="canEditUser(props.row) ? 'Editar' : 'No tienes permisos para editar este usuario'" 
-              />
-              
+              <q-btn flat round :color="canEditUser(props.row) ? 'secondary' : 'grey'" icon="edit"
+                size="sm" :disable="!canEditUser(props.row)"
+                :href="canEditUser(props.row) ? route('users.edit', props.row.id) : '#'"
+                :title="canEditUser(props.row) ? 'Editar' : 'No tienes permisos para editar este usuario'" />
+
               <!-- Delete button - always visible but disabled when not allowed -->
-              <q-btn 
-                flat 
-                round 
-                :color="canDeleteUser(props.row) ? 'negative' : 'grey'" 
-                icon="delete" 
-                size="sm"
-                :disable="!canDeleteUser(props.row)"
-                @click="canDeleteUser(props.row) ? deleteUser(props.row.id) : null" 
-                :title="canDeleteUser(props.row) ? 'Eliminar' : 'No puedes eliminar este usuario'" 
-              />
+              <q-btn flat round :color="canDeleteUser(props.row) ? 'negative' : 'grey'" icon="delete"
+                size="sm" :disable="!canDeleteUser(props.row)"
+                @click="canDeleteUser(props.row) ? deleteUser(props.row.id) : null"
+                :title="canDeleteUser(props.row) ? 'Eliminar' : 'No puedes eliminar este usuario'" />
             </div>
           </q-td>
         </template>
       </q-table>
-    </q-page>
+    </template>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
 import EmailField from '@/Components/admin/EmailField.vue';
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import RoleBadge from '@/Components/Badges/RoleBadge.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
@@ -171,11 +124,11 @@ const customFilter = (rows, terms, cols, cellValue) => {
       (row.firstname && row.firstname.toLowerCase().includes(lowerTerms)) ||
       (row.lastname && row.lastname.toLowerCase().includes(lowerTerms)) ||
       (row.email && row.email.toLowerCase().includes(lowerTerms)) ||
-      (row.schools && row.schools.some(school => 
+      (row.schools && row.schools.some(school =>
         school.name && school.name.toLowerCase().includes(lowerTerms) ||
         school.short && school.short.toLowerCase().includes(lowerTerms)
       )) ||
-      (row.roles && row.roles.some(role => 
+      (row.roles && row.roles.some(role =>
         role.name && role.name.toLowerCase().includes(lowerTerms)
       ))
     );
@@ -188,7 +141,7 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
-  breadcrumbs: Array,
+  
   filters: {
     type: Object,
     default: () => ({})
@@ -197,9 +150,9 @@ const props = defineProps({
 
 // Available colors for schools
 const schoolColorOptions = [
-  'primary', 'secondary', 'accent', 'positive', 'negative', 
-  'info', 'warning', 'deep-purple', 'purple', 'pink', 
-  'red', 'orange', 'yellow', 'green', 'teal', 
+  'primary', 'secondary', 'accent', 'positive', 'negative',
+  'info', 'warning', 'deep-purple', 'purple', 'pink',
+  'red', 'orange', 'yellow', 'green', 'teal',
   'cyan', 'blue', 'indigo', 'brown', 'grey'
 ];
 
@@ -207,7 +160,7 @@ const schoolColorOptions = [
 const schoolColors = computed(() => {
   const colors = {};
   const uniqueSchools = new Set();
-  
+
   // Extract all unique schools from users data
   if (props.users && props.users.data) {
     props.users.data.forEach(user => {
@@ -218,12 +171,12 @@ const schoolColors = computed(() => {
       }
     });
   }
-  
+
   // Assign colors to each unique school
   Array.from(uniqueSchools).forEach((schoolId, index) => {
     colors[schoolId] = schoolColorOptions[index % schoolColorOptions.length];
   });
-  
+
   return colors;
 });
 
@@ -252,7 +205,7 @@ const columns = [
     align: 'left',
     field: 'lastname',
     sortable: true
-  },  {
+  }, {
     name: 'email',
     required: true,
     label: 'Email',

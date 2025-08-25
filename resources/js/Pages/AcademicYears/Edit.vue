@@ -4,65 +4,64 @@
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Editar Ciclo Lectivo ${props.academicYear.year}`"></AdminHeader>
+      <AdminHeader  :title="`Editar Ciclo Lectivo ${props.academicYear.year}`"></AdminHeader>
     </template>
 
-    <div class="container">
-      <div class="admin-form__wrapper">
-        <form @submit.prevent="submit" class="admin-form__container">
-          <!-- Flash Messages -->
-          <FlashMessages :flash="flash" />
-          <div class="admin-form__card">
-            <div class="admin-form__card-content">
-              <div class="admin-form__field">
-                <InputLabel for="year" value="Año" />
-                <TextInput type="number" id="year" v-model="form.year" class="admin-form__input admin-form__input--disabled"
-                  disabled />
-              </div>
-
-              <div class="admin-form__grid admin-form__grid--2">
+    <template #main-page-content>
+      <div class="container">
+        <div class="admin-form__wrapper">
+          <form @submit.prevent="submit" class="admin-form__container">
+            <div class="admin-form__card">
+              <div class="admin-form__card-content">
                 <div class="admin-form__field">
-                  <InputLabel for="start_date" value="Fecha de Inicio" />
-                  <TextInput type="date" id="start_date" v-model="form.start_date" class="admin-form__input" />
-                  <InputError class="admin-form__error" :message="form.errors.start_date" />
+                  <InputLabel for="year" value="Año" />
+                  <TextInput type="number" id="year" v-model="form.year" class="admin-form__input admin-form__input--disabled"
+                    disabled />
                 </div>
 
-                <div class="admin-form__field">
-                  <InputLabel for="end_date" value="Fecha de Fin" />
-                  <TextInput type="date" id="end_date" v-model="form.end_date" class="admin-form__input" />
-                  <InputError class="admin-form__error" :message="form.errors.end_date" />
-                </div>
-              </div>
+                <div class="admin-form__grid admin-form__grid--2">
+                  <div class="admin-form__field">
+                    <InputLabel for="start_date" value="Fecha de Inicio" />
+                    <TextInput type="date" id="start_date" v-model="form.start_date" class="admin-form__input" />
+                    <InputError class="admin-form__error" :message="form.errors.start_date" />
+                  </div>
 
-              <div class="admin-form__grid admin-form__grid--2">
-                <div class="admin-form__field">
-                  <InputLabel for="winter_break_start" value="Inicio de Vacaciones de Invierno" />
-                  <TextInput type="date" id="winter_break_start" v-model="form.winter_break_start"
-                    class="admin-form__input" />
-                  <InputError class="admin-form__error" :message="form.errors.winter_break_start" />
+                  <div class="admin-form__field">
+                    <InputLabel for="end_date" value="Fecha de Fin" />
+                    <TextInput type="date" id="end_date" v-model="form.end_date" class="admin-form__input" />
+                    <InputError class="admin-form__error" :message="form.errors.end_date" />
+                  </div>
                 </div>
 
-                <div class="admin-form__field">
-                  <InputLabel for="winter_break_end" value="Fin de Vacaciones de Invierno" />
-                  <TextInput type="date" id="winter_break_end" v-model="form.winter_break_end"
-                    class="admin-form__input" />
-                  <InputError class="admin-form__error" :message="form.errors.winter_break_end" />
+                <div class="admin-form__grid admin-form__grid--2">
+                  <div class="admin-form__field">
+                    <InputLabel for="winter_break_start" value="Inicio de Vacaciones de Invierno" />
+                    <TextInput type="date" id="winter_break_start" v-model="form.winter_break_start"
+                      class="admin-form__input" />
+                    <InputError class="admin-form__error" :message="form.errors.winter_break_start" />
+                  </div>
+
+                  <div class="admin-form__field">
+                    <InputLabel for="winter_break_end" value="Fin de Vacaciones de Invierno" />
+                    <TextInput type="date" id="winter_break_end" v-model="form.winter_break_end"
+                      class="admin-form__input" />
+                    <InputError class="admin-form__error" :message="form.errors.winter_break_end" />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <ActionButtons button-label="Guardar Cambios" :cancel-href="route('academic-years.index')"
-            :disabled="form.processing" />
-        </form>
+            <ActionButtons button-label="Guardar Cambios" :cancel-href="route('academic-years.index')"
+              :disabled="form.processing" />
+          </form>
+        </div>
       </div>
-    </div>
+    </template>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
 import ActionButtons from '@/Components/admin/ActionButtons.vue'
-import FlashMessages from '@/Components/admin/FlashMessages.vue'
 import InputError from '@/Components/admin/InputError.vue'
 import InputLabel from '@/Components/admin/InputLabel.vue'
 import TextInput from '@/Components/admin/TextInput.vue'

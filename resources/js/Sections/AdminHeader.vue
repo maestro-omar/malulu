@@ -24,12 +24,11 @@
 </template>
 
 <script setup>
-import { Link } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
 import { useSlots } from 'vue';
 import Breadcrumb from "@/Components/admin/Breadcrumbs.vue";
 
 defineProps({
-  breadcrumbs: Array,
   title: String,
   edit: {
     type: Object,
@@ -48,6 +47,8 @@ defineProps({
     default: null,
   },
 });
+const $page = usePage();
+const breadcrumbs = $page.props.breadcrumbs;
 
 const slots = useSlots();
 const hasAdditionalButtons = !!slots['additional-buttons'];

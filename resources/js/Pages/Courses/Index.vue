@@ -4,7 +4,7 @@
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`${school.short} - Cursos de ${selectedLevel.name}`">
+      <AdminHeader  :title="`${school.short} - Cursos de ${selectedLevel.name}`">
         <template #additional-buttons>
           <Link :href="route('school.course.create', { school: school.slug, schoolLevel: selectedLevel.code })"
             class="admin-button admin-button--top admin-button--blue">
@@ -233,7 +233,7 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  breadcrumbs: Array,
+  
   year: {
     type: [Number, null],
     default: null,

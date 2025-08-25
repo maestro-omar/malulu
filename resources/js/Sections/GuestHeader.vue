@@ -13,7 +13,7 @@
 import Breadcrumb from "@/Components/admin/Breadcrumbs.vue";
 
 defineProps({
-  breadcrumbs: Array,
+  
   title: String,
 });
 </script>

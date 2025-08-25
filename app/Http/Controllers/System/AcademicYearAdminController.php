@@ -56,6 +56,14 @@ class AcademicYearAdminController extends SystemBaseController
         ]);
     }
 
+    public function show(AcademicYear $academicYear)
+    {
+        return Inertia::render('AcademicYears/Show', [
+            'academicYear' => $academicYear,
+            'breadcrumbs' => Breadcrumbs::generate('academic-years.show', $academicYear),
+        ]);
+    }
+
     public function update(Request $request, AcademicYear $academicYear)
     {
         try {

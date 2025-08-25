@@ -4,7 +4,7 @@
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Detalles de la Escuela: ${school.short}`" :edit="{
+      <AdminHeader  :title="`Detalles de la Escuela: ${school.short}`" :edit="{
         show: hasPermission($page.props, 'school.edit', school.id),
         href: route('school.edit', school.slug),
         label: 'Editar'
@@ -33,7 +33,7 @@
       </AdminHeader>
     </template>
 
-    <q-page class="q-pa-md">
+    <template #main-page-content>
       <q-card class="school-detail__card">
         <q-card-section>
           <div class="row q-col-gutter-lg">
@@ -222,7 +222,7 @@
           </div>
         </q-card-section>
       </q-card>
-    </q-page>
+    </template>
   </AuthenticatedLayout>
 </template>
 
@@ -241,7 +241,7 @@ import { Head, Link, router } from "@inertiajs/vue3";
 
 const props = defineProps({
   school: Object,
-  breadcrumbs: Array,
+  
 });
 
 const destroy = () => {

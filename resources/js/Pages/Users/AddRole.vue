@@ -4,237 +4,240 @@
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader :breadcrumbs="breadcrumbs" :title="`Añadir Rol a ${user.name}`"></AdminHeader>
+      <AdminHeader  :title="`Agregar Rol a ${user.name}`">
+      </AdminHeader>
     </template>
 
-    <div class="container container--as-card">
-      <UserInformation :user="user" :show-picture="true" :show-roles="true" :show-contact="true"
-        :schools="assignedSchools" :role-relationships="roleRelationships" :worker-relationships="workerRelationships"
-        :guardian-relationships="guardianRelationships" :student-relationships="studentRelationships" :roles="roles" />
-    </div>
+    <template #main-page-content>
+      <div class="container container--as-card">
+        <UserInformation :user="user" :show-picture="true" :show-roles="true" :show-contact="true"
+          :schools="assignedSchools" :role-relationships="roleRelationships" :worker-relationships="workerRelationships"
+          :guardian-relationships="guardianRelationships" :student-relationships="studentRelationships" :roles="roles" />
+      </div>
 
-    <div class="container">
-      <div class="admin-form">
-        <div class="admin-form__wrapper">
-          <form @submit.prevent="submit" class="admin-form__container">
-            <div v-if="form.errors.error" class="admin-form__error admin-form__error--main">
-              {{ form.errors.error }}
-            </div>
-            <!-- School Selection -->
-            <div class="admin-form__card">
-              <h3 class="admin-form__card-title">
-                Seleccionar la escuela para el nuevo rol
-              </h3>
-              <div class="admin-form__card-content">
-                <div class="admin-form__field">
-                  <InputLabel for="school" value="Escuela" />
-                  <SearchableDropdown id="school" v-model="selectedSchool" :options="allSchools"
-                    placeholder="Buscar y seleccionar una escuela..." />
-                  <InputError class="admin-form__error" :message="form.errors.school_id" />
-                </div>
-                <div v-if="selectedSchool" class="admin-form__info">
-                  <p class="admin-form__info-text">
-                    {{ selectedSchool.name + ' (' + selectedSchool.address + ', ' + selectedSchool.locality.name + ')'}}
-                  </p>
-                  <p class="admin-form__info-text">
-                  </p>
-                </div>
+      <div class="container">
+        <div class="admin-form">
+          <div class="admin-form__wrapper">
+            <form @submit.prevent="submit" class="admin-form__container">
+              <div v-if="form.errors.error" class="admin-form__error admin-form__error--main">
+                {{ form.errors.error }}
               </div>
-            </div>
-
-            <!-- School Level Selection -->
-            <div v-if="selectedSchool" class="admin-form__card">
-              <div class="admin-form__card-header">
-                <h3 class="admin-form__card-title">Nivel Escolar</h3>
-                <button v-if="selectedLevel !== null" type="button" @click="selectedLevel = null"
-                  class="admin-form__card-action">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                  </svg>
-                </button>
-              </div>
-              <div class="admin-form__card-content">
-                <div v-if="selectedLevel !== null" class="admin-form__info">
-                  <div :class="getLevelColorClasses(selectedLevel)">
-                    {{
-                      selectedLevel ? selectedLevel.name : "Sin especificar"
-                    }}
+              <!-- School Selection -->
+              <div class="admin-form__card">
+                <h3 class="admin-form__card-title">
+                  Seleccionar la escuela para el nuevo rol
+                </h3>
+                <div class="admin-form__card-content">
+                  <div class="admin-form__field">
+                    <InputLabel for="school" value="Escuela" />
+                    <SearchableDropdown id="school" v-model="selectedSchool" :options="allSchools"
+                      placeholder="Buscar y seleccionar una escuela..." />
+                    <InputError class="admin-form__error" :message="form.errors.school_id" />
+                  </div>
+                  <div v-if="selectedSchool" class="admin-form__info">
+                    <p class="admin-form__info-text">
+                      {{ selectedSchool.name + ' (' + selectedSchool.address + ', ' + selectedSchool.locality.name + ')'}}
+                    </p>
+                    <p class="admin-form__info-text">
+                    </p>
                   </div>
                 </div>
-                <div v-else class="admin-form__grid admin-form__grid--3">
-                  <button type="button" @click="selectedLevel = null" :class="getLevelColorClasses(null)">
-                    Sin especificar
-                  </button>
-                  <button type="button" v-for="level in availableLevels" :key="level.id" @click="selectedLevel = level"
-                    :class="getLevelColorClasses(level)">
-                    {{ level.name }}
+              </div>
+
+              <!-- School Level Selection -->
+              <div v-if="selectedSchool" class="admin-form__card">
+                <div class="admin-form__card-header">
+                  <h3 class="admin-form__card-title">Nivel Escolar</h3>
+                  <button v-if="selectedLevel !== null" type="button" @click="selectedLevel = null"
+                    class="admin-form__card-action">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
                   </button>
                 </div>
-                <InputError class="admin-form__error" :message="form.errors.school_level_id" />
+                <div class="admin-form__card-content">
+                  <div v-if="selectedLevel !== null" class="admin-form__info">
+                    <div :class="getLevelColorClasses(selectedLevel)">
+                      {{
+                        selectedLevel ? selectedLevel.name : "Sin especificar"
+                      }}
+                    </div>
+                  </div>
+                  <div v-else class="admin-form__grid admin-form__grid--3">
+                    <button type="button" @click="selectedLevel = null" :class="getLevelColorClasses(null)">
+                      Sin especificar
+                    </button>
+                    <button type="button" v-for="level in availableLevels" :key="level.id" @click="selectedLevel = level"
+                      :class="getLevelColorClasses(level)">
+                      {{ level.name }}
+                    </button>
+                  </div>
+                  <InputError class="admin-form__error" :message="form.errors.school_level_id" />
+                </div>
               </div>
-            </div>
 
-            <!-- Role Selection -->
-            <div v-if="selectedSchool" class="admin-form__card">
-              <div class="admin-form__card-header">
-                <h3 class="admin-form__card-title">Rol</h3>
-                <button v-if="selectedRole !== null" type="button" @click="selectedRole = null"
-                  class="admin-form__card-action">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                  </svg>
-                </button>
+              <!-- Role Selection -->
+              <div v-if="selectedSchool" class="admin-form__card">
+                <div class="admin-form__card-header">
+                  <h3 class="admin-form__card-title">Rol</h3>
+                  <button v-if="selectedRole !== null" type="button" @click="selectedRole = null"
+                    class="admin-form__card-action">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="admin-form__card-content">
+                  <div v-if="selectedRole !== null" class="admin-form__info">
+                    <div :class="getRoleColorClasses(selectedRole)">
+                      {{ selectedRole.name }}
+                    </div>
+                  </div>
+                  <div v-else class="admin-form__grid admin-form__grid--4">
+                    <button type="button" v-for="role in filteredAvailableRoles" :key="role.id"
+                      @click="selectedRole = role" :class="getRoleColorClasses(role)">
+                      {{ role.name }}
+                    </button>
+                  </div>
+                  <InputError class="admin-form__error" :message="form.errors.role_id" />
+                </div>
               </div>
-              <div class="admin-form__card-content">
-                <div v-if="selectedRole !== null" class="admin-form__info">
-                  <div :class="getRoleColorClasses(selectedRole)">
-                    {{ selectedRole.name }}
+
+              <!-- Generic Role Details (Start Date, Notes) -->
+              <div v-if="selectedRole" class="admin-form__card">
+                <h3 class="admin-form__card-title">Detalles del Rol</h3>
+                <div class="admin-form__card-content admin-form__grid admin-form__grid--2">
+                  <div class="admin-form__field">
+                    <InputLabel for="startDate" value="Fecha de Inicio" />
+                    <TextInput id="startDate" type="date" class="admin-form__input" v-model="form.start_date" required />
+                    <InputError class="admin-form__error" :message="form.errors.start_date" />
+                  </div>
+                  <div class="admin-form__field admin-form__field--full">
+                    <InputLabel for="notes" value="Notas" />
+                    <textarea id="notes" class="admin-form__input" v-model="form.notes"></textarea>
+                    <InputError class="admin-form__error" :message="form.errors.notes" />
                   </div>
                 </div>
-                <div v-else class="admin-form__grid admin-form__grid--4">
-                  <button type="button" v-for="role in filteredAvailableRoles" :key="role.id"
-                    @click="selectedRole = role" :class="getRoleColorClasses(role)">
-                    {{ role.name }}
-                  </button>
-                </div>
-                <InputError class="admin-form__error" :message="form.errors.role_id" />
               </div>
-            </div>
 
-            <!-- Generic Role Details (Start Date, Notes) -->
-            <div v-if="selectedRole" class="admin-form__card">
-              <h3 class="admin-form__card-title">Detalles del Rol</h3>
-              <div class="admin-form__card-content admin-form__grid admin-form__grid--2">
-                <div class="admin-form__field">
-                  <InputLabel for="startDate" value="Fecha de Inicio" />
-                  <TextInput id="startDate" type="date" class="admin-form__input" v-model="form.start_date" required />
-                  <InputError class="admin-form__error" :message="form.errors.start_date" />
-                </div>
-                <div class="admin-form__field admin-form__field--full">
-                  <InputLabel for="notes" value="Notas" />
-                  <textarea id="notes" class="admin-form__input" v-model="form.notes"></textarea>
-                  <InputError class="admin-form__error" :message="form.errors.notes" />
-                </div>
-              </div>
-            </div>
-
-            <!-- Workers Specific Fields -->
-            <div v-if="showWorkerFields" class="admin-form__card admin-form__card--worker">
-              <h3 class="admin-form__card-title">Detalles de cargo</h3>
-              <div class="admin-form__card-content admin-form__grid admin-form__grid--2">
-                <div>
-                  <InputLabel for="jobStatus" value="Estado de Empleo" />
-                  <SelectInput id="jobStatus" class="admin-form__input" v-model="form.worker_details.job_status_id">
-                    <option value="">Seleccionar estado...</option>
-                    <option v-for="(label, value) in jobStatuses" :key="value" :value="value">
-                      {{ label }}
-                    </option>
-                  </SelectInput>
-                  <InputError class="admin-form__error" :message="form.errors['worker_details.job_status']" />
-                </div>
-                <div>
-                  <InputLabel for="jobStatusDate" value="Fecha de Estado de Empleo" />
-                  <TextInput id="jobStatusDate" type="date" class="admin-form__input"
-                    v-model="form.worker_details.job_status_date" />
-                  <InputError class="admin-form__error" :message="form.errors['worker_details.job_status_date']" />
-                </div>
-                <div>
-                  <InputLabel for="decreeNumber" value="Número de Decreto" />
-                  <TextInput id="decreeNumber" type="text" class="admin-form__input"
-                    v-model="form.worker_details.decree_number" />
-                  <InputError class="admin-form__error" :message="form.errors['worker_details.decree_number']" />
-                </div>
-                <div>
-                  <InputLabel for="degreeTitle" value="Título" />
-                  <TextInput id="degreeTitle" type="text" class="admin-form__input"
-                    v-model="form.worker_details.degree_title" />
-                  <InputError class="admin-form__error" :message="form.errors['worker_details.degree_title']" />
-                </div>
-                <div v-if="showTeacherFields">
-                  <InputLabel for="classSubject" value="Asignatura (ID)" />
-                  <TextInput id="classSubject" type="number" class="admin-form__input"
-                    v-model="form.worker_details.class_subject_id" placeholder="ID de la asignatura" />
-                  <InputError class="admin-form__error" :message="form.errors['worker_details.class_subject_id']
-                    " />
-                </div>
-                <!-- Schedule will need custom components or further complexity -->
-              </div>
-            </div>
-
-            <!-- Guardian Specific Fields -->
-            <div v-if="showGuardianFields" class="admin-form__card admin-form__card--guardian">
-              <h3 class="admin-form__card-title">Detalles de Tutor</h3>
-              <div class="admin-form__card-content admin-form__grid admin-form__grid--2">
-                <div>
-                  <InputLabel for="relationshipType" value="Tipo de Relación" />
-                  <SelectInput id="relationshipType" class="admin-form__input"
-                    v-model="form.guardian_details.relationship_type">
-                    <option value="">Seleccionar relación...</option>
-                    <option v-for="(label, value) in relationshipTypes" :key="value" :value="value">
-                      {{ label }}
-                    </option>
-                  </SelectInput>
-                  <InputError class="admin-form__error" :message="form.errors['guardian_details.relationship_type']
-                    " />
-                </div>
-                <div>
-                  <InputLabel for="isEmergencyContact" value="Contacto de Emergencia" />
-                  <input type="checkbox" id="isEmergencyContact" v-model="form.guardian_details.is_emergency_contact"
-                    class="admin-form__input" />
-                  <InputError class="admin-form__error" :message="form.errors['guardian_details.is_emergency_contact']
-                    " />
-                </div>
-                <div v-if="form.guardian_details.is_emergency_contact">
-                  <InputLabel for="emergencyContactPriority" value="Prioridad Contacto Emergencia" />
-                  <TextInput id="emergencyContactPriority" type="number" class="admin-form__input" v-model="form.guardian_details.emergency_contact_priority
-                    " />
-                  <InputError class="admin-form__error" :message="form.errors[
-                    'guardian_details.emergency_contact_priority'
-                  ]
-                    " />
-                </div>
-                <div>
-                  <InputLabel for="isRestricted" value="Restringido" />
-                  <input type="checkbox" id="isRestricted" v-model="form.guardian_details.is_restricted"
-                    class="admin-form__input" />
-                  <InputError class="admin-form__error" :message="form.errors['guardian_details.is_restricted']" />
-                </div>
-                <div>
-                  <InputLabel for="studentId" value="ID de Estudiante" />
-                  <TextInput id="studentId" type="number" class="admin-form__input"
-                    v-model="form.guardian_details.student_id" placeholder="ID de estudiante" />
-                  <InputError class="admin-form__error" :message="form.errors['guardian_details.student_id']" />
+              <!-- Workers Specific Fields -->
+              <div v-if="showWorkerFields" class="admin-form__card admin-form__card--worker">
+                <h3 class="admin-form__card-title">Detalles de cargo</h3>
+                <div class="admin-form__card-content admin-form__grid admin-form__grid--2">
+                  <div>
+                    <InputLabel for="jobStatus" value="Estado de Empleo" />
+                    <SelectInput id="jobStatus" class="admin-form__input" v-model="form.worker_details.job_status_id">
+                      <option value="">Seleccionar estado...</option>
+                      <option v-for="(label, value) in jobStatuses" :key="value" :value="value">
+                        {{ label }}
+                      </option>
+                    </SelectInput>
+                    <InputError class="admin-form__error" :message="form.errors['worker_details.job_status']" />
+                  </div>
+                  <div>
+                    <InputLabel for="jobStatusDate" value="Fecha de Estado de Empleo" />
+                    <TextInput id="jobStatusDate" type="date" class="admin-form__input"
+                      v-model="form.worker_details.job_status_date" />
+                    <InputError class="admin-form__error" :message="form.errors['worker_details.job_status_date']" />
+                  </div>
+                  <div>
+                    <InputLabel for="decreeNumber" value="Número de Decreto" />
+                    <TextInput id="decreeNumber" type="text" class="admin-form__input"
+                      v-model="form.worker_details.decree_number" />
+                    <InputError class="admin-form__error" :message="form.errors['worker_details.decree_number']" />
+                  </div>
+                  <div>
+                    <InputLabel for="degreeTitle" value="Título" />
+                    <TextInput id="degreeTitle" type="text" class="admin-form__input"
+                      v-model="form.worker_details.degree_title" />
+                    <InputError class="admin-form__error" :message="form.errors['worker_details.degree_title']" />
+                  </div>
+                  <div v-if="showTeacherFields">
+                    <InputLabel for="classSubject" value="Asignatura (ID)" />
+                    <TextInput id="classSubject" type="number" class="admin-form__input"
+                      v-model="form.worker_details.class_subject_id" placeholder="ID de la asignatura" />
+                    <InputError class="admin-form__error" :message="form.errors['worker_details.class_subject_id']
+                      " />
+                  </div>
+                  <!-- Schedule will need custom components or further complexity -->
                 </div>
               </div>
-            </div>
 
-            <!-- Student Specific Fields -->
-            <div v-if="showStudentFields" class="admin-form__card admin-form__card--student">
-              <h3 class="admin-form__card-title">Detalles de Estudiante</h3>
-              <div class="admin-form__card-content admin-form__grid">
-                <div>
-                  <InputLabel for="currentCourseId" value="ID de Curso Actual" />
-                  <TextInput id="currentCourseId" type="number" class="admin-form__input"
-                    v-model="form.student_details.current_course_id" placeholder="ID de curso" />
-                  <InputError class="admin-form__error" :message="form.errors['student_details.current_course_id']
-                    " />
+              <!-- Guardian Specific Fields -->
+              <div v-if="showGuardianFields" class="admin-form__card admin-form__card--guardian">
+                <h3 class="admin-form__card-title">Detalles de Tutor</h3>
+                <div class="admin-form__card-content admin-form__grid admin-form__grid--2">
+                  <div>
+                    <InputLabel for="relationshipType" value="Tipo de Relación" />
+                    <SelectInput id="relationshipType" class="admin-form__input"
+                      v-model="form.guardian_details.relationship_type">
+                      <option value="">Seleccionar relación...</option>
+                      <option v-for="(label, value) in relationshipTypes" :key="value" :value="value">
+                        {{ label }}
+                      </option>
+                    </SelectInput>
+                    <InputError class="admin-form__error" :message="form.errors['guardian_details.relationship_type']
+                      " />
+                  </div>
+                  <div>
+                    <InputLabel for="isEmergencyContact" value="Contacto de Emergencia" />
+                    <input type="checkbox" id="isEmergencyContact" v-model="form.guardian_details.is_emergency_contact"
+                      class="admin-form__input" />
+                    <InputError class="admin-form__error" :message="form.errors['guardian_details.is_emergency_contact']
+                      " />
+                  </div>
+                  <div v-if="form.guardian_details.is_emergency_contact">
+                    <InputLabel for="emergencyContactPriority" value="Prioridad Contacto Emergencia" />
+                    <TextInput id="emergencyContactPriority" type="number" class="admin-form__input" v-model="form.guardian_details.emergency_contact_priority
+                      " />
+                    <InputError class="admin-form__error" :message="form.errors[
+                      'guardian_details.emergency_contact_priority'
+                    ]
+                      " />
+                  </div>
+                  <div>
+                    <InputLabel for="isRestricted" value="Restringido" />
+                    <input type="checkbox" id="isRestricted" v-model="form.guardian_details.is_restricted"
+                      class="admin-form__input" />
+                    <InputError class="admin-form__error" :message="form.errors['guardian_details.is_restricted']" />
+                  </div>
+                  <div>
+                    <InputLabel for="studentId" value="ID de Estudiante" />
+                    <TextInput id="studentId" type="number" class="admin-form__input"
+                      v-model="form.guardian_details.student_id" placeholder="ID de estudiante" />
+                    <InputError class="admin-form__error" :message="form.errors['guardian_details.student_id']" />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div v-if="isRoleAlreadyAssigned" class="admin-form__error admin-form__error--main">
-              Este rol ya está asignado a este usuario para la escuela
-              seleccionada.
-            </div>
+              <!-- Student Specific Fields -->
+              <div v-if="showStudentFields" class="admin-form__card admin-form__card--student">
+                <h3 class="admin-form__card-title">Detalles de Estudiante</h3>
+                <div class="admin-form__card-content admin-form__grid">
+                  <div>
+                    <InputLabel for="currentCourseId" value="ID de Curso Actual" />
+                    <TextInput id="currentCourseId" type="number" class="admin-form__input"
+                      v-model="form.student_details.current_course_id" placeholder="ID de curso" />
+                    <InputError class="admin-form__error" :message="form.errors['student_details.current_course_id']
+                      " />
+                  </div>
+                </div>
+              </div>
 
-            <ActionButtons button-label="Guardar Rol" :cancel-href="route('users.show', user.id)"
-              :disabled="form.processing || isRoleAlreadyAssigned" />
-          </form>
+              <div v-if="isRoleAlreadyAssigned" class="admin-form__error admin-form__error--main">
+                Este rol ya está asignado a este usuario para la escuela
+                seleccionada.
+              </div>
+
+              <ActionButtons button-label="Guardar Rol" :cancel-href="route('users.show', user.id)"
+                :disabled="form.processing || isRoleAlreadyAssigned" />
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
   </AuthenticatedLayout>
 </template>
 
@@ -272,7 +275,7 @@ const props = defineProps({
   jobStatuses: Array,
   relationshipTypes: Array,
   schoolLevels: Array,
-  breadcrumbs: Array,
+  
 });
 
 // Debugging info (can be removed later)

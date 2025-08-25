@@ -107,10 +107,17 @@ Breadcrumbs::for('academic-years.create', function (Trail $trail) {
     $trail->push('Crear ciclo lectivo');
 });
 
-Breadcrumbs::for('academic-years.edit', function (Trail $trail, $year) {
+
+Breadcrumbs::for('academic-years.show', function (Trail $trail, $year) {
     $trail->parent('academic-years.index');
-    $trail->push("Editar {$year->name}");
+    $trail->push("{$year->year}", route('academic-years.show', $year->id));
 });
+
+Breadcrumbs::for('academic-years.edit', function (Trail $trail, $year) {
+    $trail->parent('academic-years.show', $year);
+    $trail->push("Editar");
+});
+
 
 Breadcrumbs::for('provinces.index', function (Trail $trail) {
     $trail->parent('dashboard');

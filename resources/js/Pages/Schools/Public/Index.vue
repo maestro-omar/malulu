@@ -147,7 +147,7 @@ const props = defineProps({
   localities: Array,
   districts: Array,
   provinces: Array,
-  breadcrumbs: Array,
+  
   titleSuffix: String
 });
 

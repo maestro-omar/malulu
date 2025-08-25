@@ -1,34 +1,35 @@
 <template>
 
-    <Head title="Tu perfil de usuario" />
+  <Head title="Tu perfil de usuario" />
 
-    <AuthenticatedLayout>
-        <template #admin-header>
-            <AdminHeader :breadcrumbs="breadcrumbs" title="Tu perfil de usuario"></AdminHeader>
-        </template>
-        <q-page class="q-pa-md flex flex-center">
-            <div class="">
-                <div class="row">
-                    <q-card class="col-12">
-                        <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status" />
-                    </q-card>
-                </div>
-                <div class="row q-mt-md">
-                    <q-card class="col-12">
-                        <UpdatePasswordForm />
-                    </q-card>
+  <AuthenticatedLayout pageClass="q-pa-md flex flex-center">
+    <template #admin-header>
+      <AdminHeader  title="Tu perfil de usuario"></AdminHeader>
+    </template>
 
-                    <!--
-                    <div class="col-12">
-                        <q-card class="profile-form__card">
-                            <DeleteUserForm />
-                        </q-card>
-                    </div>
-                    -->
-                </div>
-            </div>
-        </q-page>
-    </AuthenticatedLayout>
+    <template #main-page-content>
+      <div class="">
+        <div class="row">
+          <q-card class="col-12">
+            <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status" />
+          </q-card>
+        </div>
+        <div class="row q-mt-md">
+          <q-card class="col-12">
+            <UpdatePasswordForm />
+          </q-card>
+
+          <!--
+          <div class="col-12">
+            <q-card class="profile-form__card">
+              <DeleteUserForm />
+            </q-card>
+          </div>
+          -->
+        </div>
+      </div>
+    </template>
+  </AuthenticatedLayout>
 </template>
 
 <script setup>
@@ -40,12 +41,12 @@ import UpdateProfileInformationForm from './Partials/UpdateProfileInformationFor
 import { Head } from '@inertiajs/vue3';
 
 defineProps({
-    mustVerifyEmail: {
-        type: Boolean,
-    },
-    status: {
-        type: String,
-    },
-    breadcrumbs: Array,
+  mustVerifyEmail: {
+    type: Boolean,
+  },
+  status: {
+    type: String,
+  },
+  
 });
 </script>

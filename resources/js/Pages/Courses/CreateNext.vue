@@ -3,7 +3,7 @@
     <Head :title="`${school.short} - Crear próximos cursos de ${selectedLevel.name}`" />
 
     <AuthenticatedLayout>
-        <AdminHeader :breadcrumbs="breadcrumbs"
+        <AdminHeader 
             :title="`${school.short} - Crear próximos cursos de ${selectedLevel.name}`">
         </AdminHeader>
 
@@ -147,7 +147,7 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    breadcrumbs: Array,
+    
     year: {
         type: [Number, null],
         default: null,

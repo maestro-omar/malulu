@@ -4,7 +4,7 @@
 
   <AuthenticatedLayout title="Ciclos Lectivos">
     <template #admin-header>
-      <AdminHeader :breadcrumbs="breadcrumbs" title="Ciclos Lectivos" :add="{
+      <AdminHeader  title="Ciclos Lectivos" :add="{
         show: hasPermission($page.props, 'superadmin', null),
         href: route('academic-years.create'),
         label: 'Nuevo'
@@ -12,10 +12,7 @@
       </AdminHeader>
     </template>
 
-    <q-page class="q-pa-md">
-      <!-- Flash Messages -->
-      <FlashMessages :flash="flash" />
-
+    <template #main-page-content>
       <!-- Quasar Table -->
       <q-table class="mll-table mll-table--small-width striped-table" dense :rows="academicYears" :columns="columns"
         row-key="id" :pagination="{ rowsPerPage: 30 }">
@@ -68,12 +65,11 @@
           </q-td>
         </template>
       </q-table>
-    </q-page>
+    </template>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
@@ -87,8 +83,8 @@ defineProps({
     type: Array,
     required: true
   },
-  breadcrumbs: Array,
-  flash: Object || null
+  
+  
 });
 
 // Table columns definition

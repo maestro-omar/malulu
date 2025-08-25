@@ -4,7 +4,7 @@
 
   <AuthenticatedLayout title="Escuelas">
     <template #admin-header>
-      <AdminHeader :breadcrumbs="breadcrumbs" title="Listado de Escuelas" :add="{
+      <AdminHeader  title="Listado de Escuelas" :add="{
         show: hasPermission($page.props, 'superadmin', null),
         href: route('schools.create'),
         label: 'Nueva escuela'
@@ -16,10 +16,7 @@
       </AdminHeader>
     </template>
 
-    <q-page class="q-pa-md">
-      <!-- Flash Messages -->
-      <FlashMessages :flash="flash" />
-
+    <template #main-page-content>
       <!-- Search and Filter Controls -->
       <div class="row q-mb-md q-gutter-x-md">
         <div class="col-5">
@@ -120,12 +117,11 @@
           </q-td>
         </template>
       </q-table>
-    </q-page>
+    </template>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import ManagementTypeBadge from '@/Components/Badges/ManagementTypeBadge.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
@@ -142,9 +138,7 @@ const $q = useQuasar();
 const props = defineProps({
   schools: Object,
   filters: Object,
-  localities: Array,
-  breadcrumbs: Array,
-  flash: Object || null
+  localities: Array
 });
 
 // Table columns definition
@@ -206,8 +200,8 @@ const filteredSchools = computed(() => {
   return schools;
 });
 
-const search = ref(page.props.filters?.search || '');
-const selectedLocality = ref(props.localities?.find(l => l.id == page.props.filters?.locality_id) || null);
+const search = ref($page.props.filters?.search || '');
+const selectedLocality = ref(props.localities?.find(l => l.id == $page.props.filters?.locality_id) || null);
 let searchTimeout = null;
 
 const handleSearch = () => {
@@ -264,7 +258,7 @@ watch(search, (value) => {
 });
 
 // Watch for changes in page props filters to update local variables
-watch(() => page.props.filters, (newFilters) => {
+watch(() => $page.props.filters, (newFilters) => {
   if (newFilters) {
     search.value = newFilters.search || '';
     const locality = props.localities?.find(l => l.id == newFilters.locality_id);

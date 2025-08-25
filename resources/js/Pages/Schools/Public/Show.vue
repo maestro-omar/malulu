@@ -91,7 +91,7 @@ import { Head, router } from "@inertiajs/vue3";
 
 const props = defineProps({
   school: Object,
-  breadcrumbs: Array,
+  
 });
 
 const copyToClipboard = (text) => {

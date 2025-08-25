@@ -8,8 +8,8 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 
 const showingNavigationDropdown = ref(false);
-const page = usePage();
-const school = page.props.auth.user.activeSchool;
+const $page = usePage();
+const school = $page.props.auth.user.activeSchool;
 
 // Parse school configuration from extra field
 const schoolConfig = computed(() => {
@@ -49,9 +49,9 @@ const logoComponent = computed(() => {
 });
 
 onMounted(() => {
-    // console.log('Auth User:', page.props.auth.user);
-    // console.log('Debug Info:', page.props.debug);
-    // console.log('Menu Items:', page.props.menu.items);
+    // console.log('Auth User:', $page.props.auth.user);
+    // console.log('Debug Info:', $page.props.debug);
+    // console.log('Menu Items:', $page.props.menu.items);
 
     // Debug school prop
     // console.log('Layout - school prop:', school);

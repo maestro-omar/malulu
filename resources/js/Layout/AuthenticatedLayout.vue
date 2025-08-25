@@ -1,21 +1,21 @@
 <template>
   <q-layout view="hHh lpr fFr">
     <!-- Header with only toolbar -->
-    <q-header elevated class="bg-primary text-white" height-hint="64">
+    <q-header reveal elevated class="bg-primary text-white" height-hint="64">
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
             <SystemLogo :href="route('dashboard')" />
           </q-avatar>
-          {{ page.props.appName }}
+          {{ $page.props.appName }}
         </q-toolbar-title>
         <q-tabs>
-          <q-route-tab v-for="item in page.props.menu.items" :key="item.route" :href="route(item.route)"
+          <q-route-tab v-for="item in $page.props.menu.items" :key="item.route" :href="route(item.route)"
             :active="route().current(item.route)" :label="item.name" />
         </q-tabs>
 
 
-        {{ page.props.auth.user.name }}
+        {{ $page.props.auth.user.name }}
         <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
     </q-header>
@@ -25,7 +25,7 @@
       <q-btn flat round dense size="10px" icon="close" class="absolute-top-right q-ma-xs"
         @click="rightDrawerOpen = false" />
       <q-list class="q-mt-lg">
-        <template v-for="item in page.props.menu.userItems" :key="item.route || 'separator'">
+        <template v-for="item in $page.props.menu.userItems" :key="item.route || 'separator'">
           <template v-if="item.type === 'separator'">
             <q-separator />
           </template>
@@ -42,14 +42,25 @@
       </q-list>
     </q-drawer>
 
-    <!-- Page container -->
     <q-page-container>
-
       <!-- AdminHeader slot -->
-      <slot name="admin-header" />
+      <q-page-sticky expand position="top">
+        <slot name="admin-header" />
+      </q-page-sticky>
 
-      <!-- Page content -->
-      <slot />
+      <q-page :class="pageClass">
+
+        <!-- Page content with padding for sticky header -->
+        <div style="padding-top: 60px;">
+          <!-- Flash Messages -->
+          <FlashMessages :flash="flash" />
+
+          <slot name="main-page-content" />
+        </div>
+
+
+
+      </q-page>
     </q-page-container>
   </q-layout>
 </template>
@@ -58,26 +69,29 @@
 <script setup>
 //OMAR IMPORTANTE: rediseñar con https://quasar.dev/layout/gallery/google-photos
 import SystemLogo from '@/Components/SystemLogo.vue';
-import AdminHeader from '@/Sections/AdminHeader.vue';
+import FlashMessages from '@/Components/admin/FlashMessages.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 
 defineProps({
   title: {
     type: String
+  },
+  pageClass: {
+    type: String,
+    default: 'q-pa-md'
   }
 })
+const $page = usePage();
+const flash = $page.props.flash;
 
 const rightDrawerOpen = ref(false)
+// const showingNavigationDropdown = ref(false);
+const school = $page.props.auth.user.activeSchool;
 
 const toggleRightDrawer = () => {
   rightDrawerOpen.value = !rightDrawerOpen.value
 }
-
-
-const showingNavigationDropdown = ref(false);
-const page = usePage();
-const school = page.props.auth.user.activeSchool;
 
 // Parse school configuration from extra field
 const schoolConfig = computed(() => {
@@ -117,9 +131,9 @@ const logoComponent = computed(() => {
 });
 
 onMounted(() => {
-  // console.log('Auth User:', page.props.auth.user);
-  // console.log('Debug Info:', page.props.debug);
-  // console.log('Menu Items:', page.props.menu.items);
+  // console.log('Auth User:', $page.props.auth.user);
+  // console.log('Debug Info:', $page.props.debug);
+  // console.log('Menu Items:', $page.props.menu.items);
 
   // Debug school prop
   // console.log('Layout - school prop:', school);

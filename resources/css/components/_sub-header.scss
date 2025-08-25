@@ -70,3 +70,29 @@
         }
     }
 }
+
+// Hide sub-header actions when Quasar header is hidden (reveal mode)
+.q-page-container .q-page-sticky {
+    z-index: 1000;
+    position: relative !important;
+    margin-top: -50px;
+
+    @include mixins.mq(sm) {
+        margin-top: 0px;
+        position: fixed !important;
+    }
+}
+
+.q-header--hidden~.q-page-container .q-page-sticky {
+
+    margin-top: 0px;
+    position: fixed !important;
+
+    & .mll-sub-header__actions {
+        display: none !important;
+
+        @include mixins.mq(sm) {
+            display: flex !important;
+        }
+    }
+}

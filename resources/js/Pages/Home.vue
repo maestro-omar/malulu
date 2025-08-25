@@ -7,7 +7,7 @@
             <q-icon name="waving_hand" size="80px" color="teal" />
           </div>
 
-          <h1 class="welcome__title">{{ page.props.appName }}</h1>
+          <h1 class="welcome__title">{{ $page.props.appName }}</h1>
           <h2 class="welcome__subtitle">Bienvenida/o</h2>
 
           <div class="welcome__text">
@@ -30,7 +30,7 @@ import { usePage, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import GuestLayout from '@/Layout/GuestLayout.vue';
 
-const page = usePage();
+const $page = usePage();
 
 const props = defineProps({
   canLogin: {
