@@ -1,4 +1,5 @@
 <template>
+
   <Head :title="`Detalles de la Provincia: ${province.name}`" />
   <AuthenticatedLayout>
     <template #admin-header>
@@ -13,74 +14,68 @@
       }" />
     </template>
     <template #main-page-content>
-      <div class="q-pa-md">
-        <div class="row q-col-gutter-md">
-          <div class="col-12">
-            <q-card>
-              <q-card-section>
-                <div class="row q-col-gutter-lg">
-                  <!-- Images Section -->
-                  <div class="col-12 col-md-6">
-                    <div class="text-h3 q-mb-md">Información de la Provincia</div>
-                    <div class="row q-col-gutter-md q-mb-lg">
-                      <div class="col-12 col-sm-6">
-                        <DataFieldShow label="Escudo provincial">
-                          <template #slotValue>
-                            <EditableImage v-model="province.logo1" type="logo1" :model-id="province.code"
-                              :can-edit="true" image-class="q-mt-sm" upload-route="provinces.upload-image"
-                              delete-route="provinces.delete-image"
-                              delete-confirm-message="¿Está seguro que desea eliminar el escudo 1?" />
-                          </template>
-                        </DataFieldShow>
-                      </div>
-                      <div class="col-12 col-sm-6">
-                        <DataFieldShow label="Logo ministerio">
-                          <template #slotValue>
-                            <EditableImage v-model="province.logo2" type="logo2" :model-id="province.code"
-                              :can-edit="true" image-class="q-mt-sm" upload-route="provinces.upload-image"
-                              delete-route="provinces.delete-image"
-                              delete-confirm-message="¿Está seguro que desea eliminar el escudo 2?" />
-                          </template>
-                        </DataFieldShow>
-                      </div>
-                    </div>
-                    <div class="row q-col-gutter-md">
-                      <div class="col-12 col-md-6">
-                        <DataFieldShow label="Código" :value="province.code" type="text" />
-                      </div>
-                      <div class="col-12 col-md-6">
-                        <DataFieldShow label="Nombre" :value="province.name" type="text" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Details Section -->
-                  <div class="col-12 col-md-6">
-                    <div class="text-h3 q-mb-md">&nbsp;</div>
-                    <div class="row q-col-gutter-md">
-                      <div class="col-12">
-                        <DataFieldShow label="Título" :value="province.title" type="text" />
-                      </div>
-                      <div class="col-12">
-                        <DataFieldShow label="Subtítulo" :value="province.subtitle" type="text" />
-                      </div>
-                      <div class="col-12">
-                        <DataFieldShow label="Enlace">
-                          <template #slotValue>
-                            <a v-if="province.link" :href="province.link" target="_blank"
-                              class="text-primary">{{ province.link }}</a>
-                            <span v-else>-</span>
-                          </template>
-                        </DataFieldShow>
-                      </div>
-                    </div>
-                  </div>
+      <q-card>
+        <q-card-section>
+          <div class="row q-col-gutter-lg">
+            <!-- Images Section -->
+            <div class="col-12 col-md-6">
+              <div class="text-h3 q-mb-md">Información de la Provincia</div>
+              <div class="row q-col-gutter-md q-mb-lg">
+                <div class="col-12 col-sm-6">
+                  <DataFieldShow label="Escudo provincial">
+                    <template #slotValue>
+                      <EditableImage v-model="province.logo1" type="logo1" :model-id="province.code" :can-edit="true"
+                        image-class="q-mt-sm" upload-route="provinces.upload-image"
+                        delete-route="provinces.delete-image"
+                        delete-confirm-message="¿Está seguro que desea eliminar el escudo 1?" />
+                    </template>
+                  </DataFieldShow>
                 </div>
-              </q-card-section>
-            </q-card>
+                <div class="col-12 col-sm-6">
+                  <DataFieldShow label="Logo ministerio">
+                    <template #slotValue>
+                      <EditableImage v-model="province.logo2" type="logo2" :model-id="province.code" :can-edit="true"
+                        image-class="q-mt-sm" upload-route="provinces.upload-image"
+                        delete-route="provinces.delete-image"
+                        delete-confirm-message="¿Está seguro que desea eliminar el escudo 2?" />
+                    </template>
+                  </DataFieldShow>
+                </div>
+              </div>
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-md-6">
+                  <DataFieldShow label="Código" :value="province.code" type="text" />
+                </div>
+                <div class="col-12 col-md-6">
+                  <DataFieldShow label="Nombre" :value="province.name" type="text" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Details Section -->
+            <div class="col-12 col-md-6">
+              <div class="text-h3 q-mb-md">&nbsp;</div>
+              <div class="row q-col-gutter-md">
+                <div class="col-12">
+                  <DataFieldShow label="Título" :value="province.title" type="text" />
+                </div>
+                <div class="col-12">
+                  <DataFieldShow label="Subtítulo" :value="province.subtitle" type="text" />
+                </div>
+                <div class="col-12">
+                  <DataFieldShow label="Enlace">
+                    <template #slotValue>
+                      <a v-if="province.link" :href="province.link" target="_blank" class="text-primary">{{
+                        province.link }}</a>
+                      <span v-else>-</span>
+                    </template>
+                  </DataFieldShow>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </q-card-section>
+      </q-card>
     </template>
   </AuthenticatedLayout>
 </template>

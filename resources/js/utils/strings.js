@@ -55,3 +55,13 @@ export function getCourseSlug(course) {
 
   return slugify(slug);
 }
+
+export function shrinkCoordinates(coordinates) {
+  return coordinates
+    .split(',')
+    .map(coord => {
+      const num = parseFloat(coord.trim());
+      return isNaN(num) ? coord.trim() : num.toFixed(6);
+    })
+    .join(', ');
+}
