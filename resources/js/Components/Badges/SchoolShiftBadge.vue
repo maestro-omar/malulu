@@ -1,5 +1,5 @@
 <template>
-  <q-chip :class="['school-shift--' + (shift.code || 'default')]" :title="shift.name" :size="size">
+  <q-chip v-if="shift" :class="['school-shift--' + (shift.code || 'default')]" :title="shift.name" :size="size">
     {{ label }}
   </q-chip>
 </template>

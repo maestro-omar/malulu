@@ -1,5 +1,5 @@
 <template>
-  <q-chip :class="['school-level--' + (level.code || 'default')]" :title="level.name" :size="size">
+  <q-chip v-if="level" :class="['school-level--' + (level.code || 'default')]" :title="level.name" :size="size">
     {{ label }}
   </q-chip>
 </template>

@@ -73,17 +73,16 @@ trait UserServiceList
         $transformedUsers['data'] = $users->map(function ($user) {
             $studentRelationship = $user->studentRelationships->whereNull('deleted_at')->first();
             $currentCourse = empty($studentRelationship) ? null : $studentRelationship->currentCourse;
+            if (!empty($currentCourse)) {
+                $currentCourse->load(['schoolLevel', 'schoolShift']);
+                // dd($currentCourse);
+            }
             // Add student relationships to the user data
-            $user['course'] = $currentCourse ? [
-                'id' => $currentCourse->id,
-                'number' => $currentCourse->number,
-                'letter' => $currentCourse->letter,
-                'shift' => ['id' => $currentCourse->schoolShift->id, 'code' => $currentCourse->schoolShift->code],
-                'level' => ['id' => $currentCourse->schoolLevel->id, 'code' => $currentCourse->schoolLevel->code],
-            ] : null;
+            $user['course'] = $currentCourse;
             return $user;
         })->toArray();
 
+        $transformedUsers['data'] = array_filter($transformedUsers['data']);
         return $transformedUsers;
     }
 

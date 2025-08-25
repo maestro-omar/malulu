@@ -4,217 +4,131 @@
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader  :title="`${school.short} - Cursos de ${selectedLevel.name}`">
-        <template #additional-buttons>
-          <Link :href="route('school.course.create', { school: school.slug, schoolLevel: selectedLevel.code })"
-            class="admin-button admin-button--top admin-button--blue">
-          Agregar Nuevo Curso
-          </Link>
-          <Link :href="route('school.course.create-next', { school: school.slug, schoolLevel: selectedLevel.code })"
-            class="admin-button admin-button--top admin-button--indigo">
-          Crear cursos siguientes
-          </Link>
-        </template>
+      <AdminHeader :title="`${school.short} - Cursos de ${selectedLevel.name}`" :add="{
+        show: hasPermission($page.props, 'superadmin', null),
+        href: route('school.course.create', { school: school.slug, schoolLevel: selectedLevel.code }),
+        label: 'Nuevo Curso'
+      }" :edit="{
+        show: hasPermission($page.props, 'superadmin', null),
+        href: route('school.course.create-next', { school: school.slug, schoolLevel: selectedLevel.code }),
+        label: 'Crear cursos siguientes'
+      }">
       </AdminHeader>
     </template>
 
-    <div class="container">
-      <!-- Flash Messages -->
-      <FlashMessages :flash="flash" />
-
-      <div class="table__wrapper">
-        <div class="table__container">
-          <!-- Filter Section -->
-          <div class="table__filters">
-            <h3 class="table__filters-title">Filtros</h3>
-            <div class="table__filters-grid">
-              <!-- Year Filter -->
-              <div class="table__filter-group">
-                <label for="year-filter" class="table__filter-label">Año</label>
-                <input type="number" id="year-filter" v-model.number="selectedYear" @input="triggerFilter"
-                  class="table__filter-input" />
-              </div>
-
-              <!-- Active Status Filter -->
-              <div class="table__filter-group">
-                <label class="table__filter-label">Estado</label>
-                <div class="table__filter-radio-group">
-                  <label class="table__filter-radio">
-                    <input type="radio" name="active-status" :value="true" v-model="activeStatus"
-                      @change="triggerFilter">
-                    <span>Activo</span>
-                  </label>
-                  <label class="table__filter-radio">
-                    <input type="radio" name="active-status" :value="false" v-model="activeStatus"
-                      @change="triggerFilter">
-                    <span>Inactivo</span>
-                  </label>
-                  <label class="table__filter-radio">
-                    <input type="radio" name="active-status" :value="null" v-model="activeStatus"
-                      @change="triggerFilter">
-                    <span>Todos</span>
-                  </label>
-                </div>
-              </div>
-
-              <!-- Shift Filter -->
-              <SelectSchoolShift v-model="selectedShift" @update:modelValue="triggerFilter" :options="schoolShifts"
-                :showAllOption="true" />
-            </div>
-          </div>
-
-          <!-- Desktop Table View -->
-          <div class="table__desktop">
-            <table class="table__table">
-              <thead class="table__thead">
-                <tr>
-                  <th class="table__th table__th--center">Curso</th>
-                  <th class="table__th table__th--center">Turno</th>
-                  <th class="table__th table__th--center">Curso Anterior</th>
-                  <th class="table__th table__th--center">Curso/s siguiente/s</th>
-                  <th class="table__th">Fecha de Inicio</th>
-                  <th class="table__th">Fecha de Fin</th>
-                  <th class="table__th table__th--center">Activo</th>
-                  <th class="table__th">Acciones</th>
-                </tr>
-              </thead>
-              <tbody class="table__tbody">
-                <tr v-for="(course, index) in courses.data" :key="course.id" :class="{
-                  'table__tr--even': index % 2 === 0,
-                  'table__tr--odd': index % 2 === 1
-                }">
-                  <td class="table__td table__td--center">{{ course.nice_name }}</td>
-                  <td class="table__td table__td--center">
-                    <SchoolShiftBadge :shift="course.school_shift" />
-                  </td>
-                  <td class="table__td table__td--center">
-                    <Link v-if="course.previous_course"
-                      :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
-                      class="table__link">
-                    {{ course.previous_course.nice_name + ' (' + getFullYear(course.previous_course.start_date) + ')' }}
-                    </Link>
-                    <span v-else>-</span>
-                  </td>
-                  <td class="table__td table__td--center">
-                    <span v-if="course.next_courses.length === 0">-</span>
-                    <span v-else v-for="nextCourse in course.next_courses" :key="nextCourse.id">
-                      <Link
-                        :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(nextCourse) })"
-                        class="table__link">
-                      {{ nextCourse.nice_name + ' (' + getFullYear(nextCourse.start_date) + ')' }}
-                      </Link>
-                    </span>
-                  </td>
-                  <td class="table__td">{{ formatDate(course.start_date) }}</td>
-                  <td class="table__td">{{ course.end_date ? formatDate(course.end_date) : '-' }}</td>
-                  <td class="table__td table__td--center">
-                    <span :class="{
-                      'table__status': true,
-                      'table__status--active': course.active,
-                      'table__status--inactive': !course.active,
-                    }">
-                      {{ course.active ? 'Sí' : 'No' }}
-                    </span>
-                  </td>
-                  <td class="table__td table__actions">
-                    <Link
-                      :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) })">
-                    Ver
-                    </Link>
-                    <Link
-                      :href="route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) })">
-                    Editar
-                    </Link>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Mobile Card View -->
-          <div class="table__mobile">
-            <div v-for="(course, index) in courses.data" :key="course.id" :class="{
-              'table__card--even': index % 2 === 0,
-              'table__card--odd': index % 2 === 1
-            }" class="table__card">
-              <div class="table__card-header">
-                <div class="table__card-user">
-                  <div class="table__card-info">
-                    <h3>{{ course.nice_name }}</h3>
-                    <p>
-                      <SchoolShiftBadge :shift="course.school_shift" />
-                    </p>
-                  </div>
-                </div>
-                <div class="table__card-actions">
-                  <Link
-                    :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) })">
-                  Ver
-                  </Link>
-                  <Link
-                    :href="route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) })">
-                  Editar
-                  </Link>
-                </div>
-              </div>
-              <div class="table__card-section">
-                <div class="table__card-label">Curso Anterior:</div>
-                <div class="table__card-content">
-                  <Link v-if="course.previous_course"
-                    :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
-                    class="table__link">
-                  {{ course.previous_course.nice_name }}
-                  </Link>
-                  <span v-else>-</span>
-                </div>
-              </div>
-              <div class="table__card-section">
-                <div class="table__card-label">Fecha de Inicio:</div>
-                <div class="table__card-content">{{ formatDate(course.start_date) }}</div>
-              </div>
-              <div class="table__card-section">
-                <div class="table__card-label">Fecha de Fin:</div>
-                <div class="table__card-content">{{ course.end_date ? formatDate(course.end_date) : '-' }}</div>
-              </div>
-              <div class="table__card-section">
-                <div class="table__card-label">Estado:</div>
-                <div class="table__card-content">
-                  <span :class="{
-                    'table__status': true,
-                    'table__status--active': course.active,
-                    'table__status--inactive': !course.active,
-                  }">
-                    {{ course.active ? 'Sí' : 'No' }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pagination -->
-          <div class="table__pagination">
-            <div class="table__pagination-info">
-              Mostrando {{ courses.from }} a {{ courses.to }} de {{ courses.total }} resultados
-            </div>
-            <Pagination :links="courses.links" />
-          </div>
+    <template #main-page-content>
+      <!-- Search and Filters -->
+      <div class="row q-mb-md q-gutter-x-md">
+        <div class="col-12 col-md-2">
+          <q-input v-model.number="selectedYear" dense outlined placeholder="Año" type="number"
+            @update:model-value="triggerFilter" clearable>
+            <template v-slot:prepend>
+              <q-icon name="calendar_today" />
+            </template>
+          </q-input>
+        </div>
+        <div class="col-12 col-md-2">
+          <q-select v-model="activeStatus" dense outlined :options="activeStatusOptions" option-label="label"
+            option-value="value" @update:model-value="triggerFilter" clearable>
+            <template v-slot:prepend>
+              <q-icon name="filter_list" />
+            </template>
+          </q-select>
+        </div>
+        <div class="col-12 col-md-2">
+          <q-select v-model="selectedShift" dense outlined :options="shiftOptions" option-label="label"
+            option-value="value" @update:model-value="triggerFilter" clearable>
+            <template v-slot:prepend>
+              <q-icon name="schedule" />
+            </template>
+          </q-select>
+        </div>
+        <div class="col-12 col-md-3">
+          <q-input v-model="search" dense outlined placeholder="Buscar cursos..." @update:model-value="handleSearch"
+            clearable>
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
         </div>
       </div>
-    </div>
+
+      <!-- Quasar Table -->
+      <q-table class="mll-table mll-table--courses striped-table" dense :rows="courses.data" :columns="columns"
+        row-key="id" :pagination="{ rowsPerPage: 30 }" :filter="search" :filter-method="customFilter">
+
+        <!-- Custom cell for shift -->
+        <template #body-cell-shift="props">
+          <q-td :props="props">
+            <SchoolShiftBadge :shift="props.row.school_shift" />
+          </q-td>
+        </template>
+
+        <!-- Custom cell for previous course -->
+        <template #body-cell-previous_course="props">
+          <q-td :props="props">
+            <Link v-if="props.row.previous_course"
+              :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(props.row.previous_course) })"
+              class="text-primary">
+            {{ props.row.previous_course.nice_name + ' (' + getFullYear(props.row.previous_course.start_date) + ')' }}
+            </Link>
+            <span v-else>-</span>
+          </q-td>
+        </template>
+
+        <!-- Custom cell for next courses -->
+        <template #body-cell-next_courses="props">
+          <q-td :props="props">
+            <div v-if="props.row.next_courses.length === 0">-</div>
+            <div v-else>
+              <div v-for="nextCourse in props.row.next_courses" :key="nextCourse.id" class="q-mb-xs">
+                <Link
+                  :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(nextCourse) })"
+                  class="text-primary">
+                {{ nextCourse.nice_name + ' (' + getFullYear(nextCourse.start_date) + ')' }}
+                </Link>
+              </div>
+            </div>
+          </q-td>
+        </template>
+
+        <!-- Custom cell for status -->
+        <template #body-cell-active="props">
+          <q-td :props="props">
+            <q-chip :color="props.row.active ? 'positive' : 'grey'" :icon="props.row.active ? 'check_circle' : 'cancel'"
+              text-color="white" size="sm">
+              {{ props.row.active ? 'Sí' : 'No' }}
+            </q-chip>
+          </q-td>
+        </template>
+
+        <!-- Custom cell for actions -->
+        <template #body-cell-actions="props">
+          <q-td :props="props">
+            <div class="row items-center q-gutter-sm">
+              <q-btn flat round color="primary" icon="visibility" size="sm"
+                :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(props.row) })"
+                title="Ver" />
+              <q-btn flat round color="secondary" icon="edit" size="sm"
+                :href="route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(props.row) })"
+                title="Editar" />
+            </div>
+          </q-td>
+        </template>
+      </q-table>
+    </template>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import FlashMessages from '@/Components/admin/FlashMessages.vue'
-import Pagination from '@/Components/admin/Pagination.vue'
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
-import SelectSchoolShift from '@/Components/admin/SelectSchoolShift.vue'
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
-import { formatDate, getFullYear } from '../../utils/date'
-import { getCourseSlug } from '../../utils/strings'
+import { formatDate, getFullYear } from '@/Utils/date'
+import { hasPermission } from '@/Utils/permissions';
+import { getCourseSlug } from '@/Utils/strings'
 
 const props = defineProps({
   courses: {
@@ -233,7 +147,6 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  
   year: {
     type: [Number, null],
     default: null,
@@ -252,8 +165,108 @@ const currentYear = computed(() => new Date().getFullYear());
 const selectedYear = ref(props.year || currentYear.value);
 const activeStatus = ref(props.active !== undefined ? props.active : true);
 const selectedShift = ref(props.shift || null);
+const search = ref('');
 
-// console.log('props.courses:', props.courses);
+// Filter options
+const activeStatusOptions = [
+  { label: 'Activo', value: true },
+  { label: 'Inactivo', value: false },
+  { label: 'Todos', value: null }
+];
+
+const shiftOptions = computed(() => {
+  const options = [];
+  props.schoolShifts.forEach(shift => {
+    options.push({ label: shift.name, value: shift.code });
+  });
+  return options;
+});
+
+// Search functionality
+const handleSearch = () => {
+  // This will trigger the q-table's built-in filtering
+  // The filter is applied automatically through the :filter prop
+};
+
+const customFilter = (rows, terms, cols, cellValue) => {
+  const lowerTerms = terms.toLowerCase();
+  return rows.filter(row => {
+    return (
+      (row.nice_name && row.nice_name.toLowerCase().includes(lowerTerms)) ||
+      (row.school_shift && row.school_shift.name && row.school_shift.name.toLowerCase().includes(lowerTerms))
+      //  || (row.previous_course && row.previous_course.nice_name && row.previous_course.nice_name.toLowerCase().includes(lowerTerms))
+      //  || (row.next_courses && row.next_courses.some(nextCourse =>
+      //  nextCourse.nice_name && nextCourse.nice_name.toLowerCase().includes(lowerTerms)
+      //  ))
+    );
+  });
+};
+
+// Table columns definition
+const columns = [
+  {
+    name: 'nice_name',
+    required: true,
+    label: 'Curso',
+    align: 'left',
+    field: 'nice_name',
+    sortable: true
+  },
+  {
+    name: 'shift',
+    label: 'Turno',
+    field: 'school_shift',
+    align: 'center',
+    sortable: false
+  },
+  {
+    name: 'previous_course',
+    label: 'Curso Anterior',
+    field: 'previous_course',
+    align: 'left',
+    sortable: false
+  },
+  {
+    name: 'next_courses',
+    label: 'Curso/s siguiente/s',
+    field: 'next_courses',
+    align: 'left',
+    sortable: false
+  },
+  {
+    name: 'start_date',
+    label: 'Fecha de Inicio',
+    field: 'start_date',
+    align: 'left',
+    sortable: true,
+    format: (val) => formatDate(val)
+  },
+  {
+    name: 'end_date',
+    label: 'Fecha de Fin',
+    field: 'end_date',
+    align: 'left',
+    sortable: true,
+    format: (val) => val ? formatDate(val) : '-'
+  },
+  {
+    name: 'active',
+    label: 'Activo',
+    field: 'active',
+    align: 'center',
+    sortable: true
+  },
+  {
+    name: 'actions',
+    label: 'Acciones',
+    field: 'actions',
+    align: 'center',
+    sortable: false,
+    classes: 'mll-table__cell-actions',
+    headerClasses: 'mll-table__cell-actions-header',
+    style: 'width: 120px'
+  }
+];
 
 // Debounce function and filter trigger
 let filterTimeout = null;
@@ -277,7 +290,4 @@ const triggerFilter = () => {
     );
   }, 300);
 };
-
-
-
 </script>

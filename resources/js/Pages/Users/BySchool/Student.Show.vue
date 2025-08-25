@@ -2,6 +2,7 @@
 import EditableImage from '@/Components/admin/EditableImage.vue';
 import EmailField from '@/Components/admin/EmailField.vue';
 import PhoneField from '@/Components/admin/PhoneField.vue';
+import DataFieldShow from '@/Components/DataFieldShow.vue';
 import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
@@ -12,183 +13,159 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const props = defineProps({
-    user: Object,
-    school: Object,
-    genders: Object,
-    
-    flash: Object,
+  user: Object,
+  school: Object,
+  genders: Object,
+  flash: Object,
 });
 
 const $page = usePage();
 
 const userAge = computed(() => {
-    return calculateAge(props.user.birthdate);
+  return calculateAge(props.user.birthdate);
 });
 
 const destroy = () => {
-    if (confirm("¿Está seguro que desea eliminar este usuario?")) {
-        router.delete(route("users.destroy", props.user.id));
-    }
+  if (confirm("¿Está seguro que desea eliminar este usuario?")) {
+    router.delete(route("users.destroy", props.user.id));
+  }
 };
 </script>
 
 <template>
+  <Head :title="`Usuario: ${user.name}`" />
 
-    <Head :title="`Usuario: ${user.name}`" />
+  <AuthenticatedLayout>
+    <template #admin-header>
+      <AdminHeader :title="`Estudiante ${user.firstname} ${user.lastname}`" :edit="{
+        show: hasPermission($page.props, 'student.edit'),
+        href: route_school_student(school, user, 'edit'),
+        label: 'Editar'
+      }" :del="{
+        show: hasPermission($page.props, 'student.delete'),
+        onClick: destroy,
+        label: 'Eliminar'
+      }">
+      </AdminHeader>
+    </template>
 
-    <AuthenticatedLayout>
-        <template #admin-header>
-            <AdminHeader  :title="`Estudiante ${user.firstname} ${user.lastname}`" :edit="{
-                show: hasPermission($page.props, 'student.edit'),
-                href: route_school_student(school, user, 'edit'),
-                label: 'Editar'
-            }" :del="{
-                show: hasPermission($page.props, 'student.delete'),
-                onClick: destroy,
-                label: 'Eliminar'
-            }">
-            </AdminHeader>
-        </template>
-
-        <template #main-page-content>
-            <div class="container">
-                <div class="admin-detail__wrapper">
-                    <div class="admin-detail__card">
-                        <div class="admin-detail__content">
-                            <div class="admin-detail__grid">
-                                <!-- Basic Information -->
-                                <div class="admin-detail__section">
-                                    <div class="admin-detail__image-container">
-                                        <EditableImage v-model="user.picture" type="picture"
-                                            :can-edit="true" :upload-full-route="route_school_student(school, user, 'upload-image')"
-                                            delete-route="users.delete-image"
-                                            delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?" />
-                                    </div>
-                                    <h3 class="admin-detail__section-title">Información Básica</h3>
-                                    <div class="admin-detail__info-layout">
-                                        <div class="admin-detail__info-content">
-                                            <div class="admin-detail__field">
-                                                <label class="admin-detail__label">Nombre de usuario</label>
-                                                <div class="admin-detail__value">{{ user.name }}</div>
-                                            </div>
-
-                                            <div class="admin-detail__field-grid">
-                                                <div class="admin-detail__field">
-                                                    <label class="admin-detail__label">Nombre</label>
-                                                    <div class="admin-detail__value">{{ user.firstname || '-' }}</div>
-                                                </div>
-                                                <div class="admin-detail__field">
-                                                    <label class="admin-detail__label">Apellido</label>
-                                                    <div class="admin-detail__value">{{ user.lastname || '-' }}</div>
-                                                </div>
-                                                <div class="admin-detail__field">
-                                                    <label class="admin-detail__label">Género</label>
-                                                    <div class="admin-detail__value">
-                                                        {{ genders[user.gender] || user.gender || '-' }}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="admin-detail__field-grid">
-                                                <div class="admin-detail__field">
-                                                    <label class="admin-detail__label">DNI</label>
-                                                    <div class="admin-detail__value">{{ user.id_number || '-' }}</div>
-                                                </div>
-                                                <div class="admin-detail__field">
-                                                    <label class="admin-detail__label">Fecha de Nacimiento</label>
-                                                    <div class="admin-detail__value">
-                                                        <span v-if="user.birthdate">
-                                                            {{ new Date(user.birthdate).toLocaleDateString('es-AR', {
-                                                                timeZone:
-                                                                    'UTC'
-                                                            }) }}
-                                                            <span v-if="userAge !== null" class="admin-detail__age">
-                                                                ({{ userAge }} años)
-                                                            </span>
-                                                        </span>
-                                                        <span v-else>-</span>
-                                                    </div>
-                                                </div>
-                                                <div class="admin-detail__field">
-                                                    <label class="admin-detail__label">Nacionalidad</label>
-                                                    <div class="admin-detail__value">{{ user.nationality || '-' }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Contact Information -->
-                                <div class="admin-detail__section">
-                                    <h3 class="admin-detail__section-title">Información de Contacto</h3>
-                                    <div class="admin-detail__field-grid admin-detail__field-grid--contact">
-                                        <div class="admin-detail__field admin-detail__field--email">
-                                            <label class="admin-detail__label">Email</label>
-                                            <EmailField :email="user.email" />
-                                        </div>
-                                        <div class="admin-detail__field">
-                                            <label class="admin-detail__label">Teléfono</label>
-                                            <PhoneField :phone="user.phone" />
-                                        </div>
-                                    </div>
-
-                                    <div class="admin-detail__field-grid">
-                                        <div class="admin-detail__field">
-                                            <label class="admin-detail__label">Dirección</label>
-                                            <div class="admin-detail__value">{{ user.address || '-' }}</div>
-                                        </div>
-                                        <div class="admin-detail__field">
-                                            <label class="admin-detail__label">Localidad</label>
-                                            <div class="admin-detail__value">{{ user.locality || '-' }}</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="admin-detail__field-grid">
-                                        <div class="admin-detail__field">
-                                            <label class="admin-detail__label">Provincia</label>
-                                            <div class="admin-detail__value">{{ user.province?.name || '-' }}</div>
-                                        </div>
-                                        <div class="admin-detail__field">
-                                            <label class="admin-detail__label">País</label>
-                                            <div class="admin-detail__value">{{ user.country?.name || '-' }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <template #main-page-content>
+      <div class="q-pa-md">
+        <div class="row q-col-gutter-md">
+          <div class="col-12">
+            <!-- Basic Information Card -->
+            <q-card class="q-mb-md">
+              <q-card-section>
+                <div class="row q-col-gutter-lg">
+                  <!-- Profile Image -->
+                  <div class="col-12 col-md-3">
+                    <div class="q-mb-md">
+                      <EditableImage v-model="user.picture" type="picture" :can-edit="true"
+                        :upload-full-route="route_school_student(school, user, 'upload-image')"
+                        delete-route="users.delete-image"
+                        delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?" />
                     </div>
-                </div>
+                  </div>
 
-                <SchoolsAndRolesCard :guardian-relationships="user.guardianRelationships" :schools="user.schools"
-                    :roles="user.roles" :role-relationships="user.roleRelationships"
-                    :teacher-relationships="user.workerRelationships" :student-relationships="user.studentRelationships"
-                    :can-add-roles="hasPermission($page.props, 'superadmin')" :user-id="user.id" />
-
-                <div class="admin-detail__card admin-detail__card--mt">
-                    <div class="admin-detail__content">
-                        <div class="admin-detail__grid">
-                            <!-- System Information -->
-                            <div class="admin-detail__section">
-                                <h3 class="admin-detail__section-title">Información del Sistema</h3>
-                                <div class="admin-detail__field-grid">
-                                    <div class="admin-detail__field">
-                                        <label class="admin-detail__label">Fecha de Registro</label>
-                                        <div class="admin-detail__value">
-                                            {{ new Date(user.created_at).toLocaleDateString() }}
-                                        </div>
-                                    </div>
-                                    <div class="admin-detail__field">
-                                        <label class="admin-detail__label">Última Actualización</label>
-                                        <div class="admin-detail__value">
-                                            {{ new Date(user.updated_at).toLocaleDateString() }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                  <!-- Basic Information -->
+                  <div class="col-12 col-md-9">
+                    <div class="text-h3 q-mb-md">Información Básica</div>
+                    <div class="row q-col-gutter-md">
+                      <div class="col-12 col-md-6">
+                        <DataFieldShow label="Nombre de usuario" :value="user.name" type="text" />
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <DataFieldShow label="Nombre" :value="user.firstname" type="text" />
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <DataFieldShow label="Apellido" :value="user.lastname" type="text" />
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <DataFieldShow label="Género" :value="genders[user.gender] || user.gender" type="text" />
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <DataFieldShow label="DNI" :value="user.id_number" type="text" />
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <DataFieldShow label="Fecha de Nacimiento" :value="user.birthdate" type="date">
+                          <template #slotValue>
+                            <span v-if="user.birthdate">
+                              {{ new Date(user.birthdate).toLocaleDateString('es-AR', { timeZone: 'UTC' }) }}
+                              <span v-if="userAge !== null" class="text-caption q-ml-sm">
+                                ({{ userAge }} años)
+                              </span>
+                            </span>
+                            <span v-else>-</span>
+                          </template>
+                        </DataFieldShow>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <DataFieldShow label="Nacionalidad" :value="user.nationality" type="text" />
+                      </div>
                     </div>
+                  </div>
                 </div>
-            </div>
-        </template>
-    </AuthenticatedLayout>
+              </q-card-section>
+            </q-card>
+
+            <!-- Contact Information Card -->
+            <q-card class="q-mb-md">
+              <q-card-section>
+                <div class="text-h3 q-mb-md">Información de Contacto</div>
+                <div class="row q-col-gutter-md">
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="Email">
+                      <template #slotValue>
+                        <EmailField :email="user.email" />
+                      </template>
+                    </DataFieldShow>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="Teléfono">
+                      <template #slotValue>
+                        <PhoneField :phone="user.phone" />
+                      </template>
+                    </DataFieldShow>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="Dirección" :value="user.address" type="text" />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="Localidad" :value="user.locality" type="text" />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="Provincia" :value="user.province?.name" type="text" />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="País" :value="user.country?.name" type="text" />
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+
+            <!-- Schools and Roles Card -->
+            <SchoolsAndRolesCard :guardian-relationships="user.guardianRelationships" :schools="user.schools"
+              :roles="user.roles" :role-relationships="user.roleRelationships"
+              :teacher-relationships="user.workerRelationships" :student-relationships="user.studentRelationships"
+              :can-add-roles="hasPermission($page.props, 'superadmin')" :user-id="user.id" />
+
+            <!-- System Information Card -->
+            <q-card>
+              <q-card-section>
+                <div class="text-h3 q-mb-md">Información del Sistema</div>
+                <div class="row q-col-gutter-md">
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="Fecha de Registro" :value="user.created_at" type="date" />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <DataFieldShow label="Última Actualización" :value="user.updated_at" type="date" />
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+      </div>
+    </template>
+  </AuthenticatedLayout>
 </template>

@@ -242,20 +242,21 @@ class UserService
 
     private function parseCurrentCourse($currentCourse)
     {
-        return $currentCourse ? [
-            'id' => $currentCourse->id,
-            'name' => $currentCourse->name,
-            'number' => $currentCourse->number,
-            'letter' => $currentCourse->letter,
-            'school_level_id' => $currentCourse->school_level_id,
-            'level' => $currentCourse->schoolLevel ? [
-                'id' => $currentCourse->schoolLevel->id,
-                'name' => $currentCourse->schoolLevel->name,
-                'code' => $currentCourse->schoolLevel->code,
-            ] : null,
-            'school_shift_id' => $currentCourse->school_shift_id,
-            'start_date' => $currentCourse->start_date,
-            'end_date' => $currentCourse->end_date,
-        ] : null;
+        return $currentCourse;
+        // return $currentCourse ? [
+        //     'id' => $currentCourse->id,
+        //     'name' => $currentCourse->name,
+        //     'number' => $currentCourse->number,
+        //     'letter' => $currentCourse->letter,
+        //     'school_level_id' => $currentCourse->school_level_id,
+        //     'level' => $currentCourse->schoolLevel ? [
+        //         'id' => $currentCourse->schoolLevel->id,
+        //         'name' => $currentCourse->schoolLevel->name,
+        //         'code' => $currentCourse->schoolLevel->code,
+        //     ] : null,
+        //     'school_shift_id' => $currentCourse->school_shift_id,
+        //     'start_date' => $currentCourse->start_date,
+        //     'end_date' => $currentCourse->end_date,
+        // ] : null;
     }
 }

@@ -9,7 +9,6 @@
         </q-toolbar-title>
         <div class="mll-sub-header__actions">
           <q-btn v-if="add && add.show" :href="add.href" color="green" size="md" :label="add.label || 'Nuevo'" />
-
           <q-btn v-if="trashed && trashed.show" :href="trashed.href" color="grey-6" size="md"
             :label="trashed.label || 'Eliminados'" />
           <q-btn v-if="edit && edit.show" :href="edit.href" color="primary" size="md" :label="edit.label || 'Editar'" />
