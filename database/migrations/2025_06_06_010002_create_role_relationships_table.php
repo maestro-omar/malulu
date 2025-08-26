@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // The user who has this role
             $table->foreignId('role_id')->constrained()->onDelete('cascade'); // The role type (teacher, student, etc.)
-            $table->foreignId('school_id')->constrained()->onDelete('cascade'); // The school where this role applies
+            $table->foreignId('school_id')->nullable()->constrained()->onDelete('cascade'); // The school where this role applies
             $table->foreignId('school_level_id')->nullable()->constrained()->onDelete('cascade'); // The school level where this role applies
 
             // Relationship lifecycle

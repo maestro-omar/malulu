@@ -174,11 +174,11 @@ class FakeUsersSeeder extends Seeder
                 $roleRelationship = [
                     'user_id' => $teacherGuardian->id,
                     'role_id' => $guardianRoleId,
-                    'school_id' => $defaultSchool->id,
+                    'school_id' => null,
                     'start_date' => Carbon::now()->subYears(2),
                     'end_date' => null,
                     'end_reason_id' => null,
-                    'notes' => "Auto-generated guardian relationship for teacher",
+                    'notes' => "Auto-generated guardian relationship: teacher and guardian",
                     'created_by' => 1,
                     'updated_by' => 1,
                     'created_at' => Carbon::now(),
