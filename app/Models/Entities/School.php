@@ -20,6 +20,7 @@ class School extends Model
     protected $table = 'schools';
 
     const GLOBAL = 'GLOBAL'; //code for special "global" school, for admin uses
+    const CUE_LUCIO_LUCERO = '740058000';
 
     /**
      * Profile code constants

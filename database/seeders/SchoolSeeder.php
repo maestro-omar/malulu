@@ -27,11 +27,11 @@ class SchoolSeeder extends Seeder
         $this->initManagementTypes();
         $this->initShifts();
 
-        // Simulate upload for school 740058000
+        // Simulate upload for school School::CUE_LUCIO_LUCERO
         $pictureSource = database_path('seeders/images/ce-n8-picture.png');
         $logoSource = database_path('seeders/images/ce-n8-logo-2025.png');
-        $pictureDest = 'school-logos/740058000/ce-n8-picture.png';
-        $logoDest = 'school-logos/740058000/ce-n8-logo-2025.png';
+        $pictureDest = 'school-logos/' . School::CUE_LUCIO_LUCERO . '/ce-n8-picture.png';
+        $logoDest = 'school-logos/' . School::CUE_LUCIO_LUCERO . '/ce-n8-logo-2025.png';
         if (file_exists($pictureSource) && !Storage::disk('public')->exists($pictureDest)) {
             Storage::disk('public')->put($pictureDest, file_get_contents($pictureSource));
         }
@@ -58,7 +58,7 @@ class SchoolSeeder extends Seeder
                 'shifts' => [SchoolShift::MORNING]
             ],
             [
-                'code' => '740058000',
+                'code' => School::CUE_LUCIO_LUCERO,
                 'name' => 'Centro Educativo n°8 Maestras Lucio Lucero',
                 'short' => 'CE n°8',
                 'locality_id' => $this->localities['San Luis'],
@@ -67,7 +67,7 @@ class SchoolSeeder extends Seeder
                 'phone' => '2664426546',
                 'email' => 'centroeducativo8@gmail.com',
                 'coordinates' => '-33.2972111111111,-66.3128472222222',
-                'cue' => '740058000',
+                'cue' => School::CUE_LUCIO_LUCERO,
                 'management_type_id' => $this->managementTypes[SchoolManagementType::PUBLIC],
                 'social' => [
                     [

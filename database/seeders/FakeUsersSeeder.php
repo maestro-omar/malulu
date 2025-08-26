@@ -24,7 +24,6 @@ use App\Services\UserService;
 
 class FakeUsersSeeder extends Seeder
 {
-    const DEFAULT_CUE = '740058000'; //LUCIO_LUCERO
     const OTHER_SCHOOLS_LIMIT = 1;
     const FAST_TEST = true;
     private $mathSubject;
@@ -65,10 +64,10 @@ class FakeUsersSeeder extends Seeder
             return;
         }
 
-        // Create users for default school (740058000)
-        $defaultSchool = School::where('code', self::DEFAULT_CUE)->first();
+        // Create users for default school (School::CUE_LUCIO_LUCERO)
+        $defaultSchool = School::where('code', School::CUE_LUCIO_LUCERO)->first();
         if (!$defaultSchool) {
-            throw new \Exception('School with code 740058000 not found. Please run SchoolSeeder first.');
+            throw new \Exception('School with code ' . School::CUE_LUCIO_LUCERO . ' not found. Please run SchoolSeeder first.');
         }
 
         // Get default province (San Luis) and country (Argentina)
@@ -230,7 +229,7 @@ class FakeUsersSeeder extends Seeder
 
         if ($teacherFromDefaultSchool) {
             // Get a random school that's not the default school
-            $otherSchool = School::where('code', '!=', self::DEFAULT_CUE)->inRandomOrder()->first();
+            $otherSchool = School::where('code', '!=', School::CUE_LUCIO_LUCERO)->inRandomOrder()->first();
             if ($otherSchool) {
                 // Assign guardian role in the other school
                 $this->assignRoleWithRelationship($teacherFromDefaultSchool, $otherSchool, null, Role::GUARDIAN, 'Teacher and guardian in other school');
@@ -238,7 +237,7 @@ class FakeUsersSeeder extends Seeder
         }
 
         // Create users for other schools
-        $otherSchools = School::where('code', '!=', self::DEFAULT_CUE)->limit(self::OTHER_SCHOOLS_LIMIT)->get();
+        $otherSchools = School::where('code', '!=', School::CUE_LUCIO_LUCERO)->limit(self::OTHER_SCHOOLS_LIMIT)->get();
         $availableRoles = array_diff(Role::allCodes(), [Role::SUPERADMIN, Role::SCHOOL_ADMIN]);
 
 
