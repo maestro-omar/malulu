@@ -8,6 +8,10 @@
   align-items: center;
   gap: 0.5rem;
 
+  &--center {
+    justify-content: center;
+  }
+
   &__text {
     margin: 0;
     // @include mixins.fz(1.5);

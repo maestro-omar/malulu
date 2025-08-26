@@ -54,11 +54,11 @@ const props = defineProps({
   },
   labelClass: {
     type: String,
-    default: 'text-h5'
+    default: 'text-h6'
   },
   valueClass: {
     type: String,
-    default: 'text-h4'
+    default: 'text-h5'
   }
 })
 </script>

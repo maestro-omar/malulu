@@ -33,6 +33,7 @@ const destroy = () => {
 </script>
 
 <template>
+
   <Head :title="`Usuario: ${user.name}`" />
 
   <AuthenticatedLayout>
@@ -51,29 +52,43 @@ const destroy = () => {
 
     <template #main-page-content>
       <div class="q-pa-md">
-        <div class="row q-col-gutter-md">
+        <div class="row q-col-gutter-sm">
           <div class="col-12">
             <!-- Basic Information Card -->
             <q-card class="q-mb-md">
               <q-card-section>
                 <div class="row q-col-gutter-lg">
                   <!-- Profile Image -->
-                  <div class="col-12 col-md-3">
+                  <div class="col-12 col-md-3 text-center">
                     <div class="q-mb-md">
-                      <EditableImage v-model="user.picture" type="picture" :can-edit="true"
-                        :upload-full-route="route_school_student(school, user, 'upload-image')"
-                        delete-route="users.delete-image"
-                        delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?" />
+                      <q-avatar size="100px">
+                        <EditableImage v-model="user.picture" type="picture" :can-edit="true"
+                          :upload-full-route="route_school_student(school, user, 'upload-image')"
+                          delete-route="users.delete-image"
+                          delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?" />
+                      </q-avatar>
+                    </div>
+
+                    <!-- User Info under image -->
+                    <div class="q-mt-md text-center">
+                      <DataFieldShow label="Nombre de usuario" :value="user.name" type="text" />
+                      <DataFieldShow label="">
+                        <template #slotValue>
+                          <EmailField :email="user.email" center />
+                        </template>
+                      </DataFieldShow>
+                      <DataFieldShow label="">
+                        <template #slotValue>
+                          <PhoneField :phone="user.phone" center />
+                        </template>
+                      </DataFieldShow>
                     </div>
                   </div>
 
                   <!-- Basic Information -->
                   <div class="col-12 col-md-9">
                     <div class="text-h3 q-mb-md">Información Básica</div>
-                    <div class="row q-col-gutter-md">
-                      <div class="col-12 col-md-6">
-                        <DataFieldShow label="Nombre de usuario" :value="user.name" type="text" />
-                      </div>
+                    <div class="row q-col-gutter-sm">
                       <div class="col-12 col-md-6">
                         <DataFieldShow label="Nombre" :value="user.firstname" type="text" />
                       </div>
@@ -91,7 +106,7 @@ const destroy = () => {
                           <template #slotValue>
                             <span v-if="user.birthdate">
                               {{ new Date(user.birthdate).toLocaleDateString('es-AR', { timeZone: 'UTC' }) }}
-                              <span v-if="userAge !== null" class="text-caption q-ml-sm">
+                              <span v-if="userAge !== null" class="text-h6 q-ml-sm">
                                 ({{ userAge }} años)
                               </span>
                             </span>
@@ -112,21 +127,7 @@ const destroy = () => {
             <q-card class="q-mb-md">
               <q-card-section>
                 <div class="text-h3 q-mb-md">Información de Contacto</div>
-                <div class="row q-col-gutter-md">
-                  <div class="col-12 col-md-6">
-                    <DataFieldShow label="Email">
-                      <template #slotValue>
-                        <EmailField :email="user.email" />
-                      </template>
-                    </DataFieldShow>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <DataFieldShow label="Teléfono">
-                      <template #slotValue>
-                        <PhoneField :phone="user.phone" />
-                      </template>
-                    </DataFieldShow>
-                  </div>
+                <div class="row q-col-gutter-sm">
                   <div class="col-12 col-md-6">
                     <DataFieldShow label="Dirección" :value="user.address" type="text" />
                   </div>
@@ -153,7 +154,7 @@ const destroy = () => {
             <q-card>
               <q-card-section>
                 <div class="text-h3 q-mb-md">Información del Sistema</div>
-                <div class="row q-col-gutter-md">
+                <div class="row q-col-gutter-sm">
                   <div class="col-12 col-md-6">
                     <DataFieldShow label="Fecha de Registro" :value="user.created_at" type="date" />
                   </div>

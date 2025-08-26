@@ -1,10 +1,52 @@
+<!--
+EditableImage Component
+
+This component is designed to fit its container while maintaining proportions.
+When used inside a q-avatar, it will automatically fill the avatar space.
+
+Usage examples:
+
+1. Inside q-avatar:
+<q-avatar size="100px">
+  <EditableImage 
+    v-model="user.avatar" 
+    type="avatar" 
+    :can-edit="true"
+    upload-route="users.avatar.upload"
+    delete-route="users.avatar.delete"
+    :model-id="user.id"
+  />
+</q-avatar>
+
+2. With custom object-fit:
+<EditableImage 
+  v-model="logo" 
+  type="logo" 
+  object-fit="contain"
+  :can-edit="true"
+  upload-route="company.logo.upload"
+  :model-id="company.id"
+/>
+
+3. With custom styling:
+<div style="width: 200px; height: 150px;">
+  <EditableImage 
+    v-model="image" 
+    type="picture" 
+    :can-edit="true"
+    upload-route="images.upload"
+    :model-id="item.id"
+  />
+</div>
+-->
+
 <template>
   <div class="editable-image">
     <div class="editable-image__container" @click="canEdit ? openFileInput() : null">
       <img :src="modelValue || noImage" :class="[
         'editable-image__image',
         getImageClass()
-      ]" />
+      ]" :style="getImageStyle()" />
       <div class="editable-image__controls">
         <button v-if="canEdit" @click.stop="openFileInput" class="editable-image__button" title="Editar imagen">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,7 +71,7 @@
 <script setup>
 import noImage from "@images/no-image-person.png";
 import { router } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps({
   modelValue: {
@@ -80,6 +122,12 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  // Custom object-fit style
+  objectFit: {
+    type: String,
+    default: null,
+    validator: (value) => ['cover', 'contain', 'fill', 'none', 'scale-down'].includes(value)
+  },
 });
 
 const emit = defineEmits([
@@ -109,6 +157,17 @@ const getImageClass = () => {
     default:
       return 'editable-image__image--default';
   }
+};
+
+const getImageStyle = () => {
+  const style = {};
+  
+  // If custom object-fit is provided, use it
+  if (props.objectFit) {
+    style.objectFit = props.objectFit;
+  }
+  
+  return style;
 };
 
 const openFileInput = () => {

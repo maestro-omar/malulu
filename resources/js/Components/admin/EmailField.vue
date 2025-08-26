@@ -1,5 +1,5 @@
 <template>
-  <div class="email-field">
+  <div class="email-field" :class="{ 'email-field--center': center }">
     <p class="email-field__text">
       <span
         v-if="email"
@@ -40,6 +40,10 @@ const props = defineProps({
   email: {
     type: String,
     default: null
+  },
+  center: {
+    type: Boolean,
+    default: false
   }
 });
 

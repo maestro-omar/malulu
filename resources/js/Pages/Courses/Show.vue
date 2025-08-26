@@ -17,13 +17,13 @@
 
     <template #main-page-content>
       <div class="q-pa-md">
-        <div class="row q-col-gutter-md">
+        <div class="row q-col-gutter-sm">
           <div class="col-12">
             <!-- Course Information Card -->
             <q-card class="q-mb-md">
               <q-card-section>
                 <div class="text-h3 q-mb-md">Información del Curso</div>
-                <div class="row q-col-gutter-md">
+                <div class="row q-col-gutter-sm">
                   <div class="col-12 col-md-6">
                     <DataFieldShow label="Curso" :value="course.nice_name" type="text" />
                   </div>

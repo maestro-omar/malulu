@@ -41,7 +41,7 @@
             <div class="col-12 col-md-6">
               <div class="school-detail__section">
                 <!-- Images Section -->
-                <div class="row q-col-gutter-md q-mb-lg">
+                <div class="row q-col-gutter-sm q-mb-lg">
                   <div class="col-12 col-lg-4">
                     <DataFieldShow label="Logo">
                       <template #slotValue>
@@ -65,7 +65,7 @@
                 </div>
 
                 <!-- Basic Information -->
-                <div class="row q-col-gutter-md">
+                <div class="row q-col-gutter-sm">
                   <div class="col-12">
                     <DataFieldShow label="Nombre" :value="school.name" type="text" />
                   </div>
@@ -77,7 +77,7 @@
                   </div>
                 </div>
 
-                <div class="row q-col-gutter-md">
+                <div class="row q-col-gutter-sm">
                   <div class="col-12 col-sm-4">
                     <DataFieldShow label="Tipo de Gestión">
                       <template #slotValue>
@@ -113,7 +113,7 @@
             <div class="col-12 col-md-6">
               <div class="text-h3 q-mb-md">Ubicación y Contacto</div>
 
-              <div class="row q-col-gutter-md">
+              <div class="row q-col-gutter-sm">
                 <div class="col-12 col-sm-6">
                   <DataFieldShow label="Localidad" :value="school.locality.name" type="text" />
                 </div>
@@ -122,7 +122,7 @@
                 </div>
               </div>
 
-              <div class="row q-col-gutter-md">
+              <div class="row q-col-gutter-sm">
                 <div class="col-12 col-sm-6">
                   <DataFieldShow label="Código Postal" :value="school.zip_code" type="text" />
                 </div>
@@ -140,7 +140,7 @@
                 </div>
               </div>
 
-              <div class="row q-col-gutter-md">
+              <div class="row q-col-gutter-sm">
                 <div class="col-12 col-sm-6">
                   <DataFieldShow label="Teléfono">
                     <template #slotValue>

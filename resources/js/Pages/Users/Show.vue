@@ -18,7 +18,7 @@
 
     <template #main-page-content>
       <div class="q-pa-md">
-        <div class="row q-col-gutter-md">
+        <div class="row q-col-gutter-sm">
           <div class="col-12">
             <!-- Basic Information Card -->
             <q-card class="q-mb-md">
@@ -36,7 +36,7 @@
                   <!-- Basic Information -->
                   <div class="col-12 col-md-9">
                     <div class="text-h3 q-mb-md">Información Básica</div>
-                    <div class="row q-col-gutter-md">
+                    <div class="row q-col-gutter-sm">
                       <div class="col-12 col-md-4">
                         <DataFieldShow label="Nombre de usuario" :value="user.name" type="text" />
                       </div>
@@ -68,7 +68,7 @@
             <q-card class="q-mb-md">
               <q-card-section>
                 <div class="text-h3 q-mb-md">Información de Contacto</div>
-                <div class="row q-col-gutter-md">
+                <div class="row q-col-gutter-sm">
                   <div class="col-12 col-md-4">
                     <DataFieldShow label="Email">
                       <template #slotValue>
@@ -109,7 +109,7 @@
             <q-card>
               <q-card-section>
                 <div class="text-h3 q-mb-md">Información del Sistema</div>
-                <div class="row q-col-gutter-md">
+                <div class="row q-col-gutter-sm">
                   <div class="col-12 col-md-4">
                     <DataFieldShow label="Fecha de Registro" :value="user.created_at" type="date" />
                   </div>

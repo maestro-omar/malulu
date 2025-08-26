@@ -20,7 +20,7 @@
             <!-- Images Section -->
             <div class="col-12 col-md-6">
               <div class="text-h3 q-mb-md">Información de la Provincia</div>
-              <div class="row q-col-gutter-md q-mb-lg">
+              <div class="row q-col-gutter-sm q-mb-lg">
                 <div class="col-12 col-sm-6">
                   <DataFieldShow label="Escudo provincial">
                     <template #slotValue>
@@ -42,7 +42,7 @@
                   </DataFieldShow>
                 </div>
               </div>
-              <div class="row q-col-gutter-md">
+              <div class="row q-col-gutter-sm">
                 <div class="col-12 col-md-6">
                   <DataFieldShow label="Código" :value="province.code" type="text" />
                 </div>
@@ -55,7 +55,7 @@
             <!-- Details Section -->
             <div class="col-12 col-md-6">
               <div class="text-h3 q-mb-md">&nbsp;</div>
-              <div class="row q-col-gutter-md">
+              <div class="row q-col-gutter-sm">
                 <div class="col-12">
                   <DataFieldShow label="Título" :value="province.title" type="text" />
                 </div>

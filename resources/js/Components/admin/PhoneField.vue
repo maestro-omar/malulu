@@ -1,5 +1,5 @@
 <template>
-  <div class="phone-field">
+  <div class="phone-field" :class="{ 'phone-field--center': center }">
     <p class="phone-field__text">
       <span v-if="phone" @click="copyToClipboard" class="phone-field__number" role="button" tabindex="0"
         title="Copiar teléfono">
@@ -29,6 +29,10 @@ const props = defineProps({
   phone: {
     type: String,
     default: null
+  },
+  center: {
+    type: Boolean,
+    default: false
   }
 });
 
