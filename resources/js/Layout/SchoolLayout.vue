@@ -8,7 +8,7 @@
           <component v-if="logoComponent" :is="logoComponent" class="school-layout__nav-logo-image"
             :color="headerStyles.textColor" :href="route('dashboard')" />
           <Link v-else-if="school && school.logo" :href="route('dashboard')">
-          <img:src="school.logo" :alt="school.name" :title="school.name" class="school-layout__nav-logo-image" />
+          <img :src="school.logo" :alt="school.name" :title="school.name" class="school-layout__nav-logo-image" />
           </Link>
           {{ $page.props.appName }}
         </q-toolbar-title>
