@@ -1,5 +1,5 @@
 <template>
-  <AuthLayout :title="pageTitle">
+  <GuestLayout :title="pageTitle">
     <q-page class="auth__container">
 
       <Head :title="pageTitle" />
@@ -36,14 +36,14 @@
         </q-card-actions>
       </q-card>
     </q-page>
-  </AuthLayout>
+  </GuestLayout>
 </template>
 
 <script setup>
 import { computed } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import AuthLayout from '@/Layout/AuthLayout.vue';
+import GuestLayout from '@/Layout/GuestLayout.vue';
 
 const props = defineProps({
   status: {

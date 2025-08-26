@@ -85,7 +85,7 @@ import ManagementTypeBadge from "@/Components/Badges/ManagementTypeBadge.vue";
 import SchoolLevelBadge from "@/Components/Badges/SchoolLevelBadge.vue";
 import SchoolShiftBadge from "@/Components/Badges/SchoolShiftBadge.vue";
 import { schoolLevelOptions } from '@/Composables/schoolLevelOptions';
-import SchoolLayout from '@/Layouts/SchoolLayout.vue';
+import SchoolLayout from '@/Layout/SchoolLayout.vue';
 import GuestHeader from "@/Sections/GuestHeader.vue";
 import { Head, router } from "@inertiajs/vue3";
 

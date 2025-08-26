@@ -305,7 +305,7 @@ malulu-vite/
 │   │   ├── Layouts/
 │   │   │   ├── AuthenticatedLayout.vue
 │   │   │   ├── GuestLayout.vue
-│   │   │   └── MinimalAuthLayout.vue
+│   │   │   └── MinimalGuestLayout.vue
 │   │   ├── Pages/
 │   │   │   ├── AcademicYears/
 │   │   │   │   ├── Create.vue

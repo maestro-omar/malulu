@@ -136,7 +136,7 @@ import SearchableDropdown from '@/Components/admin/SearchableDropdown.vue';
 import ManagementTypeBadge from '@/Components/Badges/ManagementTypeBadge.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+import GuestLayout from '@/Layout/GuestLayout.vue';
 import GuestHeader from '@/Sections/GuestHeader.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';

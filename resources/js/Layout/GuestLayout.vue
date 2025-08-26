@@ -3,9 +3,7 @@
     <q-header elevated class="bg-primary text-white" height-hint="98">
       <q-toolbar>
         <q-toolbar-title>
-          <q-avatar>
-            <SystemLogo />
-          </q-avatar>
+          <SystemLogo />
           {{ title }}
         </q-toolbar-title>
       </q-toolbar>

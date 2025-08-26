@@ -1,10 +1,15 @@
 <template>
   <q-layout view="hHh lpr fFr">
     <!-- Header with only toolbar -->
-    <q-header reveal elevated class="bg-primary text-white" height-hint="64">
+    <q-header reveal elevated class="bg-primary text-white" height-hint="64"
+      :background-color="headerStyles.background">
       <q-toolbar>
         <q-toolbar-title>
-          <SystemLogo :href="route('dashboard')" />
+          <component v-if="logoComponent" :is="logoComponent" class="school-layout__nav-logo-image"
+            :color="headerStyles.textColor" :href="route('dashboard')" />
+          <Link v-else-if="school && school.logo" :href="route('dashboard')">
+          <img:src="school.logo" :alt="school.name" :title="school.name" class="school-layout__nav-logo-image" />
+          </Link>
           {{ $page.props.appName }}
         </q-toolbar-title>
         <q-tabs>
@@ -115,7 +120,7 @@ const headerStyles = computed(() => {
 // Get logo component or image
 const logoComponent = computed(() => {
   if (!school || !school.logo) {
-    return ApplicationLogo;
+    return SystemLogo;
   }
   return null;
 });

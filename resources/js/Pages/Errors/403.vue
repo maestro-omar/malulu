@@ -1,5 +1,5 @@
 <template>
-    <ErrorLayout :title="pageTitle">
+    <GuestLayout :title="pageTitle">
         <q-page class="error__container">
             <q-card class="error__card">
                 <q-card-section class="error__content">
@@ -33,13 +33,13 @@
                 </q-card-section>
             </q-card>
         </q-page>
-    </ErrorLayout>
+    </GuestLayout>
 </template>
 
 <script setup>
 import { Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import ErrorLayout from '@/Layout/ErrorLayout.vue';
+import GuestLayout from '@/Layout/GuestLayout.vue';
 
 const props = defineProps({
     status: Number,

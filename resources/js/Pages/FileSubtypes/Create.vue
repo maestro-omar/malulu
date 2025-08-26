@@ -109,7 +109,7 @@
 <script setup>
 import { useForm } from "@inertiajs/vue3";
 import { Head } from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import AuthenticatedLayout from "@/Layout/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/admin/InputLabel.vue";
 import TextInput from "@/Components/admin/TextInput.vue";
 import InputError from "@/Components/admin/InputError.vue";
