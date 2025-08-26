@@ -231,12 +231,48 @@ class User extends Authenticatable
     /**
      * Get the students that this user is a guardian for.
      */
-    public function students()
+    public function myChildren()
     {
-        return $this->belongsToMany(User::class, 'guardian_relationships', 'student_id', 'role_relationship_id')
-            ->whereHas('roleRelationship', function ($query) {
-                $query->where('user_id', $this->id);
-            });
+        static $guardianRoleId = null;
+        if ($guardianRoleId === null) {
+            $guardianRoleId = Role::where('code', Role::GUARDIAN)->first()->id;
+        }
+
+        return User::join('guardian_relationships', 'users.id', '=', 'guardian_relationships.student_id')
+            ->join('role_relationships', 'guardian_relationships.role_relationship_id', '=', 'role_relationships.id')
+            ->where('role_relationships.user_id', $this->id)
+            ->where('role_relationships.role_id', $guardianRoleId)
+            ->select('users.*')
+            ->get();
+    }
+
+    /**
+     * Get the guardians (parents) for this user.
+     */
+    public function myParents()
+    {
+        static $guardianRoleId = null;
+        if ($guardianRoleId === null) {
+            $guardianRoleId = Role::where('code', Role::GUARDIAN)->first()->id;
+        }
+
+        return User::join('role_relationships', 'users.id', '=', 'role_relationships.user_id')
+            ->join('guardian_relationships', 'role_relationships.id', '=', 'guardian_relationships.role_relationship_id')
+            ->where('guardian_relationships.student_id', $this->id)
+            ->where('role_relationships.role_id', $guardianRoleId)
+            ->select('users.*')
+            ->get();
+    }
+
+    public function filesByMe()
+    {
+        return $this->hasMany(File::class, 'user_id');
+    }
+
+    public function files()
+    {
+        return $this->hasMany(File::class, 'fileable_id')
+            ->where('fileable_type', get_class($this));
     }
 
     public function assignRoleForSchool(int|Collection|Role $role, ?int $schoolId)

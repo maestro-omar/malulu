@@ -28,14 +28,14 @@ class CourseSeeder extends Seeder
         }
 
         // Get the specific school and two other schools
-        $defaultSchool = School::where('code', '740058000')->first();
+        $defaultSchool = School::where('code', School::CUE_LUCIO_LUCERO)->first();
         if (!$defaultSchool) {
-            $this->command->error('School with code 740058000 not found. Please run SchoolSeeder first.');
+            $this->command->error('School with code ' . School::CUE_LUCIO_LUCERO . ' not found. Please run SchoolSeeder first.');
             return;
         }
 
         // Get two other schools that are not the global school and have KINDER level
-        $kinder = School::where('code', '!=', '740058000')
+        $kinder = School::where('code', '!=', School::CUE_LUCIO_LUCERO)
             ->where('code', '!=', School::GLOBAL)
             ->whereHas('schoolLevels', function ($query) {
                 $query->where('code', SchoolLevel::KINDER);
@@ -47,7 +47,7 @@ class CourseSeeder extends Seeder
             return;
         }
 
-        $otherSchools = School::where('code', '!=', '740058000')
+        $otherSchools = School::where('code', '!=', School::CUE_LUCIO_LUCERO)
             ->where('code', '!=', School::GLOBAL)
             ->where('id', '!=', $kinder->id)
             ->inRandomOrder()

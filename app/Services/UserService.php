@@ -4,18 +4,7 @@ namespace App\Services;
 
 use App\Models\Entities\School;
 use App\Models\Entities\User;
-use App\Models\Catalogs\Role;
-use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\DB;
-use Spatie\Permission\PermissionRegistrar;
 use Illuminate\Support\Facades\Auth;
-use App\Services\CourseService;
 use App\Traits\UserServiceCrud;
 use App\Traits\UserServiceList;
 
@@ -27,31 +16,32 @@ class UserService
      */
     public function getUserShowData(User $user): array
     {
-        $user->load([
+        $loadRelations = [
             'province',
             'country',
-            'allRolesAcrossTeams',
-            'roleRelationships' => function ($query) {
-                $query->with([
-                    'workerRelationship' => function ($query) {
-                        $query->with(['classSubject']);
-                    },
-                    'guardianRelationship' => function ($query) {
-                        $query->with(['student' => function ($query) {
-                            $query->with(['roleRelationships' => function ($query) {
-                                $query->with(['studentRelationship' => function ($query) {
-                                    $query->with(['currentCourse.schoolLevel']);
-                                }]);
+            'allRolesAcrossTeams'
+        ];
+        $loadRelations['roleRelationships'] = function ($query) {
+            $query->with([
+                'workerRelationship' => function ($query) {
+                    $query->with(['classSubject']);
+                },
+                'guardianRelationship' => function ($query) {
+                    $query->with(['student' => function ($query) {
+                        $query->with(['roleRelationships' => function ($query) {
+                            $query->with(['studentRelationship' => function ($query) {
+                                $query->with(['currentCourse.schoolLevel']);
                             }]);
                         }]);
-                    },
-                    'studentRelationship' => function ($query) {
-                        $query->with(['currentCourse.schoolLevel']);
-                    },
-                    'creator'
-                ]);
-            }
-        ]);
+                    }]);
+                },
+                'studentRelationship' => function ($query) {
+                    $query->with(['currentCourse.schoolLevel']);
+                },
+                'creator'
+            ]);
+        };
+        $user->load($loadRelations);
 
         // Transform the data to include roles and schools
         $basicKeys = [
@@ -214,7 +204,7 @@ class UserService
                 ];
             })->values()->toArray();
 
-        return $transformedUser;
+            return $transformedUser;
     }
 
     public function hasAccessToSchool(int $schoolId): bool

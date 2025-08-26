@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\UserService;
 use Diglactic\Breadcrumbs\Breadcrumbs;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends SchoolBaseController
 {
@@ -44,10 +45,16 @@ class UserController extends SchoolBaseController
     public function student(Request $request, $schoolSlug, $studentIdAndName): Response
     {
         $this->setSchool($schoolSlug);
-        $student = $this->getUserData($studentIdAndName);
+        $data = $this->getUserData($studentIdAndName);
+        $parsedUserData = $data ? $data['data'] : null;
+        $student = $data ? $data['user'] : null;
+        if ($student) {
+            $parents = $student->myParents();
+            $files = $student->files;
+        }
 
         return $this->render($request, 'Users/BySchool/Student.Show', [
-            'user' => $student,
+            'user' => $parsedUserData,
             'genders' => User::genders(),
             'school' => $this->school,
             'breadcrumbs' => Breadcrumbs::generate('schools.student', $this->school, $student),
@@ -132,6 +139,6 @@ class UserController extends SchoolBaseController
     private function getUserData(string $studentIdAndName)
     {
         $student = $this->getUserFromUrlParameter($studentIdAndName);
-        return $student ? $this->userService->getUserShowData($student) : null;
+        return ['user' => $student, 'data' => $student ? $this->userService->getUserShowData($student) : null];
     }
 }
