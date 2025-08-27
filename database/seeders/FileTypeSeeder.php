@@ -11,7 +11,7 @@ class FileTypeSeeder extends Seeder
         [
             'code' => 'provincial',
             'name' => 'Provincial',
-            'relate_with' => null,
+            'relate_with' => 'province',
             'active' => true
         ],
         [
