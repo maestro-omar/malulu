@@ -4,6 +4,7 @@ namespace App\Models\Entities;
 
 use App\Models\Base\BaseModel as Model;
 use App\Models\Entities\User;
+use App\Models\Catalogs\FileSubtype;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;

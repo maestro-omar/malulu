@@ -48,10 +48,8 @@ class UserController extends SchoolBaseController
         $data = $this->getUserData($studentIdAndName);
         $parsedUserData = $data ? $data['data'] : null;
         $student = $data ? $data['user'] : null;
-        if ($student) {
-            $parents = $student->myParents();
-            $files = $student->files;
-        }
+        $parsedUserData['parents'] = $student ? $student->myParents() : null;
+        $parsedUserData['files'] =  $student ? $student->files : null;
 
         return $this->render($request, 'Users/BySchool/Student.Show', [
             'user' => $parsedUserData,

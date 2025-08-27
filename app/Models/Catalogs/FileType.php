@@ -107,6 +107,15 @@ class FileType extends Model
         return $this->hasMany(FileSubtype::class);
     }
 
+    public static function relateWithUser(): array
+    {
+        return [
+            self::RELATE_WITH_TEACHER,
+            self::RELATE_WITH_STUDENT,
+            self::RELATE_WITH_USER,
+        ];
+    }
+
     /**
      * Get available options for relate_with field
      *

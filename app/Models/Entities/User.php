@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Catalogs\Role;
 use App\Models\Entities\School;
 use App\Traits\FilterConstants;
+use App\Models\Catalogs\FileType;
 use App\Models\Catalogs\Province;
 use App\Models\Catalogs\Country;
 use App\Models\Relations\RoleRelationship;
@@ -272,7 +273,7 @@ class User extends Authenticatable
     public function files()
     {
         return $this->hasMany(File::class, 'fileable_id')
-            ->where('fileable_type', get_class($this));
+            ->whereIn('fileable_type', FileType::relateWithUser())->with(['subtype','subtype.fileType']);
     }
 
     public function assignRoleForSchool(int|Collection|Role $role, ?int $schoolId)
