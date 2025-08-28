@@ -46,6 +46,7 @@
                       <PhoneField :phone="user.phone" center />
                     </template>
                   </DataFieldShow>
+                  <DataFieldShow v-if="currentCourse" label="Curso" :value="currentCourse" type="currentCourse" />
                 </div>
               </div>
             </div>
@@ -53,7 +54,7 @@
             <!-- Basic Information -->
             <div class="col-12 col-md-9">
               <div class="col-12">
-                <div class="text-h4 q-mb-sm">Información Básica</div>
+                <div class="text-h4 q-mb-sm">Datos personales</div>
                 <div class="row q-col-gutter-sm">
                   <div class="col-6 col-xs-6 col-sm-4 col-md-3">
                     <DataFieldShow label="Nombre" :value="user.firstname" type="text" />
@@ -86,7 +87,7 @@
                 </div>
               </div>
               <div class="col-12 q-mt-md">
-                <div class="text-h4 q-mb-sm">Información de Contacto</div>
+                <div class="text-h4 q-mb-sm">Domicilio</div>
                 <div class="row q-col-gutter-sm">
                   <div class="col-6 col-xs-6 col-sm-4 col-md-3">
                     <DataFieldShow label="Dirección" :value="user.address" type="text" />
@@ -102,15 +103,11 @@
                   </div>
                 </div>
               </div>
-              <div v-if="currentCourse" class="col-12 q-mt-md">
-                <div class="text-h4 q-mb-sm">Curso actual</div>
+              <div v-if="guardians" class="col-12 q-mt-md">
+                <div class="text-h4 q-mb-sm">Tutores</div>
                 <div class="row q-col-gutter-sm">
                   <div class="col-6 col-xs-6 col-sm-4 col-md-3">
-                    <DataFieldShow label="Curso" :value="currentCourse.current_course" type="course" />
-                  </div>
-                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
-                    <DataFieldShow label="Desde" :value="currentCourse.start_date" type="date" />
-                  </div>
+                    <StudentGuardian v-for="guardian in guardians" :key="guardian.id" :guardian="guardian" />
                 </div>
               </div>
             </div>
@@ -123,7 +120,7 @@
           <FilesTable :files="files" title="Archivos del estudiante" />
         </q-card-section>
       </q-card>
-  
+
       <SystemTimestamp :row="user" />
     </template>
   </AuthenticatedLayout>
@@ -148,7 +145,7 @@ const props = defineProps({
   user: Object,
   currentCourse: Object,
   files: Object,
-  parents: Object,
+  guardians: Object,
   school: Object,
   genders: Object,
   flash: Object,

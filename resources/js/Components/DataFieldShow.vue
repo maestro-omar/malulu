@@ -7,28 +7,26 @@
         <template v-if="$slots.slotValue">
           <slot name="slotValue" />
         </template>
-        
+
         <!-- Handle special field types -->
         <template v-else-if="type === 'status'">
-          <q-chip
-            :color="value ? 'positive' : 'grey'"
-            :icon="value ? 'check_circle' : 'cancel'"
-            text-color="white"
-            size="sm"
-          >
+          <q-chip :color="value ? 'positive' : 'grey'" :icon="value ? 'check_circle' : 'cancel'" text-color="white"
+            size="sm">
             {{ value ? 'Activo' : 'Inactivo' }}
           </q-chip>
         </template>
-        
+
         <!-- Handle date fields -->
         <template v-else-if="type === 'date'">
           {{ value ? formatDate(value) : '-' }}
         </template>
         <!-- Handle date fields -->
-        <template v-else-if="type === 'course'">
-          <a :href="value.url">{{ value.nice_name }}</a>
+        <template v-else-if="type === 'currentCourse'">
+          <a :href="value.current_course.url">{{ value.current_course.nice_name }}</a> (desde
+          {{ formatDate(value.start_date) }})
+
         </template>
-        
+
         <!-- Default text display -->
         <template v-else>
           {{ value || '-' }}

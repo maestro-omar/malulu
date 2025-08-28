@@ -50,7 +50,7 @@ class UserController extends SchoolBaseController
         $this->setSchool($schoolSlug);
         $data = $this->getUserData($studentIdAndName);
         $student = $data ? $data['user'] : null;
-        $parents = $student ? $this->getStudentParents($student) : null;
+        $guardians = $student ? $this->getStudentParents($student) : null;
         $files =  $student ? $this->fileService->getUserFiles($student, $request->user()) : null;
         $currentCourse =  $student ? ($data['data']['current_course'] ?? null) : null;
 
@@ -58,7 +58,7 @@ class UserController extends SchoolBaseController
             'user' => $data['data'],
             'currentCourse' => $currentCourse,
             'files' => $files,
-            'parents' => $parents,
+            'guardians' => $guardians,
             'genders' => User::genders(),
             'school' => $this->school,
             'breadcrumbs' => Breadcrumbs::generate('schools.student', $this->school, $student),
@@ -90,7 +90,26 @@ class UserController extends SchoolBaseController
             $r = $parent->roleRelationships->first();
             $g = $r ? $r->guardianRelationship->first() : null;
             $parent->setRelations([]);
-            $return[] = ['parent' => $parent, 'guardianRelationship' => $g];
+            $return[] = [
+                "id" => $parent->id,
+                "firstname" => $parent->firstname,
+                "lastname" => $parent->lastname,
+                "id_number" => $parent->id_number,
+                "gender" => $parent->gender,
+                "birthdate" => $parent->birthdate->format('Y-m-d'),
+                "phone" => $parent->phone,
+                "address" => $parent->address,
+                "locality" => $parent->locality,
+                "province" => $parent->province->name,
+                "country" => $parent->country->name,
+                "nationality" => $parent->nationality,
+                "picture" =>  $parent->picture,
+                "email" => $parent->email,
+                "relationship_type" => $g ? $g->relationship_type : null,
+                "is_emergency_contact" => $g ? $g->is_emergency_contact : null,
+                "is_restricted" => $g ? $g->is_restricted : null,
+                "emergency_contact_priority" => $g ? $g->emergency_contact_priority : null,
+            ];
         }
         return $return;
     }

@@ -76,6 +76,7 @@ class UserService
             $width = array_filter($width);
             $query->with($width);
         };
+        $loadRelations = array_filter($loadRelations);
         $user->load($loadRelations);
 
         // Transform the data to include roles and schools
@@ -206,7 +207,7 @@ class UserService
                     'student' => $student ? [
                         'id' => $student->id,
                         'name' => $student->name,
-                        'current_course' => $this->parseCurrentCourse($currentCourse)
+                        'current_course' => $currentCourse ? $this->parseCurrentCourse($currentCourse) : null
                     ] : null,
                     'student_id' => $relationship->student_id,
                     'relationship_type' => $relationship->relationship_type,
@@ -273,6 +274,7 @@ class UserService
 
     private function parseCurrentCourse($currentCourse)
     {
+        if (!$currentCourse) return null;
         $data = $currentCourse->toArray();
         $data['url'] = route('school.course.show', [
             'school' => $currentCourse->school->slug,
