@@ -257,12 +257,33 @@ class User extends Authenticatable
             $guardianRoleId = Role::where('code', Role::GUARDIAN)->first()->id;
         }
 
-        return User::join('role_relationships', 'users.id', '=', 'role_relationships.user_id')
-            ->join('guardian_relationships', 'role_relationships.id', '=', 'guardian_relationships.role_relationship_id')
-            ->where('guardian_relationships.student_id', $this->id)
-            ->where('role_relationships.role_id', $guardianRoleId)
-            ->select('users.*')
+        $studentId = $this->id;
+        $parents =  User::query()
+            // 1) Filtramos solo usuarios que tengan al menos un roleRelationship
+            //    de tutor (role_id = 14) vinculado a ESTE estudiante.
+            ->whereHas('roleRelationships', function ($q) use ($studentId, $guardianRoleId) {
+                $q->where('role_id', $guardianRoleId)
+                    ->whereHas('guardianRelationship', function ($q) use ($studentId) {
+                        $q->where('student_id', $studentId);
+                    });
+            })
+            // 2) Cargamos SOLO esos roleRelationships (no los demás que el tutor pueda tener).
+            ->with([
+                'roleRelationships' => function ($q) use ($studentId, $guardianRoleId) {
+                    $q->where('role_id', $guardianRoleId)
+                        ->whereHas('guardianRelationship', function ($q) use ($studentId) {
+                            $q->where('student_id', $studentId);
+                        })
+                        // 3) Anidamos la relación con guardianRelationships,
+                        //    filtrada a ESTE estudiante.
+                        ->with(['guardianRelationship' => function ($q) use ($studentId) {
+                            $q->where('student_id', $studentId);
+                        }]);
+                },
+            ])
             ->get();
+
+        return $parents;
     }
 
     public function filesByMe()
@@ -273,7 +294,7 @@ class User extends Authenticatable
     public function files()
     {
         return $this->hasMany(File::class, 'fileable_id')
-            ->whereIn('fileable_type', FileType::relateWithUser())->with(['subtype','subtype.fileType']);
+            ->whereIn('fileable_type', FileType::relateWithUser())->with(['subtype', 'subtype.fileType']);
     }
 
     public function assignRoleForSchool(int|Collection|Role $role, ?int $schoolId)

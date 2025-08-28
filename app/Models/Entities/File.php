@@ -4,8 +4,10 @@ namespace App\Models\Entities;
 
 use App\Models\Base\BaseModel as Model;
 use App\Models\Entities\User;
+use App\Models\Relations\FileVisibility;
 use App\Models\Catalogs\FileSubtype;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -78,6 +80,11 @@ class File extends Model
     public function replacedFile(): BelongsTo
     {
         return $this->belongsTo(File::class, 'replaced_by_id', 'id');
+    }
+
+    public function visibility(): HasMany
+    {
+        return $this->hasMany(FileVisibility::class);
     }
 
     /**

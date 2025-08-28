@@ -13,17 +13,20 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\UserService;
+use App\Services\FileService;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends SchoolBaseController
 {
     protected $userService;
+    protected $fileService;
     protected ?School $school;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, FileService $fileService)
     {
         $this->userService = $userService;
+        $this->fileService = $fileService;
         $this->middleware('permission:view users')->only(['index', 'trashed']);
         $this->middleware('permission:create users')->only(['create', 'store']);
         $this->middleware('permission:edit users')->only(['edit', 'update']);
@@ -46,13 +49,15 @@ class UserController extends SchoolBaseController
     {
         $this->setSchool($schoolSlug);
         $data = $this->getUserData($studentIdAndName);
-        $parsedUserData = $data ? $data['data'] : null;
         $student = $data ? $data['user'] : null;
-        $parsedUserData['parents'] = $student ? $student->myParents() : null;
-        $parsedUserData['files'] =  $student ? $student->files : null;
+        $parents = $student ? $this->getStudentParents($student) : null;
+        $files =  $student ? $this->fileService->getUserFiles($student, $request->user()) : null;
+
 
         return $this->render($request, 'Users/BySchool/Student.Show', [
             'user' => $parsedUserData,
+            'files' => $files,
+            'parents' => $parents,
             'genders' => User::genders(),
             'school' => $this->school,
             'breadcrumbs' => Breadcrumbs::generate('schools.student', $this->school, $student),
@@ -73,6 +78,20 @@ class UserController extends SchoolBaseController
             'genders' => User::genders(),
             'breadcrumbs' => Breadcrumbs::generate('schools.student.edit', $this->school, $student),
         ]);
+    }
+
+    private function getStudentParents(User $student)
+    {
+        $parents = $student->myParents();
+        if (empty($parents)) return null;
+        $return  = [];
+        foreach ($parents as $parent) {
+            $r = $parent->roleRelationships->first();
+            $g = $r ? $r->guardianRelationship->first() : null;
+            $parent->setRelations([]);
+            $return[] = ['parent' => $parent, 'guardianRelationship' => $g];
+        }
+        return $return;
     }
 
 
