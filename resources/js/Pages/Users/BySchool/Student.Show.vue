@@ -102,29 +102,40 @@
                   </div>
                 </div>
               </div>
+              <div v-if="currentCourse" class="col-12 q-mt-md">
+                <div class="text-h4 q-mb-sm">Curso actual</div>
+                <div class="row q-col-gutter-sm">
+                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Curso" :value="currentCourse.current_course" type="course" />
+                  </div>
+                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Desde" :value="currentCourse.start_date" type="date" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </q-card-section>
       </q-card>
 
-      <!-- Schools and Roles Card -->
-      <SchoolsAndRolesCard :guardian-relationships="user.guardianRelationships" :schools="user.schools"
-        :roles="user.roles" :role-relationships="user.roleRelationships"
-        :teacher-relationships="user.workerRelationships" :student-relationships="user.studentRelationships"
-        :can-add-roles="hasPermission($page.props, 'superadmin')" :user-id="user.id" />
-
+      <q-card class="q-mb-md">
+        <q-card-section>
+          <FilesTable :files="files" title="Archivos del estudiante" />
+        </q-card-section>
+      </q-card>
+  
       <SystemTimestamp :row="user" />
     </template>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
+import FilesTable from '@/Components/admin/FilesTable.vue';
 import EditableImage from '@/Components/admin/EditableImage.vue';
 import EmailField from '@/Components/admin/EmailField.vue';
 import PhoneField from '@/Components/admin/PhoneField.vue';
 import DataFieldShow from '@/Components/DataFieldShow.vue';
 import SystemTimestamp from '@/Components/admin/SystemTimestamp.vue';
-import SchoolsAndRolesCard from '@/Components/admin/SchoolsAndRolesCard.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
@@ -135,6 +146,9 @@ import { computed } from 'vue';
 
 const props = defineProps({
   user: Object,
+  currentCourse: Object,
+  files: Object,
+  parents: Object,
   school: Object,
   genders: Object,
   flash: Object,

@@ -1,11 +1,11 @@
 <!-- Students list for teachers or system admin (not for public access or for students to see their classmates) -->
 <template>
 
-  <Head title="Estudiantes" />
+  <Head :title="`Estudiantes de ${school.short}`" />
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader :title="`Listado de estudiantes`" :add="{
+      <AdminHeader :title="`Estudiantes de ${school.name}`"  :add="{
         show: hasPermission($page.props, 'student.create'),
         href: route('school.students.create', { 'school': school.slug }),
         label: 'Nuevo'

@@ -24,6 +24,10 @@
         <template v-else-if="type === 'date'">
           {{ value ? formatDate(value) : '-' }}
         </template>
+        <!-- Handle date fields -->
+        <template v-else-if="type === 'course'">
+          <a :href="value.url">{{ value.nice_name }}</a>
+        </template>
         
         <!-- Default text display -->
         <template v-else>
