@@ -98,7 +98,10 @@ class Handler extends ExceptionHandler
         $traceArray = $exception->getTrace();
         $trace = '';
         for ($i = $from; $i <= $to; $i++) {
-            $trace .= ($traceArray[$i] ?? false) ? ' <br>' . $traceArray[$i]['file'] . ' on line ' . $traceArray[$i]['line'] : '';
+            if (empty($traceArray[$i])) continue;
+            if (!empty($traceArray[$i]['file']))
+                $trace .= ' <br>' . $traceArray[$i]['file'] . ' on line ' . $traceArray[$i]['line'];
+            // $trace .= ' | ' . $traceArray[$i]['function'] . $traceArray[$i]['type'] . $traceArray[$i]['class'] . print_r($traceArray[$i]['args'], true);
         }
         return $trace;
     }
