@@ -14,19 +14,52 @@ class UserService
     /**
      * Get user data for show view with all relationships
      */
-    public function getUserShowData(User $user): array
+    public function getFullUserShowData(User $user): array
     {
+        return $this->getUserShowData($user, false, true, true, true);
+    }
+    public function getBasicUserShowData(User $user): array
+    {
+        return $this->getUserShowData($user, true, false, false, false);
+    }
+    public function getStudentUserShowData(User $user): array
+    {
+        return $this->getUserShowData($user, false, true, false, false);
+    }
+    public function getGuardianUserShowData(User $user): array
+    {
+        return $this->getUserShowData($user, false, false, true, false);
+    }
+    public function getWorkerUserShowData(User $user): array
+    {
+        return $this->getUserShowData($user, false, false, false, true);
+    }
+
+    public function getUserShowData(
+        User $user,
+        bool $basicDataOnly,
+        bool $getDataForStudent,
+        bool $getDataForGuardian,
+        bool $getDataForWorker,
+    ): array {
+        if ($basicDataOnly) {
+            $getDataForStudent = false;
+            $getDataForWorker = false;
+            $getDataForGuardian = false;
+        }
         $loadRelations = [
             'province',
             'country',
-            'allRolesAcrossTeams'
         ];
-        $loadRelations['roleRelationships'] = function ($query) {
-            $query->with([
-                'workerRelationship' => function ($query) {
+        if (!$basicDataOnly) {
+            $loadRelations[] = 'allRolesAcrossTeams';
+        }
+        $loadRelations['roleRelationships'] = $basicDataOnly ? null : function ($query) use ($getDataForStudent, $getDataForGuardian, $getDataForWorker) {
+            $width = [
+                'workerRelationship' => $getDataForWorker ? function ($query) {
                     $query->with(['classSubject']);
-                },
-                'guardianRelationship' => function ($query) {
+                } : null,
+                'guardianRelationship' =>  $getDataForGuardian ? function ($query) {
                     $query->with(['student' => function ($query) {
                         $query->with(['roleRelationships' => function ($query) {
                             $query->with(['studentRelationship' => function ($query) {
@@ -34,12 +67,14 @@ class UserService
                             }]);
                         }]);
                     }]);
-                },
-                'studentRelationship' => function ($query) {
+                } : null,
+                'studentRelationship' =>  $getDataForStudent ? function ($query) {
                     $query->with(['currentCourse.schoolLevel']);
-                },
+                } : null,
                 'creator'
-            ]);
+            ];
+            $width = array_filter($width);
+            $query->with($width);
         };
         $user->load($loadRelations);
 
@@ -64,10 +99,10 @@ class UserService
             'updated_at'
         ];
         $transformedUser = array_intersect_key($user->toArray(), array_flip($basicKeys));
-        $allRolesAcrossTeams = collect($user->allRolesAcrossTeams);
+        $allRolesAcrossTeams = $basicDataOnly ? null : collect($user->allRolesAcrossTeams);
 
         // Get unique school IDs from roles
-        $schoolIds = $allRolesAcrossTeams
+        $schoolIds = $basicDataOnly ? null : $allRolesAcrossTeams
             ->pluck('pivot.team_id')
             ->filter()
             ->unique()
@@ -75,9 +110,9 @@ class UserService
             ->toArray();
 
         // Get schools for these IDs
-        $schools = School::whereIn('id', $schoolIds)->get();
+        $schools = $basicDataOnly ? null : School::whereIn('id', $schoolIds)->get();
 
-        $transformedUser['roles'] = $allRolesAcrossTeams->map(function ($role) {
+        $transformedUser['roles'] = $basicDataOnly ? null : $allRolesAcrossTeams->map(function ($role) {
             return [
                 'id' => $role->id,
                 'name' => $role->name,
@@ -88,7 +123,7 @@ class UserService
         })->values()->toArray();
 
         // Add schools to user data
-        $transformedUser['schools'] = $schools->map(function ($school) {
+        $transformedUser['schools'] = $basicDataOnly ? null : $schools->map(function ($school) {
             return [
                 'id' => $school->id,
                 'name' => $school->name,
@@ -98,7 +133,7 @@ class UserService
         })->values()->toArray();
 
         // Add role relationships data
-        $transformedUser['roleRelationships'] = $user->roleRelationships->map(function ($relationship) {
+        $transformedUser['roleRelationships'] = $basicDataOnly ? null : $user->roleRelationships->map(function ($relationship) {
             return [
                 'id' => $relationship->id,
                 'user_id' => $relationship->user_id,
@@ -119,7 +154,7 @@ class UserService
         })->values()->toArray();
 
         // Add teacher relationships with detailed information
-        $transformedUser['workerRelationships'] = $user->roleRelationships
+        $transformedUser['workerRelationships'] = !$getDataForWorker ? null : $user->roleRelationships
             ->pluck('workerRelationship')
             ->filter()
             ->map(function ($relationship) use ($user) {
@@ -155,7 +190,7 @@ class UserService
             })->values()->toArray();
 
         // Add guardian relationships with student information
-        $transformedUser['guardianRelationships'] = $user->roleRelationships
+        $transformedUser['guardianRelationships'] = !$getDataForGuardian ? null :  $user->roleRelationships
             ->pluck('guardianRelationship')
             ->filter()
             ->map(function ($relationship) use ($user) {
@@ -186,8 +221,8 @@ class UserService
                 ];
             })->values()->toArray();
 
-        // Add student relationships with course information
-        $transformedUser['studentRelationships'] = $user->roleRelationships
+        // Add student relationships with the real current active course information
+        $transformedUser['studentRelationships'] = !$getDataForStudent ? null : $user->roleRelationships
             ->pluck('studentRelationship')
             ->filter()
             ->map(function ($relationship) use ($user) {
@@ -204,7 +239,13 @@ class UserService
                 ];
             })->values()->toArray();
 
-            return $transformedUser;
+        $transformedUser['current_course'] = !$getDataForStudent ? null : $this->getRealCurrentCourse($transformedUser['studentRelationships']);
+        return $transformedUser;
+    }
+
+    private function getRealCurrentCourse($studentRelationships)
+    {
+        return $studentRelationships[0] ?? null;
     }
 
     public function hasAccessToSchool(int $schoolId): bool
@@ -232,21 +273,12 @@ class UserService
 
     private function parseCurrentCourse($currentCourse)
     {
-        return $currentCourse;
-        // return $currentCourse ? [
-        //     'id' => $currentCourse->id,
-        //     'name' => $currentCourse->name,
-        //     'number' => $currentCourse->number,
-        //     'letter' => $currentCourse->letter,
-        //     'school_level_id' => $currentCourse->school_level_id,
-        //     'level' => $currentCourse->schoolLevel ? [
-        //         'id' => $currentCourse->schoolLevel->id,
-        //         'name' => $currentCourse->schoolLevel->name,
-        //         'code' => $currentCourse->schoolLevel->code,
-        //     ] : null,
-        //     'school_shift_id' => $currentCourse->school_shift_id,
-        //     'start_date' => $currentCourse->start_date,
-        //     'end_date' => $currentCourse->end_date,
-        // ] : null;
+        $data = $currentCourse->toArray();
+        $data['url'] = route('school.course.show', [
+            'school' => $currentCourse->school->slug,
+            'schoolLevel' => $currentCourse->schoolLevel->code,
+            'idAndLabel' => $currentCourse->idAndLabel
+        ]);
+        return $data;
     }
 }

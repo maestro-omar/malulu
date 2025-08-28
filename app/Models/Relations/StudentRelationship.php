@@ -1,5 +1,10 @@
 <?php
-
+/*
+Por ahora esta tabla es redundante con student_courses: 
+mantiene un único registro vinculado con la 
+única relación (role_relationship) entre usuario+escuela+nivel+rol.estudiante
+Es redundate porque en student_courses está el histórico pero con cursos a los que ya no pertenece
+*/
 namespace App\Models\Relations;
 
 use App\Models\Base\BaseModel as Model;

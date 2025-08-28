@@ -17,14 +17,17 @@ class FileService
     {
         $userId = Auth::id() ?: 1;
 
+        $niceName = basename($fileInDisk);
         $localUploadedFile = new UploadedFile(
             $fileInDisk,                      // full path to the file
-            basename($fileInDisk),            // original file name
+            $niceName,            // original file name
             mime_content_type($fileInDisk),   // mime type
             null,                             // size (null will auto-detect)
             true                              // mark as test mode (skip is_uploaded_file)
         );
-        $this->setNewFile($localUploadedFile, $folder, $userId, $fileSubTypeId, '', $relatedWith, $relatedWithId, '', true, [], [], $replacingFileId);
+
+        $niceName = 'HH ' . explode('.', $niceName)[0];
+        $this->setNewFile($localUploadedFile, $folder, $userId, $fileSubTypeId, $niceName, '', $relatedWith, $relatedWithId, '', true, [], [], $replacingFileId);
     }
 
 
@@ -50,11 +53,12 @@ class FileService
             ],
             'fileable_type' => ['nullable', 'string'],
             'fileable_id' => ['nullable', 'integer'],
-            'original_name' => ['nullable', 'string'],
-            'filename' => ['nullable', 'string'],
-            'mime_type' => ['nullable', 'string'],
-            'size' => ['nullable', 'integer'],
-            'path' => ['nullable', 'string'],
+            'nice_name' => ['string'],
+            'original_name' => ['string'],
+            'filename' => ['string'],
+            'mime_type' => ['string'],
+            'size' => ['integer'],
+            'path' => ['string'],
             'description' => ['nullable', 'string'],
             'metadata' => ['nullable', 'array'],
             'active' => [
@@ -75,6 +79,7 @@ class FileService
         string $destinationSubFolder,
         int $createdByUserId,
         int $fileSubTypeId,
+        string $niceName,
         string $customFileName = '',
         ?string $relatedWith = null,
         ?int $relatedWithId = null,
@@ -100,7 +105,7 @@ class FileService
 
         $basePath = 'files' . DIRECTORY_SEPARATOR . trim(trim($destinationSubFolder, '/'), '\\');
         $storagePath = 'public' . DIRECTORY_SEPARATOR . $basePath;
-        $publicPath = 'storage/' . str_replace(DIRECTORY_SEPARATOR, '/', $basePath);
+        $publicPath = str_replace(DIRECTORY_SEPARATOR, '/', $basePath);
         $storedFullPathAndName = $localUploadedFile->storeAs($storagePath, $finalFileName);
         if (!$storedFullPathAndName)
             throw new \Exception('Error storing file');
@@ -112,6 +117,7 @@ class FileService
         $fileData['replaced_by_id'] = null;
         $fileData['fileable_type'] = $relatedWith;
         $fileData['fileable_id'] = $relatedWithId;
+        $fileData['nice_name'] = $niceName;
         $fileData['original_name'] = $localUploadedFile->getClientOriginalName();
         $fileData['filename'] = $finalFileName;
         $fileData['mime_type'] = $localUploadedFile->getClientMimeType();
@@ -137,14 +143,35 @@ class FileService
     public function getUserFiles(User $user, User $loggedUser)
     {
         $files = $user->files;
-        $files->filter(function ($file) use ($loggedUser) {
-            return $this->checkFileVisibility($file, $loggedUser);
+        $files = $files->map(function ($file) use ($loggedUser) {
+            if ($this->checkFileVisibility($file, $loggedUser)) {
+                return $this->formatFileForTable($file);
+            } else {
+                return null;
+            }
         });
-        return $files;
+        $files = $files->filter()->toArray();
+        return $files ?: null;
     }
 
     private function checkFileVisibility(File $file, User $loggedUser)
     {
         return true; //OMAR TODO 
+    }
+
+    private function formatFileForTable(File $file)
+    {
+        $replaces = $file->replacedFile;
+        $data = [
+            'nice_name' => $file->nice_name,
+            'original_name' => $file->original_name,
+            'subtype' => $file->subtype->name,
+            'type' => $file->subtype->filetype->name,
+            'created_at' => $file->created_at->format('d/m/Y H:i'),
+            'created_by' => $file->user->firstname . ' ' . $file->user->lastname,
+            'replaces' =>  $replaces->pluck('nice_name')->join(', '),
+            'url' =>  $file->url
+        ];
+        return $data;
     }
 }

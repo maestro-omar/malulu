@@ -1,11 +1,12 @@
 <?php
+/*
+OJO con student_relationship porque allá se establece la relación con el único curso activo.
+*/
 
 namespace App\Models\Relations;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Base\BaseModel as Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Relations\RoleRelationship;
 use App\Models\Entities\Course;

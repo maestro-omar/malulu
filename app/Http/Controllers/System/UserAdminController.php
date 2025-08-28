@@ -180,7 +180,7 @@ class UserAdminController extends SystemBaseController
     public function show(User $user): Response
     {
         return Inertia::render('Users/Show', [
-            'user' => $this->userService->getUserShowData($user),
+            'user' => $this->userService->getFullUserShowData($user),
             'genders' => User::genders(),
             'breadcrumbs' => Breadcrumbs::generate('users.show', $user),
         ]);
@@ -191,7 +191,7 @@ class UserAdminController extends SystemBaseController
      */
     public function addRole(User $user): Response
     {
-        $userData = $this->userService->getUserShowData($user);
+        $userData = $this->userService->getFullUserShowData($user);
 
         return Inertia::render('Users/AddRole', [
             'user' => $userData,

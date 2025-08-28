@@ -4,7 +4,7 @@ namespace App\Models\Entities;
 
 use App\Models\Base\BaseModel as Model;
 use App\Models\Entities\User;
-use App\Models\Relations\FileVisibility;
+// use App\Models\Relations\FileVisibility;
 use App\Models\Catalogs\FileSubtype;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -71,21 +71,21 @@ class File extends Model
      */
     public function replacedBy(): BelongsTo
     {
-        return $this->belongsTo(File::class, 'replaced_by_id');
+        return $this->belongsTo(File::class, 'replaced_by_id')->withTrashed();
     }
 
     /**
      * Get the file that this file replaced.
      */
-    public function replacedFile(): BelongsTo
+    public function replacedFile(): HasMany
     {
-        return $this->belongsTo(File::class, 'replaced_by_id', 'id');
+        return $this->hasMany(File::class, 'replaced_by_id')->withTrashed();
     }
 
-    public function visibility(): HasMany
-    {
-        return $this->hasMany(FileVisibility::class);
-    }
+    // public function visibility(): HasMany
+    // {
+    //     return $this->hasMany(FileVisibility::class);
+    // }
 
     /**
      * Get the parent fileable model (school, course, teacher, student, user).
@@ -108,7 +108,7 @@ class File extends Model
      */
     public function getUrlAttribute(): string
     {
-        return asset('storage/' . $this->path);
+        return asset('storage/' . $this->path . '/' . $this->filename);
     }
 
     /**

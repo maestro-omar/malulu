@@ -27,7 +27,7 @@ class DashboardService
         $this->user = auth()->user();
         $data = $this->getFlagsForCards();
         return $data + [
-            'loggedUserData' => $this->userService->getUserShowData($this->user)
+            'loggedUserData' => $this->userService->getBasicUserShowData($this->user)
         ];
     }
 

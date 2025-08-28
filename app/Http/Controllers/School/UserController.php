@@ -52,10 +52,11 @@ class UserController extends SchoolBaseController
         $student = $data ? $data['user'] : null;
         $parents = $student ? $this->getStudentParents($student) : null;
         $files =  $student ? $this->fileService->getUserFiles($student, $request->user()) : null;
-
+        $currentCourse =  $student ? ($data['data']['current_course'] ?? null) : null;
 
         return $this->render($request, 'Users/BySchool/Student.Show', [
-            'user' => $parsedUserData,
+            'user' => $data['data'],
+            'currentCourse' => $currentCourse,
             'files' => $files,
             'parents' => $parents,
             'genders' => User::genders(),
@@ -156,6 +157,6 @@ class UserController extends SchoolBaseController
     private function getUserData(string $studentIdAndName)
     {
         $student = $this->getUserFromUrlParameter($studentIdAndName);
-        return ['user' => $student, 'data' => $student ? $this->userService->getUserShowData($student) : null];
+        return ['user' => $student, 'data' => $student ? $this->userService->getStudentUserShowData($student) : null];
     }
 }

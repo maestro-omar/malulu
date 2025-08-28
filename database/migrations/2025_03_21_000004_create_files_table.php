@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignId('user_id')->unsigned()->constrained('users')->onDelete('cascade'); //created by
             $table->foreignId('replaced_by_id')->nullable()->unsigned()->constrained('files')->onDelete('set null');
             $table->morphs('fileable'); // For polymorphic relationship with schools, courses, teachers, students, users
+            $table->string('nice_name');
             $table->string('original_name');
             $table->string('filename');
             $table->string('mime_type');

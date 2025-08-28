@@ -3,6 +3,9 @@
 namespace App\Models\Catalogs;
 
 use App\Models\Base\BaseCatalogModel as Model;
+use App\Models\Relations\StudentCourse;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 use App\Traits\FilterConstants;
 
 class StudentCourseEndReason extends Model
@@ -36,5 +39,10 @@ class StudentCourseEndReason extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function studentCourses(): HasMany
+    {
+        return $this->hasMany(StudentCourse::class);
     }
 }
