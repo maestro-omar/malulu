@@ -3,10 +3,7 @@
     <q-page class="welcome__container">
       <q-card class="welcome__card">
         <q-card-section class="welcome__content">
-          <div class="welcome__icon welcome__icon--warning">
-            <q-icon name="waving_hand" size="80px" color="teal" />
-          </div>
-
+          <SystemLogo size="lg" href="" />
           <h1 class="welcome__title">{{ $page.props.appName }}</h1>
           <h2 class="welcome__subtitle">Bienvenida/o</h2>
 
@@ -29,6 +26,7 @@
 import { usePage, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import GuestLayout from '@/Layout/GuestLayout.vue';
+import SystemLogo from '@/Components/SystemLogo.vue';
 
 const $page = usePage();
 

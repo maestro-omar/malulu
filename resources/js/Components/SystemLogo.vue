@@ -17,7 +17,7 @@ const props = defineProps({
     size: {
         type: String,
         default: 'default',
-        validator: (value) => ['small', 'default', 'large'].includes(value)
+        validator: (value) => ['sm', 'lg'].includes(value)
     },
     href: {
         type: String,
@@ -31,18 +31,24 @@ const sizeClass = computed(() => `system-logo--${props.size}`);
 <style lang="scss" scoped>
 .system-logo {
     display: block;
-    border-radius: 10px;    
+    border-radius: 10px;
     width: 60px;
     height: 60px;
+    margin: 0 auto;
 
-    &--small {
+    &--sm {
         width: 32px;
         height: 32px;
     }
 
-    &--large {
-        width: 56px;
-        height: 56px;
+    &--md {
+        width: 100px;
+        height: 100px;
+    }
+
+    &--lg {
+        width: 200px;
+        height: 200px;
     }
 }
 
