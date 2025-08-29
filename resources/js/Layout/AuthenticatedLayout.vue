@@ -1,10 +1,10 @@
 <template>
   <q-layout view="hHh lpr fFr">
     <!-- Header with only toolbar -->
-    <q-header reveal elevated class="bg-primary text-white" height-hint="64">
+    <q-header reveal elevated class="bg-white text-primary" height-hint="90">
       <q-toolbar>
+        <SystemLogo :href="route('dashboard')" />
         <q-toolbar-title>
-          <SystemLogo :href="route('dashboard')" />
           {{ $page.props.appName }}
         </q-toolbar-title>
         <q-tabs>

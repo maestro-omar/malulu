@@ -1,9 +1,9 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header elevated class="bg-primary text-white" height-hint="98">
+    <q-header elevated class="bg-white text-primary" height-hint="90">
       <q-toolbar>
+        <SystemLogo />
         <q-toolbar-title>
-          <SystemLogo />
           {{ title }}
         </q-toolbar-title>
       </q-toolbar>

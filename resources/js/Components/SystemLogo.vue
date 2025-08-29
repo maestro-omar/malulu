@@ -1,6 +1,6 @@
 <template>
     <img v-if="!href" :src="logoImage" :alt="alt" :class="['system-logo', sizeClass]" />
-    <a v-else :href="href" :class="['system-logo-link', sizeClass]">
+    <a v-else :href="href" :class="['system-logo system-logo--link', sizeClass]">
         <img :src="logoImage" :alt="alt" :class="['system-logo', sizeClass]" />
     </a>
 </template>
@@ -31,45 +31,28 @@ const sizeClass = computed(() => `system-logo--${props.size}`);
 <style lang="scss" scoped>
 .system-logo {
     display: block;
+    border-radius: 10px;    
+    width: 60px;
+    height: 60px;
 
     &--small {
-        max-width: 24px;
-        max-height: 24px;
-    }
-
-    &--default {
-        max-width: 32px;
-        max-height: 32px;
+        width: 32px;
+        height: 32px;
     }
 
     &--large {
-        max-width: 48px;
-        max-height: 48px;
+        width: 56px;
+        height: 56px;
     }
 }
 
-.system-logo-link {
+.system-logo--link {
     display: inline-block;
     text-decoration: none;
     transition: opacity 0.2s ease;
 
     &:hover {
         opacity: 0.8;
-    }
-
-    &--small {
-        max-width: 24px;
-        max-height: 24px;
-    }
-
-    &--default {
-        max-width: 32px;
-        max-height: 32px;
-    }
-
-    &--large {
-        max-width: 48px;
-        max-height: 48px;
     }
 }
 </style>

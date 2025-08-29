@@ -107,7 +107,8 @@
                 <div class="text-h4 q-mb-sm">Tutores</div>
                 <div class="row q-col-gutter-sm">
                   <div class="col-6 col-xs-6 col-sm-4 col-md-3">
-                    <StudentGuardian v-for="guardian in guardians" :key="guardian.id" :guardian="guardian" />
+                    <!-- StudentGuardian v-for="guardian in guardians" :key="guardian.id" :guardian="guardian" /-->
+                  </div>
                 </div>
               </div>
             </div>
