@@ -1,0 +1,72 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+@use "sass:color";
+
+.student-guardian {
+    transition: box-shadow 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+
+    &--restricted {
+        border-color: variables.$color-secondary;
+        background: variables.$color-grey;
+    }
+
+    &__title {
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 1.05em;
+        display: flex;
+        align-items: center;
+    }
+
+    &__title-btn {
+        width: 100%;
+        text-align: left;
+        padding: 0;
+        min-height: unset;
+        font-size: 1em;
+        font-weight: 600;
+        color: variables.$color-primary;
+        background: transparent;
+
+        &:hover {
+            background: variables.$color-grey;
+        }
+    }
+
+    &__restricted {
+        color: variables.$color-secondary;
+        font-weight: bold;
+        font-size: 0.95em;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        border: 1px solid variables.$color-secondary;
+        border-radius: 4px;
+        padding: 1px 6px;
+        background: variables.$color-grey;
+        margin-right: 6px;
+        display: inline-block;
+    }
+
+    &__info {
+        margin-bottom: 0;
+
+        .data-field-show {
+            margin-bottom: 0;
+        }
+    }
+
+    &__popup {
+        min-width: 340px;
+        max-width: 520px;
+
+        .student-guardian__restricted {
+            margin-bottom: 6px;
+        }
+
+        .text-h6 {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+    }
+}

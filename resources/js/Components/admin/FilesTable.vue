@@ -1,24 +1,16 @@
 <template>
-    <div class="text-h4 q-mb-md">{{ title }}</div>
-    <div class="row q-col-gutter-sm">
+    <q-expansion-item expand-separator default-opened icon="attach_file" :label="title" class="mll-table-expansion">
         <q-table v-if="files" class="mll-table mll-table--files striped-table" dense :rows="files" :columns="columns"
             row-key="id">
             <template v-slot:body-cell-download="props">
                 <q-td :props="props">
-                    <q-btn
-                        flat
-                        round
-                        dense
-                        icon="download"
-                        color="primary"
-                        @click="downloadFile(props.row)"
-                        title="Descargar archivo"
-                    />
+                    <q-btn flat round dense icon="download" color="primary" @click="downloadFile(props.row)"
+                        title="Descargar archivo" />
                 </q-td>
             </template>
         </q-table>
         <div v-else class="">Sin archivos</div>
-    </div>
+    </q-expansion-item>
 </template>
 
 <script setup>

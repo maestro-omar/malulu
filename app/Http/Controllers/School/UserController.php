@@ -53,7 +53,6 @@ class UserController extends SchoolBaseController
         $guardians = $student ? $this->getStudentParents($student) : null;
         $files =  $student ? $this->fileService->getUserFiles($student, $request->user()) : null;
         $currentCourse =  $student ? ($data['data']['current_course'] ?? null) : null;
-
         return $this->render($request, 'Users/BySchool/Student.Show', [
             'user' => $data['data'],
             'currentCourse' => $currentCourse,
@@ -111,6 +110,35 @@ class UserController extends SchoolBaseController
                 "emergency_contact_priority" => $g ? $g->emergency_contact_priority : null,
             ];
         }
+        $return = collect($return)->sort(function ($a, $b) {
+            // 1. is_restricted: true first, false second, null last
+            $a_restricted = $a['is_restricted'];
+            $b_restricted = $b['is_restricted'];
+            if ($a_restricted !== $b_restricted) {
+                // true (1) < false (0) < null
+                if ($a_restricted === true) return -1;
+                if ($b_restricted === true) return 1;
+                if ($a_restricted === false) return -1;
+                if ($b_restricted === false) return 1;
+                // nulls go last
+            }
+
+            // 2. emergency_contact_priority: number order, null last
+            $a_priority = $a['emergency_contact_priority'];
+            $b_priority = $b['emergency_contact_priority'];
+            if ($a_priority !== $b_priority) {
+                if ($a_priority === null) return 1;
+                if ($b_priority === null) return -1;
+                return $a_priority <=> $b_priority;
+            }
+
+            // 3. lastname firstname
+            $lastname_cmp = strcmp($a['lastname'], $b['lastname']);
+            if ($lastname_cmp !== 0) {
+                return $lastname_cmp;
+            }
+            return strcmp($a['firstname'], $b['firstname']);
+        })->values()->all();
         return $return;
     }
 

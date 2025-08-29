@@ -107,7 +107,7 @@
                 <div class="text-h4 q-mb-sm">Tutores</div>
                 <div class="row q-col-gutter-sm">
                   <div class="col-6 col-xs-6 col-sm-4 col-md-3">
-                    <!-- StudentGuardian v-for="guardian in guardians" :key="guardian.id" :guardian="guardian" /-->
+                    <StudentGuardian v-for="guardian in guardians" :key="guardian.id" :guardian="guardian" />
                   </div>
                 </div>
               </div>
@@ -116,11 +116,7 @@
         </q-card-section>
       </q-card>
 
-      <q-card class="q-mb-md">
-        <q-card-section>
-          <FilesTable :files="files" title="Archivos del estudiante" />
-        </q-card-section>
-      </q-card>
+      <FilesTable :files="files" title="Archivos del estudiante" />
 
       <SystemTimestamp :row="user" />
     </template>
@@ -132,6 +128,7 @@ import FilesTable from '@/Components/admin/FilesTable.vue';
 import EditableImage from '@/Components/admin/EditableImage.vue';
 import EmailField from '@/Components/admin/EmailField.vue';
 import PhoneField from '@/Components/admin/PhoneField.vue';
+import StudentGuardian from '@/Components/admin/StudentGuardian.vue';
 import DataFieldShow from '@/Components/DataFieldShow.vue';
 import SystemTimestamp from '@/Components/admin/SystemTimestamp.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
