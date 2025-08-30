@@ -42,7 +42,7 @@
               <div class="school-detail__section">
                 <!-- Images Section -->
                 <div class="row q-col-gutter-sm q-mb-lg">
-                  <div class="col-12 col-lg-4">
+                  <div class="col-3 col-lg-4">
                     <DataFieldShow label="Logo">
                       <template #slotValue>
                         <EditableImage v-model="school.logo" type="logo" :model-id="school.slug" :can-edit="true"
@@ -52,7 +52,7 @@
                     </DataFieldShow>
                   </div>
 
-                  <div class="col-12 col-lg-8">
+                  <div class="col-4 col-lg-8">
                     <DataFieldShow label="Imagen Principal">
                       <template #slotValue>
                         <EditableImage v-model="school.picture" type="picture" :model-id="school.slug" :can-edit="true"
@@ -111,62 +111,67 @@
 
             <!-- Right Column -->
             <div class="col-12 col-md-6">
-              <div class="text-h3 q-mb-md">Ubicación y Contacto</div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="text-h3 q-mb-md">Ubicación y Contacto</div>
 
-              <div class="row q-col-gutter-sm">
-                <div class="col-12 col-sm-6">
-                  <DataFieldShow label="Localidad" :value="school.locality.name" type="text" />
-                </div>
-                <div class="col-12 col-sm-6">
-                  <DataFieldShow label="Dirección" :value="school.address" type="text" />
+                  <div class="row q-col-gutter-sm">
+                    <div class="col-12 col-sm-6">
+                      <DataFieldShow label="Localidad" :value="school.locality.name" type="text" />
+                    </div>
+                    <div class="col-12 col-sm-6">
+                      <DataFieldShow label="Dirección" :value="school.address" type="text" />
+                    </div>
+                  </div>
+
+                  <div class="row q-col-gutter-sm">
+                    <div class="col-12 col-sm-6">
+                      <DataFieldShow label="Código Postal" :value="school.zip_code" type="text" />
+                    </div>
+                    <div class="col-12 col-sm-6">
+                      <DataFieldShow label="Coordenadas">
+                        <template #slotValue>
+                          <div class="row items-center q-gutter-sm">
+                            <span>{{ shrinkCoordinates(school.coordinates) }}</span>
+                            <q-btn :href="`https://www.google.com/maps/search/?api=1&query=${school.coordinates}`"
+                              target="_blank" icon="location_on" flat round color="primary" size="sm"
+                              title="Ver en Google Maps" />
+                          </div>
+                        </template>
+                      </DataFieldShow>
+                    </div>
+                  </div>
+
+                  <div class="row q-col-gutter-sm">
+                    <div class="col-12 col-sm-6">
+                      <DataFieldShow label="Teléfono">
+                        <template #slotValue>
+                          <PhoneField :phone="school.phone" />
+                        </template>
+                      </DataFieldShow>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                      <DataFieldShow label="Email">
+                        <template #slotValue>
+                          <EmailField :email="school.email" />
+                        </template>
+                      </DataFieldShow>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <div class="row q-mt-lg">
+                <div class="col-12">
+                  <div class="text-h4 q-mb-md">Redes sociales</div>
+                  <div class="row q-gutter-md">
+                    <div v-for="(social, index) in school.social" :key="index" class="col-auto">
+                      <q-btn :href="social.link" target="_blank" :label="social.label" color="accent"
+                        unelevated />
+                    </div>
+                  </div>
 
-              <div class="row q-col-gutter-sm">
-                <div class="col-12 col-sm-6">
-                  <DataFieldShow label="Código Postal" :value="school.zip_code" type="text" />
-                </div>
-                <div class="col-12 col-sm-6">
-                  <DataFieldShow label="Coordenadas">
-                    <template #slotValue>
-                      <div class="row items-center q-gutter-sm">
-                        <span>{{ shrinkCoordinates(school.coordinates) }}</span>
-                        <q-btn :href="`https://www.google.com/maps/search/?api=1&query=${school.coordinates}`"
-                          target="_blank" icon="location_on" flat round color="primary" size="sm"
-                          title="Ver en Google Maps" />
-                      </div>
-                    </template>
-                  </DataFieldShow>
                 </div>
               </div>
-
-              <div class="row q-col-gutter-sm">
-                <div class="col-12 col-sm-6">
-                  <DataFieldShow label="Teléfono">
-                    <template #slotValue>
-                      <PhoneField :phone="school.phone" />
-                    </template>
-                  </DataFieldShow>
-                </div>
-                <div class="col-12 col-sm-6">
-                  <DataFieldShow label="Email">
-                    <template #slotValue>
-                      <EmailField :email="school.email" />
-                    </template>
-                  </DataFieldShow>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </q-card-section>
-      </q-card>
-      <q-card class="q-mt-md">
-        <q-card-section>
-          <div class="text-h6 q-mb-md">Redes sociales</div>
-          <div class="row q-gutter-md">
-            <div v-for="(social, index) in school.social" :key="index" class="col-auto">
-              <q-btn :href="social.link" target="_blank" :label="social.label" color="primary" outline unelevated />
             </div>
           </div>
         </q-card-section>
@@ -218,4 +223,5 @@ const copyToClipboard = (text) => {
   // Clean up
   document.body.removeChild(input);
 };
+
 </script>

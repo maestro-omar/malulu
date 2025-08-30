@@ -23,3 +23,11 @@ export function hasPermission(props, permission, schoolId = null, levelId = null
     }
     return true;
 }
+
+export function isAdmin(user) {
+    return user.roles && user.roles.some(role => role.name === 'admin' || role.name === 'Administrador');
+}
+
+export function isCurrentUserAdmin(props) {
+    return isAdmin($page.props.auth.user);
+}

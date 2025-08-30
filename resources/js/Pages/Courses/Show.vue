@@ -1,4 +1,5 @@
 <template>
+
   <Head :title="`Detalle del Curso ${course.nice_name}`" />
 
   <AuthenticatedLayout>
@@ -16,97 +17,105 @@
     </template>
 
     <template #main-page-content>
-      <div class="q-pa-md">
-        <div class="row q-col-gutter-sm">
-          <div class="col-12">
-            <!-- Course Information Card -->
-            <q-card class="q-mb-md">
-              <q-card-section>
-                <div class="text-h3 q-mb-md">Información del Curso</div>
-                <div class="row q-col-gutter-sm">
-                  <div class="col-12 col-md-6">
-                    <DataFieldShow label="Curso" :value="course.nice_name" type="text" />
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <DataFieldShow label="Escuela" :value="`${course.school.name} (${course.school.cue})`" type="text" />
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <q-item>
-                      <q-item-section>
-                        <q-item-label caption class="text-h5">Nivel Escolar</q-item-label>
-                        <q-item-label class="text-h4">
-                          <SchoolLevelBadge :level="course.school_level" />
-                        </q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <q-item>
-                      <q-item-section>
-                        <q-item-label caption class="text-h5">Turno</q-item-label>
-                        <q-item-label class="text-h4">
-                          <SchoolShiftBadge :shift="course.school_shift" />
-                        </q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <DataFieldShow label="Fecha de Inicio" :value="course.start_date" type="date" />
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <DataFieldShow label="Fecha de Fin" :value="course.end_date" type="date" />
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <DataFieldShow label="Estado" :value="course.active" type="status" />
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <q-item>
-                      <q-item-section>
-                        <q-item-label caption class="text-h5">Curso Anterior</q-item-label>
-                        <q-item-label class="text-h4">
-                          <Link v-if="course.previous_course"
-                            :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
-                            class="text-primary">
-                            {{ course.previous_course.nice_name }}
-                          </Link>
-                          <span v-else>-</span>
-                        </q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </div>
+      <!-- Course Information Card -->
+      <q-card class="q-mb-md">
+        <q-card-section>
+          <div class="row">
+            <div class="col-6">
+              <div class="text-h3 q-mb-md">Datos básicos</div>
+              <div class="row q-col-gutter-sm">
+                <div class="col-lg-2 col-md-3 col-4">
+                  <DataFieldShow label="Nivel Escolar">
+                    <template #slotValue>
+                      <SchoolLevelBadge :level="course.school_level" />
+                    </template>
+                  </DataFieldShow>
                 </div>
-              </q-card-section>
-            </q-card>
-
-            <!-- Teachers Card -->
-            <q-card class="q-mb-md">
-              <q-card-section>
-                <div class="text-h3 q-mb-md">Docentes</div>
-                <TeachersTable :teachers="teachers" />
-              </q-card-section>
-            </q-card>
-
-            <!-- Students Card -->
-            <q-card>
-              <q-card-section>
-                <div class="text-h3 q-mb-md">Estudiantes</div>
-                <StudentsTable 
-                  :students="students" 
-                  :courseId="getCourseSlug(course)"
-                  :schoolLevel="selectedLevel.code"
-                  :schoolSlug="school.slug"
-                />
-              </q-card-section>
-            </q-card>
+                <div class="col-lg-2 col-md-3 col-4">
+                  <DataFieldShow label="Turno">
+                    <template #slotValue>
+                      <SchoolShiftBadge :shift="course.school_shift" />
+                    </template>
+                  </DataFieldShow>
+                </div>
+                <div class="col-lg-2 col-md-3 col-4">
+                  <DataFieldShow label="Número" :value="course.number" type="text" />
+                </div>
+                <div class="col-lg-2 col-md-3 col-4">
+                  <DataFieldShow label="Letra" :value="course.letter" type="text" />
+                </div>
+                <div class="col-lg-2 col-md-3 col-4">
+                  <DataFieldShow label="Nombre" :value="course.name" type="text" />
+                </div>
+              </div>
+              <div class="row q-col-gutter-sm">
+                <div class="col-md-3 col-4">
+                  <DataFieldShow label="Fecha de Inicio" :value="course.start_date" type="date" />
+                </div>
+                <div class="col-md-3 col-4">
+                  <DataFieldShow label="Fecha de Fin" :value="course.end_date" type="date" />
+                </div>
+                <div class="col-md-3 col-4">
+                  <DataFieldShow label="Curso Anterior">
+                    <template #slotValue>
+                      <span v-if="!course.previous_course">-</span>
+                      <Link v-if="course.previous_course"
+                        :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course.previous_course) })"
+                        class="text-primary">
+                      {{ course.previous_course.nice_name }}
+                      </Link>
+                    </template>
+                  </DataFieldShow>
+                </div>
+                <div class="col-md-3 col-4">
+                  <DataFieldShow label="Curso/s siguiente/s">
+                    <template #slotValue>
+                      <span v-if="!course.next_courses">-</span>
+                      <Link v-for="oneNext in course.next_courses"
+                        :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(oneNext) })"
+                        class="text-primary">
+                      {{ oneNext.nice_name }}
+                      </Link>
+                    </template>
+                  </DataFieldShow>
+                </div>
+                <div class="col-lg-2 col-md-3 col-4">
+                  <DataFieldShow label="Estado" :value="course.active" type="status" />
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="text-h3 q-mb-md">Horarios</div>
+              <div class="row q-col-gutter-sm">
+                LU MA MI JU VI
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </q-card-section>
+      </q-card>
+
+      <!-- Teachers Card -->
+      <q-card class="q-mb-md">
+        <q-card-section>
+          <div class="text-h3 q-mb-md">Docentes</div>
+          <TeachersTable :teachers="teachers" />
+        </q-card-section>
+      </q-card>
+
+      <StudentsTable :students="students" :courseId="getCourseSlug(course)" :schoolLevel="selectedLevel.code"
+        :school="school" />
+
+      <FilesTable :files="null" title="Archivos del curso" />
+
+      <SystemTimestamp :row="course" />
     </template>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
 import { Link, Head } from '@inertiajs/vue3'
+import FilesTable from '@/Components/admin/FilesTable.vue';
+import SystemTimestamp from '@/Components/admin/SystemTimestamp.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import DataFieldShow from '@/Components/DataFieldShow.vue'
@@ -130,8 +139,8 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  students:{  
-    type: Array,  
+  students: {
+    type: Array,
     required: true,
   },
   teachers: {
@@ -142,10 +151,10 @@ const props = defineProps({
 
 const destroy = () => {
   if (confirm("¿Está seguro que desea eliminar este curso?")) {
-    router.delete(route("school.course.destroy", { 
-      'school': props.school.slug, 
-      'schoolLevel': props.selectedLevel.code, 
-      'idAndLabel': getCourseSlug(props.course) 
+    router.delete(route("school.course.destroy", {
+      'school': props.school.slug,
+      'schoolLevel': props.selectedLevel.code,
+      'idAndLabel': getCourseSlug(props.course)
     }))
   }
 }

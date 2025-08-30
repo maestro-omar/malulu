@@ -1,173 +1,149 @@
 <template>
-  <div class="ag-theme-alpine" style="height: 500px; width: 100%;">
-    <ag-grid-vue
-      :rowData="students"
-      :columnDefs="columnDefs"
-      :defaultColDef="defaultColDef"
-      :pagination="true"
-      :paginationPageSize="30"
-      :domLayout="'autoHeight'"
-      :rowSelection="'single'"
-      :suppressRowClickSelection="true"
-      @grid-ready="onGridReady"
-    >
-    </ag-grid-vue>
-  </div>
+  <q-expansion-item expand-separator default-opened class="mll-table-expansion">
+    <template v-slot:header>
+      <q-item-section avatar>
+        <q-icon name="person" size="sm" color="accent" />
+      </q-item-section>
+
+      <q-item-section align="left">
+        {{ title }}
+      </q-item-section>
+
+      <q-item-section avatar v-if="true">
+        <q-btn size="sm" padding="sm" dense icon="add" color="green" @click="addStudent" title="Inscribir estudiante">
+          Inscribir estudiante
+        </q-btn>
+      </q-item-section>
+    </template>
+    <!-- Quasar Table -->
+    <q-table class="mll-table mll-table--students striped-table" dense :rows="students" :columns="columns" row-key="id"
+      binary-state-sort>
+
+      <!-- Custom cell for photo -->
+      <template #body-cell-photo="props">
+        <q-td :props="props">
+          <q-avatar size="40px">
+            <img :src="props.row.picture || noImage" :alt="props.row.name" />
+          </q-avatar>
+        </q-td>
+      </template>
+
+      <!-- Custom cell for firstname with link -->
+      <template #body-cell-firstname="props">
+        <q-td :props="props">
+          <Link :href="route_school_student(school, props.row, 'show')" class="text-primary">
+          {{ props.row.firstname }}
+          </Link>
+        </q-td>
+      </template>
+
+      <!-- Custom cell for email -->
+      <template #body-cell-email="props">
+        <q-td :props="props">
+          <EmailField :email="props.row.email" />
+        </q-td>
+      </template>
+
+      <!-- Custom cell for DNI -->
+      <template #body-cell-id_number="props">
+        <q-td :props="props">
+          {{ formatNumber(props.row.id_number) }}
+        </q-td>
+      </template>
+
+      <!-- Custom cell for actions -->
+      <template #body-cell-actions="props">
+        <q-td :props="props">
+          <div class="row items-center q-gutter-sm">
+            <!-- View button - always visible -->
+            <q-btn flat round color="primary" icon="visibility" size="sm"
+              :href="route_school_student(school, props.row, 'show')" title="Ver" />
+
+            <!-- Edit button - conditional -->
+            <q-btn v-if="hasPermission($page.props, 'student.edit')" flat round color="secondary" icon="edit" size="sm"
+              :href="route_school_student(school, props.row, 'edit')" title="Editar" />
+
+            <!-- Delete button - conditional -->
+            <q-btn
+              v-if="hasPermission($page.props, 'course.student.delete') && !isAdmin(props.row) && props.row.id !== $page.props.auth.user.id"
+              flat round color="negative" icon="person_remove" size="sm" @click="removeUserFromCourse(props.row.id)"
+              title="Quitar del curso" />
+          </div>
+        </q-td>
+      </template>
+    </q-table>
+  </q-expansion-item>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
-import { AgGridVue } from 'ag-grid-vue3';
-import { router } from '@inertiajs/vue3';
+import { Link, Head } from '@inertiajs/vue3'
+import EmailField from '@/Components/admin/EmailField.vue';
 import noImage from "@images/no-image-person.png";
-
-// Import AG Grid styles
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
+import { route_school_student } from '@/Utils/routes';
+import { formatNumber } from '@/Utils/strings';
+import { hasPermission, isAdmin, isCurrentUserAdmin } from '@/Utils/permissions';
 
 
 
 const props = defineProps({
+  title: { type: String, default: 'Estudiantes' },
   students: { type: Array, default: () => [] },
   courseId: { type: [String, Number], required: true },
   schoolLevel: { type: String, required: true },
-  schoolSlug: { type: String, required: true },
+  school: { type: Object, required: true },
 });
 
-const gridApi = ref(null);
-
-const defaultColDef = ref({
-  sortable: true,
-  filter: true,
-  resizable: true,
-  minWidth: 100,
-});
-
-const columnDefs = computed(() => [
+// Table columns definition
+const columns = [
   {
-    headerName: '#',
-    field: 'rowNumber',
-    width: 50,
-    valueGetter: (params) => {
-      // Get the current display position (1-based)
-      if (params.node && typeof params.node.rowIndex === 'number') {
-        return params.node.rowIndex + 1;
-      }
-      return 1;
-    },
+    name: 'photo',
+    label: 'Foto',
+    field: 'picture',
+    align: 'center',
     sortable: false,
-    filter: false,
-    pinned: 'left',
-    cellClass: 'row-number-cell',
+    style: 'width: 80px'
   },
   {
-    headerName: 'Foto',
-    field: 'photo',
-    width: 80,
-    cellRenderer: 'agImageCellRenderer',
-    cellRendererParams: {
-      defaultImage: noImage,
-      width: 40,
-      height: 40,
-      borderRadius: '50%',
-    },
-    sortable: false,
-    filter: false,
-  },
-  {
-    headerName: 'Apellido',
-    field: 'lastname',
-    width: 150,
-  },
-  {
-    headerName: 'Nombre',
+    name: 'firstname',
+    required: true,
+    label: 'Nombre',
+    align: 'left',
     field: 'firstname',
-    width: 150,
+    sortable: true
   },
   {
-    headerName: 'DNI',
+    name: 'lastname',
+    required: true,
+    label: 'Apellido',
+    align: 'left',
+    field: 'lastname',
+    sortable: true
+  },
+  {
+    name: 'email',
+    required: true,
+    label: 'Email',
+    align: 'left',
+    field: 'email',
+    sortable: true
+  },
+  {
+    name: 'id_number',
+    label: 'DNI',
     field: 'id_number',
-    width: 180,
+    align: 'left',
+    sortable: true
   },
   {
-    headerName: 'Género',
-    field: 'gender',
-    width: 100,
-  },
-  {
-    headerName: 'Fec nac',
-    field: 'birthdate',
-    width: 150,
-    valueFormatter: (params) => {
-      if (params.value) {
-        return new Date(params.value).toLocaleDateString('es-ES');
-      }
-      return '';
-    },
-  },
-  {
-    headerName: 'Edad',
-    field: 'age',
-    width: 80,
-  },
-  {
-    headerName: 'Inscripto',
-    field: 'rel_start_date',
-    width: 150,
-    valueFormatter: (params) => {
-      if (params.value) {
-        return new Date(params.value).toLocaleDateString('es-ES');
-      }
-      return '';
-    },
-  },
-  {
-    headerName: 'Motivo de Salida',
-    field: 'rel_end_reason',
-    width: 150,
-  },
-  {
-    headerName: 'Acciones',
-    field: 'id',
-    width: 120,
-    cellRenderer: (params) => {
-      const studentId = params.data.id;
-      const studentName = `${params.data.lastname} ${params.data.firstname}`;
-      const url = route('school.course.view-student', {
-        school: props.schoolSlug,
-        schoolLevel: props.schoolLevel,
-        idAndLabel: props.courseId,
-        userIdAndName: `${studentId}-${encodeURIComponent(studentName)}`
-      });
-      
-      return `<button 
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-xs"
-        onclick="window.location.href='${url}'"
-      >
-        Ver Detalle
-      </button>`;
-    },
+    name: 'actions',
+    label: 'Acciones',
+    field: 'actions',
+    align: 'center',
     sortable: false,
-    filter: false,
-  },
-]);
-
-const onGridReady = (params) => {
-  gridApi.value = params.api;
-  params.api.sizeColumnsToFit();
-  
-  // Refresh row numbers when data changes
-  params.api.addEventListener('sortChanged', () => {
-    params.api.refreshCells({ force: true });
-  });
-  
-  params.api.addEventListener('filterChanged', () => {
-    params.api.refreshCells({ force: true });
-  });
-};
-
-// Expose grid API for parent components if needed
-defineExpose({
-  gridApi,
-});
+    classes: 'mll-table__cell-actions',
+    headerClasses: 'mll-table__cell-actions-header',
+    style: 'width: 150px'
+  }
+];
 </script>

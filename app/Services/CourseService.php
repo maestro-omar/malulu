@@ -17,6 +17,13 @@ class CourseService
 {
     use CourseNext;
 
+    protected $userservice;
+
+    public function __construct(UserService $userservice)
+    {
+        $this->userservice = $userservice;
+    }
+
     /**
      * Get courses with filters
      */
@@ -330,12 +337,12 @@ class CourseService
     }
 
 
-    public function getStudents(Course $course)
+    public function getStudents(Course $course, bool $withGuardians)
     {
         $students = $course->courseStudents->load(['roleRelationship.user', 'endReason']);
         // student_relationships OMAR PREGUNTA ¿esta relacion es redundante? ¿estuvo hecha para facilitar búsquedas?
-        $parsedStudents = $students->map(function ($oneRel) {
-            return $this->parseRelatedStudent($oneRel);
+        $parsedStudents = $students->map(function ($oneRel) use ($withGuardians) {
+            return $this->parseRelatedStudent($oneRel, $withGuardians);
         }, $students);
         $parsedStudents = $parsedStudents->sortBy([['rel.end_date'], ['user.lastname'], ['user.firstname']]);
         return $parsedStudents->values()->all();
@@ -351,7 +358,7 @@ class CourseService
         return $parsedTeachers;
     }
 
-    private function parseRelatedStudent(object $studentRel)
+    private function parseRelatedStudent(object $studentRel, bool $withGuardians)
     {
         $user = $studentRel->roleRelationship->user->load(['province']);
         $student = [
@@ -377,6 +384,9 @@ class CourseService
             "rel_notes" => $studentRel->notes,
             "rel_custom_fields" => $studentRel->custom_fields,
         ];
+        if ($withGuardians) {
+            $student["guardians"] = $this->userservice->getStudentParents($user);
+        }
         return $student;
     }
 
@@ -387,7 +397,7 @@ class CourseService
             "rel_id" => $teacherRel->id,
             "id" => $user->id,
             "photo" => $user->photo,
-            "name" => $user->name,  
+            "name" => $user->name,
             "firstname" => $user->firstname,
             "lastname" => $user->lastname,
             "id_number" => $user->id_number,

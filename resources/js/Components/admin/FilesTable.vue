@@ -1,5 +1,20 @@
 <template>
-    <q-expansion-item expand-separator default-opened icon="attach_file" :label="title" class="mll-table-expansion">
+    <q-expansion-item expand-separator default-opened class="mll-table-expansion">
+        <template v-slot:header>
+            <q-item-section avatar>
+                <q-icon name="business_center" size="sm" color="accent" />
+            </q-item-section>
+
+            <q-item-section align="left">
+                {{ title }}
+            </q-item-section>
+
+            <q-item-section avatar v-if="true">
+                <q-btn size="sm" padding="sm" dense icon="add" color="green" @click="addFile" title="Agregar archivo">
+                    Agregar archivo
+                </q-btn>
+            </q-item-section>
+        </template>
         <q-table v-if="files" class="mll-table mll-table--files striped-table" dense :rows="files" :columns="columns"
             row-key="id">
             <template v-slot:body-cell-download="props">
@@ -17,7 +32,6 @@
 const props = defineProps({
     files: {
         type: Object,
-        required: true
     },
     title: {
         type: String,

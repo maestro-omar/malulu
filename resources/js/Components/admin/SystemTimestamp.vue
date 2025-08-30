@@ -1,11 +1,12 @@
 <template>
     <!-- System Information Expansion -->
-    <q-expansion-item
-        expand-separator
-        icon="info"
-        label="Información del Sistema"
-        class="system-timestamp"
-    >
+    <q-expansion-item expand-separator label="Información del Sistema" class="system-timestamp">
+        <template v-slot:header>
+            <q-item-section avatar>
+                <q-icon name="info" size="sm" color="warning" />
+            </q-item-section>
+            <q-item-section align="left">Información del Sistema</q-item-section>
+        </template>
         <div class="row q-col-gutter-sm q-mt-sm">
             <div class="col-12 col-sm-4 col-md-3">
                 <DataFieldShow label="Fecha de Registro" :value="row.created_at" type="date" />

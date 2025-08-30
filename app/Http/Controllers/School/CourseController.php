@@ -180,10 +180,10 @@ class CourseController extends SchoolBaseController
             $view = 'Courses/ShowForStudent'; //or guardian
         }
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
-        $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse']);
+        $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse', 'nextCourses']);
 
-        
-        $students = $this->courseService->getStudents($course);
+
+        $students = $this->courseService->getStudents($course, true);
         $teachers = $this->courseService->getTeachers($course);
 
         return Inertia::render($view, [

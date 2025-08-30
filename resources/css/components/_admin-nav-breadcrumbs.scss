@@ -1,0 +1,30 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+@use "sass:color";
+
+.admin-nav-breadcrumbs {
+    @include mixins.fz(1.5);
+    @include mixins.lh(1.5);
+    margin-bottom: 2px;
+    color: variables.$color-terciary !important;
+
+    a.admin-nav-breadcrumbs__item {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        color: variables.$color-terciary !important;
+        text-decoration: none !important;
+
+        &:hover {
+            color: color.scale(variables.$color-terciary, $lightness: 50%) !important;
+        }
+    }
+
+    .q-breadcrumbs--last {
+        a.admin-nav-breadcrumbs__item {
+            color: white !important;
+            text-decoration: none;
+        }
+    }
+
+}

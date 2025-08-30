@@ -254,4 +254,66 @@ trait UserServiceList
                 break;
         }
     }
+
+    public function getStudentParents(User $student)
+    {
+        $parents = $student->myParents();
+        if (empty($parents)) return null;
+        $return  = [];
+        foreach ($parents as $parent) {
+            $r = $parent->roleRelationships->first();
+            $g = $r ? $r->guardianRelationship->first() : null;
+            $parent->setRelations([]);
+            $return[] = [
+                "id" => $parent->id,
+                "firstname" => $parent->firstname,
+                "lastname" => $parent->lastname,
+                "id_number" => $parent->id_number,
+                "gender" => $parent->gender,
+                "birthdate" => $parent->birthdate->format('Y-m-d'),
+                "phone" => $parent->phone,
+                "address" => $parent->address,
+                "locality" => $parent->locality,
+                "province" => $parent->province->name,
+                "country" => $parent->country->name,
+                "nationality" => $parent->nationality,
+                "picture" =>  $parent->picture,
+                "email" => $parent->email,
+                "relationship_type" => $g ? $g->relationship_type : null,
+                "is_emergency_contact" => $g ? $g->is_emergency_contact : null,
+                "is_restricted" => $g ? $g->is_restricted : null,
+                "emergency_contact_priority" => $g ? $g->emergency_contact_priority : null,
+            ];
+        }
+        $return = collect($return)->sort(function ($a, $b) {
+            // 1. is_restricted: true first, false second, null last
+            $a_restricted = $a['is_restricted'];
+            $b_restricted = $b['is_restricted'];
+            if ($a_restricted !== $b_restricted) {
+                // true (1) < false (0) < null
+                if ($a_restricted === true) return -1;
+                if ($b_restricted === true) return 1;
+                if ($a_restricted === false) return -1;
+                if ($b_restricted === false) return 1;
+                // nulls go last
+            }
+
+            // 2. emergency_contact_priority: number order, null last
+            $a_priority = $a['emergency_contact_priority'];
+            $b_priority = $b['emergency_contact_priority'];
+            if ($a_priority !== $b_priority) {
+                if ($a_priority === null) return 1;
+                if ($b_priority === null) return -1;
+                return $a_priority <=> $b_priority;
+            }
+
+            // 3. lastname firstname
+            $lastname_cmp = strcmp($a['lastname'], $b['lastname']);
+            if ($lastname_cmp !== 0) {
+                return $lastname_cmp;
+            }
+            return strcmp($a['firstname'], $b['firstname']);
+        })->values()->all();
+        return $return;
+    }
 }
