@@ -89,7 +89,7 @@
             </q-card>
 
             <ActionButtons button-label="Guardar Cambios"
-              :cancel-href="route('school.courses', { school: school.slug, schoolLevel: selectedLevel.code })"
+              :cancel-href="route('school.course.show', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: course.id_and_label })"
               :disabled="form.processing" />
           </form>
         </div>

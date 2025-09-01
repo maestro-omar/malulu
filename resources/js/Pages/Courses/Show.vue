@@ -105,7 +105,7 @@
       <StudentsTable :students="students" :courseId="getCourseSlug(course)" :schoolLevel="selectedLevel.code"
         :school="school" />
 
-      <FilesTable :files="null" title="Archivos del curso" />
+      <FilesTable :files="null" title="Archivos del curso" :newFileUrl="route('school.course.file.create', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course) })" />
 
       <SystemTimestamp :row="course" />
     </template>

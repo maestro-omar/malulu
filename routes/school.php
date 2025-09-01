@@ -4,6 +4,7 @@ use App\Http\Controllers\School\CourseController;
 use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\School\SchoolPageController;
 use App\Http\Controllers\School\UserController;
+use App\Http\Controllers\School\FileController;
 use Illuminate\Support\Facades\Route;
 // use Inertia\Inertia;
 
@@ -27,9 +28,6 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::post(__('routes.student') . '/{idAndName}/' . __('routes.upload-image'), [UserController::class, 'uploadImage'])->name('school.student.upload-image')->middleware('school.permission:student.edit');
 
         Route::get(__('routes.guardians'), [UserController::class, 'guardians'])->name('school.guardians')->middleware('school.permission:guardian.view');
-
-
-
 
         // School Pages Routes
         Route::get(__('routes.pages'), [SchoolPageController::class, 'index'])->name('school-pages.index')->middleware('school.permission:school-page.manage');
@@ -56,6 +54,8 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::delete('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}', [CourseController::class, 'destroy'])->name('school.course.destroy')->middleware('school.permission:course.manage');
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.student') . '/{userIdAndName}', [CourseController::class, 'viewStudent'])->name('school.course.student.view'); //OMAR PENDIENTE ver permiso para esto
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.student') . '/{userIdAndName}/' . __('routes.remove'), [CourseController::class, 'removeStudent'])->name('school.course.student.remove'); //OMAR PENDIENTE ver permiso para esto
+        
+        Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.files') . '/' . __('routes.create'), [FileController::class, 'create'])->name('school.course.file.create')->middleware('school.permission:course.files.manage');
 
         // Course Search for Popover
         Route::post('{schoolLevel}/' . __('routes.course') . '/' . __('routes.search'), [CourseController::class, 'search'])->name('school.courses.search')->middleware('school.permission:course.manage');

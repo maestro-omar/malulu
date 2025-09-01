@@ -203,16 +203,4 @@ class CourseController extends SchoolBaseController
 
         return redirect()->route('school.courses', ['school' => $school->slug, 'schoolLevel' => $schoolLevel->code])->with('success', $message);
     }
-
-
-    private function getCourseFromUrlParameter(string $idAndLabel)
-    {
-        $id = (int) explode('-', $idAndLabel)[0];
-        $course = $id ? Course::where('id', $id)->first() : null;
-        if (!$course) {
-            // if (!$course) throw new \Exception('Curso no encontrado');
-            abort(404, 'Curso no encontrado');
-        }
-        return $course;
-    }
 }

@@ -9,8 +9,8 @@
                 {{ title }}
             </q-item-section>
 
-            <q-item-section avatar v-if="true">
-                <q-btn size="sm" padding="sm" dense icon="add" color="green" @click="addFile" title="Agregar archivo">
+            <q-item-section avatar v-if="newFileUrl">
+                <q-btn size="sm" padding="sm" dense icon="add" color="green" :href="newFileUrl" title="Agregar archivo">
                     Agregar archivo
                 </q-btn>
             </q-item-section>
@@ -40,6 +40,10 @@ const props = defineProps({
     context: {
         type: String,
         default: 'user'
+    },
+    newFileUrl: {
+        type: String,
+        required: false
     }
 });
 

@@ -4,6 +4,9 @@ namespace App\Services;
 
 use App\Models\Entities\File;
 use App\Models\Entities\User;
+use App\Models\Entities\Course;
+use App\Models\Catalogs\FileSubtype;
+use App\Models\Catalogs\FileType;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -174,4 +177,9 @@ class FileService
         ];
         return $data;
     }
+
+public function getSubtypesForCourse(Course $dummyByNow){
+    return FileSubtype::where('file_type_id', FileType::COURSE)->get();
+}
+
 }
