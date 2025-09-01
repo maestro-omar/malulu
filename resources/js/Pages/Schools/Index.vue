@@ -4,15 +4,15 @@
 
   <AuthenticatedLayout title="Escuelas">
     <template #admin-header>
-      <AdminHeader  title="Listado de Escuelas" :add="{
+      <AdminHeader title="Listado de Escuelas" :add="{
         show: hasPermission($page.props, 'superadmin', null),
         href: route('schools.create'),
         label: 'Nueva escuela'
       }" :trashed="{
-      show: hasPermission($page.props, 'superadmin', null),
-      href: route('schools.trashed'),
-      label: 'Eliminadas'
-    }">
+        show: hasPermission($page.props, 'superadmin', null),
+        href: route('schools.trashed'),
+        label: 'Eliminadas'
+      }">
       </AdminHeader>
     </template>
 
@@ -79,40 +79,22 @@
           <q-td :props="props">
             <div class="row items-center q-gutter-sm">
               <!-- View button - always visible but disabled when not allowed -->
-              <q-btn 
-                flat 
-                round 
-                :color="hasPermission($page.props, 'school.view') ? 'primary' : 'grey'" 
-                icon="visibility"
-                size="sm" 
-                :disable="!hasPermission($page.props, 'school.view')"
-                :href="hasPermission($page.props, 'school.view') ? route('school.show', props.row.slug) : '#'" 
-                :title="hasPermission($page.props, 'school.view') ? 'Ver' : 'No tienes permisos para ver esta escuela'" 
-              />
-              
+              <q-btn flat round :color="hasPermission($page.props, 'school.view') ? 'primary' : 'grey'"
+                icon="visibility" size="sm" :disable="!hasPermission($page.props, 'school.view')"
+                :href="hasPermission($page.props, 'school.view') ? route('school.show', props.row.slug) : '#'"
+                :title="hasPermission($page.props, 'school.view') ? 'Ver' : 'No tienes permisos para ver esta escuela'" />
+
               <!-- Edit button - always visible but disabled when not allowed -->
-              <q-btn 
-                flat 
-                round 
-                :color="hasPermission($page.props, 'school.edit') ? 'secondary' : 'grey'" 
-                icon="edit" 
-                size="sm"
-                :disable="!hasPermission($page.props, 'school.edit')"
-                :href="hasPermission($page.props, 'school.edit') ? route('school.edit', props.row.slug) : '#'" 
-                :title="hasPermission($page.props, 'school.edit') ? 'Editar' : 'No tienes permisos para editar esta escuela'" 
-              />
-              
+              <q-btn flat round :color="hasPermission($page.props, 'school.edit') ? 'warning' : 'grey'" icon="edit"
+                size="sm" :disable="!hasPermission($page.props, 'school.edit')"
+                :href="hasPermission($page.props, 'school.edit') ? route('school.edit', props.row.slug) : '#'"
+                :title="hasPermission($page.props, 'school.edit') ? 'Editar' : 'No tienes permisos para editar esta escuela'" />
+
               <!-- Delete button - always visible but disabled when not allowed -->
-              <q-btn 
-                flat 
-                round 
-                :color="hasPermission($page.props, 'school.delete') ? 'negative' : 'grey'" 
-                icon="delete"
-                size="sm" 
-                :disable="!hasPermission($page.props, 'school.delete')"
-                @click="hasPermission($page.props, 'school.delete') ? deleteSchool(props.row.slug) : null" 
-                :title="hasPermission($page.props, 'school.delete') ? 'Eliminar' : 'No tienes permisos para eliminar esta escuela'" 
-              />
+              <q-btn flat round :color="hasPermission($page.props, 'school.delete') ? 'negative' : 'grey'" icon="delete"
+                size="sm" :disable="!hasPermission($page.props, 'school.delete')"
+                @click="hasPermission($page.props, 'school.delete') ? deleteSchool(props.row.slug) : null"
+                :title="hasPermission($page.props, 'school.delete') ? 'Eliminar' : 'No tienes permisos para eliminar esta escuela'" />
             </div>
           </q-td>
         </template>

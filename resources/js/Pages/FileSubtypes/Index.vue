@@ -4,7 +4,7 @@
 
     <AuthenticatedLayout title="Subtipos de Archivo">
         <template #admin-header>
-            <AdminHeader  title="Subtipos de Archivo" :add="{
+            <AdminHeader title="Subtipos de Archivo" :add="{
                 show: hasPermission($page.props, 'superadmin', null),
                 href: route('file-subtypes.create'),
                 label: 'Nuevo'
@@ -30,29 +30,16 @@
                                 :href="route('file-subtypes.show', props.row.id)" 
                                 title="Ver" 
                             /> -->
-                            
+
                             <!-- Edit button - always visible -->
-                            <q-btn 
-                                flat 
-                                round 
-                                color="secondary" 
-                                icon="edit" 
-                                size="sm"
-                                :href="route('file-subtypes.edit', props.row.id)" 
-                                title="Editar" 
-                            />
-                            
+                            <q-btn flat round color="warning" icon="edit" size="sm"
+                                :href="route('file-subtypes.edit', props.row.id)" title="Editar" />
+
                             <!-- Delete button - always visible but disabled when not allowed -->
-                            <q-btn 
-                                flat 
-                                round 
-                                :color="props.row.can_delete ? 'negative' : 'grey'" 
-                                icon="delete" 
-                                size="sm"
-                                :disable="!props.row.can_delete"
-                                @click="props.row.can_delete ? deleteFileSubtype(props.row.id) : null" 
-                                :title="props.row.can_delete ? 'Eliminar' : 'No se puede eliminar este subtipo de archivo'" 
-                            />
+                            <q-btn flat round :color="props.row.can_delete ? 'negative' : 'grey'" icon="delete"
+                                size="sm" :disable="!props.row.can_delete"
+                                @click="props.row.can_delete ? deleteFileSubtype(props.row.id) : null"
+                                :title="props.row.can_delete ? 'Eliminar' : 'No se puede eliminar este subtipo de archivo'" />
                         </div>
                     </q-td>
                 </template>
@@ -73,8 +60,8 @@ const $q = useQuasar();
 
 defineProps({
     fileSubtypes: Array,
-    
-    
+
+
 });
 
 // Table columns definition

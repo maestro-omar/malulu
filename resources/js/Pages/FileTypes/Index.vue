@@ -4,7 +4,7 @@
 
   <AuthenticatedLayout title="Tipos de Archivo">
     <template #admin-header>
-      <AdminHeader  title="Tipos de Archivo" :add="{
+      <AdminHeader title="Tipos de Archivo" :add="{
         show: hasPermission($page.props, 'superadmin', null),
         href: route('file-types.create'),
         label: 'Nuevo'
@@ -41,16 +41,9 @@
               />
                -->
               <!-- Edit button - always visible -->
-              <q-btn 
-                flat 
-                round 
-                color="secondary" 
-                icon="edit" 
-                size="sm" 
-                :href="route('file-types.edit', props.row.id)"
-                title="Editar" 
-              />
-              
+              <q-btn flat round color="warning" icon="edit" size="sm" :href="route('file-types.edit', props.row.id)"
+                title="Editar" />
+
               <!-- Delete button - always visible but disabled when not allowed -->
               <!-- <q-btn 
                 flat 
@@ -82,8 +75,8 @@ const $q = useQuasar();
 
 defineProps({
   fileTypes: Array,
-  
-  
+
+
 });
 
 // Table columns definition

@@ -34,7 +34,7 @@
                 :href="route('provinces.show', props.row.code)" title="Ver" />
 
               <!-- Edit button - always visible -->
-              <q-btn flat round color="secondary" icon="edit" size="sm" :href="route('provinces.edit', props.row.code)"
+              <q-btn flat round color="warning" icon="edit" size="sm" :href="route('provinces.edit', props.row.code)"
                 title="Editar" />
 
               <!-- Delete button - always visible -->

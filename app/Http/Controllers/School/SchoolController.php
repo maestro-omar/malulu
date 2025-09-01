@@ -55,7 +55,7 @@ class SchoolController extends SchoolBaseController
         try {
             $school = $this->schoolService->createSchool($request->all());
 
-            return redirect()->route('school.index')
+            return redirect()->route('schools.index')
                 ->with('success', 'School created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -87,8 +87,8 @@ class SchoolController extends SchoolBaseController
         try {
             $this->schoolService->updateSchool($school, $request->all());
 
-            return redirect()->route('school.index')
-                ->with('success', 'School updated successfully.');
+            return redirect()->route('school.show', $school->slug)
+                ->with('success', 'Se ha actualizado la escuela.');
         } catch (ValidationException $e) {
             return redirect()->back()
                 ->withErrors($e->errors())
@@ -105,7 +105,7 @@ class SchoolController extends SchoolBaseController
         try {
             $this->schoolService->deleteSchool($school);
 
-            return redirect()->route('school.index')
+            return redirect()->route('schools.index')
                 ->with('success', 'School deleted successfully.');
         } catch (\Exception $e) {
             return redirect()->back()

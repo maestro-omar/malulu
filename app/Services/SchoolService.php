@@ -114,8 +114,8 @@ class SchoolService
             'email' => 'nullable|email|max:255',
             'coordinates' => 'nullable|string|max:100',
             'social' => 'nullable|array',
-            'logo' => 'nullable|image|max:1024', // max 1MB
-            'picture' => 'nullable|image|max:2048' // max 2MB
+            // if I leave this, logo is cleared, set to null 'logo' => 'nullable|image|max:1024', // max 1MB
+            // if I leave this, logo is cleared, set to null 'picture' => 'nullable|image|max:2048' // max 2MB
         ];
 
         $validator = Validator::make($data, $rules);
