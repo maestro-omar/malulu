@@ -4,7 +4,7 @@
 
   <AuthenticatedLayout title="Ciclos Lectivos">
     <template #admin-header>
-      <AdminHeader  title="Ciclos Lectivos" :add="{
+      <AdminHeader title="Ciclos Lectivos" :add="{
         show: hasPermission($page.props, 'superadmin', null),
         href: route('academic-years.create'),
         label: 'Nuevo'
@@ -41,26 +41,12 @@
           <q-td :props="props">
             <div class="row items-center q-gutter-sm">
               <!-- View button - always visible -->
-              <q-btn 
-                flat 
-                round 
-                color="primary" 
-                icon="visibility" 
-                size="sm"
-                :href="route('academic-years.show', props.row.id)" 
-                title="Ver" 
-              />
-              
+              <q-btn flat round color="primary" icon="visibility" size="sm"
+                :href="route('academic-years.show', props.row.id)" title="Ver" />
+
               <!-- Edit button - always visible -->
-              <q-btn 
-                flat 
-                round 
-                color="secondary" 
-                icon="edit" 
-                size="sm"
-                :href="route('academic-years.edit', props.row.id)" 
-                title="Editar" 
-              />
+              <q-btn flat round color="warning" icon="edit" size="sm" :href="route('academic-years.edit', props.row.id)"
+                title="Editar" />
             </div>
           </q-td>
         </template>
@@ -83,8 +69,8 @@ defineProps({
     type: Array,
     required: true
   },
-  
-  
+
+
 });
 
 // Table columns definition

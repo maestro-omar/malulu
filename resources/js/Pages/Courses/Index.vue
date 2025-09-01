@@ -109,7 +109,7 @@
               <q-btn flat round color="primary" icon="visibility" size="sm"
                 :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(props.row) })"
                 title="Ver" />
-              <q-btn flat round color="secondary" icon="edit" size="sm"
+              <q-btn flat round color="warning" icon="edit" size="sm"
                 :href="route('school.course.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(props.row) })"
                 title="Editar" />
             </div>

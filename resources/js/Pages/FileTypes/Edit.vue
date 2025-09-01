@@ -8,8 +8,9 @@
         <div class="container">
             <div class="admin-form__wrapper">
                 <form @submit.prevent="submit" class="admin-form__container">
-                    <div class="admin-form__card">
-                        <div class="admin-form__card-content">
+                    <q-card class="admin-form__card">
+                        <q-card-section>
+                            <div class="admin-form__card-content">
                             <div class="admin-form__field">
                                 <InputLabel for="code" value="Clave" />
                                 <TextInput
@@ -55,15 +56,16 @@
                                     Activo
                                 </CheckboxWithLabel>
                             </div>
-
-                            <ActionButtons
-                                button-label="Guardar"
-                                :cancel-href="route('file-types.index')"
-                                :disabled="form.processing"
-                            />
-                        </div>
-                    </div>
+                            </div>
+                        </q-card-section>
+                    </q-card>
                 </form>
+                
+                <ActionButtons
+                    button-label="Guardar"
+                    :cancel-href="route('file-types.index')"
+                    :disabled="form.processing"
+                />
             </div>
         </div>
     </AuthenticatedLayout>

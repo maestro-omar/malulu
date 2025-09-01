@@ -16,8 +16,8 @@ const props = defineProps({
     },
     size: {
         type: String,
-        default: 'default',
-        validator: (value) => ['sm', 'lg'].includes(value)
+        default: '',
+        validator: (value) => ['sm', 'lg', ''].includes(value)
     },
     href: {
         type: String,

@@ -1,0 +1,12 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+
+.admin-action-buttons {
+    margin-top: 1rem;
+    &__container {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

@@ -1,5 +1,5 @@
 <template>
-    <q-expansion-item expand-separator default-opened class="mll-table-expansion">
+    <q-expansion-item expand-separator default-opened class="mll-table-expansion q-mt-md">
         <template v-slot:header>
             <q-item-section avatar>
                 <q-icon name="business_center" size="sm" color="accent" />
@@ -37,6 +37,10 @@ const props = defineProps({
         type: String,
         required: true
     },
+    context: {
+        type: String,
+        default: 'user'
+    }
 });
 
 // Download file function
@@ -119,4 +123,5 @@ const columns = [
         style: 'width: 60px'
     },
 ];
+
 </script>

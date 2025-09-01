@@ -1,100 +1,119 @@
 <template>
-  <div class="admin-user-information">
-    <div class="admin-user-information__grid">
-      <!-- Left Column (20%) -->
-      <div class="admin-user-information__profile">
-        <h3 class="admin-user-information__name">
-          {{ user.firstname + " " + user.lastname }}
-        </h3>
-        <div v-if="showPicture" class="admin-user-information__picture">
-          <EditableImage
-            :model-value="user.picture"
-            :default-image="'/images/no-image-person.png'"
-            :can-edit="false"
-            class="admin-user-information__image"
-          />
-        </div>
-      </div>
+  <q-expansion-item expand-separator default-opened class="mll-table-expansion">
+    <template v-slot:header>
+      <q-item-section avatar>
+        <q-icon name="contact_emergency" size="sm" color="secondary" />
+      </q-item-section>
 
-      <!-- Right Column (80%) -->
-      <div class="admin-user-information__details">
-        <div class="admin-user-information__details-grid">
-          <!-- ID Number -->
-          <div class="admin-user-information__field">
-            <span class="admin-user-information__field-label">DNI:</span>
-            <span class="admin-user-information__field-value">{{ user.id_number }}</span>
+      <q-item-section align="left">
+        Datos del usuario
+      </q-item-section>
+    </template>
+    <div class="row q-col-gutter-sm">
+      <!-- Profile Image -->
+      <div class="col-12 col-md-3 text-center">
+        <div class="row">
+          <div class="col-4 col-md-12">
+            <q-avatar size="100px">
+              <EditableImage v-model="user.picture" type="picture" :model-id="user.id" :can-edit="editablePicture"
+                upload-route="users.upload-image" delete-route="users.delete-image"
+                delete-confirm-message="¿Está seguro que desea eliminar la foto de perfil?" />
+            </q-avatar>
           </div>
 
-          <!-- Birthdate -->
-          <div class="admin-user-information__field admin-user-information__field--span-2">
-            <span class="admin-user-information__field-label">Fecha de Nacimiento:</span>
-            <span class="admin-user-information__field-value">
-              {{ formatDateShort(user.birthdate) }}
-              <template v-if="user.birthdate">
-                &nbsp;({{ calculateAge(user.birthdate) }} años)
+          <div class="col-8 col-md-12">
+            <!-- User Info under image -->
+            <DataFieldShow label="Nombre de usuario" :value="user.name" type="text" />
+            <DataFieldShow label="">
+              <template #slotValue>
+                <EmailField :email="user.email" center />
               </template>
-            </span>
+            </DataFieldShow>
+            <DataFieldShow label="">
+              <template #slotValue>
+                <PhoneField :phone="user.phone" center />
+              </template>
+            </DataFieldShow>
+            <DataFieldShow v-if="currentCourse" label="Curso" :value="currentCourse" type="currentCourse" />
           </div>
+        </div>
+      </div>
 
-          <!-- Email (if enabled) -->
-          <div
-            v-if="showContact"
-            class="admin-user-information__field"
-          >
-            <span class="admin-user-information__field-value">
-              <EmailField id="userEmail" :email="user.email" class="admin-user-information__contact-field" />
-            </span>
+      <!-- Basic Information -->
+      <div class="col-12 col-md-9">
+        <div class="col-12">
+          <div class="text-h4 q-mb-sm">Datos personales</div>
+          <div class="row q-col-gutter-sm">
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <DataFieldShow label="Nombre" :value="user.firstname" type="text" />
+            </div>
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <DataFieldShow label="Apellido" :value="user.lastname" type="text" />
+            </div>
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <DataFieldShow label="Género" :value="genders[user.gender] || user.gender" type="text" />
+            </div>
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <DataFieldShow label="DNI" :value="user.id_number" type="text" />
+            </div>
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <DataFieldShow label="Fecha de Nacimiento" :value="user.birthdate" type="date">
+                <template v-if="user.birthdate" #slotValue>
+                  {{ formatDateShort(user.birthdate) }}
+                  &nbsp;({{ calculateAge(user.birthdate) }} años)
+                </template>
+                <template v-else #slotValue>
+                  <span>-</span>
+                </template>
+              </DataFieldShow>
+            </div>
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <DataFieldShow label="Nacionalidad" :value="user.nationality" type="text" />
+            </div>
           </div>
-
-          <!-- Phone (if enabled) -->
-          <div v-if="showContact" class="admin-user-information__field">
-            <span class="admin-user-information__field-value">
-              <PhoneField id="userPhone" :phone="user.phone" class="admin-user-information__contact-field" />
-            </span>
+        </div>
+        <div class="col-12 q-mt-md">
+          <div class="text-h4 q-mb-sm">Domicilio</div>
+          <div class="row q-col-gutter-sm">
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <DataFieldShow label="Dirección" :value="user.address" type="text" />
+            </div>
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <DataFieldShow label="Localidad" :value="user.locality" type="text" />
+            </div>
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <DataFieldShow label="Provincia" :value="user.province?.name" type="text" />
+            </div>
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <DataFieldShow label="País" :value="user.country?.name" type="text" />
+            </div>
+          </div>
+        </div>
+        <div v-if="guardians" class="col-12 q-mt-md">
+          <div class="text-h4 q-mb-sm">Tutores</div>
+          <div class="row q-col-gutter-sm">
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <StudentGuardian v-for="guardian in guardians" :key="guardian.id" :guardian="guardian" />
+            </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Roles Section (if enabled) -->
-    <div v-if="showRoles" class="admin-user-information__roles">
-      <slot name="roles">
-        <SchoolsAndRolesCard
-          :title="'Escuelas y roles actuales'"
-          :user="user"
-          :schools="schools"
-          :role-relationships="roleRelationships"
-          :workers-relationships="workerRelationships"
-          :guardian-relationships="guardianRelationships"
-          :student-relationships="studentRelationships"
-          :roles="roles"
-          :user-id="user.id"
-          :show-add-role-button="false"
-        />
-      </slot>
-    </div>
-  </div>
+  </q-expansion-item>
 </template>
 
 <script setup>
 import EditableImage from "@/Components/admin/EditableImage.vue";
-import InputLabel from "@/Components/admin/InputLabel.vue";
+import DataFieldShow from '@/Components/DataFieldShow.vue';
 import EmailField from "@/Components/admin/EmailField.vue";
 import PhoneField from "@/Components/admin/PhoneField.vue";
-import SchoolsAndRolesCard from "@/Components/admin/SchoolsAndRolesCard.vue";
+import StudentGuardian from '@/Components/admin/StudentGuardian.vue';
 import { formatDateShort, calculateAge } from "@/Utils/date";
 
 const props = defineProps({
   user: { type: Object, required: true },
-  showPicture: { type: Boolean, default: true },
-  showRoles: { type: Boolean, default: true },
-  showContact: { type: Boolean, default: false },
-  // The following are only needed if showRoles is true
-  schools: { type: Array, default: () => [] },
-  roleRelationships: { type: Array, default: () => [] },
-  workerRelationships: { type: Array, default: () => [] },
-  guardianRelationships: { type: Array, default: () => [] },
-  studentRelationships: { type: Array, default: () => [] },
-  roles: { type: Array, default: () => [] },
+  genders: { type: Object, required: true },
+  editablePicture: { type: Boolean, default: true },
+  currentCourse: { type: Object, required: false },
 });
 </script>

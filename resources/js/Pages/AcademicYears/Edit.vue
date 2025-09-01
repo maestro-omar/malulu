@@ -11,7 +11,8 @@
       <div class="container">
         <div class="admin-form__wrapper">
           <form @submit.prevent="submit" class="admin-form__container">
-            <div class="admin-form__card">
+            <q-card class="dmin-form__card">
+            <q-card-section>
               <div class="admin-form__card-content">
                 <div class="admin-form__field">
                   <InputLabel for="year" value="Año" />
@@ -49,7 +50,8 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </q-card-section>
+            </q-card>
 
             <ActionButtons button-label="Guardar Cambios" :cancel-href="route('academic-years.index')"
               :disabled="form.processing" />

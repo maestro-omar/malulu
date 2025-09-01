@@ -51,20 +51,11 @@ watch(() => props.flash, (newFlash) => {
   if (newFlash?.success && showSuccess.value) {
     showNotification(newFlash.success, 'positive');
   }
-  
+
   if (newFlash?.error && showError.value) {
     showNotification(newFlash.error, 'negative');
   }
 }, { immediate: true, deep: true });
 
-// Show notifications on mount if flash messages exist
-onMounted(() => {
-  if (props.flash?.success && showSuccess.value) {
-    showNotification(props.flash.success, 'positive');
-  }
-  
-  if (props.flash?.error && showError.value) {
-    showNotification(props.flash.error, 'negative');
-  }
-});
+
 </script>

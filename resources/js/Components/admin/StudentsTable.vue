@@ -1,5 +1,5 @@
 <template>
-  <q-expansion-item expand-separator default-opened class="mll-table-expansion">
+  <q-expansion-item expand-separator default-opened class="mll-table-expansion q-mt-md">
     <template v-slot:header>
       <q-item-section avatar>
         <q-icon name="person" size="sm" color="accent" />
@@ -60,7 +60,7 @@
               :href="route_school_student(school, props.row, 'show')" title="Ver" />
 
             <!-- Edit button - conditional -->
-            <q-btn v-if="hasPermission($page.props, 'student.edit')" flat round color="secondary" icon="edit" size="sm"
+            <q-btn v-if="hasPermission($page.props, 'student.edit')" flat round color="warning" icon="edit" size="sm"
               :href="route_school_student(school, props.row, 'edit')" title="Editar" />
 
             <!-- Delete button - conditional -->

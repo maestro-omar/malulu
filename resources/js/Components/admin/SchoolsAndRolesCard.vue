@@ -1,225 +1,216 @@
 <template>
-  <div class="schools-roles-card">
-    <div class="schools-roles-card__content">
-      <div class="schools-roles-card__header">
-        <h3 class="schools-roles-card__title">{{ title || 'Escuelas y Roles' }}</h3>
-        <Link v-if="canAddRoles" :href="route('users.add-role', userId)" class="admin-butotn--indigo">
-        NUEVO ROL
-        </Link>
-      </div>
+  <q-expansion-item expand-separator default-opened class="schools-roles-card q-mt-md">
+    <template v-slot:header>
+      <q-item-section avatar>
+        <q-icon name="badge" size="sm" color="accent" />
+      </q-item-section>
 
-      <div class="schools-roles-card__schools">
-        <div v-for="(school, idx) in schools" :key="school.id"
-          :class="['schools-roles-card__school', { 'schools-roles-card__school--alternate': idx % 2 === 0 }]">
-          <!-- School Header -->
-          <div class="schools-roles-card__school-header">
-            <h4 class="schools-roles-card__school-name">{{ school.name }}</h4>
-          </div>
+      <q-item-section align="left">
+        Roles
+      </q-item-section>
 
-          <!-- Roles Summary -->
-          <div class="schools-roles-card__roles-summary">
-            <div v-for="role in getRolesForSchool(school.id)" :key="role.id" class="schools-roles-card__role-item">
-              <RoleBadge :role="role" />
-              <button @click="toggleRoleDetails(role.id, school.id)" class="schools-roles-card__toggle-btn">
-                <span :title="expandedRoleDetails[school.id]?.[role.id] ? 'Ocultar detalles' : 'Ver detalles'"
-                  :class="{ 'schools-roles-card__toggle-icon--expanded': expandedRoleDetails[school.id]?.[role.id] }"
-                  class="schools-roles-card__toggle-icon">
-                  &#9660; <!-- Unicode for down arrow -->
-                </span>
-              </button>
-            </div>
-          </div>
+      <q-item-section avatar v-if="canAddRoles">
+        <q-btn size="sm" padding="sm" dense icon="add" color="green" :href="route('users.add-role', userId)"
+          title="Agregar archivo">
+          Nuevo rol
+        </q-btn>
+      </q-item-section>
+    </template>
 
-          <!-- Detailed Role Information -->
-          <template v-for="role in getRolesForSchool(school.id)" :key="`details-${role.id}`">
-            <div v-if="expandedRoleDetails[school.id]?.[role.id]" class="schools-roles-card__details">
-              <!-- Worker Relationships -->
-              <div v-if="hasworkerRelationshipsForRole(role.id, school.id)"
-                :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
-                <h5 class="schools-roles-card__section-title">Información Docente - {{ role.name }}</h5>
-                <div class="schools-roles-card__relationships">
-                  <div v-for="relationship in getWorkerRelationshipsForRole(role.id, school.id)" :key="relationship.id"
-                    class="schools-roles-card__relationship">
-                    <div class="schools-roles-card__relationship-grid">
-                      <div class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Estado:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.job_status }}</p>
-                      </div>
-                      <div class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Título:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.degree_title }}</p>
-                      </div>
-                      <div v-if="relationship.start_date" class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
-                        <p class="schools-roles-card__field-value">{{ formatDate(relationship.start_date) }}</p>
-                      </div>
-                      <div v-if="relationship.creator" class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Creado por:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.creator.name }}</p>
-                      </div>
-                      <div v-if="relationship.role" class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Rol:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.role.name }}</p>
-                      </div>
-                      <div v-if="relationship.decree_number" class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Decreto:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.decree_number }}</p>
-                      </div>
-                      <div v-if="relationship.job_status_date" class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Fecha:</span>
-                        <p class="schools-roles-card__field-value">{{ formatDate(relationship.job_status_date) }}</p>
-                      </div>
-                      <div v-if="hasTeacherRelationshipsForRole(role.id, school.id) && relationship.class_subject"
-                        class="schools-roles-card__field schools-roles-card__field--span-2">
-                        <span class="schools-roles-card__field-label">Asignatura:</span>
-                        <div class="schools-roles-card__field-content">
-                          <p class="schools-roles-card__field-value">{{ relationship.class_subject.name }}</p>
-                        </div>
-                      </div>
-                      <div v-if="relationship.schedule"
-                        class="schools-roles-card__field schools-roles-card__field--span-2">
-                        <span class="schools-roles-card__field-label">Horario:</span>
-                        <pre
-                          class="schools-roles-card__field-pre">{{ JSON.stringify(relationship.schedule, null, 2) }}</pre>
-                      </div>
-                      <div v-if="relationship.notes"
-                        class="schools-roles-card__field schools-roles-card__field--span-2">
-                        <span class="schools-roles-card__field-label">Notas:</span>
-                        <p class="schools-roles-card__field-value schools-roles-card__field-value--pre-wrap">{{
-                          relationship.notes }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+    <div class="schools-roles-card__schools">
+      <q-expansion-item v-for="(school, idx) in schools" :key="school.id" expand-separator default-opened
+        :header-inset-level="1" :content-inset-level="1"
+        :class="['schools-roles-card__school', { 'schools-roles-card__school--alternate': idx % 2 === 0 }]" icon="home"
+        :label="school.name">
 
-              <!-- Guardian Relationships -->
-              <div v-if="hasGuardianRelationshipsForRole(role.id, school.id)"
-                :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
-                <h5 class="schools-roles-card__section-title">Información de Tutor</h5>
-                <div class="schools-roles-card__relationships">
-                  <div v-for="relationship in getGuardianRelationshipsForRole(role.id, school.id)"
-                    :key="relationship.id" class="schools-roles-card__relationship">
-                    <div class="schools-roles-card__relationship-grid">
-                      <div class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Tipo:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.relationship_type }}</p>
-                      </div>
-                      <div v-if="relationship.start_date" class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
-                        <p class="schools-roles-card__field-value">{{ formatDate(relationship.start_date) }}</p>
-                      </div>
-                      <div v-if="relationship.creator" class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Creado por:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.creator.name }}</p>
-                      </div>
-                      <div class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Contacto de Emergencia:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.is_emergency_contact ? 'Sí' : 'No' }}
-                        </p>
-                      </div>
-                      <div v-if="relationship.is_emergency_contact" class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Prioridad:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.emergency_contact_priority }}</p>
-                      </div>
-                      <div class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Restricción:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.is_restricted ? 'Sí' : 'No' }}</p>
-                      </div>
-                      <div v-if="relationship.student"
-                        class="schools-roles-card__field schools-roles-card__field--span-2">
-                        <span class="schools-roles-card__field-label">Estudiante:</span>
-                        <div class="schools-roles-card__field-content">
-                          <p class="schools-roles-card__field-value">{{ relationship.student.name }}</p>
-                          <p v-if="relationship.student.current_course" class="schools-roles-card__field-subtitle">
-                            {{ relationship.student.current_course.name }}
-                          </p>
-                        </div>
-                      </div>
-                      <div v-if="relationship.notes"
-                        class="schools-roles-card__field schools-roles-card__field--span-2">
-                        <span class="schools-roles-card__field-label">Notas:</span>
-                        <p class="schools-roles-card__field-value schools-roles-card__field-value--pre-wrap">{{
-                          relationship.notes }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Student Relationships -->
-              <div v-if="hasStudentRelationshipsForRole(role.id, school.id)"
-                :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
-                <h5 class="schools-roles-card__section-title">Información de Estudiante</h5>
-                <div class="schools-roles-card__relationships">
-                  <div v-for="relationship in getStudentRelationshipsForRole(role.id, school.id)" :key="relationship.id"
-                    class="schools-roles-card__relationship">
-                    <div v-if="relationship.current_course"
-                      class="schools-roles-card__relationship-content schools-roles-card__relationship-content--student-course">
-                      <div class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Curso:</span>
-                        <a class="schools-roles-card__field-value"
-                          :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': getSchoolLevelCode(relationship.current_course.school_level_id), 'idAndName': getCourseSlug(relationship.current_course) })">
-                          {{ relationship.current_course.nice_name }}</a>
-                      </div>
-                      <div v-if="relationship.current_course.level" class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Nivel:</span>
-                        <div class="schools-roles-card__field-value">
-                          <SchoolLevelBadge :level="relationship.current_course.level" />
-                        </div>
-                      </div>
-                      <div v-if="relationship.start_date" class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
-                        <p class="schools-roles-card__field-value">{{ formatDate(relationship.start_date) }}</p>
-                      </div>
-                      <div v-if="relationship.creator" class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Creado por:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.creator.name }}</p>
-                      </div>
-                      <div v-if="relationship.notes"
-                        class="schools-roles-card__field schools-roles-card__field--span-2">
-                        <span class="schools-roles-card__field-label">Notas:</span>
-                        <p class="schools-roles-card__field-value schools-roles-card__field-value--pre-wrap">{{
-                          relationship.notes }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- General Role Relationships (for roles without specific relationship types) -->
-              <div v-if="hasGeneralRoleRelationshipsForRole(role.id, school.id)"
-                :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
-                <h5 class="schools-roles-card__section-title">Información General del Rol - {{ role.name }}</h5>
-                <div class="schools-roles-card__relationships">
-                  <div v-for="relationship in getGeneralRoleRelationshipsForRole(role.id, school.id)"
-                    :key="relationship.id" class="schools-roles-card__relationship">
-                    <div class="schools-roles-card__relationship-grid">
-                      <div class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
-                        <p class="schools-roles-card__field-value">{{ formatDate(relationship.start_date) }}</p>
-                      </div>
-                      <div v-if="relationship.creator" class="schools-roles-card__field">
-                        <span class="schools-roles-card__field-label">Creado por:</span>
-                        <p class="schools-roles-card__field-value">{{ relationship.creator.name }}</p>
-                      </div>
-                      <div v-if="relationship.notes"
-                        class="schools-roles-card__field schools-roles-card__field--span-2">
-                        <span class="schools-roles-card__field-label">Notas:</span>
-                        <p class="schools-roles-card__field-value schools-roles-card__field-value--pre-wrap">{{
-                          relationship.notes }}</p>
-                      </div>
-                      <!-- Add other general role relationship fields here if needed -->
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <q-expansion-item v-for="role in getRolesForSchool(school.id)" :key="role.id" expand-separator
+          :header-inset-level="1" :content-inset-level="2"
+          :class="['schools-roles-card__school', { 'schools-roles-card__school--alternate': idx % 2 === 0 }]"
+          icon="home" :label="school.name">
+          <template v-slot:header>
+            <RoleBadge :role="role" />
           </template>
-        </div>
-      </div>
+
+          <!-- Worker Relationships -->
+          <div v-if="hasworkerRelationshipsForRole(role.id, school.id)"
+            :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
+            <h5 class="schools-roles-card__section-title">Información Docente - {{ role.name }}</h5>
+            <div class="schools-roles-card__relationships">
+              <div v-for="relationship in getWorkerRelationshipsForRole(role.id, school.id)" :key="relationship.id"
+                class="schools-roles-card__relationship">
+                <div class="schools-roles-card__relationship-grid">
+                  <div class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Estado:</span>
+                    <p class="schools-roles-card__field-value">{{ relationship.job_status }}</p>
+                  </div>
+                  <div class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Título:</span>
+                    <p class="schools-roles-card__field-value">{{ relationship.degree_title }}</p>
+                  </div>
+                  <div v-if="relationship.start_date" class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
+                    <p class="schools-roles-card__field-value">{{ formatDate(relationship.start_date) }}</p>
+                  </div>
+                  <div v-if="relationship.creator" class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Creado por:</span>
+                    <p class="schools-roles-card__field-value">{{ relationship.creator.name }}</p>
+                  </div>
+                  <div v-if="relationship.role" class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Rol:</span>
+                    <p class="schools-roles-card__field-value">{{ relationship.role.name }}</p>
+                  </div>
+                  <div v-if="relationship.decree_number" class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Decreto:</span>
+                    <p class="schools-roles-card__field-value">{{ relationship.decree_number }}</p>
+                  </div>
+                  <div v-if="relationship.job_status_date" class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Fecha:</span>
+                    <p class="schools-roles-card__field-value">{{ formatDate(relationship.job_status_date) }}</p>
+                  </div>
+                  <div v-if="hasTeacherRelationshipsForRole(role.id, school.id) && relationship.class_subject"
+                    class="schools-roles-card__field schools-roles-card__field--span-2">
+                    <span class="schools-roles-card__field-label">Asignatura:</span>
+                    <div class="schools-roles-card__field-content">
+                      <p class="schools-roles-card__field-value">{{ relationship.class_subject.name }}</p>
+                    </div>
+                  </div>
+                  <div v-if="relationship.schedule" class="schools-roles-card__field schools-roles-card__field--span-2">
+                    <span class="schools-roles-card__field-label">Horario:</span>
+                    <pre
+                      class="schools-roles-card__field-pre">{{ JSON.stringify(relationship.schedule, null, 2) }}</pre>
+                  </div>
+                  <div v-if="relationship.notes" class="schools-roles-card__field schools-roles-card__field--span-2">
+                    <span class="schools-roles-card__field-label">Notas:</span>
+                    <p class="schools-roles-card__field-value schools-roles-card__field-value--pre-wrap">{{
+                      relationship.notes }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Guardian Relationships -->
+          <div v-if="hasGuardianRelationshipsForRole(role.id, school.id)"
+            :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
+            <h5 class="schools-roles-card__section-title">Información de Tutor</h5>
+            <div class="schools-roles-card__relationships">
+              <div v-for="relationship in getGuardianRelationshipsForRole(role.id, school.id)" :key="relationship.id"
+                class="schools-roles-card__relationship">
+                <div class="schools-roles-card__relationship-grid">
+                  <div class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Tipo:</span>
+                    <p class="schools-roles-card__field-value">{{ relationship.relationship_type }}</p>
+                  </div>
+                  <div v-if="relationship.start_date" class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
+                    <p class="schools-roles-card__field-value">{{ formatDate(relationship.start_date) }}</p>
+                  </div>
+                  <div v-if="relationship.creator" class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Creado por:</span>
+                    <p class="schools-roles-card__field-value">{{ relationship.creator.name }}</p>
+                  </div>
+                  <div class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Contacto de Emergencia:</span>
+                    <p class="schools-roles-card__field-value">{{ relationship.is_emergency_contact ? 'Sí' : 'No' }}
+                    </p>
+                  </div>
+                  <div v-if="relationship.is_emergency_contact" class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Prioridad:</span>
+                    <p class="schools-roles-card__field-value">{{ relationship.emergency_contact_priority }}</p>
+                  </div>
+                  <div class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Restricción:</span>
+                    <p class="schools-roles-card__field-value">{{ relationship.is_restricted ? 'Sí' : 'No' }}</p>
+                  </div>
+                  <div v-if="relationship.student" class="schools-roles-card__field schools-roles-card__field--span-2">
+                    <span class="schools-roles-card__field-label">Estudiante:</span>
+                    <div class="schools-roles-card__field-content">
+                      <p class="schools-roles-card__field-value">{{ relationship.student.name }}</p>
+                      <p v-if="relationship.student.current_course" class="schools-roles-card__field-subtitle">
+                        {{ relationship.student.current_course.name }}
+                      </p>
+                    </div>
+                  </div>
+                  <div v-if="relationship.notes" class="schools-roles-card__field schools-roles-card__field--span-2">
+                    <span class="schools-roles-card__field-label">Notas:</span>
+                    <p class="schools-roles-card__field-value schools-roles-card__field-value--pre-wrap">{{
+                      relationship.notes }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Student Relationships -->
+          <div v-if="hasStudentRelationshipsForRole(role.id, school.id)"
+            :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
+            <h5 class="schools-roles-card__section-title">Información de Estudiante</h5>
+            <div class="schools-roles-card__relationships">
+              <div v-for="relationship in getStudentRelationshipsForRole(role.id, school.id)" :key="relationship.id"
+                class="schools-roles-card__relationship">
+                <div v-if="relationship.current_course"
+                  class="schools-roles-card__relationship-content schools-roles-card__relationship-content--student-course">
+                  <div class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Curso:</span>
+                    <a class="schools-roles-card__field-value"
+                      :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': getSchoolLevelCode(relationship.current_course.school_level_id), 'idAndName': getCourseSlug(relationship.current_course) })">
+                      {{ relationship.current_course.nice_name }}</a>
+                  </div>
+                  <div v-if="relationship.current_course.level" class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Nivel:</span>
+                    <div class="schools-roles-card__field-value">
+                      <SchoolLevelBadge :level="relationship.current_course.level" />
+                    </div>
+                  </div>
+                  <div v-if="relationship.start_date" class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
+                    <p class="schools-roles-card__field-value">{{ formatDate(relationship.start_date) }}</p>
+                  </div>
+                  <div v-if="relationship.creator" class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Creado por:</span>
+                    <p class="schools-roles-card__field-value">{{ relationship.creator.name }}</p>
+                  </div>
+                  <div v-if="relationship.notes" class="schools-roles-card__field schools-roles-card__field--span-2">
+                    <span class="schools-roles-card__field-label">Notas:</span>
+                    <p class="schools-roles-card__field-value schools-roles-card__field-value--pre-wrap">{{
+                      relationship.notes }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- General Role Relationships (for roles without specific relationship types) -->
+          <div v-if="hasGeneralRoleRelationshipsForRole(role.id, school.id)"
+            :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
+            <h5 class="schools-roles-card__section-title">Información General del Rol - {{ role.name }}</h5>
+            <div class="schools-roles-card__relationships">
+              <div v-for="relationship in getGeneralRoleRelationshipsForRole(role.id, school.id)" :key="relationship.id"
+                class="schools-roles-card__relationship">
+                <div class="schools-roles-card__relationship-grid">
+                  <div class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
+                    <p class="schools-roles-card__field-value">{{ formatDate(relationship.start_date) }}</p>
+                  </div>
+                  <div v-if="relationship.creator" class="schools-roles-card__field">
+                    <span class="schools-roles-card__field-label">Creado por:</span>
+                    <p class="schools-roles-card__field-value">{{ relationship.creator.name }}</p>
+                  </div>
+                  <div v-if="relationship.notes" class="schools-roles-card__field schools-roles-card__field--span-2">
+                    <span class="schools-roles-card__field-label">Notas:</span>
+                    <p class="schools-roles-card__field-value schools-roles-card__field-value--pre-wrap">{{
+                      relationship.notes }}</p>
+                  </div>
+                  <!-- Add other general role relationship fields here if needed -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </q-expansion-item>
+      </q-expansion-item>
     </div>
-  </div>
+  </q-expansion-item>
+
 </template>
 
 <script setup>

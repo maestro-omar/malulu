@@ -1,16 +1,13 @@
 <template>
-    <div class="admin-action-buttons">
-        <div class="admin-action-buttons__container">
-            <PrimaryButton :disabled="disabled" :type="type" :class="buttonClass">
-                {{ buttonLabel }}
-            </PrimaryButton>
+    <q-card class="admin-action-buttons">
+        <q-card-section class="admin-action-buttons__container">
+            <PrimaryButton :disabled="disabled" :type="type" :class="buttonClass" :label="buttonLabel" />
             <CancelLink :href="cancelHref" class="admin-button admin-button--danger" />
-        </div>
-    </div>
+        </q-card-section>
+    </q-card>
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
 import CancelLink from '@/Components/admin/CancelLink.vue';
 

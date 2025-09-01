@@ -3,7 +3,7 @@
     <q-page class="welcome__container">
       <q-card class="welcome__card">
         <q-card-section class="welcome__content">
-          <SystemLogo size="lg" href="" />
+          <SystemLogo ref="" />
           <h1 class="welcome__title">{{ $page.props.appName }}</h1>
           <h2 class="welcome__subtitle">Bienvenida/o</h2>
 

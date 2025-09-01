@@ -1,6 +1,6 @@
 <template>
     <!-- System Information Expansion -->
-    <q-expansion-item expand-separator label="Información del Sistema" class="system-timestamp">
+    <q-expansion-item expand-separator label="Información del Sistema" class="system-timestamp q-mt-md">
         <template v-slot:header>
             <q-item-section avatar>
                 <q-icon name="info" size="sm" color="warning" />
