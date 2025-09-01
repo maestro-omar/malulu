@@ -14,12 +14,15 @@ class CourseSeeder extends Seeder
 {
     private $coursesCreated = 0;
     private $coursesBySchool = [];
+    private $SIMPLE_LUCIO_LUCERO = false;
 
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
+        $SIMPLE_LUCIO_LUCERO = config('malulu.one_school_cue') === School::CUE_LUCIO_LUCERO;
+
         $schoolLevels = SchoolLevel::all();
 
         if ($schoolLevels->isEmpty()) {
@@ -42,19 +45,19 @@ class CourseSeeder extends Seeder
             })
             ->first();
 
-        if (!$kinder) {
+        if (!$kinder && !$SIMPLE_LUCIO_LUCERO) {
             $this->command->error('No other schools found. Please run SchoolSeeder first.');
             return;
         }
 
         $otherSchools = School::where('code', '!=', School::CUE_LUCIO_LUCERO)
             ->where('code', '!=', School::GLOBAL)
-            ->where('id', '!=', $kinder->id)
+            ->where('id', '!=', $kinder ? $kinder->id : null)
             ->inRandomOrder()
             ->take(2)
             ->get();
 
-        if ($otherSchools->isEmpty()) {
+        if ($otherSchools->isEmpty() && !$SIMPLE_LUCIO_LUCERO) {
             $this->command->error('No other schools found. Please run SchoolSeeder first.');
             return;
         }
@@ -66,6 +69,7 @@ class CourseSeeder extends Seeder
         }
         // Combine the schools
         $schools = collect([$defaultSchool, $kinder])->merge($otherSchools);
+        $schools  = $schools->filter();
 
         $coursesByLevel = [
             SchoolLevel::KINDER => [

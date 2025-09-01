@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Storage;
 
 class SchoolSeeder extends Seeder
 {
-    const SIMPLE_LUCIO_LUCERO = true;
+    private $SIMPLE_LUCIO_LUCERO = false;
+    private $SIMPLE_LUCIO_LUCERO_ONLY_PRIMARY = false;
 
     private array $schoolLevels;
     private array $localities;
@@ -26,6 +27,9 @@ class SchoolSeeder extends Seeder
         $this->initLocalities();
         $this->initManagementTypes();
         $this->initShifts();
+
+        $this->SIMPLE_LUCIO_LUCERO = config('malulu.one_school_cue') === School::CUE_LUCIO_LUCERO;
+        $this->SIMPLE_LUCIO_LUCERO_ONLY_PRIMARY = config('malulu.one_school_only_primary');
 
         // Simulate upload for school School::CUE_LUCIO_LUCERO
         $pictureSource = database_path('seeders/images/ce-n8-picture.png');
@@ -54,7 +58,7 @@ class SchoolSeeder extends Seeder
                 'management_type_id' => $this->managementTypes[SchoolManagementType::PUBLIC],
                 'social' => null,
                 'extra' => null,
-                'levels' => [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
+                'levels' => [SchoolLevel::PRIMARY],
                 'shifts' => [SchoolShift::MORNING]
             ],
             [
@@ -82,14 +86,14 @@ class SchoolSeeder extends Seeder
                     ]
                 ],
                 'extra' => null,
-                'levels' => self::SIMPLE_LUCIO_LUCERO ? [SchoolLevel::PRIMARY] : [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
+                'levels' => $this->SIMPLE_LUCIO_LUCERO_ONLY_PRIMARY ? [SchoolLevel::PRIMARY] : [SchoolLevel::PRIMARY, SchoolLevel::SECONDARY],
                 'shifts' => [SchoolShift::MORNING, SchoolShift::AFTERNOON],
                 'picture' => '/storage/' . $pictureDest,
                 'logo' => '/storage/' . $logoDest,
             ],
         ];
-        
-        $otherSchools = self::SIMPLE_LUCIO_LUCERO ? [] : [
+
+        $otherSchools = $this->SIMPLE_LUCIO_LUCERO ? [] : [
             [
                 'code' => '740058100',
                 'name' => 'Centro Educativo n°1 Juan Pascual Pringles',

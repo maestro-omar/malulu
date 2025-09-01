@@ -210,7 +210,7 @@ class FakeUsersSeeder extends Seeder
             $query->where('code', Role::COOPERATIVE);
         })->get();
 
-        foreach ($cooperativeUsers as $user) {
+        foreach ($cooperativeUsers as $user) { 
             $this->assignRoleWithRelationship($user, $defaultSchool, null, Role::COOPERATIVE);
         }
 
@@ -229,7 +229,7 @@ class FakeUsersSeeder extends Seeder
 
         if ($teacherFromDefaultSchool) {
             // Get a random school that's not the default school
-            $otherSchool = School::where('code', '!=', School::CUE_LUCIO_LUCERO)->inRandomOrder()->first();
+            $otherSchool = School::where('code', '!=', School::CUE_LUCIO_LUCERO)->where('id', '!=', $globalSchoolId)->inRandomOrder()->first();
             if ($otherSchool) {
                 // Assign guardian role in the other school
                 $this->assignRoleWithRelationship($teacherFromDefaultSchool, $otherSchool, null, Role::GUARDIAN, 'Teacher and guardian in other school');
@@ -237,7 +237,7 @@ class FakeUsersSeeder extends Seeder
         }
 
         // Create users for other schools
-        $otherSchools = School::where('code', '!=', School::CUE_LUCIO_LUCERO)->limit(self::OTHER_SCHOOLS_LIMIT)->get();
+        $otherSchools = School::where('code', '!=', School::CUE_LUCIO_LUCERO)->where('id', '!=', $globalSchoolId)->limit(self::OTHER_SCHOOLS_LIMIT)->get();
         $availableRoles = array_diff(Role::allCodes(), [Role::SUPERADMIN, Role::SCHOOL_ADMIN]);
 
 
