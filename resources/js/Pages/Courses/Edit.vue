@@ -167,6 +167,6 @@ const handleCourseSelected = (course) => {
 }
 
 const triggerShiftSelected = (value) => {
-  // console.log('mainShiftSelected', value);
+  // Handle shift selection if needed
 }
 </script>

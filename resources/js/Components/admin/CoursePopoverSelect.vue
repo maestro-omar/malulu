@@ -86,10 +86,6 @@
 
             <!-- Course List -->
             <div v-else-if="filteredCourses.length > 0" class="course-popover__list">
-                <!-- Debug info -->
-                <div style="background: #f0f0f0; padding: 10px; margin-bottom: 10px; font-size: 12px;">
-                    Debug: {{ filteredCourses.length }} courses found
-                </div>
                 
                 <!-- "Sin curso anterior" option -->
                 <div class="course-popover__item course-popover__item--no-course"
@@ -147,12 +143,6 @@
             <!-- Empty State -->
             <div v-else class="course-popover__empty">
                 <span>No se encontraron cursos</span>
-                <!-- Debug info -->
-                <div style="background: #f0f0f0; padding: 10px; margin-top: 10px; font-size: 12px;">
-                    Debug: courses.value.length = {{ courses?.length || 0 }},
-                    filteredCourses.length = {{ filteredCourses.length }},
-                    loading = {{ loading }}
-                </div>
             </div>
 
             <!-- Pagination -->
@@ -258,12 +248,8 @@ const getCourseNumber = (course) => {
 }
 
 const filteredCourses = computed(() => {
-    // console.log('🔍 filteredCourses computed - courses.value:', courses.value)
-    // console.log('🔍 filteredCourses computed - search.value:', search.value)
-
     // Safety check for undefined courses.value
     if (!courses.value || !Array.isArray(courses.value)) {
-        // console.log('🔍 filteredCourses: courses.value is not an array, returning empty array')
         return []
     }
 
@@ -275,7 +261,6 @@ const filteredCourses = computed(() => {
             const courseNumber = getCourseNumber(course)
             return courseNumber === null || courseNumber <= props.currentCourse.number
         })
-        // console.log('🔍 Filtered by course number <=', props.currentCourse.number, ':', result.length, 'courses')
     }
 
     // Filter by search term
@@ -283,9 +268,6 @@ const filteredCourses = computed(() => {
         result = result.filter(course =>
             course.nice_name.toLowerCase().includes(search.value.toLowerCase())
         )
-        // console.log('🔍 filteredCourses result (with search):', result)
-    } else {
-        // console.log('🔍 filteredCourses result (no search):', result)
     }
 
     return result
@@ -293,11 +275,8 @@ const filteredCourses = computed(() => {
 
 // Methods
 const togglePopover = () => {
-    // console.log('🔍 togglePopover called, current isOpen:', isOpen.value)
     isOpen.value = !isOpen.value
-    // console.log('🔍 isOpen changed to:', isOpen.value)
     if (isOpen.value) {
-        // console.log('🔍 Opening popover, saving original value and calling loadCourses')
         // Save the current selected course as original value
         originalSelectedCourse.value = selectedCourse.value
         loadCourses()
@@ -309,12 +288,10 @@ const closePopover = () => {
     // Restore original value if popover was closed without selection
     if (originalSelectedCourse.value && selectedCourse.value !== originalSelectedCourse.value) {
         selectedCourse.value = originalSelectedCourse.value
-        // console.log('🔍 Restored original selected course:', selectedCourse.value)
     }
 }
 
 const triggerFilter = () => {
-    // console.log('popoverShiftSelected', filters.value.schoolShift);
     // Validate year
     if (filters.value.year > maxYear.value) {
         yearError.value = true
@@ -366,38 +343,27 @@ const loadCourses = async () => {
 
         const data = await response.json()
 
-        // console.log('🔍 API Response:', data)
-        // console.log('🔍 Courses data:', data.courses)
-        // console.log('🔍 Courses type:', typeof data.courses)
-        // console.log('🔍 Courses length:', data.courses?.length)
-
         if (data.courses) {
             // Handle paginated response - courses are in data.courses.data
             if (data.courses.data && Array.isArray(data.courses.data)) {
                 courses.value = data.courses.data
                 paginationData.value = data.courses
-                // console.log('🔍 Updated courses.value (from paginated data):', courses.value)
-                // console.log('🔍 Updated paginationData:', paginationData.value)
             } else if (Array.isArray(data.courses)) {
                 // Handle direct array response
                 courses.value = data.courses
                 paginationData.value = null
-                // console.log('🔍 Updated courses.value (direct array):', courses.value)
             } else {
                 courses.value = []
                 paginationData.value = null
-                // console.log('🔍 No valid courses data found, set empty array')
             }
             
             // After loading courses, set selectedCourse if modelValue exists
             if (props.modelValue && courses.value.length > 0) {
                 selectedCourse.value = courses.value.find(course => course.id === props.modelValue)
-                // console.log('🔍 Set selectedCourse after loading:', selectedCourse.value)
             }
         } else {
             courses.value = []
             paginationData.value = null
-            // console.log('🔍 No courses found, set empty array')
         }
     } catch (error) {
         console.error('Error loading courses:', error)
@@ -446,7 +412,6 @@ const selectNoCourse = () => {
 }
 
 const handlePagination = async (url) => {
-    // console.log('🔍 Pagination clicked, loading URL:', url)
     loading.value = true
 
     try {
@@ -457,16 +422,12 @@ const handlePagination = async (url) => {
         const urlParams = new URLSearchParams(url.split('?')[1])
         const page = urlParams.get('page')
 
-        // console.log('🔍 Loading page:', page)
-
         // Construct the full URL by using the route helper with the page parameter
         const fullUrl = route('school.courses.search', {
             school: props.school.slug,
             schoolLevel: props.schoolLevel.code,
             page: page
         })
-
-        // console.log('🔍 Full URL for pagination:', fullUrl)
 
         // Use fetch to load the paginated data
         const response = await fetch(fullUrl, {
@@ -492,35 +453,27 @@ const handlePagination = async (url) => {
 
         const data = await response.json()
 
-        // console.log('🔍 Pagination API Response:', data)
-
         if (data.courses) {
             // Handle paginated response - courses are in data.courses.data
             if (data.courses.data && Array.isArray(data.courses.data)) {
                 courses.value = data.courses.data
                 paginationData.value = data.courses
-                // console.log('🔍 Updated courses.value (pagination):', courses.value)
-                // console.log('🔍 Updated paginationData (pagination):', paginationData.value)
             } else if (Array.isArray(data.courses)) {
                 // Handle direct array response
                 courses.value = data.courses
                 paginationData.value = null
-                // console.log('🔍 Updated courses.value (direct array):', courses.value)
             } else {
                 courses.value = []
                 paginationData.value = null
-                // console.log('🔍 No valid courses data found, set empty array')
             }
             
             // After loading courses, set selectedCourse if modelValue exists
             if (props.modelValue && courses.value.length > 0) {
                 selectedCourse.value = courses.value.find(course => course.id === props.modelValue)
-                // console.log('🔍 Set selectedCourse after pagination:', selectedCourse.value)
             }
         } else {
             courses.value = []
             paginationData.value = null
-            // console.log('🔍 No courses found, set empty array')
         }
     } catch (error) {
         console.error('Error loading paginated courses:', error)
@@ -555,7 +508,6 @@ watch(() => props.modelValue, (newValue) => {
 watch(() => props.lastSaved, (newValue) => {
     if (newValue) {
         selectedCourse.value = newValue
-        // console.log('🔍 Set selectedCourse from lastSaved:', selectedCourse.value)
     }
 }, { immediate: true })
 

@@ -70,7 +70,7 @@
                 <div class="col-md-3 col-4">
                   <DataFieldShow label="Curso/s siguiente/s">
                     <template #slotValue>
-                      <span v-if="!course.next_courses">-</span>
+                      <span v-if="course.next_courses.length === 0">-</span>
                       <Link v-for="oneNext in course.next_courses"
                         :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(oneNext) })"
                         class="text-primary">

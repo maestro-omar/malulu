@@ -66,11 +66,12 @@ Breadcrumbs::for('schools.create', function (Trail $trail) {
 
 Breadcrumbs::for('school.edit', function (Trail $trail, $school) {
     $user = breadcrumbsGetUser();
-    if ($user->isSuperadmin())
-        $trail->parent('school.show', $school);
-    else
-        $trail->parent('dashboard');
-    $trail->push("Editar");
+    $trail->parent('school.show', $school);
+    if ($user->isSuperadmin()) {
+        $trail->push("Editar");
+    } else {
+        $trail->push("Editar los datos de mi escuela");
+    }
 });
 
 Breadcrumbs::for('school.show', function (Trail $trail, $school) {

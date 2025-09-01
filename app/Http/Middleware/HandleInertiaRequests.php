@@ -242,11 +242,6 @@ class HandleInertiaRequests extends Middleware
             ];
         }
         $items[] = ['type' => 'separator'];
-        $items[] = [
-            'name' => 'Archivos',
-            'href' => route('school.files', $school->slug),
-            'icon' => 'library_books',
-        ];
         $items[] = ['type' => 'separator'];
         $items[] = [
             'name' => 'Estudiantes',

@@ -3,22 +3,15 @@
     <label v-if="!hideLabel" class="table__filter-label">{{ label }}</label>
     <div class="table__filter-buttons">
       <template v-for="option in shiftOptions" :key="option.id">
-        <button 
-          type="button"
-          @click="handleShiftSelect(option.id)"
-          :class="getShiftButtonClasses(option.code, modelValue === option.id)"
-        >
+        <q-chip clickable @click="handleShiftSelect(option.id)"
+          :class="getShiftChipClasses(option.code, modelValue === option.id)">
           {{ option.name }}
-        </button>
+        </q-chip>
       </template>
-      <button 
-        v-if="showAllOption" 
-        type="button"
-        @click="handleShiftSelect(null)"
-        :class="getShiftButtonClasses('default', modelValue === null)"
-      >
+      <q-chip v-if="showAllOption" clickable @click="handleShiftSelect(null)"
+        :class="getShiftChipClasses('default', modelValue === null)">
         Todos
-      </button>
+      </q-chip>
     </div>
   </div>
 </template>
@@ -59,7 +52,7 @@ const shiftOptions = computed(() => {
   if (props.options && props.options.length > 0) {
     return props.options
   }
-  
+
   // Otherwise, use the composable options
   if (composableOptions.value && typeof composableOptions.value === 'object') {
     return Object.entries(composableOptions.value).map(([code, data]) => ({
@@ -68,12 +61,12 @@ const shiftOptions = computed(() => {
       code: code
     }))
   }
-  
+
   return []
 })
 
-const getShiftButtonClasses = (shiftCode, isActive) => {
-  const baseClasses = 'btn btn--sm'
+const getShiftChipClasses = (shiftCode, isActive) => {
+  const baseClasses = 'school-shift'
   const shiftClass = `school-shift--${shiftCode || 'default'}`
   const stateClass = isActive ? shiftClass : `${shiftClass}-light`
   return `${baseClasses} ${stateClass}`

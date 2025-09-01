@@ -1,0 +1,446 @@
+@use "../abstracts/mixins";
+@use "../abstracts/variables";
+@use "sass:color";
+
+.course-popover {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    background-color: white;
+    border: 1px solid variables.$color-grey-dark;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    min-height: 2.5rem;
+
+    &:hover {
+      background-color: variables.$color-grey;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px variables.$color-brand;
+    }
+  }
+
+  &__trigger-content {
+    flex: 1;
+    text-align: left;
+  }
+
+  &__selected {
+    @include mixins.fz(1.5);
+    color: variables.$color-text;
+    font-weight: 500;
+  }
+
+  &__placeholder {
+    @include mixins.fz(1.5);
+    color: variables.$color-grey-dark;
+  }
+
+  &__trigger-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: variables.$color-grey-dark;
+    transition: transform 0.15s ease-in-out;
+
+    &--open {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__overlay {
+    z-index: 9000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  &__content {
+    z-index: 9001;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 1200px;
+    height: 85%;
+    max-height: 800px;
+    background-color: white;
+    border: 1px solid variables.$color-grey-dark;
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.3s ease-out;
+
+    @media (max-width: 768px) {
+      width: 95%;
+      height: 90%;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid variables.$color-grey-dark;
+    background-color: variables.$color-grey;
+  }
+
+  &__title {
+    @include mixins.fz(1.8);
+    font-weight: 600;
+    color: variables.$color-text;
+    margin: 0;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    color: variables.$color-grey-dark;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    transition: all 0.15s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: variables.$color-grey-dark;
+      color: white;
+    }
+
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+
+  &__filters {
+    padding: 1.5rem;
+    border-bottom: 1px solid variables.$color-grey-dark;
+    background-color: variables.$color-grey;
+  }
+
+  &__filter-group {
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__filters-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &__filter-label {
+    @include mixins.fz(1.4);
+    font-weight: 500;
+    color: variables.$color-text;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  &__filter-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid variables.$color-grey-dark;
+    border-radius: 0.375rem;
+    @include mixins.fz(1.4);
+
+    &:focus {
+      outline: none;
+      border-color: variables.$color-brand;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    }
+
+    &:invalid {
+      border-color: variables.$color-ko;
+    }
+  }
+
+  &__error {
+    @include mixins.fz(1.2);
+    color: variables.$color-ko;
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  &__filter-radio-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__filter-radio {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+
+    input[type="radio"] {
+      margin: 0;
+    }
+
+    span {
+      @include mixins.fz(1.4);
+      color: variables.$color-text;
+    }
+  }
+
+  &__search {
+    padding: 1rem;
+    border-bottom: 1px solid variables.$color-grey-dark;
+  }
+
+  &__search-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid variables.$color-grey-dark;
+    border-radius: 0.375rem;
+    @include mixins.fz(1.4);
+
+    &:focus {
+      outline: none;
+      border-color: variables.$color-brand;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    }
+
+    &::placeholder {
+      color: variables.$color-grey-dark;
+    }
+  }
+
+  &__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    color: variables.$color-grey-dark;
+    @include mixins.fz(1.4);
+  }
+
+  &__loading-spinner {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid variables.$color-grey-dark;
+    border-top: 2px solid variables.$color-brand;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  &__list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  &__item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid variables.$color-grey;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+
+    &:hover {
+      background-color: variables.$color-grey;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &--selected {
+      background-color: color.scale(variables.$color-brand, $lightness: 90%);
+      border-left: 3px solid variables.$color-brand;
+    }
+  }
+
+  &__item-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__item-main {
+    flex: 1;
+    cursor: pointer;
+  }
+
+  &__item-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__item-title {
+    @include mixins.fz(1.5);
+    font-weight: 600;
+    color: variables.$color-text;
+    margin: 0 0 0.25rem 0;
+  }
+
+  &__item-details {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    @include mixins.fz(1.3);
+    color: variables.$color-grey-dark;
+  }
+
+  &__item-shift {
+    display: flex;
+    align-items: center;
+  }
+
+  &__item-date {
+    font-weight: 500;
+  }
+
+  &__item-status {
+    flex-shrink: 0;
+  }
+
+  &__item-description {
+    @include mixins.fz(1.3);
+    color: variables.$color-grey-dark;
+    font-style: italic;
+  }
+
+  &__item-current {
+    margin-top: 0.25rem;
+  }
+
+  &__current-legend {
+    @include mixins.fz(1.2);
+    color: variables.$color-brand;
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  &__item--no-course {
+    background-color: color.scale(variables.$color-grey, $lightness: 95%);
+    border-left: 3px solid variables.$color-grey-dark;
+
+    &:hover {
+      background-color: color.scale(variables.$color-grey, $lightness: 90%);
+    }
+
+    &--selected {
+      background-color: color.scale(variables.$color-brand, $lightness: 90%);
+      border-left: 3px solid variables.$color-brand;
+    }
+  }
+
+  &__select-btn {
+    background-color: variables.$color-brand;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    @include mixins.fz(1.3);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+
+    &:hover {
+      background-color: color.scale(variables.$color-brand, $lightness: -10%);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+
+    &--no-course {
+      background-color: variables.$color-purple;
+    }
+  }
+
+  &__status {
+    @include mixins.fz(1.2);
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    &--active {
+      background-color: color.scale(variables.$color-ok, $lightness: 90%);
+      color: color.scale(variables.$color-ok, $lightness: -20%);
+    }
+
+    &--inactive {
+      background-color: color.scale(variables.$color-ko, $lightness: 90%);
+      color: color.scale(variables.$color-ko, $lightness: -20%);
+    }
+  }
+
+  &__empty {
+    padding: 2rem;
+    text-align: center;
+    color: variables.$color-grey-dark;
+    @include mixins.fz(1.4);
+  }
+
+  &__pagination {
+    padding: 1rem;
+    border-top: 1px solid variables.$color-grey-dark;
+    background-color: variables.$color-grey;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}

@@ -18,7 +18,6 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::delete(__('routes.delete-image'), [SchoolController::class, 'deleteImage'])->name('school.delete-image')->middleware('school.permission:school.edit');
 
         Route::get(__('routes.staff'), [UserController::class, 'staff'])->name('school.staff')->middleware('school.permission:teacher.manage');
-        Route::get(__('routes.files'), [UserController::class, 'files'])->name('school.files')->middleware('school.permission:school.files.view');
 
         Route::get(__('routes.students'), [UserController::class, 'students'])->name('school.students')->middleware('school.permission:student.view');
         Route::get(__('routes.students') . '/' . __('routes.create'), [UserController::class, 'studentCreate'])->name('school.students.create')->middleware('school.permission:student.create');
