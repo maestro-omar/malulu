@@ -294,6 +294,7 @@ class RoleAndPermissionSeeder extends Seeder
 
         $schoolEditPermissions = [
             'school.edit',
+            'school.files.manage',
         ];
 
         $academicAdminPermissions = [
@@ -301,11 +302,20 @@ class RoleAndPermissionSeeder extends Seeder
             'grading-scale.manage',
             'report-template.manage',
             'student.bulk-import',
+            'school.files.view',
         ];
 
         $teacherPermissions = [
             'teacher.manage',
             'partner.view',
+            'partner.view',
+        ];
+
+        $studentsGuardiansPermissions = [
+            'guardian.view',
+            'guardian.create',
+            'guardian.edit',
+            'guardian.delete',
         ];
 
         $studentPermissions = [
@@ -321,6 +331,7 @@ class RoleAndPermissionSeeder extends Seeder
             'grade.view',
             'grade.manage',
             'course.manage',
+            'course.files.manage',
             'report.generate',
         ];
 
@@ -358,6 +369,7 @@ class RoleAndPermissionSeeder extends Seeder
 
         $academicHistoryPermissions = [
             'academic-history.view',
+            'course.files.view',
         ];
 
         $roleStudentPermissions = [
@@ -383,6 +395,7 @@ class RoleAndPermissionSeeder extends Seeder
                     $schoolEditPermissions,
                     $academicAdminPermissions,
                     $teacherPermissions,
+                    $studentsGuardiansPermissions,
                     $studentPermissions,
                     $academicPermissions,
                     $libraryPermissions,
@@ -404,6 +417,7 @@ class RoleAndPermissionSeeder extends Seeder
                     $schoolEditPermissions,
                     $academicAdminPermissions,
                     $teacherPermissions,
+                    $studentsGuardiansPermissions,
                     $studentPermissions,
                     $academicPermissions,
                     $libraryPermissions,
@@ -421,6 +435,7 @@ class RoleAndPermissionSeeder extends Seeder
                     $schoolEditPermissions,
                     $academicAdminPermissions,
                     $teacherPermissions,
+                    $studentsGuardiansPermissions,
                     $studentPermissions,
                     $academicPermissions,
                     $libraryPermissions,
@@ -445,6 +460,7 @@ class RoleAndPermissionSeeder extends Seeder
             case Role::CURRICULAR_TEACHER:
             case Role::SPECIAL_TEACHER:
                 return array_merge(
+                    $studentsGuardiansPermissions,
                     $studentPermissions,
                     $academicPermissions,
                     $documentPermissions,
@@ -456,6 +472,7 @@ class RoleAndPermissionSeeder extends Seeder
                 return array_merge(
                     $childPermissions,
                     $libraryBasicPermissions,
+                    $academicHistoryPermissions,
                     $universalPermissions
                 );
             case Role::COOPERATIVE:

@@ -5,7 +5,7 @@
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader :title="`Estudiantes de ${school.name}`"  :add="{
+      <AdminHeader :title="`Estudiantes de ${school.name}`" :add="{
         show: hasPermission($page.props, 'student.create'),
         href: route('school.students.create', { 'school': school.slug }),
         label: 'Nuevo'
@@ -94,8 +94,8 @@
                 :href="route_school_student(school, props.row, 'show')" title="Ver" />
 
               <!-- Edit button - conditional -->
-              <q-btn v-if="hasPermission($page.props, 'student.edit')" flat round color="secondary" icon="edit"
-                size="sm" :href="route_school_student(school, props.row, 'edit')" title="Editar" />
+              <q-btn v-if="hasPermission($page.props, 'student.edit')" flat round color="warning" icon="edit" size="sm"
+                :href="route_school_student(school, props.row, 'edit')" title="Editar" />
 
               <!-- Delete button - conditional -->
               <q-btn
@@ -337,14 +337,14 @@ const columns = [
     label: 'Turno',
     field: 'course.shift',
     align: 'center',
-    sortable: false
+    sortable: true
   },
   {
     name: 'course',
     label: 'Curso',
     field: 'course.nice_name',
     align: 'left',
-    sortable: false
+    sortable: true
   },
   {
     name: 'actions',

@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpr fFr">
+  <q-layout view="hHr lpR fFf">
     <!-- Header with only toolbar -->
     <q-header reveal elevated class="bg-white text-primary" height-hint="90">
       <q-toolbar>
@@ -8,8 +8,11 @@
           {{ $page.props.appName }}
         </q-toolbar-title>
         <q-tabs>
-          <q-route-tab v-for="item in $page.props.menu.items" :key="item.route" :href="route(item.route)"
-            :active="route().current(item.route)" :label="item.name" />
+          <q-route-tab v-for="item in $page.props.menu.items" :key="item.route || item.href"
+            :href="item.href ? item.href : (item.route ? route(item.route) : undefined)"
+            :active="item.route ? route().current(item.route) : (item.href ? $page.url === item.href : false)"
+            :label="item.name" :icon="item.icon ? item.icon : undefined"
+            :class="item.colorClass ? item.colorClass : 'text-teal'" />
         </q-tabs>
 
 
@@ -25,16 +28,18 @@
       <q-btn flat round dense size="10px" icon="close" class="absolute-top-right q-ma-xs"
         @click="rightDrawerOpen = false" />
       <q-list class="q-mt-lg">
-        <template v-for="item in $page.props.menu.userItems" :key="item.route || 'separator'">
+        <template v-for="item in $page.props.menu.userItems" :key="item.route || item.href || 'separator'">
           <template v-if="item.type === 'separator'">
             <q-separator />
           </template>
           <template v-else>
-            <q-item :clickable="item.route !== 'logout.get'" v-ripple
+            <q-item :clickable="(item.route !== 'logout.get')" v-ripple dense
               :class="['authenticated-layout__responsive-settings-item', headerStyles.textColor, headerStyles.hoverColor]"
-              :href="route(item.route)">
+              :href="item.href ? item.href : (item.route ? route(item.route) : undefined)">
               <q-item-section>
-                <q-item-label>{{ item.name }}</q-item-label>
+                <q-item-label>
+                  <q-icon v-if="item.icon" :name="item.icon" /> {{ item.name }}
+                </q-item-label>
               </q-item-section>
             </q-item>
           </template>

@@ -4,15 +4,15 @@
 
   <AuthenticatedLayout title="Usuarios">
     <template #admin-header>
-      <AdminHeader  title="Listado de usuarios" :add="{
+      <AdminHeader title="Listado de usuarios" :add="{
         show: hasPermission($page.props, 'user.manage'),
         href: route('users.create'),
         label: 'Nuevo usuario'
       }" :trashed="{
-    show: hasPermission($page.props, 'user.manage'),
-    href: route('users.trashed'),
-    label: 'Eliminados'
-  }">
+        show: hasPermission($page.props, 'user.manage'),
+        href: route('users.trashed'),
+        label: 'Eliminados'
+      }">
       </AdminHeader>
     </template>
 
@@ -20,8 +20,8 @@
       <!-- Search Filter -->
       <div class="row q-mb-md">
         <div class="col-12 col-md-6">
-          <q-input v-model="search" dense outlined placeholder="Buscar usuarios..."
-            @update:model-value="handleSearch" clearable>
+          <q-input v-model="search" dense outlined placeholder="Buscar usuarios..." @update:model-value="handleSearch"
+            clearable>
             <template v-slot:prepend>
               <q-icon name="search" />
             </template>
@@ -30,8 +30,8 @@
       </div>
 
       <!-- Quasar Table -->
-      <q-table class="mll-table mll-table--users striped-table" dense :rows="users.data" :columns="columns"
-        row-key="id" :pagination="{ rowsPerPage: 30 }" :filter="search" :filter-method="customFilter">
+      <q-table class="mll-table mll-table--users striped-table" dense :rows="users.data" :columns="columns" row-key="id"
+        :pagination="{ rowsPerPage: 30 }" :filter="search" :filter-method="customFilter">
         <!-- Custom cell for photo -->
         <template #body-cell-photo="props">
           <q-td :props="props">
@@ -73,19 +73,18 @@
           <q-td :props="props">
             <div class="row items-center q-gutter-sm">
               <!-- View button - always visible -->
-              <q-btn flat round color="primary" icon="visibility" size="sm"
-                :href="route('users.show', props.row.id)" title="Ver" />
+              <q-btn flat round color="primary" icon="visibility" size="sm" :href="route('users.show', props.row.id)"
+                title="Ver" />
 
               <!-- Edit button - always visible but disabled when not allowed -->
-              <q-btn flat round :color="canEditUser(props.row) ? 'secondary' : 'grey'" icon="edit"
-                size="sm" :disable="!canEditUser(props.row)"
+              <q-btn flat round :color="canEditUser(props.row) ? 'warning' : 'grey'" icon="edit" size="sm"
+                :disable="!canEditUser(props.row)"
                 :href="canEditUser(props.row) ? route('users.edit', props.row.id) : '#'"
                 :title="canEditUser(props.row) ? 'Editar' : 'No tienes permisos para editar este usuario'" />
 
               <!-- Delete button - always visible but disabled when not allowed -->
-              <q-btn flat round :color="canDeleteUser(props.row) ? 'negative' : 'grey'" icon="delete"
-                size="sm" :disable="!canDeleteUser(props.row)"
-                @click="canDeleteUser(props.row) ? deleteUser(props.row.id) : null"
+              <q-btn flat round :color="canDeleteUser(props.row) ? 'negative' : 'grey'" icon="delete" size="sm"
+                :disable="!canDeleteUser(props.row)" @click="canDeleteUser(props.row) ? deleteUser(props.row.id) : null"
                 :title="canDeleteUser(props.row) ? 'Eliminar' : 'No puedes eliminar este usuario'" />
             </div>
           </q-td>
@@ -141,7 +140,7 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
-  
+
   filters: {
     type: Object,
     default: () => ({})

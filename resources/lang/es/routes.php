@@ -33,6 +33,7 @@ return [
     'delete-image' => 'eliminar-imagen',
     'schools' => 'escuelas',
     'academic-year' => 'ciclo-escolar',
+    'files' => 'archivos',
     'file-types' => 'tipos-archivo',
     'file-subtypes' => 'subtipos-archivo',
     'provinces' => 'provincias',

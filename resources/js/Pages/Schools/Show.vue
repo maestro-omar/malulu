@@ -38,7 +38,7 @@
         <q-card-section>
           <div class="row q-col-gutter-lg">
             <!-- Left Column -->
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-4">
               <div class="school-detail__section">
                 <!-- Images Section -->
                 <div class="row q-col-gutter-sm q-mb-lg">
@@ -52,7 +52,7 @@
                     </DataFieldShow>
                   </div>
 
-                  <div class="col-4 col-lg-8">
+                  <div v-if="false" class="col-4 col-lg-8">
                     <DataFieldShow label="Imagen Principal">
                       <template #slotValue>
                         <EditableImage v-model="school.picture" type="picture" :model-id="school.slug" :can-edit="true"

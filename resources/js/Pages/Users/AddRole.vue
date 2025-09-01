@@ -10,7 +10,7 @@
 
     <template #main-page-content>
       <div class="container container--as-card">
-        <UserInformation :user="user" :show-picture="true" :show-roles="true" :show-contact="true"
+        <UserContextInformation :user="user" :show-picture="true" :show-roles="true" :show-contact="true"
           :schools="assignedSchools" :role-relationships="roleRelationships" :worker-relationships="workerRelationships"
           :guardian-relationships="guardianRelationships" :student-relationships="studentRelationships" :roles="roles" />
       </div>
@@ -251,11 +251,9 @@ import SelectInput from "@/Components/admin/SelectInput.vue";
 import InputLabel from "@/Components/admin/InputLabel.vue";
 import TextInput from "@/Components/admin/TextInput.vue";
 import InputError from "@/Components/admin/InputError.vue";
-import SchoolsAndRolesCard from "@/Components/admin/SchoolsAndRolesCard.vue";
-import EditableImage from "@/Components/admin/EditableImage.vue";
 import { formatDateShort, calculateAge } from "@/Utils/date.js";
 import axios from "axios";
-import UserInformation from "@/Components/admin/UserInformation.vue";
+import UserContextInformation from "@/Components/admin/UserContextInformation.vue";
 import PrimaryButton from "@/Components/admin/PrimaryButton.vue";
 import { roleOptions } from "@/Composables/roleOptions";
 import { schoolLevelOptions } from "@/Composables/schoolLevelOptions";

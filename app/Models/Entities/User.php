@@ -347,6 +347,7 @@ class User extends Authenticatable
 
     public function isSuperadmin(): bool
     {
+        // return $this->can('superadmin'); Is this the same? why not?
         $adminRoleId = DB::table('roles')
             ->where('code', Role::SUPERADMIN)
             ->value('id');
