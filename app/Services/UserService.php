@@ -7,10 +7,17 @@ use App\Models\Entities\User;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\UserServiceCrud;
 use App\Traits\UserServiceList;
+use App\Services\FileService;
 
 class UserService
 {
     use UserServiceCrud, UserServiceList;
+    private FileService $fileService;
+
+    public function __construct(FileService $fileService)
+    {
+        $this->fileService = $fileService;
+    }
     /**
      * Get user data for show view with all relationships
      */
@@ -282,5 +289,10 @@ class UserService
             'idAndLabel' => $currentCourse->idAndLabel
         ]);
         return $data;
+    }
+
+    public function getFiles(User $user, User $loggedUser)
+    {
+        return $this->fileService->getUserFiles($user, $loggedUser);
     }
 }

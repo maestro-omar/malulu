@@ -54,4 +54,11 @@ class FileSubtype extends Model
     {
         return $this->hasMany(File::class, 'subtype_id');
     }
+
+    public static function scopeByFileTypeCode($query, string $code)
+    {
+        return $query->whereHas('fileType', function ($q) use ($code) {
+            $q->where('code', $code);
+        });
+    }
 }

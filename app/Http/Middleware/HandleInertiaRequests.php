@@ -96,7 +96,7 @@ class HandleInertiaRequests extends Middleware
     /**
      * Get the menu items based on user permissions
      */
-    protected function headerMenuItems(User $user, School $school): array
+    protected function headerMenuItems(?User $user, ?School $school): array
     {
         if (!$user) {
             return [];
@@ -151,7 +151,7 @@ class HandleInertiaRequests extends Middleware
     /**
      * Get the user menu items (profile, logout, etc)
      */
-    protected function sideMenuItems(User $user, School $school): array
+    protected function sideMenuItems(?User $user, ?School $school): array
     {
         if (!$user) {
             return [];
@@ -205,11 +205,11 @@ class HandleInertiaRequests extends Middleware
             'route' => 'file-subtypes.index',
             'icon' => 'document-text',
         ];
-        $items[] = [
-            'name' => 'Materias',
-            'route' => 'class-subject.index',
-            'icon' => 'interests',
-        ];
+        // $items[] = [
+        //     'name' => 'Materias',
+        //     'route' => 'class-subject.index',
+        //     'icon' => 'interests',
+        // ];
 
         return $items;
     }

@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Http\Controllers\System;
+
+use Illuminate\Http\Request;
+use App\Services\FileService;
+use App\Services\CourseService;
+use App\Services\UserService;
+use App\Models\Entities\User;
+use App\Models\Entities\File;
+use Inertia\Inertia;
+
+use Diglactic\Breadcrumbs\Breadcrumbs;
+
+class FileAdminController extends SystemBaseController
+{
+    protected $fileService;
+    protected $courseService;
+    protected $userService;
+
+    public function __construct(UserService $userService, CourseService $courseService, FileService $fileService)
+    {
+        $this->userService = $userService;
+        $this->courseService = $courseService;
+        $this->fileService = $fileService;
+    }
+
+    public function createForUser(Request $request, User $user)
+    {
+        $loggedUser = auth()->user();
+        $files = $this->userService->getFiles($user, $loggedUser);
+        $subTypes = $this->fileService->getSubtypesForUser($user);
+
+        return Inertia::render('Files/byUser/Create', [
+            'subTypes' => $subTypes,
+            'breadcrumbs' => Breadcrumbs::generate('users.file.create', $user),
+        ]);
+    }
+
+    public function showForUser(Request $request, User $user, File $file)
+    {
+        $loggedUser = auth()->user();
+        $fileData = $this->fileService->getFileDataForUser($file, $loggedUser, $user);
+        $history = $fileData['history'];
+        return Inertia::render('Files/byUser/Show', [
+            'file' => $fileData['file'],
+            'history' => $history,
+            'breadcrumbs' => Breadcrumbs::generate('users.file.show', $user, $file),
+        ]);
+    }
+
+    public function editForUser(Request $request, User $user, File $file)
+    {
+        $loggedUser = auth()->user();
+        $fileData = $this->fileService->getFileDataForUser($file, $loggedUser, $user);
+        $subTypes = $this->fileService->getSubtypesForUser($user);
+
+        return Inertia::render('Files/byUser/Edit', [
+            'file' => $fileData,
+            'subTypes' => $subTypes,
+            'breadcrumbs' => Breadcrumbs::generate('users.file.edit', $user, $file),
+        ]);
+    }
+
+    public function replaceForUser(Request $request, User $user, File $file)
+    {
+        $loggedUser = auth()->user();
+        $fileData = $this->fileService->getFileDataForUser($file, $loggedUser, $user);
+        $subTypes = $this->fileService->getSubtypesForUser($user);
+
+        return Inertia::render('Files/byUser/Replace', [
+            'file' => $fileData['file'],
+            'subTypes' => $subTypes,
+            'breadcrumbs' => Breadcrumbs::generate('users.file.replace', $user, $file),
+        ]);
+    }
+}

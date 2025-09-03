@@ -25,7 +25,11 @@
         :teacher-relationships="user.workerRelationships" :student-relationships="user.studentRelationships"
         :can-add-roles="hasPermission($page.props, 'superadmin')" :user-id="user.id" />
 
-      <FilesTable :files="files" title="Archivos del usuario" />
+      <FilesTable :files="files" title="Archivos del usuario"
+        :newFileUrl="route('users.file.create', { 'user': user.id })"
+        :showFileBaseUrl="route('users.file.show', { 'user': user.id, 'file': '##' })"
+        :editFileBaseUrl="route('users.file.edit', { 'user': user.id, 'file': '##' })"
+        :replaceFileBaseUrl="route('users.file.replace', { 'user': user.id, 'file': '##' })" canDownload="true" />
 
       <SystemTimestamp :row="user" />
 
@@ -46,6 +50,7 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 const props = defineProps({
   user: Object,
   genders: Object,
+  files: Object,
 });
 
 const $page = usePage();

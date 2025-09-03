@@ -75,9 +75,11 @@
         <div class="col-12 q-mt-md">
           <div class="text-h4 q-mb-sm">Domicilio</div>
           <div class="row q-col-gutter-sm">
-            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+            <div class="col-6 col-xs-6 col-sm-4 col-md-6">
               <DataFieldShow label="Dirección" :value="user.address" type="text" />
             </div>
+          </div>
+          <div class="row q-col-gutter-sm">
             <div class="col-6 col-xs-6 col-sm-4 col-md-3">
               <DataFieldShow label="Localidad" :value="user.locality" type="text" />
             </div>

@@ -179,8 +179,11 @@ class UserAdminController extends SystemBaseController
 
     public function show(User $user): Response
     {
+        $loggedUser = auth()->user();
+        $userData = $this->userService->getFullUserShowData($user);
         return Inertia::render('Users/Show', [
-            'user' => $this->userService->getFullUserShowData($user),
+            'user' => $userData,
+            'files' => $this->userService->getFiles($user, $loggedUser),
             'genders' => User::genders(),
             'breadcrumbs' => Breadcrumbs::generate('users.show', $user),
         ]);

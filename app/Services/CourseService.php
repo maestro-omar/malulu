@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use App\Models\Relations\StudentCourse;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
+use App\Services\FileService;
 use App\Traits\CourseNext;
 
 class CourseService
@@ -18,10 +19,12 @@ class CourseService
     use CourseNext;
 
     protected $userservice;
+    protected $fileService;
 
-    public function __construct(UserService $userservice)
+    public function __construct(UserService $userservice, FileService $fileService)
     {
         $this->userservice = $userservice;
+        $this->fileService = $fileService;
     }
 
     /**
@@ -416,5 +419,10 @@ class CourseService
             "rel_notes" => $teacherRel->notes,
         ];
         return $teacher;
+    }
+
+    public function getFiles(Course $course, User $loggedUser)
+    {
+        return $this->fileService->getCourseFiles($course, $loggedUser);
     }
 }

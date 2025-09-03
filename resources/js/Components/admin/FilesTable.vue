@@ -17,10 +17,28 @@
         </template>
         <q-table v-if="files" class="mll-table mll-table--files striped-table" dense :rows="files" :columns="columns"
             row-key="id">
+            <template v-slot:body-cell-show="props">
+                <q-td :props="props">
+                    <q-btn flat round dense icon="visibility" color="green" :href="buildShowFileUrl(props.row)"
+                        title="Ver archivo" />
+                </q-td>
+            </template>
+            <template v-slot:body-cell-edit="props">
+                <q-td :props="props">
+                    <q-btn flat round dense icon="edit" color="warning" :href="buildEditFileUrl(props.row)"
+                        title="Ver archivo" />
+                </q-td>
+            </template>
             <template v-slot:body-cell-download="props">
                 <q-td :props="props">
                     <q-btn flat round dense icon="download" color="primary" @click="downloadFile(props.row)"
                         title="Descargar archivo" />
+                </q-td>
+            </template>
+            <template v-slot:body-cell-replace="props">
+                <q-td :props="props">
+                    <q-btn flat round dense icon="published_with_changes" color="teal"
+                        :href="buildReplaceFileUrl(props.row)" title="Reemplazar archivo" />
                 </q-td>
             </template>
         </q-table>
@@ -44,6 +62,22 @@ const props = defineProps({
     newFileUrl: {
         type: String,
         required: false
+    },
+    showFileBaseUrl: {
+        type: String,
+        required: true
+    },
+    editFileBaseUrl: {
+        type: String,
+        required: true
+    },
+    replaceFileBaseUrl: {
+        type: String,
+        required: true
+    },
+    canDownload: {
+        type: Boolean,
+        default: true
     }
 });
 
@@ -118,14 +152,63 @@ const columns = [
         sortable: true,
         style: 'width: 80px'
     },
-    {
-        name: 'download',
-        label: 'Descargar',
-        field: 'download',
-        align: 'center',
-        sortable: false,
-        style: 'width: 60px'
-    },
+
 ];
+if (props.canDownload) {
+    columns.push(
+        {
+            name: 'download',
+            label: 'Descargar',
+            // field: 'download',
+            align: 'center',
+            sortable: false,
+            style: 'width: 60px'
+        });
+
+}
+if (props.showFileBaseUrl) {
+    columns.push(
+        {
+            name: 'show',
+            label: 'Detalles',
+            // field: '',
+            align: 'center',
+            style: 'width: 60px'
+        },
+    );
+}
+if (props.replaceFileBaseUrl) {
+    columns.push(
+        {
+            name: 'replace',
+            label: 'Reemplazar',
+            // field: 'replace',
+            align: 'center',
+            sortable: false,
+            style: 'width: 60px'
+        },
+    );
+}
+if (props.editFileBaseUrl) {
+    columns.push(
+        {
+            name: 'edit',
+            label: 'Editar',
+            // field: 'replace',
+            align: 'center',
+            sortable: false,
+            style: 'width: 60px'
+        },
+    );
+}
+const buildShowFileUrl = (file) => {
+    return props.showFileBaseUrl.replace('##', file.id);
+}
+const buildEditFileUrl = (file) => {
+    return props.editFileBaseUrl.replace('##', file.id);
+}
+const buildReplaceFileUrl = (file) => {
+    return props.replaceFileBaseUrl.replace('##', file.id);
+}
 
 </script>

@@ -43,6 +43,27 @@ Breadcrumbs::for('users.edit', function (Trail $trail, $user) {
     $trail->push("Editar");
 });
 
+Breadcrumbs::for('users.file.create', function (Trail $trail, $user) {
+    $trail->parent('users.show', $user);
+    $trail->push("Nuevo archivo para {$user->firstname} {$user->lastname}");
+});
+
+Breadcrumbs::for('users.file.show', function (Trail $trail, $user, $file) {
+    $trail->parent('users.show', $user);
+    $trail->push("Archivos", null, ['icon' => 'folder']);
+    $trail->push($file->nice_name);
+});
+
+Breadcrumbs::for('users.file.edit', function (Trail $trail, $user, $file) {
+    $trail->parent('users.show', $user);
+    $trail->push("Editar archivo");
+});
+
+Breadcrumbs::for('users.file.replace', function (Trail $trail, $user, $file) {
+    $trail->parent('users.show', $user);
+    $trail->push("Reemplazar archivo");
+});
+
 Breadcrumbs::for('users.add.role', function (Trail $trail, $user) {
     $trail->parent('users.show', $user);
     $trail->push("Añadir rol");
@@ -50,7 +71,7 @@ Breadcrumbs::for('users.add.role', function (Trail $trail, $user) {
 
 Breadcrumbs::for('users.show', function (Trail $trail, $user) {
     $trail->parent('users.index');
-    $trail->push($user->name, route('users.show', $user));
+    $trail->push($user->name, route('users.show', $user), ['icon' => 'face']);
 });
 
 // 🏫 Escuelas
@@ -186,6 +207,11 @@ Breadcrumbs::for('school.course.show', function (Trail $trail, School $school, S
 Breadcrumbs::for('school.course.edit', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
     $trail->parent('school.course.show', $school, $schoolLevel, $course);
     $trail->push("Editar {$course->name}");
+});
+
+Breadcrumbs::for('school.course.file.create', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
+    $trail->parent('school.course.show', $school, $schoolLevel, $course);
+    $trail->push("Nuevo archivo para {$course->nice_name}");
 });
 
 

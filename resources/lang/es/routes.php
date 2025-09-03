@@ -33,10 +33,12 @@ return [
     'delete-image' => 'eliminar-imagen',
     'schools' => 'escuelas',
     'academic-year' => 'ciclo-escolar',
+    'file' => 'archivo',
     'files' => 'archivos',
     'file-types' => 'tipos-archivo',
     'file-subtypes' => 'subtipos-archivo',
     'provinces' => 'provincias',
+    'replace' => 'reemplazar',
 
     'search' => 'buscar',
     // School routes slugs

@@ -32,8 +32,7 @@ class File extends Model
         'size',
         'path',
         'description',
-        'metadata',
-        'active'
+        'metadata'
     ];
 
     /**
@@ -46,8 +45,7 @@ class File extends Model
         'user_id' => 'integer',
         'replaced_by_id' => 'integer',
         'size' => 'integer',
-        'metadata' => 'array',
-        'active' => 'boolean'
+        'metadata' => 'array'
     ];
 
     /**
@@ -71,7 +69,7 @@ class File extends Model
      */
     public function replacedBy(): BelongsTo
     {
-        return $this->belongsTo(File::class, 'replaced_by_id')->withTrashed();
+        return $this->belongsTo(File::class, 'replaced_by_id');
     }
 
     /**
@@ -80,6 +78,19 @@ class File extends Model
     public function replacedFile(): HasMany
     {
         return $this->hasMany(File::class, 'replaced_by_id')->withTrashed();
+    }
+
+    public function historyFlattened(int $level = 1)
+    {
+        $replaced = $this->replacedFile;
+        $return = [];
+        foreach ($replaced as $file) {
+            $file->load('subtype', 'subtype.fileType', 'user');
+            $return[] = ['level' => $level, 'file' => $file];
+            $myParents = $file->historyFlattened($level + 1);
+            $return = array_merge($return, $myParents);
+        }
+        return $return;
     }
 
     // public function visibility(): HasMany

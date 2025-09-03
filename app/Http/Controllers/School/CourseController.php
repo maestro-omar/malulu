@@ -8,6 +8,7 @@ use App\Services\CourseService;
 use App\Services\SchoolService;
 use App\Services\SchoolLevelService;
 use App\Services\SchoolShiftService;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\ValidationException;
@@ -23,17 +24,20 @@ class CourseController extends SchoolBaseController
     protected $schoolService;
     protected $schoolLevelService;
     protected $schoolShiftService;
+    protected $fileService;
 
     public function __construct(
         CourseService $courseService,
         SchoolService $schoolService,
         SchoolLevelService $schoolLevelService,
-        SchoolShiftService $schoolShiftService
+        SchoolShiftService $schoolShiftService,
+        FileService $fileService
     ) {
         $this->courseService = $courseService;
         $this->schoolService = $schoolService;
         $this->schoolLevelService = $schoolLevelService;
         $this->schoolShiftService = $schoolShiftService;
+        $this->fileService = $fileService;
     }
 
     public function index(Request $request, School $school, SchoolLevel $schoolLevel)
@@ -185,10 +189,11 @@ class CourseController extends SchoolBaseController
 
         $students = $this->courseService->getStudents($course, true);
         $teachers = $this->courseService->getTeachers($course);
-
+        $files = $this->courseService->getFiles($course, $user);
         return Inertia::render($view, [
             'course' => $course,
             'school' => $school,
+            'files' => $files,
             'students' => $students,
             'teachers' => $teachers,
             'selectedLevel' => $schoolLevel,

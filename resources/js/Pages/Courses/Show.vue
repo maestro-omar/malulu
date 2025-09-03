@@ -105,7 +105,12 @@
       <StudentsTable :students="students" :courseId="getCourseSlug(course)" :schoolLevel="selectedLevel.code"
         :school="school" />
 
-      <FilesTable :files="null" title="Archivos del curso" :newFileUrl="route('school.course.file.create', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course) })" />
+      <FilesTable :files="files" title="Archivos del curso"
+        :newFileUrl="route('school.course.file.create', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course) })"
+        :showFileBaseUrl="route('school.course.file.show', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: '##' })"
+        :editFileBaseUrl="route('school.course.file.edit', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: '##' })"
+        :replaceFileBaseUrl="route('school.course.file.replace', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: '##' })"
+        canDownload="true" />
 
       <SystemTimestamp :row="course" />
     </template>
@@ -146,6 +151,9 @@ const props = defineProps({
   teachers: {
     type: Array,
     required: true,
+  },
+  files: {
+    type: Array
   },
 })
 

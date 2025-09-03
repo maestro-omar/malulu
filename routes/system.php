@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\System\ProfileAdminController;
+use App\Http\Controllers\System\FileAdminController;
 use App\Http\Controllers\System\UserAdminController;
 use App\Http\Controllers\System\SchoolAdminController;
 use App\Http\Controllers\System\AcademicYearAdminController;
@@ -43,6 +44,11 @@ Route::prefix(__('routes.system'))->group(function () {
             Route::post(__('routes.users') . '/{user}/' . __('routes.upload-image'), [UserAdminController::class, 'uploadImage'])->name('users.upload-image');
             Route::delete(__('routes.users') . '/{user}/' . __('routes.delete-image'), [UserAdminController::class, 'deleteImage'])->name('users.delete-image');
             Route::resource('usuarios', UserAdminController::class)->except(['index', 'show', 'create', 'edit', 'destroy']);
+
+            Route::get(__('routes.users') . '/{user}/' . __('routes.files') . '/' . __('routes.create'), [FileAdminController::class, 'createForUser'])->name('users.file.create');
+            Route::get(__('routes.users') . '/{user}/' . __('routes.file') . '/{file}', [FileAdminController::class, 'showForUser'])->name('users.file.show');
+            Route::get(__('routes.users') . '/{user}/' . __('routes.file') . '/{file}/' . __('routes.edit'), [FileAdminController::class, 'editForUser'])->name('users.file.edit');
+            Route::get(__('routes.users') . '/{user}/' . __('routes.file') . '/{file}/' . __('routes.replace'), [FileAdminController::class, 'replaceForUser'])->name('users.file.replace');
         });
 
         // Schools Routes

@@ -10,7 +10,7 @@
       </q-item-section>
 
       <q-item-section avatar v-if="true">
-        <q-btn size="sm" padding="sm" dense icon="add" color="green" @click="addStudent" title="Inscribir estudiante">
+        <q-btn size="sm" padding="sm" dense icon="add" color="green" title="Inscribir estudiante">
           Inscribir estudiante
         </q-btn>
       </q-item-section>

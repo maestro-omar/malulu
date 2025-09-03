@@ -146,27 +146,34 @@ class FileService
     public function getUserFiles(User $user, User $loggedUser)
     {
         $files = $user->files;
+        $files = $this->checkAndFormatEach($files, $loggedUser);
+        return $files ?: null;
+    }
+
+    private function checkFileVisibility(File $file, User $loggedUser, bool $throwException)
+    {
+        return true; //OMAR TODO 
+    }
+
+    private function checkAndFormatEach($files, User $loggedUser)
+    {
         $files = $files->map(function ($file) use ($loggedUser) {
-            if ($this->checkFileVisibility($file, $loggedUser)) {
+            if ($this->checkFileVisibility($file, $loggedUser, false)) {
                 return $this->formatFileForTable($file);
             } else {
                 return null;
             }
         });
-        $files = $files->filter()->toArray();
-        return $files ?: null;
-    }
-
-    private function checkFileVisibility(File $file, User $loggedUser)
-    {
-        return true; //OMAR TODO 
+        return $files->filter()->toArray();
     }
 
     private function formatFileForTable(File $file)
     {
         $replaces = $file->replacedFile;
         $data = [
+            'id' => $file->id,
             'nice_name' => $file->nice_name,
+            'description' => $file->description,
             'original_name' => $file->original_name,
             'subtype' => $file->subtype->name,
             'type' => $file->subtype->filetype->name,
@@ -178,8 +185,50 @@ class FileService
         return $data;
     }
 
-public function getSubtypesForCourse(Course $dummyByNow){
-    return FileSubtype::where('file_type_id', FileType::COURSE)->get();
-}
+    private function formatFileForHistoryTable(int $level, File $file)
+    {
+        $data = [
+            'level' => $level,
+            'id' => $file->id,
+            'nice_name' => $file->nice_name,
+            'subtype' => $file->subtype->name,
+            'created_at' => $file->created_at->format('d/m/Y'),
+            'deleted_at' => $file->deleted_at ? $file->deleted_at->format('d/m/Y') : '',
+            'created_by' => $file->user->firstname . ' ' . $file->user->lastname,
+            'url' =>  $file->url
+        ];
+        return $data;
+    }
 
+    public function getSubtypesForCourse(Course $dummyByNow)
+    {
+        return FileSubtype::byFileTypeCode(FileType::COURSE)->get();
+    }
+
+    public function getSubtypesForUser(User $dummyByNow)
+    {
+        return FileSubtype::byFileTypeCode(FileType::USER)->get();
+    }
+
+    public function getCourseFiles(Course $course, User $loggedUser)
+    {
+        $files = File::where('fileable_type', 'course')->where('fileable_id', $course->id)->with(['subtype', 'subtype.fileType'])->get();
+        $files = $this->checkAndFormatEach($files, $loggedUser);
+        return $files ?: null;
+    }
+
+    public function getFileDataForUser(File $file, User $loggedUser, User $user)
+    {
+        $this->checkFileVisibility($file, $loggedUser, true);
+        if ($file->fileable_id != $user->id || !in_array($file->fileable_type, FileType::userRelatedCodes())) {
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException('Este archivo no pertenece al usuario indicado');
+        }
+        $file->load('subtype', 'subtype.fileType', 'user');
+        $history = $file->historyFlattened();
+        $history = array_map(function ($item) use ($loggedUser) {
+            return $this->formatFileForHistoryTable($item['level'], $item['file']);
+        }, $history);
+
+        return ['file' => $file, 'history' => $history];
+    }
 }
