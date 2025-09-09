@@ -18,6 +18,10 @@
         &:hover {
             color: color.scale(variables.$color-terciary, $lightness: 50%) !important;
         }
+
+        i {
+            margin-top: -2px;
+        }
     }
 
     .q-breadcrumbs--last {
