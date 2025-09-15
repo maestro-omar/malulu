@@ -492,6 +492,14 @@ class RoleAndPermissionSeeder extends Seeder
                     $academicHistoryPermissions,
                     ['profile.view']
                 );
+            case Role::MAINTENANCE:
+                return array_merge(
+                    $universalPermissions
+                );
+            case Role::EXTERNAL:
+                return array_merge(
+                    $universalPermissions
+                );
             default:
                 return [];
         endswitch;

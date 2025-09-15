@@ -43,6 +43,8 @@ class Role extends SpatieRole
     const GUARDIAN = 'tutor';
     const STUDENT = 'estudiante';
     const COOPERATIVE = 'cooperador';
+    const MAINTENANCE = 'mantenimiento';
+    const EXTERNAL = 'externo';
     const FORMER_STUDENT = 'ex_alumno';
 
     /**
@@ -80,6 +82,8 @@ class Role extends SpatieRole
             self::SPECIAL_TEACHER,
             self::LIBRARIAN,
             self::COOPERATIVE,
+            self::MAINTENANCE,
+            self::EXTERNAL,
             self::STUDENT,
             self::GUARDIAN,
             self::FORMER_STUDENT,
@@ -121,6 +125,7 @@ class Role extends SpatieRole
             self::CURRICULAR_TEACHER,
             self::SPECIAL_TEACHER,
             self::LIBRARIAN,
+            self::MAINTENANCE,
         ];
     }
 
@@ -201,6 +206,8 @@ class Role extends SpatieRole
             self::LIBRARIAN,
             self::GUARDIAN,
             self::FORMER_STUDENT,
+            self::MAINTENANCE,
+            self::EXTERNAL,
         ];
     }
 
@@ -226,6 +233,8 @@ class Role extends SpatieRole
             self::GUARDIAN => ['label' => 'Tutor/a'],
             self::STUDENT => ['label' => 'Alumno/a'],
             self::COOPERATIVE => ['label' => 'Cooperadora'],
+            self::MAINTENANCE => ['label' => 'Mantenimiento'],
+            self::EXTERNAL => ['label' => 'Externo'],
             self::FORMER_STUDENT => ['label' => 'Ex-alumno/a'],
         ];
 
