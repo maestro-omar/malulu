@@ -54,7 +54,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('role_relationship_id')->constrained()->onDelete('cascade'); // Link to the main role relationship
             $table->foreignId('class_subject_id')->nullable()->constrained()->onDelete('cascade'); // Link to the subject
-            $table->foreignId('job_status_id')->nullable()->constrained()->onDelete('cascade'); // Link to the job statys
+            $table->foreignId('school_shift_id')->nullable()->constrained()->onDelete('cascade'); // Link to the school shift
+            $table->foreignId('job_status_id')->nullable()->constrained()->onDelete('cascade'); // Link to the job status
             $table->date('job_status_date')->nullable(); // Employment status date
             $table->string('decree_number')->nullable(); // Decree number and year that assings to this job
             $table->foreignId('decree_file_id')->nullable()->constrained('files')->onDelete('cascade'); // Link to the file

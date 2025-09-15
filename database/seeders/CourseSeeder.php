@@ -21,7 +21,7 @@ class CourseSeeder extends Seeder
      */
     public function run(): void
     {
-        $SIMPLE_LUCIO_LUCERO = config('malulu.one_school_cue') === School::CUE_LUCIO_LUCERO;
+        $this->SIMPLE_LUCIO_LUCERO = config('malulu.one_school_cue') === School::CUE_LUCIO_LUCERO;
 
         $schoolLevels = SchoolLevel::all();
 
@@ -45,7 +45,7 @@ class CourseSeeder extends Seeder
             })
             ->first();
 
-        if (!$kinder && !$SIMPLE_LUCIO_LUCERO) {
+        if (!$kinder && !$this->SIMPLE_LUCIO_LUCERO) {
             $this->command->error('No other schools found. Please run SchoolSeeder first.');
             return;
         }
@@ -57,7 +57,7 @@ class CourseSeeder extends Seeder
             ->take(2)
             ->get();
 
-        if ($otherSchools->isEmpty() && !$SIMPLE_LUCIO_LUCERO) {
+        if ($otherSchools->isEmpty() && !$this->SIMPLE_LUCIO_LUCERO) {
             $this->command->error('No other schools found. Please run SchoolSeeder first.');
             return;
         }
@@ -75,70 +75,70 @@ class CourseSeeder extends Seeder
             SchoolLevel::KINDER => [
                 [
                     'grade' => 2,
-                    'letters' => ['A', 'B'],
+                    'courses_per_shift' => 2,
                     'names' => ['ositos', 'duendes'],
                 ],
                 [
                     'grade' => 3,
-                    'letters' => ['A', 'B'],
+                    'courses_per_shift' => 2,
                     'names' => ['rosa', 'verde'],
                 ],
                 [
                     'grade' => 4,
-                    'letters' => ['A', 'B'],
+                    'courses_per_shift' => 2,
                     'names' => ['amarilla', 'violeta'],
                 ],
             ],
             SchoolLevel::PRIMARY => [
                 [
                     'grade' => 1,
-                    'letters' => ['A', 'B', 'C'],
+                    'courses_per_shift' => 3,
                 ],
                 [
                     'grade' => 2,
-                    'letters' => ['A', 'B', 'C'],
+                    'courses_per_shift' => 3,
                 ],
                 [
                     'grade' => 3,
-                    'letters' => ['A', 'B', 'C'],
+                    'courses_per_shift' => 3,
                 ],
                 [
                     'grade' => 4,
-                    'letters' => ['A', 'B', 'C'],
+                    'courses_per_shift' => 3,
                 ],
                 [
                     'grade' => 5,
-                    'letters' => ['A', 'B', 'C'],
+                    'courses_per_shift' => 3,
                 ],
                 [
                     'grade' => 6,
-                    'letters' => ['A', 'B', 'C'],
+                    'courses_per_shift' => 3,
                 ]
             ],
             SchoolLevel::SECONDARY => [
                 [
                     'grade' => 1,
-                    'letters' => ['A', 'B', 'C'],
+                    'courses_per_shift' => 3,
                 ],
                 [
                     'grade' => 2,
-                    'letters' => ['A', 'B', 'C'],
+                    'courses_per_shift' => 3,
                 ],
                 [
                     'grade' => 3,
-                    'letters' => ['A', 'B', 'C'],
+                    'courses_per_shift' => 3,
                 ],
                 [
                     'grade' => 4,
-                    'letters' => ['A', 'B', 'C'],
+                    'courses_per_shift' => 3,
                 ],
                 [
                     'grade' => 5,
-                    'letters' => ['A', 'B', 'C'],
+                    'courses_per_shift' => 3,
                 ],
                 [
                     'grade' => 6,
-                    'letters' => ['A', 'B', 'C'],
+                    'courses_per_shift' => 3,
                 ],
             ],
         ];
@@ -175,18 +175,23 @@ class CourseSeeder extends Seeder
             foreach ($schoolLevels as $level) {
                 if (isset($coursesByLevel[$level->code])) {
                     foreach ($coursesByLevel[$level->code] as $courseData) {
-                        foreach ($courseData['letters'] as $cIdx => $letter) {
-                            foreach ($schoolShifts as $shift) {
+                        $coursesPerShift = $courseData['courses_per_shift'];
+                        $currentLetter = 'A';
+                        $nameIndex = 0;
+
+                        foreach ($schoolShifts as $shift) {
+                            // Create courses for this shift
+                            for ($i = 0; $i < $coursesPerShift; $i++) {
                                 try {
-                                    $prevCourseId = $this->getPreviousCourseId($school, $level, $shift, $courseData['grade'], $letter, $startDate);
+                                    $prevCourseId = $this->getPreviousCourseId($school, $level, $shift, $courseData['grade'], $currentLetter, $startDate);
                                     $course = Course::create([
                                         'school_id' => $school->id,
                                         'school_level_id' => $level->id,
                                         'school_shift_id' => $shift->id,
                                         'previous_course_id' => $prevCourseId,
                                         'number' => $courseData['grade'],
-                                        'letter' => $letter,
-                                        'name' => $courseData['names'][$cIdx] ?? null,
+                                        'letter' => $currentLetter,
+                                        'name' => $courseData['names'][$nameIndex] ?? null,
                                         'start_date' => $startDate,
                                         'end_date' => $endDate,
                                         'active' => true,
@@ -195,9 +200,13 @@ class CourseSeeder extends Seeder
                                     $this->coursesCreated++;
                                     $this->coursesBySchool[$school->code]++;
                                     if ($prevCourseId) $this->deactivate($prevCourseId);
+
+                                    // Move to next letter and name index
+                                    $currentLetter++;
+                                    $nameIndex++;
                                 } catch (\Exception $e) {
                                     $this->command->error("Error creating course: {$e->getMessage()}");
-                                    $this->command->error("Details: School: {$school->name}, Level: {$level->name}, Grade: {$courseData['grade']}, Letter: {$letter}, Shift: {$shift->name}");
+                                    $this->command->error("Details: School: {$school->name}, Level: {$level->name}, Grade: {$courseData['grade']}, Letter: {$currentLetter}, Shift: {$shift->name}");
                                     throw $e;
                                 }
                             }

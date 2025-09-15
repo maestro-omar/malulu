@@ -32,7 +32,8 @@ class File extends Model
         'size',
         'path',
         'description',
-        'metadata'
+        'metadata',
+        'active'
     ];
 
     /**
@@ -45,7 +46,8 @@ class File extends Model
         'user_id' => 'integer',
         'replaced_by_id' => 'integer',
         'size' => 'integer',
-        'metadata' => 'array'
+        'metadata' => 'array',
+        'active' => 'boolean'
     ];
 
     /**

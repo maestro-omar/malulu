@@ -13,6 +13,7 @@ class SchoolShift extends Model
     const MORNING = 'manana';
     const AFTERNOON = 'tarde';
     const NIGHT = 'noche';
+    const BOTH = 'ambos';
 
     protected $table = 'school_shifts';
 
@@ -33,6 +34,7 @@ class SchoolShift extends Model
             self::MORNING   => ['label' => 'Mañana'],
             self::AFTERNOON => ['label' => 'Tarde'],
             self::NIGHT   => ['label' => 'Noche'],
+            self::BOTH   => ['label' => 'Ambos'],
         ];
 
         return collect(self::getFilteredConstants())

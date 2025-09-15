@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('path');
             $table->text('description')->nullable();
             $table->json('metadata')->nullable();
+            $table->boolean('active')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

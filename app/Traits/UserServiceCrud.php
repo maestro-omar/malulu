@@ -251,6 +251,7 @@ trait UserServiceCrud
                         'degree_title' => $details['worker_details']['degree_title'] ?? null,
                         'schedule' => $details['worker_details']['schedule'] ?? null,
                         'class_subject_id' => Role::isTeacher($roleCode) ? ($details['worker_details']['class_subject_id'] ?? null) : null,
+                        'school_shift_id' => Role::isTeacher($roleCode) ? ($details['worker_details']['school_shift_id'] ?? null) : null,
                     ]);
 
                     // If is also a teacher, assign courses

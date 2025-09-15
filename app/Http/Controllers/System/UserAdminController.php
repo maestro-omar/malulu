@@ -231,6 +231,7 @@ class UserAdminController extends SystemBaseController
             'worker_details.degree_title' => ['nullable', 'string'],
             'worker_details.schedule' => ['nullable', 'array'],
             'worker_details.class_subject_id' => ['nullable', 'exists:class_subjects,id'],
+            'worker_details.school_shift_id' => ['nullable', 'exists:school_shifts,id'],
 
             'guardian_details.relationship_type' => ['nullable', 'string'],
             'guardian_details.is_emergency_contact' => ['nullable', 'boolean'],

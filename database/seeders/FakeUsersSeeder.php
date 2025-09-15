@@ -47,7 +47,6 @@ class FakeUsersSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->deleteAllUsersExceptAdmin();
 
         if (SchoolLevel::count() === 0) {
             $this->command->error('No school levels found. Please run SchoolLevelSeeder first.');
@@ -139,10 +138,10 @@ class FakeUsersSeeder extends Seeder
             Role::DIRECTOR => 1,
             Role::REGENT => 2,
             Role::SECRETARY => self::FAST_TEST ? 1 : 3,
-            Role::GRADE_TEACHER => self::FAST_TEST ? 2 : 30,
-            Role::ASSISTANT_TEACHER => self::FAST_TEST ? 2 : 20,
-            Role::CURRICULAR_TEACHER => self::FAST_TEST ? 2 : 20,
-            Role::SPECIAL_TEACHER => self::FAST_TEST ? 2 : 4,
+            // Role::GRADE_TEACHER => self::FAST_TEST ? 2 : 30,
+            // Role::ASSISTANT_TEACHER => self::FAST_TEST ? 2 : 20,
+            // Role::CURRICULAR_TEACHER => self::FAST_TEST ? 2 : 20,
+            // Role::SPECIAL_TEACHER => self::FAST_TEST ? 2 : 4,
             Role::PROFESSOR => self::FAST_TEST ? 2 : 20,
             Role::CLASS_ASSISTANT => self::FAST_TEST ? 2 : 6,
             Role::LIBRARIAN => 2,
@@ -210,7 +209,7 @@ class FakeUsersSeeder extends Seeder
             $query->where('code', Role::COOPERATIVE);
         })->get();
 
-        foreach ($cooperativeUsers as $user) { 
+        foreach ($cooperativeUsers as $user) {
             $this->assignRoleWithRelationship($user, $defaultSchool, null, Role::COOPERATIVE);
         }
 
@@ -551,42 +550,6 @@ class FakeUsersSeeder extends Seeder
         } catch (\Exception $e) {
             echo "Skip error: {$user->id}, school_id: {$school->id}, roleId: $roleId , schoolLevelId: $schoolLevelId \n";
         }
-    }
-
-    /**
-     * Delete all users and their relations except user with id=1
-     */
-    private function deleteAllUsersExceptAdmin()
-    {
-        // Delete related data first to avoid foreign key issues
-        $userIds = \App\Models\Entities\User::where('id', '!=', 1)->pluck('id');
-
-        // Delete teacher_courses and student_courses (force delete)
-        \App\Models\Relations\TeacherCourse::whereIn('role_relationship_id', function ($q) use ($userIds) {
-            $q->select('id')->from('role_relationships')->whereIn('user_id', $userIds);
-        })->withTrashed()->forceDelete();
-        \App\Models\Relations\StudentCourse::whereIn('role_relationship_id', function ($q) use ($userIds) {
-            $q->select('id')->from('role_relationships')->whereIn('user_id', $userIds);
-        })->withTrashed()->forceDelete();
-
-        // Delete worker, student, guardian relationships (no soft deletes, normal delete)
-        \App\Models\Relations\WorkerRelationship::whereIn('role_relationship_id', function ($q) use ($userIds) {
-            $q->select('id')->from('role_relationships')->whereIn('user_id', $userIds);
-        })->delete();
-        \App\Models\Relations\StudentRelationship::whereIn('role_relationship_id', function ($q) use ($userIds) {
-            $q->select('id')->from('role_relationships')->whereIn('user_id', $userIds);
-        })->delete();
-        \App\Models\Relations\GuardianRelationship::whereIn('role_relationship_id', function ($q) use ($userIds) {
-            $q->select('id')->from('role_relationships')->whereIn('user_id', $userIds);
-        })->delete();
-
-        // Delete role relationships (force delete)
-        \App\Models\Relations\RoleRelationship::whereIn('user_id', $userIds)->withTrashed()->forceDelete();
-
-        // Finally, force delete users (except admin)
-        \App\Models\Entities\User::where('id', '!=', 1)->withTrashed()->forceDelete();
-
-        echo "Deleting users with IDs: ", implode(", ", $userIds->toArray()), "\n";
     }
 
     private function schoolLevelCodeById(int $id): string

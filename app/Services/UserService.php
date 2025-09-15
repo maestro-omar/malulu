@@ -183,6 +183,7 @@ class UserService
                         'name' => $relationship->classSubject->name,
                         'short_name' => $relationship->classSubject->short_name
                     ] : null,
+                    'school_shift_id' => $relationship->school_shift_id,
                     'job_status_id' => $relationship->job_status_id,
                     'job_status_date' => $relationship->job_status_date,
                     'decree_number' => $relationship->decree_number,

@@ -9,6 +9,7 @@ use App\Traits\FilterConstants;
 use App\Models\Relations\RoleRelationship;
 use App\Models\Catalogs\ClassSubject;
 use App\Models\Catalogs\JobStatus;
+use App\Models\Catalogs\SchoolShift;
 use App\Models\Entities\File;
 
 class WorkerRelationship extends Model
@@ -20,6 +21,7 @@ class WorkerRelationship extends Model
     protected $fillable = [
         'role_relationship_id',
         'class_subject_id',
+        'school_shift_id',
         'job_status_id',
         'job_status_date',
         'decree_number',
@@ -47,6 +49,14 @@ class WorkerRelationship extends Model
     public function classSubject(): BelongsTo
     {
         return $this->belongsTo(ClassSubject::class);
+    }
+
+    /**
+     * Get the school shift that this teacher teaches.
+     */
+    public function schoolShift(): BelongsTo
+    {
+        return $this->belongsTo(SchoolShift::class);
     }
 
     /**
