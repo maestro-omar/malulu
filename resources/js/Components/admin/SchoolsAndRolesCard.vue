@@ -34,55 +34,48 @@
           <!-- Worker Relationships -->
           <div v-if="hasworkerRelationshipsForRole(role.id, school.id)"
             :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
-            <h5 class="schools-roles-card__section-title">Información Docente - {{ role.name }}</h5>
             <div class="schools-roles-card__relationships">
               <div v-for="relationship in getWorkerRelationshipsForRole(role.id, school.id)" :key="relationship.id"
                 class="schools-roles-card__relationship">
-                <div class="schools-roles-card__relationship-grid">
-                  <div class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Estado:</span>
-                    <p class="schools-roles-card__field-value">{{ relationship.job_status }}</p>
+                <div class="row q-col-gutter-sm">
+                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Estado:" :value="relationship.job_status" />
                   </div>
-                  <div class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Título:</span>
-                    <p class="schools-roles-card__field-value">{{ relationship.degree_title }}</p>
+                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Título:" :value="relationship.degree_title" />
                   </div>
-                  <div v-if="relationship.start_date" class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
-                    <p class="schools-roles-card__field-value">{{ formatDate(relationship.start_date) }}</p>
+                  <div v-if="relationship.role" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Rol:" :value="relationship.role.name" />
                   </div>
-                  <div v-if="relationship.creator" class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Creado por:</span>
-                    <p class="schools-roles-card__field-value">{{ relationship.creator.name }}</p>
+                  <div v-if="relationship.decree_number" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Decreto:" :value="relationship.decree_number" />
                   </div>
-                  <div v-if="relationship.role" class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Rol:</span>
-                    <p class="schools-roles-card__field-value">{{ relationship.role.name }}</p>
-                  </div>
-                  <div v-if="relationship.decree_number" class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Decreto:</span>
-                    <p class="schools-roles-card__field-value">{{ relationship.decree_number }}</p>
-                  </div>
-                  <div v-if="relationship.job_status_date" class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Fecha:</span>
-                    <p class="schools-roles-card__field-value">{{ formatDate(relationship.job_status_date) }}</p>
+                  <div v-if="relationship.job_status_date" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Fecha:" :value="relationship.job_status_date" type="date" />
                   </div>
                   <div v-if="hasTeacherRelationshipsForRole(role.id, school.id) && relationship.class_subject"
-                    class="schools-roles-card__field schools-roles-card__field--span-2">
-                    <span class="schools-roles-card__field-label">Asignatura:</span>
-                    <div class="schools-roles-card__field-content">
-                      <p class="schools-roles-card__field-value">{{ relationship.class_subject.name }}</p>
-                    </div>
+                    class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Asignatura:" :value="relationship.class_subject.name" />
                   </div>
-                  <div v-if="relationship.schedule" class="schools-roles-card__field schools-roles-card__field--span-2">
-                    <span class="schools-roles-card__field-label">Horario:</span>
-                    <pre
-                      class="schools-roles-card__field-pre">{{ JSON.stringify(relationship.schedule, null, 2) }}</pre>
+                  <div v-if="relationship.schedule" class="col-12">
+                    <DataFieldShow label="Horario:">
+                      <template #slotValue>
+                        <pre
+                          class="schools-roles-card__field-pre">{{ JSON.stringify(relationship.schedule, null, 2) }}</pre>
+                      </template>
+                    </DataFieldShow>
                   </div>
-                  <div v-if="relationship.notes" class="schools-roles-card__field schools-roles-card__field--span-2">
-                    <span class="schools-roles-card__field-label">Notas:</span>
-                    <p class="schools-roles-card__field-value schools-roles-card__field-value--pre-wrap">{{
-                      relationship.notes }}</p>
+                  <div v-if="relationship.notes" class="col-12">
+                    <DataFieldShow label="Notas:" :value="relationship.notes" />
+                  </div>
+                </div>
+
+                <div class="row q-col-gutter-sm">
+                  <div v-if="relationship.creator" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Creado por:" :value="relationship.creator.name" />
+                  </div>
+                  <div v-if="relationship.start_date" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Fecha de Inicio:" :value="relationship.start_date" type="date" />
                   </div>
                 </div>
               </div>
@@ -92,51 +85,49 @@
           <!-- Guardian Relationships -->
           <div v-if="hasGuardianRelationshipsForRole(role.id, school.id)"
             :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
-            <h5 class="schools-roles-card__section-title">Información de Tutor</h5>
             <div class="schools-roles-card__relationships">
               <div v-for="relationship in getGuardianRelationshipsForRole(role.id, school.id)" :key="relationship.id"
                 class="schools-roles-card__relationship">
-                <div class="schools-roles-card__relationship-grid">
-                  <div class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Tipo:</span>
-                    <p class="schools-roles-card__field-value">{{ relationship.relationship_type }}</p>
+                <div class="row q-col-gutter-sm">
+                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Tipo:" :value="relationship.relationship_type" />
                   </div>
-                  <div v-if="relationship.start_date" class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
-                    <p class="schools-roles-card__field-value">{{ formatDate(relationship.start_date) }}</p>
+                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Contacto de Emergencia:"
+                      :value="relationship.is_emergency_contact ? 'Sí' : 'No'" />
                   </div>
-                  <div v-if="relationship.creator" class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Creado por:</span>
-                    <p class="schools-roles-card__field-value">{{ relationship.creator.name }}</p>
+                  <div v-if="relationship.is_emergency_contact" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Prioridad:" :value="relationship.emergency_contact_priority" />
                   </div>
-                  <div class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Contacto de Emergencia:</span>
-                    <p class="schools-roles-card__field-value">{{ relationship.is_emergency_contact ? 'Sí' : 'No' }}
-                    </p>
+                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Restricción:" :value="relationship.is_restricted ? 'Sí' : 'No'" />
                   </div>
-                  <div v-if="relationship.is_emergency_contact" class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Prioridad:</span>
-                    <p class="schools-roles-card__field-value">{{ relationship.emergency_contact_priority }}</p>
+                  <div v-if="relationship.student" class="col-12">
+                    <DataFieldShow label="Estudiante:">
+                      <template #slotValue>
+                        <div class="schools-roles-card__field-content">
+                          <p class="schools-roles-card__field-value">{{ relationship.student.name }}</p>
+                          <p v-if="relationship.student.current_course" class="schools-roles-card__field-subtitle">
+                            {{ relationship.student.current_course.name }}
+                          </p>
+                        </div>
+                      </template>
+                    </DataFieldShow>
                   </div>
-                  <div class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Restricción:</span>
-                    <p class="schools-roles-card__field-value">{{ relationship.is_restricted ? 'Sí' : 'No' }}</p>
-                  </div>
-                  <div v-if="relationship.student" class="schools-roles-card__field schools-roles-card__field--span-2">
-                    <span class="schools-roles-card__field-label">Estudiante:</span>
-                    <div class="schools-roles-card__field-content">
-                      <p class="schools-roles-card__field-value">{{ relationship.student.name }}</p>
-                      <p v-if="relationship.student.current_course" class="schools-roles-card__field-subtitle">
-                        {{ relationship.student.current_course.name }}
-                      </p>
-                    </div>
-                  </div>
-                  <div v-if="relationship.notes" class="schools-roles-card__field schools-roles-card__field--span-2">
-                    <span class="schools-roles-card__field-label">Notas:</span>
-                    <p class="schools-roles-card__field-value schools-roles-card__field-value--pre-wrap">{{
-                      relationship.notes }}</p>
+                  <div v-if="relationship.notes" class="col-12">
+                    <DataFieldShow label="Notas:" :value="relationship.notes" />
                   </div>
                 </div>
+
+                <div class="row q-col-gutter-sm">
+                  <div v-if="relationship.creator" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Creado por:" :value="relationship.creator.name" />
+                  </div>
+                  <div v-if="relationship.start_date" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Fecha de Inicio:" :value="relationship.start_date" type="date" />
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -144,37 +135,42 @@
           <!-- Student Relationships -->
           <div v-if="hasStudentRelationshipsForRole(role.id, school.id)"
             :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
-            <h5 class="schools-roles-card__section-title">Información de Estudiante</h5>
             <div class="schools-roles-card__relationships">
               <div v-for="relationship in getStudentRelationshipsForRole(role.id, school.id)" :key="relationship.id"
                 class="schools-roles-card__relationship">
                 <div v-if="relationship.current_course"
                   class="schools-roles-card__relationship-content schools-roles-card__relationship-content--student-course">
-                  <div class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Curso:</span>
-                    <a class="schools-roles-card__field-value"
-                      :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': getSchoolLevelCode(relationship.current_course.school_level_id), 'idAndName': getCourseSlug(relationship.current_course) })">
-                      {{ relationship.current_course.nice_name }}</a>
-                  </div>
-                  <div v-if="relationship.current_course.level" class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Nivel:</span>
-                    <div class="schools-roles-card__field-value">
-                      <SchoolLevelBadge :level="relationship.current_course.level" />
+                  <div class="row q-col-gutter-sm">
+                    <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+                      <DataFieldShow label="Curso:">
+                        <template #slotValue>
+                          <a class="schools-roles-card__field-value"
+                            :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': getSchoolLevelCode(relationship.current_course.school_level_id), 'idAndName': getCourseSlug(relationship.current_course) })">
+                            {{ relationship.current_course.nice_name }}</a>
+                        </template>
+                      </DataFieldShow>
+                    </div>
+                    <div v-if="relationship.current_course.level" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                      <DataFieldShow label="Nivel:">
+                        <template #slotValue>
+                          <SchoolLevelBadge :level="relationship.current_course.level" />
+                        </template>
+                      </DataFieldShow>
+                    </div>
+                    <div v-if="relationship.notes" class="col-12">
+                      <DataFieldShow label="Notas:" :value="relationship.notes" />
                     </div>
                   </div>
-                  <div v-if="relationship.start_date" class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
-                    <p class="schools-roles-card__field-value">{{ formatDate(relationship.start_date) }}</p>
+
+                  <div class="row q-col-gutter-sm">
+                    <div v-if="relationship.creator" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                      <DataFieldShow label="Creado por:" :value="relationship.creator.name" />
+                    </div>
+                    <div v-if="relationship.start_date" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                      <DataFieldShow label="Fecha de Inicio:" :value="relationship.start_date" type="date" />
+                    </div>
                   </div>
-                  <div v-if="relationship.creator" class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Creado por:</span>
-                    <p class="schools-roles-card__field-value">{{ relationship.creator.name }}</p>
-                  </div>
-                  <div v-if="relationship.notes" class="schools-roles-card__field schools-roles-card__field--span-2">
-                    <span class="schools-roles-card__field-label">Notas:</span>
-                    <p class="schools-roles-card__field-value schools-roles-card__field-value--pre-wrap">{{
-                      relationship.notes }}</p>
-                  </div>
+
                 </div>
               </div>
             </div>
@@ -183,26 +179,25 @@
           <!-- General Role Relationships (for roles without specific relationship types) -->
           <div v-if="hasGeneralRoleRelationshipsForRole(role.id, school.id)"
             :class="['schools-roles-card__section', getRoleBackgroundColor(role)]">
-            <h5 class="schools-roles-card__section-title">Información General del Rol - {{ role.name }}</h5>
             <div class="schools-roles-card__relationships">
               <div v-for="relationship in getGeneralRoleRelationshipsForRole(role.id, school.id)" :key="relationship.id"
                 class="schools-roles-card__relationship">
-                <div class="schools-roles-card__relationship-grid">
-                  <div class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Fecha de Inicio:</span>
-                    <p class="schools-roles-card__field-value">{{ formatDate(relationship.start_date) }}</p>
-                  </div>
-                  <div v-if="relationship.creator" class="schools-roles-card__field">
-                    <span class="schools-roles-card__field-label">Creado por:</span>
-                    <p class="schools-roles-card__field-value">{{ relationship.creator.name }}</p>
-                  </div>
-                  <div v-if="relationship.notes" class="schools-roles-card__field schools-roles-card__field--span-2">
-                    <span class="schools-roles-card__field-label">Notas:</span>
-                    <p class="schools-roles-card__field-value schools-roles-card__field-value--pre-wrap">{{
-                      relationship.notes }}</p>
+                <div class="row q-col-gutter-sm">
+                  <div v-if="relationship.notes" class="col-12">
+                    <DataFieldShow label="Notas:" :value="relationship.notes" />
                   </div>
                   <!-- Add other general role relationship fields here if needed -->
                 </div>
+
+                <div class="row q-col-gutter-sm">
+                  <div v-if="relationship.creator" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Creado por:" :value="relationship.creator.name" />
+                  </div>
+                  <div v-if="relationship.start_date" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <DataFieldShow label="Fecha de Inicio:" :value="relationship.start_date" type="date" />
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -216,6 +211,7 @@
 <script setup>
 import RoleBadge from '@/Components/Badges/RoleBadge.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
+import DataFieldShow from '@/Components/DataFieldShow.vue';
 import { schoolLevelOptions } from '@/Composables/schoolLevelOptions';
 import { getCourseSlug } from '@/Utils/strings';
 import { formatDate } from '@/Utils/date';
