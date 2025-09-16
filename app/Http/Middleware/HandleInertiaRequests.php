@@ -143,6 +143,13 @@ class HandleInertiaRequests extends Middleware
                 'icon' => 'co_present',
                 'colorClass' => 'text-orange',
             ];
+        } elseif ($school) {
+            $items[] = [
+                'name' => 'Mi escuela',
+                'href' => route('school.show', $school->slug),
+                'icon' => 'home',
+                'colorClass' => 'text-blue',
+            ];
         }
 
         return $items;

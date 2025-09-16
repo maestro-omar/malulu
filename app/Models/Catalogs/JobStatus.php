@@ -37,7 +37,7 @@ class JobStatus extends Model
         $map = [
             self::SUBSTITUTE => ['label' => 'Suplente'],
             self::INTERIM    => ['label' => 'Interino'],
-            self::PERMANENT  => ['label' => 'Permanente'],
+            self::PERMANENT  => ['label' => 'Titular'],
         ];
 
         return collect(self::getFilteredConstants())

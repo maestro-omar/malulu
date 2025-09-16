@@ -2,50 +2,184 @@
 @use "../abstracts/variables";
 
 .dashboard {
-    &__header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__school-link {
+    display: inline-flex;
+    align-items: center;
+    @include mixins.fz(1.6);
+    @include mixins.lh(1.6);
+    font-weight: 400;
+    color: variables.$color-text;
+    transition: color 0.15s;
+    vertical-align: middle;
+
+    &:hover {
+      color: variables.$color-black-text;
     }
 
-    &__school-link {
-        display: inline-flex;
-        align-items: center;
-        @include mixins.fz(1.6);
-        @include mixins.lh(1.6);
-        font-weight: 400;
-        color: variables.$color-text;
-        transition: color 0.15s;
-        vertical-align: middle;
+    svg {
+      margin: 0 0.5rem;
+      vertical-align: middle;
+      display: inline-block;
+      // Adjust as needed for perfect alignment
+      position: relative;
+      top: 1px;
+    }
+  }
 
-        &:hover {
-            color: variables.$color-black-text;
-        }
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+  }
 
-        svg {
-            margin: 0 0.5rem;
-            vertical-align: middle;
-            display: inline-block;
-            // Adjust as needed for perfect alignment
-            position: relative;
-            top: 1px;
-        }
+  &__card {
+    background: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  &__content {
+    padding: 1.5rem;
+  }
+}
+
+
+.dbsub-panel {
+  & &__welcome-card {
+    background: linear-gradient(135deg, variables.$color-primary 0%, variables.$color-secondary 100%);
+    color: white;
+  }
+
+  &__title {
+    margin: 0;
+    @include mixins.fz(2.4);
+    @include mixins.lh(2.4);
+    font-weight: variables.$font-bold-weight;
+  }
+
+  &__subtitle {
+    margin: 0.5rem 0 0 0;
+    @include mixins.fz(1.6);
+    @include mixins.lh(1.6);
+    opacity: 0.9;
+  }
+
+  &__multi-school-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    @include mixins.fz(1.4);
+    @include mixins.lh(1.4);
+    font-weight: variables.$font-bold-weight;
+  }
+
+
+  &__info-card,
+  &__schedule-card,
+  &__courses-card,
+  &__no-courses-card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &__section-title {
+    margin: 0 0 1rem 0;
+    @include mixins.fz(2.0);
+    @include mixins.lh(2.0);
+    font-weight: variables.$font-bold-weight;
+    color: variables.$color-text;
+  }
+
+  &__info-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background: variables.$color-grey;
+    border-radius: 8px;
+    border-left: 4px solid variables.$color-primary;
+  }
+
+  &__info-icon {
+    @include mixins.fz(2.4);
+    color: variables.$color-primary;
+    margin-right: 1rem;
+  }
+
+  &__info-content {
+    flex: 1;
+  }
+
+  &__info-label {
+    @include mixins.fz(1.4);
+    @include mixins.lh(1.4);
+    color: variables.$color-grey-dark;
+    font-weight: variables.$font-bold-weight;
+    margin-bottom: 0.25rem;
+  }
+
+  &__info-value {
+    @include mixins.fz(1.6);
+    @include mixins.lh(1.6);
+    color: variables.$color-text;
+    font-weight: variables.$font-bold-weight;
+  }
+
+  &__courses-list {
+    .dbsub-panel__course-item {
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      background: variables.$color-grey;
+      border: 1px solid variables.$color-border;
     }
 
-    &__container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 1.5rem 1rem;
+    .dbsub-panel__course-name {
+      font-weight: variables.$font-bold-weight;
+      color: variables.$color-text;
+      @include mixins.fz(1.6);
+      @include mixins.lh(1.6);
     }
 
-    &__card {
-        background: #fff;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        overflow: hidden;
+    .dbsub-panel__course-details {
+      color: variables.$color-grey-dark;
+      @include mixins.fz(1.4);
+      @include mixins.lh(1.4);
     }
 
-    &__content {
-        padding: 1.5rem;
+    .dbsub-panel__course-actions {
+      display: flex;
+      gap: 0.5rem;
     }
+
+    .dbsub-panel__action-btn {
+      margin: 0;
+    }
+  }
+
+  &__no-courses-card {
+    .dbsub-panel__no-courses-title {
+      margin: 1rem 0 0.5rem 0;
+      color: variables.$color-grey-dark;
+      @include mixins.fz(1.8);
+      @include mixins.lh(1.8);
+      font-weight: variables.$font-bold-weight;
+    }
+
+    .dbsub-panel__no-courses-text {
+      margin: 0;
+      color: variables.$color-grey-dark;
+      @include mixins.fz(1.4);
+      @include mixins.lh(1.4);
+    }
+  }
 }

@@ -79,6 +79,34 @@ class DashboardService
                     $schoolIds[] = $schoolId;
             }
         }
+        /*
+        dd($flags);
+        array:8 [▼ // app\Services\DashboardService.php:82
+  "isGlobalAdmin" => false
+  "isSchoolAdmin" => []
+  "isTeacher" => array:1 [▼
+    2 => array:8 [▼
+      "job_status" => "Permanente"
+      "job_status_date" => 
+Illuminate\Support
+\
+Carbon @1646179200
+ {#1869 ▶}
+      "decree_number" => "747339/43"
+      "schedule" => array:5 [▶]
+      "degree_title" => "Profesor de nivel primario egb 1 y 2"
+      "subject_name" => null
+      "school_level" => "Primaria"
+      "courses" => null
+    ]
+  ]
+  "isGuardian" => []
+  "isFormerStudent" => []
+  "isOtherWorker" => []
+  "isStudent" => []
+  "isCooperative" => []
+]
+        */
         return ['rolesCardsFlags' => $flags, 'combinationCount' => $count];
     }
 
@@ -114,11 +142,21 @@ class DashboardService
         $dataToPanel['decree_number'] = $roleRel->workerRelationship->decree_number;
         $dataToPanel['schedule'] = $roleRel->workerRelationship->schedule;
         $dataToPanel['degree_title'] = $roleRel->workerRelationship->degree_title;
-        $dataToPanel['class_name'] = $roleRel->workerRelationship->classSubject->name;
-        $dataToPanel['school_level'] =  SchoolLevel::getNameById($roleRel->workerRelationship->classSubject->school_level_id);
+        $dataToPanel['subject_name'] = $roleRel->workerRelationship->classSubject ? $roleRel->workerRelationship->classSubject->name : null;
+        $dataToPanel['school_level'] = SchoolLevel::getNameById($roleRel->workerRelationship->classSubject ? $roleRel->workerRelationship->classSubject->school_level_id : $roleRel->school_level_id);
         $dataToPanel['courses'] = $this->courseService->parseTeacherCourses($roleRel->teacherCourses);
-        //
-        dd($dataToPanel, $roleRel->workerRelationship);
+        /* dd($dataToPanel);
+
+"job_status" => "Permanente"
+"job_status_date" => Illuminate\Support\Carbon @1646179200 {#1869 ▶}
+"decree_number" => "747339/43"
+"schedule" => array:5 [▶]
+"degree_title" => "Profesor de nivel primario egb 1 y 2"
+"subject_name" => null
+"school_level" => "Primaria"
+"courses" => null
+
+        */
         return $dataToPanel;
     }
 

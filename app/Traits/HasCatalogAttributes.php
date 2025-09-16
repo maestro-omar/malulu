@@ -22,12 +22,12 @@ trait HasCatalogAttributes
 
     public static function getNameById($id): ?string
     {
-        return optional(static::allCached()->get($id))->{static::$labelField};
+        return $id ? optional(static::allCached()->get($id))->{static::$labelField} : null;
     }
 
     public static function getNameByCode($code): ?string
     {
-        return optional(static::allCached()->firstWhere('code', $code))->{static::$labelField};
+        return $code ? optional(static::allCached()->firstWhere('code', $code))->{static::$labelField} : null;
     }
 
     public static function optionsById(): array
