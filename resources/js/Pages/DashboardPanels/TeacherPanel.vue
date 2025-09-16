@@ -80,16 +80,11 @@
                             </div>
                         </div>
                     </q-card-section>
-                </q-card>
-            </div>
-
-            <!-- Schedule Section -->
-            <div class="col-12" v-if="teacherData?.schedule">
-                <q-card class="dbsub-panel__schedule-card">
-                    <q-card-section>
+                    <q-card-section v-if="teacherData?.schedule">
                         <h3 class="dbsub-panel__section-title">Horario de Trabajo</h3>
                         <schedule-simple :schedule="teacherData.schedule" />
                     </q-card-section>
+                    
                 </q-card>
             </div>
 

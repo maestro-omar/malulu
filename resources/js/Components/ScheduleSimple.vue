@@ -1,6 +1,6 @@
 <template>
   <div class="schedule-simple">
-    <div class="row q-col-gutter-xs">
+    <div class="row q-col-gutter-xs justify-center">
       <div 
         v-for="day in visibleDays" 
         :key="day.number" 
@@ -9,12 +9,12 @@
       >
         <div class="schedule-simple__day">
           <!-- Day name row -->
-          <div class="schedule-simple__day-name text-center text-weight-medium">
+          <div class="schedule-simple__day-name">
             {{ getDayName(day.number) }}
           </div>
           
           <!-- Time row -->
-          <div class="schedule-simple__time text-center text-caption">
+          <div class="schedule-simple__time">
             {{ formatTimeRange(day.schedule) }}
           </div>
         </div>
