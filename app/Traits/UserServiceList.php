@@ -60,6 +60,29 @@ trait UserServiceList
         return $transformedUsers;
     }
 
+    public function getStaffBySchool(Request $request, int $schoolId)
+    {
+        $workersIds = Role::select('id')->whereIn('code', Role::workersCodes())->pluck('id')->toArray();
+        
+        $query = User::withActiveRoleRelationships($workersIds, $schoolId);
+        $query = $this->addTextSearch($request, $query);
+        $query = $this->addSorting($request, $query);
+        $users = $this->handlePagination($query, $request->input('per_page'), 30);
+
+        // Transform the data to include roles in the expected format, similar to getUsers
+        $transformedUsers = json_decode(json_encode($users), true);
+        $transformedUsers['data'] = $users->map(function ($user) {
+            $workerRelationships = $user->workerRelationships;
+            if ($workerRelationships) dd($workerRelationships,'tetetingings');
+            $workerRelationships = $workerRelationships ? $workerRelationships->whereNull('deleted_at') : null;
+            $user['workerRelationships'] = $workerRelationships;
+            return $user;
+        })->toArray();
+
+        $transformedUsers['data'] = array_filter($transformedUsers['data']);
+        return $transformedUsers;
+    }
+
     public function getStudentsBySchool(Request $request, int $schoolId)
     {
         $studentRoleId = Role::where('code', Role::STUDENT)->firstOrFail()->id;

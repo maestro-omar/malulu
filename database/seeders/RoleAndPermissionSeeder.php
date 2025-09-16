@@ -303,11 +303,11 @@ class RoleAndPermissionSeeder extends Seeder
             'report-template.manage',
             'student.bulk-import',
             'school.files.view',
+            'teacher.manage',
         ];
 
         $teacherPermissions = [
-            'teacher.manage',
-            'partner.view',
+            'staff.view',
             'partner.view',
         ];
 
@@ -460,6 +460,7 @@ class RoleAndPermissionSeeder extends Seeder
             case Role::CURRICULAR_TEACHER:
             case Role::SPECIAL_TEACHER:
                 return array_merge(
+                    $teacherPermissions,
                     $studentsGuardiansPermissions,
                     $studentPermissions,
                     $academicPermissions,

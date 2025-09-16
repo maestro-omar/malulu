@@ -37,6 +37,17 @@ class User extends BuilderAbstract
     }
 
     /**
+     * Scope to filter users who have active role relationships with specific role and school.
+     */
+    public function withActiveRoleRelationships($roleIds, $schoolId)
+    {
+        return $this->whereHas('roleRelationships', function ($q) use ($roleIds, $schoolId) {
+            $q->forRole($roleIds)
+                ->forSchool($schoolId)
+                ->active();
+        });
+    }
+    /**
      * Scope to filter users who have active role relationships with any of the provided role and school combinations.
     public function scopeWithActiveRoleRelationships($query, array $roleSchoolPairs)
     {

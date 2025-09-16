@@ -33,6 +33,17 @@ class UserController extends SchoolBaseController
         $this->middleware('permission:delete users')->only(['destroy', 'restore', 'forceDelete']);
     }
 
+    public function staff(Request $request, $slug): Response{
+        $this->setSchool($slug);
+
+        return $this->render($request, 'Users/BySchool/Staff', [
+            'users' => $this->userService->getStaffBySchool($request, $this->school->id),
+            'school' => $this->school,
+            'filters' => $request->only(['search', 'sort', 'direction']),
+            'breadcrumbs' => Breadcrumbs::generate('schools.staff', $this->school),
+        ]);
+    }
+
     public function students(Request $request, $slug): Response
     {
         $this->setSchool($slug);

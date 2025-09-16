@@ -215,6 +215,9 @@ class CourseSeeder extends Seeder
                 } else {
                     $this->command->error("No courses defined for level: {$level->name}");
                 }
+                if ($school->code === School::CUE_LUCIO_LUCERO && $level->code === SchoolLevel::PRIMARY) {
+                    $this->specialPromoteCoursesForLucio($school, $level);
+                }
             }
         }
 
@@ -223,6 +226,17 @@ class CourseSeeder extends Seeder
         if ($finalCount !== $this->coursesCreated) {
             $this->command->error("Warning: Expected {$this->coursesCreated} courses but found {$finalCount} in database!");
         }
+    }
+
+    private function specialPromoteCoursesForLucio($school, $level)
+    {
+        // Update courses of this school and level, setting number = number + 1 where number > 3
+        Course::where('school_id', $school->id)
+            ->where('school_level_id', $level->id)
+            ->where('number', '>', 3)
+            ->update([
+                'number' => \DB::raw('`number` + 1')
+            ]);
     }
 
     private function getPreviousCourseId($school, $level, $shift, $grade, $letter, $startDate): ?int

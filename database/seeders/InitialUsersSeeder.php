@@ -51,6 +51,7 @@ class InitialUsersSeeder extends Seeder
         // Get all active courses for the default school and primary level
         $this->courses = Course::where('school_id', $this->defaultSchool->id)
             ->where('school_level_id', $this->primaryLevel->id)
+            ->where('start_date', '>=', now()->year() . '-01-01')
             ->where('active', true)
             ->get();
     }
@@ -106,7 +107,7 @@ class InitialUsersSeeder extends Seeder
                 $parsedData['details'],
                 $creator
             );
-            $this->relateToCourses($user, $parsedData['user_data']['Agrupamiento/s  (si corresponde)'] ?? '');
+            $this->relateToCourses($user, $parsedData['courses']);
 
             $this->command->info("Created user: " . $user->name . " (" . $user->email . ")");
         }
@@ -123,6 +124,7 @@ class InitialUsersSeeder extends Seeder
         $birthdate = $this->parseDate($userData['Fecha de nacimiento'] ?? '');
         $phone = $this->formatPhone($userData['Teléfono móvil'] ?? '');
         $nationality = $userData['Nacionalidad'] ?? 'Argentina';
+        $shift = $this->mapShift($userData['Turno'] ?? '');
 
         // Create user data array
         $userDataArray = [
@@ -159,22 +161,25 @@ class InitialUsersSeeder extends Seeder
 
         // Add worker details if it's a worker role
         if (Role::isWorker($roleCode)) {
-            $userData['Turno'] = $this->mapShift($userData['Turno'] ?? '');
             $details['worker_details'] = [
                 'job_status_id' => $this->mapJobStatus($userData['Situación de revista'] ?? ''),
                 'job_status_date' => $this->parseDate($userData['Fecha de situación de revista'] ?? ''),
                 'decree_number' => $userData['Decreto de designación (número/año)'] ?? null,
                 'degree_title' => $userData['Título docente'] ?? null,
-                'school_shift_id' => $userData['Turno']->id,
-                'schedule' => $this->mapSchedule($userData['Turno'], $roleCode),
-                'class_subject_id' => $this->mapSubject($roleCode, $userData['Materia curricular (si corresponde)'] ?? ''),
+                'school_shift_id' =>  $shift->id,
+                'schedule' => $this->mapSchedule($shift, $roleCode),
+                'class_subject_id' => $this->mapSubject($roleCode, $userData['Materia curricular'] ?? ''),
             ];
         }
+
+        $courses = $this->normalizeCourses($shift, $userData['Agrupamientos']);
 
         return [
             'user_data' => $userDataArray,
             'school_id' => $this->defaultSchool->id,
             'role_id' => $roleId,
+            'shift' => $shift,
+            'courses' => $courses,
             'school_level_id' => $this->primaryLevel->id,
             'details' => $details,
         ];
@@ -404,9 +409,8 @@ class InitialUsersSeeder extends Seeder
         echo "Deleting users with IDs: ", implode(", ", $userIds->toArray()), "\n";
     }
 
-    private function relateToCourses(User $user, $agrupamientos)
+    private function relateToCourses(User $user, $courses)
     {
-        $courses = $this->normalizeCourses($agrupamientos);
         foreach ($courses as $courseData) {
             $course = $this->findCourse($courseData);
             if ($course) {
@@ -453,29 +457,37 @@ class InitialUsersSeeder extends Seeder
         ]);
     }
 
-    private function normalizeCourses($agrupamiento)
+    private function normalizeCourses($shift, $agrupamiento)
     {
         if (empty($agrupamiento)) {
             return [];
         }
 
-        $agrupamiento = trim($agrupamiento);
+        $agrupamiento = str_replace(' ', '', trim($agrupamiento));
 
         // Handle special cases first
         if (str_contains(strtolower($agrupamiento), 'segundo ciclo')) {
-            return $this->getCoursesByNumbers([4, 5, 6]);
+            return $this->getCoursesByNumbers($shift, [4, 5, 6]);
         }
 
         if (str_contains(strtolower($agrupamiento), 'primer y segundo ciclo')) {
-            return $this->getCoursesByNumbers([1, 2, 3, 4, 5, 6]);
+            return $this->getCoursesByNumbers($shift, [1, 2, 3, 4, 5, 6]);
         }
 
         if (str_contains(strtolower($agrupamiento), 'primer ciclo')) {
-            return $this->getCoursesByNumbers([1, 2, 3]);
+            return $this->getCoursesByNumbers($shift, [1, 2, 3]);
         }
 
         if (str_contains(strtolower($agrupamiento), '7/8') || str_contains(strtolower($agrupamiento), '7mos / 8vos')) {
-            return $this->getCoursesByNumbers([7, 8]);
+            return $this->getCoursesByNumbers($shift, [7, 8]);
+        }
+
+        if (str_contains(strtolower($agrupamiento), '7mos') || str_contains(strtolower($agrupamiento), '7mo')) {
+            return $this->getCoursesByNumbers($shift, [7]);
+        }
+
+        if (str_contains(strtolower($agrupamiento), '8vos') || str_contains(strtolower($agrupamiento), '8vo')) {
+            return $this->getCoursesByNumbers($shift, [8]);
         }
 
         if (str_contains(strtolower($agrupamiento), 'administración')) {
@@ -484,7 +496,7 @@ class InitialUsersSeeder extends Seeder
 
         // Handle numeric values (like just "2")
         if (is_numeric($agrupamiento)) {
-            return $this->getCoursesByNumbers([(int)$agrupamiento]);
+            return $this->getCoursesByNumbers($shift, [(int)$agrupamiento]);
         }
 
         // Handle specific course patterns like "1A", "3c", "6to F", etc.
@@ -497,7 +509,7 @@ class InitialUsersSeeder extends Seeder
             $part = trim($part);
             if (empty($part)) continue;
 
-            $parsed = $this->parseCourseString($part);
+            $parsed = $this->parseCourseString($shift, $part);
             if ($parsed) {
                 $courses[] = $parsed;
             }
@@ -506,7 +518,7 @@ class InitialUsersSeeder extends Seeder
         return $courses;
     }
 
-    private function parseCourseString($courseString)
+    private function parseCourseString($shift, $courseString)
     {
         $courseString = trim($courseString);
 
@@ -538,29 +550,29 @@ class InitialUsersSeeder extends Seeder
         if (preg_match('/(\d+)(?:er|ro|mo|vo)?\s+agrupamiento/i', $courseString, $matches)) {
             $number = (int)$matches[1];
             // For this case, we need to get all letters for that number
-            return $this->getCoursesByNumbers([$number]);
+            return $this->getCoursesByNumbers($shift, [$number]);
         }
 
 
-        throw new \Exception("Invalid course string: " . $courseString);
+        // throw new \Exception("Invalid course string: " . $courseString);
 
         return null;
     }
 
-    private function getCoursesByNumbers($numbers)
+    private function getCoursesByNumbers(SchoolShift $shift, $numbers)
     {
         $courses = [];
 
         foreach ($numbers as $number) {
-            $numberCourses = $this->courses->where('number', $number);
+            $numberCourses = $this->courses->where('number', $number)->where('school_shift_id', $shift->id);
             foreach ($numberCourses as $course) {
                 $courses[] = [
+                    'id' => $course->id,
                     'number' => $course->number,
                     'letter' => $course->letter
                 ];
             }
         }
-
         return $courses;
     }
 }

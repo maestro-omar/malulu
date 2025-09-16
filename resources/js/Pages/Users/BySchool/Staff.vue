@@ -1,13 +1,13 @@
 <!-- Students list for teachers or system admin (not for public access or for students to see their classmates) -->
 <template>
 
-  <Head :title="`Estudiantes - ${school.short}`" />
+  <Head :title="`Staff - ${school.short}`" />
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader :title="`Estudiantes`" :add="{
-        show: hasPermission($page.props, 'student.create'),
-        href: route('school.students.create', { 'school': school.slug }),
+      <AdminHeader :title="`Personal docente y no docente`" :add="{
+        show: hasPermission($page.props, 'school.edit'),
+        href: route('school.staff.create', { 'school': school.slug }),
         label: 'Nuevo'
       }" />
     </template>
@@ -16,7 +16,7 @@
       <!-- Search Filter -->
       <div class="row q-mb-md">
         <div class="col-lg-2 col-md-4 col-sm-6 col-12">
-          <q-input v-model="searchInput" dense outlined placeholder="Buscar estudiantes..." @keyup.enter="performSearch"
+          <q-input v-model="searchInput" dense outlined placeholder="Buscar personas..." @keyup.enter="performSearch"
             clearable>
             <template v-slot:prepend>
               <q-icon name="search" />
@@ -44,7 +44,7 @@
         <!-- Custom cell for firstname with link -->
         <template #body-cell-firstname="props">
           <q-td :props="props">
-            <Link :href="route_school_student(school, props.row, 'show')" class="text-primary">
+            <Link :href="route_school_staff(school, props.row, 'show')" class="text-primary">
             {{ props.row.firstname }}
             </Link>
           </q-td>
@@ -90,12 +90,12 @@
           <q-td :props="props">
             <div class="row items-center q-gutter-sm">
               <!-- View button - always visible -->
-              <q-btn flat round color="primary" icon="visibility" size="sm"
-                :href="route_school_student(school, props.row, 'show')" title="Ver" />
+              <q-btn v-if="hasPermission($page.props, 'partner.view')" flat round color="primary" icon="visibility" size="sm"
+                :href="route_school_staff(school, props.row, 'show')" title="Ver" />
 
               <!-- Edit button - conditional -->
-              <q-btn v-if="hasPermission($page.props, 'student.edit')" flat round color="warning" icon="edit" size="sm"
-                :href="route_school_student(school, props.row, 'edit')" title="Editar" />
+              <q-btn v-if="hasPermission($page.props, 'school.edit')" flat round color="warning" icon="edit" size="sm"
+                :href="route_school_staff(school, props.row, 'edit')" title="Editar" />
 
               <!-- Delete button - conditional -->
               <q-btn
@@ -120,7 +120,7 @@ import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
-import { route_school_student } from '@/Utils/routes';
+import { route_school_staff } from '@/Utils/routes';
 import { formatNumber } from '@/Utils/strings';
 import noImage from '@images/no-image-person.png';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
@@ -174,7 +174,7 @@ const performSearch = () => {
   };
 
   router.get(
-    route('school.students', { school: props.school.slug }),
+    route('school.staff', { school: props.school.slug }),
     requestParams,
     {
       preserveState: true,
@@ -255,7 +255,7 @@ function onRequest({ pagination: newPagination }) {
   };
 
   router.get(
-    route('school.students', { school: props.school.slug }),
+    route('school.staff', { school: props.school.slug }),
     requestParams,
     {
       preserveState: true,
