@@ -29,7 +29,8 @@
         :newFileUrl="route('users.file.create', { 'user': user.id })"
         :showFileBaseUrl="route('users.file.show', { 'user': user.id, 'file': '##' })"
         :editFileBaseUrl="route('users.file.edit', { 'user': user.id, 'file': '##' })"
-        :replaceFileBaseUrl="route('users.file.replace', { 'user': user.id, 'file': '##' })" canDownload="true" />
+        :replaceFileBaseUrl="route('users.file.replace', { 'user': user.id, 'file': '##' })" 
+        :canDownload="true" />
 
       <SystemTimestamp :row="user" />
 

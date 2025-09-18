@@ -18,9 +18,14 @@
 
     <template #main-page-content>
 
-      <UserInformation :user="user" :genders="genders" :editable-picture="hasPermission($page.props, 'student.edit')" />
+      <UserInformation title="" :user="user" :guardians="guardians" :genders="genders"
+        :editable-picture="hasPermission($page.props, 'student.edit')" />
 
-      <FilesTable :files="files" title="Archivos del estudiante" />
+      <FilesTable :files="files" title="Archivos del estudiante"
+        :newFileUrl="route('users.file.create', { 'user': user.id })"
+        :showFileBaseUrl="route('users.file.show', { 'user': user.id, 'file': '##' })"
+        :editFileBaseUrl="route('users.file.edit', { 'user': user.id, 'file': '##' })"
+        :replaceFileBaseUrl="route('users.file.replace', { 'user': user.id, 'file': '##' })" :canDownload="true" />
 
       <SystemTimestamp :row="user" />
     </template>
@@ -35,9 +40,7 @@ import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
 import { route_school_student } from '@/Utils/routes';
-import { calculateAge } from '@/Utils/date';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
 
 const props = defineProps({
   user: Object,
@@ -51,7 +54,13 @@ const props = defineProps({
 
 const $page = usePage();
 
-const userAge = computed(() => {
-  return calculateAge(props.user.birthdate);
-});
+const destroy = () => {
+  if (confirm("¿Está seguro que desea eliminar este estudiante?")) {
+    router.delete(route_school_student(props.school, props.user, 'destroy'));
+  }
+};
+
+console.log('user', props.user);
+console.log('guardians', props.guardians);
+
 </script>

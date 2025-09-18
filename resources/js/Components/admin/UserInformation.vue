@@ -6,7 +6,7 @@
       </q-item-section>
 
       <q-item-section align="left">
-        Datos del usuario
+        {{ title }}
       </q-item-section>
     </template>
     <div class="row q-col-gutter-sm">
@@ -72,6 +72,12 @@
             </div>
           </div>
         </div>
+        <div v-if="guardians && Array.isArray(guardians) && guardians.length > 0" class="col-12 q-mt-md">
+          <div class="text-h4 q-mb-sm">Tutores</div>
+          <div class="row q-col-gutter-sm">
+              <StudentGuardian v-for="guardian in guardians" :key="guardian.id" :guardian="guardian"  class="col-6 col-xs-6 col-sm-4 col-md-3"/>
+          </div>
+        </div>
         <div class="col-12 q-mt-md">
           <div class="text-h4 q-mb-sm">Domicilio</div>
           <div class="row q-col-gutter-sm">
@@ -91,14 +97,6 @@
             </div>
           </div>
         </div>
-        <div v-if="guardians" class="col-12 q-mt-md">
-          <div class="text-h4 q-mb-sm">Tutores</div>
-          <div class="row q-col-gutter-sm">
-            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
-              <StudentGuardian v-for="guardian in guardians" :key="guardian.id" :guardian="guardian" />
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </q-expansion-item>
@@ -113,9 +111,12 @@ import StudentGuardian from '@/Components/admin/StudentGuardian.vue';
 import { formatDateShort, calculateAge } from "@/Utils/date";
 
 const props = defineProps({
+  title: { type: String, default: 'Datos del usuario' },
   user: { type: Object, required: true },
+  guardians: { type: Object, required: false },
   genders: { type: Object, required: true },
   editablePicture: { type: Boolean, default: true },
   currentCourse: { type: Object, required: false },
 });
+console.log('guardians', props.guardians);
 </script>
