@@ -8,7 +8,10 @@ use Inertia\Middleware;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Entities\School;
 use App\Models\Entities\User;
-// use App\Models\Catalogs\Role;
+
+use App\Models\Catalogs\Role;
+use App\Models\Catalogs\SchoolLevel;
+use App\Models\Catalogs\SchoolShift;
 // use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -85,6 +88,11 @@ class HandleInertiaRequests extends Middleware
             ],
             'constants' => [
                 'schoolGlobalId' => $schoolGlobalId,
+                'catalogs' => [
+                    'schoolLevels' => SchoolLevel::vueOptions(),
+                    'schoolShifts' => SchoolShift::vueOptions(),
+                    'roles' => Role::vueOptions(),
+                ],
             ],
             'debug' => [
                 'guard' => Auth::getDefaultDriver(),

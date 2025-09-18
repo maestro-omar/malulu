@@ -26,7 +26,10 @@ const label = computed(() => {
   }
   
   // Only use the composable as fallback when name is not available
-  const { options } = schoolLevelOptions()
+  const { options, loading } = schoolLevelOptions()
+  if (loading.value) {
+    return props.level.name
+  }
   return options.value[props.level.code]?.label ?? props.level.name
 })
 </script>

@@ -19,6 +19,11 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::delete(__('routes.delete-image'), [SchoolController::class, 'deleteImage'])->name('school.delete-image')->middleware('school.permission:school.edit');
 
         Route::get(__('routes.staff'), [UserController::class, 'staff'])->name('school.staff')->middleware('school.permission:teacher.manage');
+        Route::get(__('routes.staff') . '/' . __('routes.create'), [UserController::class, 'staffCreate'])->name('school.staff.create')->middleware('school.permission:staff.view');
+        Route::get(__('routes.staff') . '/{idAndName}', [UserController::class, 'staff'])->name('school.staff.show')->middleware('school.permission:partner.view');
+        Route::get(__('routes.staff') . '/{idAndName}/' . __('routes.edit'), [UserController::class, 'staffEdit'])->name('school.staff.edit')->middleware('school.permission:school.edit');
+        Route::put(__('routes.staff') . '/{idAndName}/' . __('routes.edit'), [UserController::class, 'staffUpdate'])->name('school.staff.update')->middleware('school.permission:school.edit');
+        Route::post(__('routes.staff') . '/{idAndName}/' . __('routes.upload-image'), [UserController::class, 'uploadImage'])->name('school.staff.upload-image')->middleware('school.permission:school.edit');
 
         Route::get(__('routes.students'), [UserController::class, 'students'])->name('school.students')->middleware('school.permission:student.view');
         Route::get(__('routes.students') . '/' . __('routes.create'), [UserController::class, 'studentCreate'])->name('school.students.create')->middleware('school.permission:student.create');
@@ -58,7 +63,7 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.files') . '/' . __('routes.create'), [FileController::class, 'createForSchool'])->name('school.course.file.create')->middleware('school.permission:course.files.manage');
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}', [FileController::class, 'showForSchool'])->name('school.course.file.show')->middleware('school.permission:course.files.manage');
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}/' . __('routes.edit'), [FileController::class, 'editForSchool'])->name('school.course.file.edit')->middleware('school.permission:course.files.manage');
-        Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}/' . __('routes.replace'), [FileController::class, 'replaceForSchool'])->name('school.course.file.edit')->middleware('school.permission:course.files.manage');
+        Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}/' . __('routes.replace'), [FileController::class, 'replaceForSchool'])->name('school.course.file.replace')->middleware('school.permission:course.files.manage');
 
         // Course Search for Popover
         Route::post('{schoolLevel}/' . __('routes.course') . '/' . __('routes.search'), [CourseController::class, 'search'])->name('school.courses.search')->middleware('school.permission:course.manage');

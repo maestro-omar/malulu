@@ -44,10 +44,13 @@
           </q-select>
         </div>
         <div class="col-12 col-md-3">
-          <q-input v-model="search" dense outlined placeholder="Buscar cursos..." @update:model-value="handleSearch"
+          <q-input v-model="searchInput" dense outlined placeholder="Buscar cursos..." @keyup.enter="performSearch"
             clearable>
             <template v-slot:prepend>
               <q-icon name="search" />
+            </template>
+            <template v-slot:append>
+              <q-btn flat round dense icon="send" @click="performSearch" color="primary" />
             </template>
           </q-input>
         </div>
@@ -55,7 +58,7 @@
 
       <!-- Quasar Table -->
       <q-table class="mll-table mll-table--courses striped-table" dense :rows="courses.data" :columns="columns"
-        row-key="id" :pagination="{ rowsPerPage: 30 }" :filter="search" :filter-method="customFilter">
+        row-key="id" v-model:pagination="pagination" :loading="loading" @request="onRequest" binary-state-sort>
 
         <!-- Custom cell for shift -->
         <template #body-cell-shift="props">
@@ -124,8 +127,8 @@
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
-import { Head, Link, router } from '@inertiajs/vue3'
-import { computed, ref } from 'vue'
+import { Head, Link, router, usePage } from '@inertiajs/vue3'
+import { computed, ref, watch } from 'vue'
 import { formatDate, getFullYear } from '@/Utils/date'
 import { hasPermission } from '@/Utils/permissions';
 import { getCourseSlug } from '@/Utils/strings'
@@ -159,13 +162,38 @@ const props = defineProps({
     type: [String, null],
     default: null,
   },
+  filters: {
+    type: Object,
+    default: () => ({})
+  },
 })
+
+const $page = usePage();
 
 const currentYear = computed(() => new Date().getFullYear());
 const selectedYear = ref(props.year || currentYear.value);
 const activeStatus = ref(props.active !== undefined ? props.active : true);
 const selectedShift = ref(props.shift || null);
-const search = ref('');
+
+// Search input state (separate from URL search parameter)
+const searchInput = ref(props.filters?.search || '');
+
+// Current search value from URL
+const search = ref(props.filters?.search || '');
+const sortField = ref(props.filters?.sort || '');
+const sortDirection = ref(props.filters?.direction || 'asc');
+
+// Loading state
+const loading = ref(false);
+
+// Pagination state
+const pagination = ref({
+  sortBy: sortField.value,
+  descending: sortDirection.value === 'desc',
+  page: props.courses.from ? Math.ceil(props.courses.from / props.courses.per_page) : 1,
+  rowsPerPage: props.courses.per_page,
+  rowsNumber: props.courses.total
+});
 
 // Filter options
 const activeStatusOptions = [
@@ -182,24 +210,56 @@ const shiftOptions = computed(() => {
   return options;
 });
 
-// Search functionality
-const handleSearch = () => {
-  // This will trigger the q-table's built-in filtering
-  // The filter is applied automatically through the :filter prop
+// Perform search function
+const performSearch = () => {
+  loading.value = true;
+
+  const requestParams = {
+    p: 1, // Always start from page 1 when searching
+    per_page: pagination.value.rowsPerPage,
+    sort: sortField.value,
+    direction: sortDirection.value,
+    search: searchInput.value || '',
+    year: selectedYear.value,
+    active: activeStatus.value,
+    shift: selectedShift.value,
+  };
+
+  router.get(
+    route('school.courses', { 
+      school: props.school.slug, 
+      schoolLevel: props.selectedLevel.code 
+    }),
+    requestParams,
+    {
+      preserveState: true,
+      preserveScroll: true,
+      replace: true,
+      onFinish: () => {
+        const courses = usePage().props.courses;
+
+        // Update search value from URL
+        search.value = searchInput.value;
+
+        // Update pagination state
+        pagination.value = {
+          ...pagination.value,
+          page: 1,
+          rowsNumber: courses.total
+        };
+
+        loading.value = false;
+      },
+      onError: (errors) => {
+        loading.value = false;
+      }
+    }
+  );
 };
 
-const customFilter = (rows, terms, cols, cellValue) => {
-  const lowerTerms = terms.toLowerCase();
-  return rows.filter(row => {
-    return (
-      (row.nice_name && row.nice_name.toLowerCase().includes(lowerTerms)) ||
-      (row.school_shift && row.school_shift.name && row.school_shift.name.toLowerCase().includes(lowerTerms))
-      //  || (row.previous_course && row.previous_course.nice_name && row.previous_course.nice_name.toLowerCase().includes(lowerTerms))
-      //  || (row.next_courses && row.next_courses.some(nextCourse =>
-      //  nextCourse.nice_name && nextCourse.nice_name.toLowerCase().includes(lowerTerms)
-      //  ))
-    );
-  });
+// Handle search input changes
+const handleSearch = () => {
+  performSearch();
 };
 
 // Table columns definition
@@ -268,6 +328,80 @@ const columns = [
   }
 ];
 
+// Handle pagination and sorting requests
+function onRequest({ pagination: newPagination }) {
+  loading.value = true;
+
+  // Capture the sorting parameters immediately to avoid race conditions
+  const sortBy = newPagination.sortBy;
+  const descending = newPagination.descending;
+  const page = newPagination.page;
+  const rowsPerPage = newPagination.rowsPerPage;
+
+  const requestParams = {
+    p: page,
+    per_page: rowsPerPage,
+    sort: sortBy,
+    direction: descending ? 'desc' : 'asc',
+    search: searchInput.value || '', // Use searchInput to preserve what user typed
+    year: selectedYear.value,
+    active: activeStatus.value,
+    shift: selectedShift.value,
+  };
+
+  router.get(
+    route('school.courses', { 
+      school: props.school.slug, 
+      schoolLevel: props.selectedLevel.code 
+    }),
+    requestParams,
+    {
+      preserveState: true,
+      preserveScroll: true,
+      replace: true,
+      onFinish: () => {
+        const courses = usePage().props.courses;
+
+        // Update pagination state with the captured values
+        pagination.value = {
+          sortBy: sortBy,
+          descending: descending,
+          page: page,
+          rowsPerPage: rowsPerPage,
+          rowsNumber: courses.total
+        };
+
+        loading.value = false;
+      },
+      onError: (errors) => {
+        loading.value = false;
+      }
+    }
+  );
+}
+
+// Watch for URL changes to update pagination state and sync search input
+watch(() => window.location.search, () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const page = urlParams.get('p') ? parseInt(urlParams.get('p')) : 1;
+  const sort = urlParams.get('sort') || sortField.value;
+  const direction = urlParams.get('direction') || 'asc';
+  const urlSearch = urlParams.get('search') || '';
+
+  // Update search input to match URL parameter
+  searchInput.value = urlSearch;
+  search.value = urlSearch;
+  sortField.value = sort;
+  sortDirection.value = direction;
+
+  pagination.value = {
+    ...pagination.value,
+    page: page,
+    sortBy: sort,
+    descending: direction === 'desc'
+  };
+}, { immediate: true });
+
 // Debounce function and filter trigger
 let filterTimeout = null;
 
@@ -277,17 +411,7 @@ const triggerFilter = () => {
   }
 
   filterTimeout = setTimeout(() => {
-    router.get(
-      route('school.courses', {
-        school: props.school.slug,
-        schoolLevel: props.selectedLevel.code,
-        year: selectedYear.value,
-        active: activeStatus.value,
-        shift: selectedShift.value,
-      }),
-      {},
-      { preserveState: true, replace: true }
-    );
+    performSearch();
   }, 300);
 };
 </script>

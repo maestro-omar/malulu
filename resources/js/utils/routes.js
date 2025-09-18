@@ -7,6 +7,12 @@ import { slugify } from './strings';
  * @param {string} action - show / edit
  * @returns {string} Generated route URL
  */
+export function route_school_staff(school, staff, action) {
+    return route('school.staff.'+action, {
+        'school': school.slug,
+        'idAndName': staff.id + '-' + slugify(staff.name + ' ' + staff.lastname)
+    });
+}
 export function route_school_student(school, student, action) {
     return route('school.student.'+action, {
         'school': school.slug,

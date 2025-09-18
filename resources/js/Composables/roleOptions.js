@@ -1,12 +1,11 @@
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
-
-const options = ref({})
+import { computed } from 'vue'
+import { usePage } from '@inertiajs/vue3'
 
 export function roleOptions() {
-  onMounted(async () => {
-    const { data } = await axios.get('/json-options/roles')
-    options.value = data
+  const page = usePage()
+  
+  const options = computed(() => {
+    return page.props.constants?.catalogs?.roles || {}
   })
 
   return { options }

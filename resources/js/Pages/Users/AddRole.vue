@@ -299,7 +299,7 @@ const selectedLevel = ref(null);
 const selectedRole = ref(null);
 
 const { options: roleColorOptions } = roleOptions();
-const { options: schoolLevelColorOptions } = schoolLevelOptions();
+const { options: schoolLevelColorOptions, loading: schoolLevelLoading } = schoolLevelOptions();
 
 const userAge = computed(() => {
   return calculateAge(props.user.birthdate);

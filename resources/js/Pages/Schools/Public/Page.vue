@@ -133,7 +133,7 @@ const props = defineProps({
   
 });
 
-const { options: levelColors } = schoolLevelOptions()
+const { options: levelColors, loading: levelColorsLoading } = schoolLevelOptions()
 
 const destroy = () => {
   if (confirm('¿Está seguro que desea eliminar esta escuela?')) {

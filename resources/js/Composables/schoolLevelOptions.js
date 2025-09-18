@@ -1,13 +1,14 @@
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
-
-const options = ref({})
+import { computed } from 'vue'
+import { usePage } from '@inertiajs/vue3'
 
 export function schoolLevelOptions() {
-  onMounted(async () => {
-    const { data } = await axios.get('/json-options/school-levels')
-    options.value = data
+  const page = usePage()
+  
+  const options = computed(() => {
+    return page.props.constants?.catalogs?.schoolLevels || {}
   })
+  
+  const loading = computed(() => false) // Always false since data is available immediately
 
-  return { options }
+  return { options, loading }
 }

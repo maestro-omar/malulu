@@ -20,10 +20,13 @@
       <!-- Search Filter -->
       <div class="row q-mb-md">
         <div class="col-12 col-md-6">
-          <q-input v-model="search" dense outlined placeholder="Buscar usuarios..." @update:model-value="handleSearch"
+          <q-input v-model="searchInput" dense outlined placeholder="Buscar usuarios..." @keyup.enter="performSearch"
             clearable>
             <template v-slot:prepend>
               <q-icon name="search" />
+            </template>
+            <template v-slot:append>
+              <q-btn flat round dense icon="send" @click="performSearch" color="primary" />
             </template>
           </q-input>
         </div>
@@ -31,7 +34,7 @@
 
       <!-- Quasar Table -->
       <q-table class="mll-table mll-table--users striped-table" dense :rows="users.data" :columns="columns" row-key="id"
-        :pagination="{ rowsPerPage: 30 }" :filter="search" :filter-method="customFilter">
+        v-model:pagination="pagination" :loading="loading" @request="onRequest" binary-state-sort>
         <!-- Custom cell for photo -->
         <template #body-cell-photo="props">
           <q-td :props="props">
@@ -103,36 +106,10 @@ import { hasPermission } from '@/Utils/permissions';
 import noImage from '@images/no-image-person.png';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { useQuasar } from 'quasar';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const $page = usePage();
 const $q = useQuasar();
-
-// Search functionality
-const search = ref('');
-
-const handleSearch = () => {
-  // This will trigger the q-table's built-in filtering
-  // The filter is applied automatically through the :filter prop
-};
-
-const customFilter = (rows, terms, cols, cellValue) => {
-  const lowerTerms = terms.toLowerCase();
-  return rows.filter(row => {
-    return (
-      (row.firstname && row.firstname.toLowerCase().includes(lowerTerms)) ||
-      (row.lastname && row.lastname.toLowerCase().includes(lowerTerms)) ||
-      (row.email && row.email.toLowerCase().includes(lowerTerms)) ||
-      (row.schools && row.schools.some(school =>
-        school.name && school.name.toLowerCase().includes(lowerTerms) ||
-        school.short && school.short.toLowerCase().includes(lowerTerms)
-      )) ||
-      (row.roles && row.roles.some(role =>
-        role.name && role.name.toLowerCase().includes(lowerTerms)
-      ))
-    );
-  });
-};
 
 const props = defineProps({
   users: Object,
@@ -140,12 +117,78 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
-
   filters: {
     type: Object,
     default: () => ({})
   },
 });
+
+// Search input state (separate from URL search parameter)
+const searchInput = ref(props.filters?.search || '');
+
+// Current search value from URL
+const search = ref(props.filters?.search || '');
+const sortField = ref(props.filters?.sort || '');
+const sortDirection = ref(props.filters?.direction || 'asc');
+
+// Loading state
+const loading = ref(false);
+
+// Pagination state
+const pagination = ref({
+  sortBy: sortField.value,
+  descending: sortDirection.value === 'desc',
+  page: props.users.from ? Math.ceil(props.users.from / props.users.per_page) : 1,
+  rowsPerPage: props.users.per_page,
+  rowsNumber: props.users.total
+});
+
+// Perform search function
+const performSearch = () => {
+  loading.value = true;
+
+  const requestParams = {
+    p: 1, // Always start from page 1 when searching
+    per_page: pagination.value.rowsPerPage,
+    sort: sortField.value,
+    direction: sortDirection.value,
+    search: searchInput.value || ''
+  };
+
+  router.get(
+    route('users.index'),
+    requestParams,
+    {
+      preserveState: true,
+      preserveScroll: true,
+      replace: true,
+      onFinish: () => {
+        const users = usePage().props.users;
+
+        // Update search value from URL
+        search.value = searchInput.value;
+
+        // Update pagination state
+        pagination.value = {
+          ...pagination.value,
+          page: 1,
+          rowsNumber: users.total
+        };
+
+        loading.value = false;
+      },
+      onError: (errors) => {
+        loading.value = false;
+      }
+    }
+  );
+};
+
+// Handle search input changes
+const handleSearch = () => {
+  performSearch();
+};
+
 
 // Available colors for schools
 const schoolColorOptions = [
@@ -269,8 +312,79 @@ const canDeleteUser = (user) => {
 };
 
 const getUniqueRoles = (roles) => {
+  if (!roles || !Array.isArray(roles)) {
+    return [];
+  }
   return roles.filter((role, index, self) =>
     index === self.findIndex((r) => r.id === role.id)
   );
 };
+
+// Handle pagination and sorting requests
+function onRequest({ pagination: newPagination }) {
+  loading.value = true;
+
+  // Capture the sorting parameters immediately to avoid race conditions
+  const sortBy = newPagination.sortBy;
+  const descending = newPagination.descending;
+  const page = newPagination.page;
+  const rowsPerPage = newPagination.rowsPerPage;
+
+  const requestParams = {
+    p: page,
+    per_page: rowsPerPage,
+    sort: sortBy,
+    direction: descending ? 'desc' : 'asc',
+    search: searchInput.value || '' // Use searchInput to preserve what user typed
+  };
+
+  router.get(
+    route('users.index'),
+    requestParams,
+    {
+      preserveState: true,
+      preserveScroll: true,
+      replace: true,
+      onFinish: () => {
+        const users = usePage().props.users;
+
+        // Update pagination state with the captured values
+        pagination.value = {
+          sortBy: sortBy,
+          descending: descending,
+          page: page,
+          rowsPerPage: rowsPerPage,
+          rowsNumber: users.total
+        };
+
+        loading.value = false;
+      },
+      onError: (errors) => {
+        loading.value = false;
+      }
+    }
+  );
+}
+
+// Watch for URL changes to update pagination state and sync search input
+watch(() => window.location.search, () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const page = urlParams.get('p') ? parseInt(urlParams.get('p')) : 1;
+  const sort = urlParams.get('sort') || sortField.value;
+  const direction = urlParams.get('direction') || 'asc';
+  const urlSearch = urlParams.get('search') || '';
+
+  // Update search input to match URL parameter
+  searchInput.value = urlSearch;
+  search.value = urlSearch;
+  sortField.value = sort;
+  sortDirection.value = direction;
+
+  pagination.value = {
+    ...pagination.value,
+    page: page,
+    sortBy: sort,
+    descending: direction === 'desc'
+  };
+}, { immediate: true });
 </script>

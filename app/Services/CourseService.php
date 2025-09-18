@@ -12,11 +12,12 @@ use App\Models\Relations\StudentCourse;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 use App\Services\FileService;
+use App\Services\PaginationTrait;
 use App\Traits\CourseNext;
 
 class CourseService
 {
-    use CourseNext;
+    use CourseNext, PaginationTrait;
 
     protected $userservice;
     protected $fileService;
@@ -32,15 +33,8 @@ class CourseService
      */
     public function getCourses(Request $request, ?int $schoolId = null)
     {
-        $expectedFilters = ['search', 'school_level_id', 'school_id', 'year', 'active', 'shift', 'school_shift_id', 'no_next', 'page_size'];
-        //     {"school_id":2
-        //         "school_level_id":2
-        //         "school_shift_id":1
-        //         "start_date":"2025-03-01"
-        //         "year":2025
-        //         "active":false
-        //         "shift":1} 
-
+        $expectedFilters = ['search', 'school_level_id', 'school_id', 'year', 'active', 'shift', 'school_shift_id', 'no_next', 'per_page', 'sort', 'direction'];
+        
         $query = Course::query()
             ->with(['school', 'schoolLevel', 'schoolShift', 'previousCourse', 'nextCourses'])
             ->when($request->input('search'), function ($query, $search) {
@@ -87,26 +81,23 @@ class CourseService
                 $query->whereDoesntHave('nextCourses');
             });
 
-        $courses = $query->orderBy('number')->orderBy('letter');
+        // Add sorting
+        $query = $this->addSorting($request, $query);
 
+        // Handle pagination
         if ($request->input('no_paginate')) {
-            $paginate = false;
-        } elseif ($request->input('page_size')) {
-            $paginate = true;
-            $courses = $courses->paginate($request->input('page_size'));
+            $result = $query->get()->toArray();
         } else {
-            $paginate = true;
-            $courses = $courses->paginate(10);
+            $perPage = $request->input('per_page', 10);
+            $courses = $this->handlePagination($query, $perPage, 10);
+            $result = $courses->appends($request->only($expectedFilters))->withQueryString()->toArray();
         }
 
-        if ($paginate) {
-            $result = $courses->appends($request->only($expectedFilters))->through(function ($course) use ($request) {
-                return $course;
-            })->withQueryString()->toArray();
-        } else {
-            $result = $courses->get()->toArray();
-        }
-        Log::debug('getCourses input', $request->only($expectedFilters), $courses);
+        Log::debug('getCourses input', [
+            'filters' => $request->only($expectedFilters),
+            'per_page' => $request->input('per_page'),
+            'result_count' => count($result['data'] ?? [])
+        ]);
 
         return $result;
     }
@@ -424,5 +415,88 @@ class CourseService
     public function getFiles(Course $course, User $loggedUser)
     {
         return $this->fileService->getCourseFiles($course, $loggedUser);
+    }
+
+    /**
+     * Add sorting to the query
+     */
+    private function addSorting(Request $request, $query)
+    {
+        if ($request->filled('sort')) {
+            $sort = $request->input('sort');
+            $direction = $request->input('direction', 'asc');
+
+            // Validate sort field and direction
+            if (!$this->isValidSortField($sort) || !in_array($direction, ['asc', 'desc'])) {
+                return $query;
+            }
+
+            // Handle relationship-based sorting
+            if ($this->isRelationshipSortField($sort)) {
+                $this->addRelationshipSorting($query, $sort, $direction);
+            } else {
+                // Direct course table field sorting
+                $query->orderBy("courses.{$sort}", $direction);
+            }
+        } else {
+            // Default sorting
+            $query->orderBy('courses.number')->orderBy('courses.letter');
+        }
+        return $query;
+    }
+
+    /**
+     * Validate if the sort field is allowed
+     */
+    private function isValidSortField(string $field): bool
+    {
+        $validDirectFields = [
+            'id',
+            'number',
+            'letter',
+            'name',
+            'start_date',
+            'end_date',
+            'active',
+            'created_at',
+            'updated_at'
+        ];
+
+        $validRelationshipFields = [
+            'shift',    // from schoolShift
+            'level'     // from schoolLevel
+        ];
+
+        return in_array($field, $validDirectFields) || in_array($field, $validRelationshipFields);
+    }
+
+    /**
+     * Check if field requires relationship joins
+     */
+    private function isRelationshipSortField(string $field): bool
+    {
+        return in_array($field, ['shift', 'level']);
+    }
+
+    /**
+     * Add sorting for relationship-based fields
+     */
+    private function addRelationshipSorting($query, string $field, string $direction)
+    {
+        switch ($field) {
+            case 'shift':
+                $query->leftJoin('school_shifts', 'courses.school_shift_id', '=', 'school_shifts.id')
+                    ->select('courses.*', 'school_shifts.name as shift_name')
+                    ->orderBy('school_shifts.name', $direction)
+                    ->distinct();
+                break;
+
+            case 'level':
+                $query->leftJoin('school_levels', 'courses.school_level_id', '=', 'school_levels.id')
+                    ->select('courses.*', 'school_levels.name as level_name')
+                    ->orderBy('school_levels.name', $direction)
+                    ->distinct();
+                break;
+        }
     }
 }

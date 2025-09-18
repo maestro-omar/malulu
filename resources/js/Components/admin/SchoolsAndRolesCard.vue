@@ -145,12 +145,12 @@
                       <DataFieldShow label="Curso:">
                         <template #slotValue>
                           <a class="schools-roles-card__field-value"
-                            :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': getSchoolLevelCode(relationship.current_course.school_level_id), 'idAndName': getCourseSlug(relationship.current_course) })">
+                            :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': getSchoolLevelCode(relationship.current_course.school_level_id), 'idAndLabel': getCourseSlug(relationship.current_course) })">
                             {{ relationship.current_course.nice_name }}</a>
                         </template>
                       </DataFieldShow>
                     </div>
-                    <div v-if="relationship.current_course.level" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <div v-if="false && relationship.current_course.level" class="col-6 col-xs-6 col-sm-4 col-md-3">
                       <DataFieldShow label="Nivel:">
                         <template #slotValue>
                           <SchoolLevelBadge :level="relationship.current_course.level" />
@@ -334,11 +334,11 @@ const getGeneralRoleRelationshipsForRole = (roleId, schoolId) => {
 };
 
 // Get school level options with ID mapping
-const { options: schoolLevelOptionsData } = schoolLevelOptions();
+const { options: schoolLevelOptionsData, loading: schoolLevelLoading } = schoolLevelOptions();
 
 // Create a dynamic reverse mapping from ID to code using the loaded data
 const schoolLevelIdToCode = computed(() => {
-  if (!schoolLevelOptionsData.value || Object.keys(schoolLevelOptionsData.value).length === 0) {
+  if (schoolLevelLoading.value || !schoolLevelOptionsData.value || Object.keys(schoolLevelOptionsData.value).length === 0) {
     return {};
   }
 
@@ -355,7 +355,13 @@ const schoolLevelIdToCode = computed(() => {
 
 const getSchoolLevelCode = (schoolLevelId) => {
   if (!schoolLevelId) {
-    return null;
+    console.log('getSchoolLevelCode: schoolLevelId is empty');
+    return 'error1';
+  }
+
+  if (schoolLevelLoading.value) {
+    console.log('getSchoolLevelCode: Still loading school level data');
+    return 'error2';
   }
 
   // Use the dynamic mapping from loaded data
@@ -363,7 +369,8 @@ const getSchoolLevelCode = (schoolLevelId) => {
 
   if (!code) {
     console.warn(`No school level code found for ID ${schoolLevelId}. Available mappings:`, schoolLevelIdToCode.value);
-    return null;
+    console.warn('School level options data:', schoolLevelOptionsData.value);
+    return 'error3';
   }
 
   return code;

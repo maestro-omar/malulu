@@ -15,10 +15,15 @@ trait UserServiceList
 
     public function getUsers(Request $request)
     {
+        $expectedFilters = ['search', 'sort', 'direction', 'per_page'];
+        
         $query = User::with('allRolesAcrossTeams');
         $query = $this->addTextSearch($request, $query);
         $query = $this->addSorting($request, $query);
-        $users = $this->handlePagination($query, $request->input('per_page'), 30);
+        
+        // Handle pagination
+        $perPage = $request->input('per_page', 30);
+        $users = $this->handlePagination($query, $perPage, 30);
 
         // Transform the data to include roles in the expected format
         $transformedUsers = json_decode(json_encode($users), true);
@@ -56,6 +61,25 @@ trait UserServiceList
 
             return $user;
         })->toArray();
+
+        // Add query string parameters to pagination links
+        $paginationData = $users->appends($request->only($expectedFilters))->withQueryString()->toArray();
+        
+        // Merge pagination metadata with transformed data
+        $transformedUsers = array_merge($transformedUsers, [
+            'current_page' => $paginationData['current_page'],
+            'from' => $paginationData['from'],
+            'last_page' => $paginationData['last_page'],
+            'per_page' => $paginationData['per_page'],
+            'to' => $paginationData['to'],
+            'total' => $paginationData['total'],
+            'links' => $paginationData['links'],
+            'path' => $paginationData['path'],
+            'first_page_url' => $paginationData['first_page_url'],
+            'last_page_url' => $paginationData['last_page_url'],
+            'next_page_url' => $paginationData['next_page_url'],
+            'prev_page_url' => $paginationData['prev_page_url']
+        ]);
 
         return $transformedUsers;
     }

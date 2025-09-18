@@ -46,7 +46,7 @@ class CourseController extends SchoolBaseController
             'school_level_id' => $schoolLevel->id,
             'school_id' => $school->id,
             'year' => $request->input('year', date('Y')),
-            'active' => $request->input('active'),
+            // 'active' => $request->input('active'),
         ]);
 
         $courses = $this->courseService->getCourses($request, $school->id);
@@ -54,10 +54,10 @@ class CourseController extends SchoolBaseController
 
         return Inertia::render('Courses/Index', [
             'courses' => $courses,
-            'search' => $request->search,
             'year' => $request->year,
             'active' => $request->active,
             'shift' => $request->shift,
+            'filters' => $request->only(['search', 'sort', 'direction']),
             'breadcrumbs' => Breadcrumbs::generate('school.courses', $school, $schoolLevel),
             'school' => $school,
             'selectedLevel' => $schoolLevel,
