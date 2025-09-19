@@ -16,11 +16,11 @@ trait UserServiceList
     public function getUsers(Request $request)
     {
         $expectedFilters = ['search', 'sort', 'direction', 'per_page'];
-        
+
         $query = User::with('allRolesAcrossTeams');
         $query = $this->addTextSearch($request, $query);
         $query = $this->addSorting($request, $query);
-        
+
         // Handle pagination
         $perPage = $request->input('per_page', 30);
         $users = $this->handlePagination($query, $perPage, 30);
@@ -64,7 +64,7 @@ trait UserServiceList
 
         // Add query string parameters to pagination links
         $paginationData = $users->appends($request->only($expectedFilters))->withQueryString()->toArray();
-        
+
         // Merge pagination metadata with transformed data
         $transformedUsers = array_merge($transformedUsers, [
             'current_page' => $paginationData['current_page'],
@@ -87,7 +87,7 @@ trait UserServiceList
     public function getStaffBySchool(Request $request, int $schoolId)
     {
         $workersIds = Role::select('id')->whereIn('code', Role::workersCodes())->pluck('id')->toArray();
-        
+
         $query = User::withActiveRoleRelationships($workersIds, $schoolId);
         $query = $this->addTextSearch($request, $query);
         $query = $this->addSorting($request, $query);
@@ -97,7 +97,7 @@ trait UserServiceList
         $transformedUsers = json_decode(json_encode($users), true);
         $transformedUsers['data'] = $users->map(function ($user) {
             $workerRelationships = $user->workerRelationships;
-            if ($workerRelationships) dd($workerRelationships,'tetetingings');
+            if ($workerRelationships) dd($workerRelationships, 'tetetingings');
             $workerRelationships = $workerRelationships ? $workerRelationships->whereNull('deleted_at') : null;
             $user['workerRelationships'] = $workerRelationships;
             return $user;
@@ -309,7 +309,7 @@ trait UserServiceList
         $return  = [];
         foreach ($parents as $parent) {
             $r = $parent->roleRelationships->first();
-            $g = $r ? $r->guardianRelationship->first() : null;
+            $g = $r ? $r->guardianRelationship : null;
             $parent->setRelations([]);
             $return[] = [
                 "id" => $parent->id,

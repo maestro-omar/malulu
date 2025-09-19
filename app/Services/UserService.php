@@ -207,7 +207,6 @@ class UserService
                 $student = $relationship->student;
                 $studentRoleRelationship = $student ? $student->roleRelationships->first() : null;
                 $studentRelationship = $studentRoleRelationship ? $studentRoleRelationship->studentRelationship : null;
-                $currentCourse = $studentRelationship ? $studentRelationship->currentCourse : null;
 
                 return [
                     'id' => $relationship->id,
@@ -215,7 +214,7 @@ class UserService
                     'student' => $student ? [
                         'id' => $student->id,
                         'name' => $student->name,
-                        'current_course' => $currentCourse ? $this->parseCurrentCourse($currentCourse) : null
+                        'current_course' => $this->parseCurrentCourse($studentRelationship, $relationship)
                     ] : null,
                     'student_id' => $relationship->student_id,
                     'relationship_type' => $relationship->relationship_type,
@@ -239,7 +238,7 @@ class UserService
                 return [
                     'id' => $relationship->id,
                     'role_relationship_id' => $relationship->role_relationship_id,
-                    'current_course' => $this->parseCurrentCourse($relationship->currentCourse),
+                    'current_course' => $this->parseCurrentCourse($relationship, $roleRelationship),
                     'start_date' => $roleRelationship->start_date ? $roleRelationship->start_date->toDateString() : null,
                     'creator' => $roleRelationship->creator ? [
                         'id' => $roleRelationship->creator->id,
@@ -254,7 +253,7 @@ class UserService
 
     private function getRealCurrentCourse($studentRelationships)
     {
-        return $studentRelationships[0] ?? null;
+        return $studentRelationships[0]['current_course'] ?? null;
     }
 
     public function hasAccessToSchool(int $schoolId): bool
@@ -280,15 +279,17 @@ class UserService
         return User::genders();
     }
 
-    private function parseCurrentCourse($currentCourse)
+    private function parseCurrentCourse($studentRelationship, $roleRelationship)
     {
-        if (!$currentCourse) return null;
+        if (empty($studentRelationship) || empty($studentRelationship->currentCourse)) return null;
+        $currentCourse = $studentRelationship->currentCourse;
         $data = $currentCourse->toArray();
         $data['url'] = route('school.course.show', [
             'school' => $currentCourse->school->slug,
             'schoolLevel' => $currentCourse->schoolLevel->code,
             'idAndLabel' => $currentCourse->idAndLabel
         ]);
+        $data['enrollment_date'] = $roleRelationship->start_date->toDateString();
         return $data;
     }
 

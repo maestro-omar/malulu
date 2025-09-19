@@ -3,9 +3,22 @@
 @use "sass:color";
 
 .student-guardian {
+    a {
+        color: variables.$color-blue;
+    }
+
     &--restricted {
-        border-color: variables.$color-secondary;
-        background: variables.$color-grey;
+
+        a:before,
+        a:after {
+            content: '🛇';
+            display: inline-block;
+            padding: 0 2px;
+        }
+
+        a {
+            color: variables.$color-pink;
+        }
     }
 
     &__title {

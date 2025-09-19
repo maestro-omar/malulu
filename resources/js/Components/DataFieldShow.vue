@@ -22,7 +22,7 @@
         </template>
         <!-- Handle date fields -->
         <template v-else-if="type === 'currentCourse'">
-          <a :href="value.current_course.url">{{ value.current_course.nice_name }}</a> (desde
+          <a :href="value.url">{{ value.nice_name }}</a> (desde
           {{ formatDate(value.start_date) }})
 
         </template>
