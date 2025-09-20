@@ -66,7 +66,7 @@ class SchoolPage extends Model
     /**
      * Scope a query to only include pages for a specific school.
      */
-    public function scopeForSchool($query, $schoolId)
+    public function scopeForSchool($query, int $schoolId)
     {
         return $query->where('school_id', $schoolId);
     }

@@ -112,15 +112,23 @@ class RoleRelationship extends Model
     /**
      * Scope a query to only include relationships for a specific role.
      */
-    public function scopeForRole($query, $roleId)
+    public function scopeForRole($query, int $roleId)
     {
         return $query->where('role_id', $roleId);
+    }
+    
+    /**
+     * Scope a query to only include relationships for a specific role.
+     */
+    public function scopeForRoles($query, array $roleIds)
+    {
+        return $query->whereIn('role_id', $roleIds);
     }
 
     /**
      * Scope a query to only include relationships for a specific school.
      */
-    public function scopeForSchool($query, $schoolId)
+    public function scopeForSchool($query, int $schoolId)
     {
         return $query->where('school_id', $schoolId);
     }

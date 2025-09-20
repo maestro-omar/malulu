@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\Entities\School;
 use App\Models\Entities\User;
+use App\Models\Entities\Course;
 use App\Models\Catalogs\Role;
 use Illuminate\Http\Request;
 use App\Services\PaginationTrait;
@@ -86,24 +87,92 @@ trait UserServiceList
 
     public function getStaffBySchool(Request $request, int $schoolId)
     {
+        $expectedFilters = ['search', 'sort', 'direction', 'per_page'];
+
         $workersIds = Role::select('id')->whereIn('code', Role::workersCodes())->pluck('id')->toArray();
 
-        $query = User::withActiveRoleRelationships($workersIds, $schoolId);
+        $query = User::withActiveRoleRelationships($workersIds, $schoolId)
+            ->with([
+                'roleRelationships.role',
+                'roleRelationships.teacherCourses.course.schoolLevel',
+                'roleRelationships.teacherCourses.course.schoolShift',
+                'roleRelationships.teacherCourses.course.school'
+            ]);
         $query = $this->addTextSearch($request, $query);
         $query = $this->addSorting($request, $query);
-        $users = $this->handlePagination($query, $request->input('per_page'), 30);
 
-        // Transform the data to include roles in the expected format, similar to getUsers
+        // Handle pagination
+        $perPage = $request->input('per_page', 30);
+        $users = $this->handlePagination($query, $perPage, 30);
+
+        // Transform the data to include roles and courses in the expected format, similar to getUsers
         $transformedUsers = json_decode(json_encode($users), true);
-        $transformedUsers['data'] = $users->map(function ($user) {
+        $transformedUsers['data'] = $users->map(function ($user) use ($schoolId) {
+            // Add roles data similar to lines 42-50, but only worker roles for this school
+            $user['roles'] = $user->roleRelationships
+                ->filter(function ($roleRelationship) use ($schoolId) {
+                    // Only include roles for this specific school and that are worker roles
+                    return $roleRelationship->school_id == $schoolId && 
+                           Role::isWorker($roleRelationship->role->code);
+                })
+                ->map(function ($roleRelationship) {
+                    return [
+                        'id' => $roleRelationship->role->id,
+                        'name' => $roleRelationship->role->name,
+                        'short' => $roleRelationship->role->short,
+                        'code' => $roleRelationship->role->code,
+                        'team_id' => $roleRelationship->school_id
+                    ];
+                })->toArray();
+
+            // Add courses data through TeacherCourse relation
+            $courses = collect();
+            foreach ($user->roleRelationships as $roleRelationship) {
+                foreach ($roleRelationship->teacherCourses as $teacherCourse) {
+                    if ($teacherCourse->course) {
+                        $courses->push([
+                            'id' => $teacherCourse->course->id,
+                            'nice_name' => $teacherCourse->course->nice_name,
+                            'url' => route('school.course.show', [
+                                'school' => $teacherCourse->course->school->slug,
+                                'schoolLevel' => $teacherCourse->course->schoolLevel->code,
+                                'idAndLabel' => $teacherCourse->course->idAndLabel
+                            ]),
+                            'school_level' => $teacherCourse->course->schoolLevel,
+                            'school_shift' => $teacherCourse->course->schoolShift
+                        ]);
+                    }
+                }
+            }
+            $user['courses'] = $courses->toArray();
+
             $workerRelationships = $user->workerRelationships;
-            if ($workerRelationships) dd($workerRelationships, 'tetetingings');
             $workerRelationships = $workerRelationships ? $workerRelationships->whereNull('deleted_at') : null;
             $user['workerRelationships'] = $workerRelationships;
             return $user;
         })->toArray();
 
         $transformedUsers['data'] = array_filter($transformedUsers['data']);
+
+        // Add query string parameters to pagination links
+        $paginationData = $users->appends($request->only($expectedFilters))->withQueryString()->toArray();
+
+        // Merge pagination metadata with transformed data
+        $transformedUsers = array_merge($transformedUsers, [
+            'current_page' => $paginationData['current_page'],
+            'from' => $paginationData['from'],
+            'last_page' => $paginationData['last_page'],
+            'per_page' => $paginationData['per_page'],
+            'to' => $paginationData['to'],
+            'total' => $paginationData['total'],
+            'links' => $paginationData['links'],
+            'path' => $paginationData['path'],
+            'first_page_url' => $paginationData['first_page_url'],
+            'last_page_url' => $paginationData['last_page_url'],
+            'next_page_url' => $paginationData['next_page_url'],
+            'prev_page_url' => $paginationData['prev_page_url']
+        ]);
+
         return $transformedUsers;
     }
 
@@ -135,10 +204,10 @@ trait UserServiceList
 
     /**
      * Get users with active role relationships for multiple role-school combinations.
-     */
+
     public function getUsersByRoleRelationships(Request $request, array $roleSchoolPairs)
     {
-        $query = User::withActiveRoleRelationships($roleSchoolPairs);
+        $query = User::withActiveRoleRelationships(make parameters);
         $query = $this->addTextSearch($request, $query);
         $query = $this->addSorting($request, $query);
         $users = $this->handlePagination($query, $request->input('per_page'), 30);
@@ -182,7 +251,7 @@ trait UserServiceList
 
         return $transformedUsers;
     }
-
+     */
     private function addTextSearch(Request $request, $query)
     {
         // Apply search filter if present

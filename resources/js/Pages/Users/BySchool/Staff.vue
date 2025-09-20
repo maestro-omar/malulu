@@ -67,21 +67,38 @@
         <!-- Custom cell for level -->
         <template #body-cell-level="props">
           <q-td :props="props">
-            <SchoolLevelBadge v-if="props.row.course" :level="props.row.course.school_level" />
+            <div class="row q-gutter-xs">
+              <SchoolLevelBadge v-for="course in getUniqueLevels(props.row.courses)" :key="course.school_level.id" :level="course.school_level" />
+            </div>
           </q-td>
         </template>
 
         <!-- Custom cell for shift -->
         <template #body-cell-shift="props">
           <q-td :props="props">
-            <SchoolShiftBadge v-if="props.row.course" :shift="props.row.course.school_shift" />
+            <div class="row q-gutter-xs">
+              <SchoolShiftBadge v-for="course in getUniqueShifts(props.row.courses)" :key="course.school_shift.id" :shift="course.school_shift" />
+            </div>
+          </q-td>
+        </template>
+
+        <!-- Custom cell for roles -->
+        <template #body-cell-roles="props">
+          <q-td :props="props">
+            <div class="row q-gutter-xs">
+              <RoleBadge v-for="role in getUniqueRoles(props.row.roles)" :key="role.id" :role="role" />
+            </div>
           </q-td>
         </template>
 
         <!-- Custom cell for course -->
         <template #body-cell-course="props">
           <q-td :props="props">
-            {{ props.row.course ? props.row.course.nice_name : '' }}
+            <div class="row q-gutter-xs">
+              <Link v-for="course in props.row.courses" :key="course.id" :href="course.url" class="text-primary">
+                {{ course.nice_name }}
+              </Link>
+            </div>
           </q-td>
         </template>
 
@@ -115,6 +132,7 @@
 <script setup>
 import { computed } from 'vue';
 import EmailField from '@/Components/admin/EmailField.vue';
+import RoleBadge from '@/Components/Badges/RoleBadge.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
@@ -234,6 +252,35 @@ const isAdmin = (user) => {
   return user.roles && user.roles.some(role => role.name === 'admin' || role.name === 'Administrador');
 };
 
+const getUniqueRoles = (roles) => {
+  if (!roles || !Array.isArray(roles)) {
+    return [];
+  }
+  return roles.filter((role, index, self) =>
+    index === self.findIndex((r) => r.id === role.id)
+  );
+};
+
+const getUniqueLevels = (courses) => {
+  if (!courses || !Array.isArray(courses)) {
+    return [];
+  }
+  return courses.filter((course, index, self) =>
+    course.school_level && 
+    index === self.findIndex((c) => c.school_level && c.school_level.id === course.school_level.id)
+  );
+};
+
+const getUniqueShifts = (courses) => {
+  if (!courses || !Array.isArray(courses)) {
+    return [];
+  }
+  return courses.filter((course, index, self) =>
+    course.school_shift && 
+    index === self.findIndex((c) => c.school_shift && c.school_shift.id === course.school_shift.id)
+  );
+};
+
 
 
 // Handle pagination and sorting requests
@@ -326,25 +373,32 @@ const columns = [
     sortable: true
   },
   {
+    name: 'roles',
+    label: 'Roles',
+    field: 'roles',
+    align: 'left',
+    sortable: false
+  },
+  {
     name: 'level',
     label: 'Nivel',
-    field: 'course.level',
+    field: 'courses',
     align: 'center',
     sortable: false
   },
   {
     name: 'shift',
     label: 'Turno',
-    field: 'course.shift',
+    field: 'courses',
     align: 'center',
-    sortable: true
+    sortable: false
   },
   {
     name: 'course',
     label: 'Curso',
-    field: 'course.nice_name',
+    field: 'courses',
     align: 'left',
-    sortable: true
+    sortable: false
   },
   {
     name: 'actions',
