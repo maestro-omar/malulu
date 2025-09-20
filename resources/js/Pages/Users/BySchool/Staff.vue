@@ -17,20 +17,22 @@
       <div class="row q-mb-md">
         <div class="col-lg-2 col-md-4 col-sm-6 col-12">
           <q-input v-model="searchInput" dense outlined placeholder="Buscar personas..." @keyup.enter="performSearch"
-            clearable>
+            clearable :loading="loading">
             <template v-slot:prepend>
               <q-icon name="search" />
             </template>
             <template v-slot:append>
-              <q-btn flat round dense icon="send" @click="performSearch" color="primary" />
+              <q-btn flat round dense icon="send" @click="performSearch" color="primary" :loading="loading" :disable="loading" />
             </template>
           </q-input>
         </div>
       </div>
 
       <!-- Quasar Table -->
-      <q-table class="mll-table mll-table--students striped-table" dense :rows="users.data" :columns="columns"
-        row-key="id" v-model:pagination="pagination" :loading="loading" @request="onRequest" binary-state-sort>
+      <div class="relative-position">
+        <q-table class="mll-table mll-table--students striped-table" dense :rows="users.data" :columns="columns"
+          row-key="id" v-model:pagination="pagination" :loading="loading" @request="onRequest" binary-state-sort
+          :loading-label="loading ? 'Cargando datos...' : ''">
 
         <!-- Custom cell for photo -->
         <template #body-cell-photo="props">
@@ -124,6 +126,10 @@
         </template>
       </q-table>
 
+      <!-- Loading overlay -->
+      <q-inner-loading :showing="loading || initialLoading" color="primary" size="50px" />
+      </div>
+
 
     </template>
   </AuthenticatedLayout>
@@ -142,7 +148,7 @@ import { route_school_staff } from '@/Utils/routes';
 import { formatNumber } from '@/Utils/strings';
 import noImage from '@images/no-image-person.png';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import { watch, ref } from 'vue';
+import { watch, ref, onMounted } from 'vue';
 
 const props = defineProps({
   school: Object,
@@ -159,6 +165,12 @@ const props = defineProps({
 
 const $page = usePage();
 
+// Handle initial loading
+onMounted(() => {
+  // Set initial loading to false after component is mounted
+  initialLoading.value = false;
+});
+
 // Search input state (separate from URL search parameter)
 const searchInput = ref(props.filters?.search || '');
 
@@ -169,6 +181,7 @@ const sortDirection = ref(props.filters?.direction || 'asc');
 
 // Loading state
 const loading = ref(false);
+const initialLoading = ref(true);
 
 // Pagination state
 const pagination = ref({
