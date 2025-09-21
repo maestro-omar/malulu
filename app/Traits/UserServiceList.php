@@ -203,6 +203,11 @@ trait UserServiceList
                 $currentCourse->load(['schoolLevel', 'schoolShift']);
                 // dd($currentCourse);
             }
+            $currentCourse->url = route('school.course.show', [
+                'school' => $currentCourse->school->slug,
+                'schoolLevel' => $currentCourse->schoolLevel->code,
+                'idAndLabel' => $currentCourse->idAndLabel
+            ]);
             // Add student relationships to the user data
             $user['course'] = $currentCourse;
             return $user;

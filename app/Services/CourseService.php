@@ -359,6 +359,7 @@ class CourseService
             "rel_id" => $studentRel->id,
             "id" => $user->id,
             "name" => $user->name,
+            "email" => $user->email,
             "firstname" => $user->firstname,
             "lastname" => $user->lastname,
             "id_number" => $user->id_number,
@@ -396,6 +397,7 @@ class CourseService
             "name" => $user->name,
             "firstname" => $user->firstname,
             "lastname" => $user->lastname,
+            "email" => $user->email,
             "id_number" => $user->id_number,
             "gender" => User::getGenderName($user->gender, true),
             "birthdate" => $user->birthdate->format('Y-m-d'),
@@ -502,5 +504,115 @@ class CourseService
                     ->distinct();
                 break;
         }
+    }
+
+    /**
+     * Export course data based on selected options
+     */
+    public function exportCourse(Course $course, array $exportOptions)
+    {
+        // Log the export request for debugging
+        Log::info('Course export requested', [
+            'course_id' => $course->id,
+            'course_name' => $course->nice_name,
+            'export_options' => $exportOptions
+        ]);
+
+        // Prepare the export data based on selected options
+        $exportData = [];
+
+        // Load necessary relationships
+        $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse', 'nextCourses']);
+
+        // Basic course data
+        if ($exportOptions['basicData'] ?? false) {
+            $exportData['basic_data'] = [
+                'id' => $course->id,
+                'nice_name' => $course->nice_name,
+                'number' => $course->number,
+                'letter' => $course->letter,
+                'name' => $course->name,
+                'start_date' => $course->start_date,
+                'end_date' => $course->end_date,
+                'active' => $course->active,
+                'school' => [
+                    'id' => $course->school->id,
+                    'name' => $course->school->name,
+                    'slug' => $course->school->slug,
+                ],
+                'school_level' => [
+                    'id' => $course->schoolLevel->id,
+                    'name' => $course->schoolLevel->name,
+                    'code' => $course->schoolLevel->code,
+                ],
+                'school_shift' => [
+                    'id' => $course->schoolShift->id,
+                    'name' => $course->schoolShift->name,
+                ],
+                'previous_course' => $course->previousCourse ? [
+                    'id' => $course->previousCourse->id,
+                    'nice_name' => $course->previousCourse->nice_name,
+                ] : null,
+                'next_courses' => $course->nextCourses->map(function ($nextCourse) {
+                    return [
+                        'id' => $nextCourse->id,
+                        'nice_name' => $nextCourse->nice_name,
+                    ];
+                }),
+                'created_at' => $course->created_at,
+                'updated_at' => $course->updated_at,
+            ];
+        }
+
+        // Schedule data
+        if ($exportOptions['schedule'] ?? false) {
+            // TODO: Implement schedule data export
+            // This will depend on how schedules are stored in your system
+            $exportData['schedule'] = [
+                'message' => 'Schedule export not yet implemented',
+                'note' => 'This will be implemented based on your schedule data structure'
+            ];
+        }
+
+        // Teachers data
+        if ($exportOptions['teachers'] ?? false) {
+            $teachers = $this->getTeachers($course);
+            $exportData['teachers'] = $teachers->map(function ($teacher) {
+                return [
+                    'id' => $teacher->id,
+                    'name' => $teacher->name,
+                    'email' => $teacher->email,
+                    'phone' => $teacher->phone,
+                    'role' => $teacher->pivot->role ?? 'teacher',
+                    'assigned_at' => $teacher->pivot->created_at ?? null,
+                ];
+            });
+        }
+
+        // Students data
+        if ($exportOptions['students'] ?? false) {
+            $students = $this->getStudents($course, true);
+            $exportData['students'] = $students->map(function ($student) {
+                return [
+                    'id' => $student->id,
+                    'name' => $student->name,
+                    'email' => $student->email,
+                    'phone' => $student->phone,
+                    'birth_date' => $student->birth_date,
+                    'enrolled_at' => $student->pivot->created_at ?? null,
+                    'status' => $student->pivot->status ?? 'active',
+                ];
+            });
+        }
+
+        // For now, return JSON response
+        // Later you can implement actual file generation (PDF, Excel, etc.)
+        return response()->json([
+            'success' => true,
+            'message' => 'Course data exported successfully',
+            'course_name' => $course->nice_name,
+            'exported_at' => now()->toISOString(),
+            'data' => $exportData
+        ]);
     }
 }

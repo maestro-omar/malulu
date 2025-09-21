@@ -26,8 +26,9 @@
       <!-- Custom cell for firstname -->
       <template #body-cell-firstname="props">
         <q-td :props="props">
-          <div class="text-weight-medium">{{ props.row.firstname }}</div>
-          <div class="text-caption text-grey-6">{{ props.row.email }}</div>
+          <Link :href="route_school_staff(school, props.row, 'show')" class="text-primary">
+          {{ props.row.firstname }}
+          </Link>
         </q-td>
       </template>
 
@@ -35,6 +36,13 @@
       <template #body-cell-lastname="props">
         <q-td :props="props">
           <div class="text-weight-medium">{{ props.row.lastname }}</div>
+        </q-td>
+      </template>
+
+      <!-- Custom cell for email -->
+      <template #body-cell-email="props">
+        <q-td :props="props">
+          <EmailField :email="props.row.email" />
         </q-td>
       </template>
 
@@ -71,7 +79,8 @@
       <!-- Custom cell for actions -->
       <template #body-cell-actions="props">
         <q-td :props="props">
-          <q-btn flat dense color="primary" icon="visibility" :href="getUserShowUrl(props.row)" size="sm">
+          <q-btn flat dense color="primary" icon="visibility" :href="route_school_staff(school, props.row, 'show')"
+            size="sm">
             <q-tooltip>Ver profesor</q-tooltip>
           </q-btn>
         </q-td>
@@ -82,10 +91,12 @@
 
 
 <script setup>
-import { getUserSlug } from '@/Utils/strings';
+import { Link } from '@inertiajs/vue3'
 import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
+import EmailField from '@/Components/admin/EmailField.vue';
 import RoleBadge from '@/Components/Badges/RoleBadge.vue';
-import noImage from '@images/no-image-person.png';
+import noImage from "@images/no-image-person.png";
+import { route_school_staff } from '@/Utils/routes';
 
 const props = defineProps({
   title: { type: String, default: 'Docentes' },
@@ -117,6 +128,14 @@ const columns = [
     label: 'Apellido',
     field: 'lastname',
     align: 'left',
+    sortable: true
+  },
+  {
+    name: 'email',
+    required: true,
+    label: 'Email',
+    align: 'left',
+    field: 'email',
     sortable: true
   },
   {
@@ -158,7 +177,4 @@ const columns = [
   }
 ];
 
-const getUserShowUrl = (user) => {
-  return route('users.show', getUserSlug(user));
-};
 </script>

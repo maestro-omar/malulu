@@ -83,8 +83,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { Link, Head } from '@inertiajs/vue3'
+import { Link } from '@inertiajs/vue3'
 import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
 import EmailField from '@/Components/admin/EmailField.vue';
 import noImage from "@images/no-image-person.png";

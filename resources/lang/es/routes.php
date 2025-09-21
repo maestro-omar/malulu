@@ -22,6 +22,7 @@ return [
     'guardian' => 'tutor',
     'users' => 'usuarios',
     'trashed' => 'eliminados',
+    'export' => 'exportar',
     'restore' => 'restaurar',
     'force-delete' => 'eliminar-permanentemente',
     'create' => 'crear',

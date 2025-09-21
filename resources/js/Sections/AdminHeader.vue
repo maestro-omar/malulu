@@ -44,7 +44,7 @@ defineProps({
   add: {
     type: Object,
     default: null,
-  },
+  }
 });
 const $page = usePage();
 const breadcrumbs = $page.props.breadcrumbs;

@@ -201,6 +201,25 @@ class CourseController extends SchoolBaseController
         ]);
     }
 
+    public function export(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
+    {
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        
+        // Validate export options
+        $request->validate([
+            'export_options' => 'required|array',
+            'export_options.basicData' => 'boolean',
+            'export_options.schedule' => 'boolean',
+            'export_options.teachers' => 'boolean',
+            'export_options.students' => 'boolean',
+        ]);
+
+        $exportOptions = $request->input('export_options');
+        
+        // Call the exportCourse method from CourseService
+        return $this->courseService->exportCourse($course, $exportOptions);
+    }
+
     private function goBackToIndex(Request $request, string $message)
     {
         $school = School::find($request->school_id);

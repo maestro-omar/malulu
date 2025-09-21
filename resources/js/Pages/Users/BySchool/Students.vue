@@ -64,6 +64,14 @@
           </q-td>
         </template>
 
+        <!-- Custom cell for birthdate -->
+        <template #body-cell-birthdate="props">
+          <q-td :props="props">
+            <BirthdateAge v-if="props.row.birthdate" :birthdate="props.row.birthdate" />
+            <span v-else class="text-grey-5">-</span>
+          </q-td>
+        </template>
+
         <!-- Custom cell for level -->
         <template #body-cell-level="props">
           <q-td :props="props">
@@ -81,7 +89,9 @@
         <!-- Custom cell for course -->
         <template #body-cell-course="props">
           <q-td :props="props">
-            {{ props.row.course ? props.row.course.nice_name : '' }}
+            <Link v-if="props.row.course" :href="props.row.course.url" class="text-primary">
+            {{ props.row.course.nice_name }}
+            </Link>
           </q-td>
         </template>
 
@@ -115,6 +125,7 @@
 <script setup>
 import { computed } from 'vue';
 import EmailField from '@/Components/admin/EmailField.vue';
+import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
@@ -322,6 +333,13 @@ const columns = [
     name: 'id_number',
     label: 'DNI',
     field: 'id_number',
+    align: 'left',
+    sortable: true
+  },
+  {
+    name: 'birthdate',
+    label: 'Cumpleaños',
+    field: 'birthdate',
     align: 'left',
     sortable: true
   },

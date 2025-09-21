@@ -13,6 +13,9 @@
         onClick: destroy,
         label: 'Eliminar'
       }">
+        <template #additional-buttons>  
+          <CourseExportPopover :course="course" :school="school" :schoolLevel="selectedLevel" />
+        </template>
       </AdminHeader>
     </template>
 
@@ -106,7 +109,7 @@
         :showFileBaseUrl="route('school.course.file.show', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course), file: '##' })"
         :editFileBaseUrl="route('school.course.file.edit', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course), file: '##' })"
         :replaceFileBaseUrl="route('school.course.file.replace', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course), file: '##' })"
-        canDownload="true" />
+        :canDownload="true" />
 
       <SystemTimestamp :row="course" />
     </template>
@@ -126,6 +129,7 @@ import { hasPermission } from '@/Utils/permissions';
 import { getCourseSlug } from '@/Utils/strings';
 import StudentsTable from '@/Components/admin/StudentsTable.vue';
 import TeachersTable from '@/Components/admin/TeachersTable.vue';
+import CourseExportPopover from '@/Components/admin/CourseExportPopover.vue';
 
 const props = defineProps({
   course: {
