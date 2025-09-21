@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Log;
 use App\Services\FileService;
 use App\Services\PaginationTrait;
 use App\Traits\CourseNext;
+use App\Exports\CourseExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CourseService
 {
@@ -511,111 +513,21 @@ class CourseService
      */
     public function exportCourse(Course $course, array $exportOptions)
     {
-        // Log the export request for debugging
-        Log::info('Course export requested', [
-            'course_id' => $course->id,
-            'course_name' => $course->nice_name,
-            'export_options' => $exportOptions
-        ]);
-
-        // Prepare the export data based on selected options
-        $exportData = [];
-
-        // Load necessary relationships
-        $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse', 'nextCourses']);
-
-        // Basic course data
-        if ($exportOptions['basicData'] ?? false) {
-            $exportData['basic_data'] = [
-                'id' => $course->id,
-                'nice_name' => $course->nice_name,
-                // 'number' => $course->number,
-                // 'letter' => $course->letter,
-                // 'name' => $course->name,
-                // 'start_date' => $course->start_date,
-                // 'end_date' => $course->end_date,
-                // 'active' => $course->active,
-                'school' => [
-                    // 'id' => $course->school->id,
-                    'name' => $course->school->name,
-                    // 'slug' => $course->school->slug,
-                ],
-                'school_level' => [
-                    // 'id' => $course->schoolLevel->id,
-                    'name' => $course->schoolLevel->name,
-                    // 'code' => $course->schoolLevel->code,
-                ],
-                'school_shift' => [
-                    // 'id' => $course->schoolShift->id,
-                    'name' => $course->schoolShift->name,
-                ],
-                // 'previous_course' => $course->previousCourse ? [
-                //     'id' => $course->previousCourse->id,
-                //     'nice_name' => $course->previousCourse->nice_name,
-                // ] : null,
-                // 'next_courses' => $course->nextCourses->map(function ($nextCourse) {
-                //     return [
-                //         'id' => $nextCourse->id,
-                //         'nice_name' => $nextCourse->nice_name,
-                //     ];
-                // }),
-                // 'created_at' => $course->created_at,
-                // 'updated_at' => $course->updated_at,
-            ];
-        }
-
-        // Schedule data
-        if ($exportOptions['schedule'] ?? false) {
-            // TODO: Implement schedule data export
-            // This will depend on how schedules are stored in your system
-            $exportData['schedule'] = [
-                'message' => 'Schedule export not yet implemented',
-                'note' => 'This will be implemented based on your schedule data structure'
-            ];
-        }
-
-        // Teachers data
-        if ($exportOptions['teachers'] ?? false) {
-            $teachers = $this->getTeachers($course);
-            $exportData['teachers'] = array_map(function ($teacher) {
-                return [
-                    // 'id' => $teacher['id'],
-                    'name' => $teacher['name'],
-                    'email' => $teacher['email'],
-                    'phone' => $teacher['phone'],
-                    'birthdate' => $teacher['birthdate'],
-                    'id_number' => $teacher['id_number'],
-                    'role' => $teacher['rel_role']->name,
-                    'subject' => $teacher['rel_in_charge'],
-                    'in_charge' => $teacher['rel_in_charge'],
-                ];
-            }, $teachers);
-        }
-
-        // Students data
-        if ($exportOptions['students'] ?? false) {
-            $students = $this->getStudents($course, true);
-            $exportData['students'] = array_map(function ($student) {
-                return [
-                    // 'id' => $student['id'],
-                    'name' => $student['name'],
-                    'gender' => $student['gender'],
-                    'email' => $student['email'],
-                    'phone' => $student['phone'],
-                    'birthdate' => $student['birthdate'],
-                    'id_number' => $student['id_number'],
-                ];
-            }, $students);
-        }
+        $filename = $course->nice_name . '-' . now()->toISOString() . '.xlsx';
+        $return = Excel::download(
+            new CourseExport($this, $course, $exportOptions),
+            $filename
+        );
+        return $return;
 
         // For now, return JSON response
         // Later you can implement actual file generation (PDF, Excel, etc.)
-        return response()->json([
-            'success' => true,
-            'message' => 'Course data exported successfully',
-            'course_name' => $course->nice_name,
-            'exported_at' => now()->toISOString(),
-            'data' => $exportData
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Course data exported successfully',
+        //     'course_name' => $course->nice_name,
+        //     'exported_at' => now()->toISOString(),
+        //     'file' => $return
+        // ]);
     }
 }

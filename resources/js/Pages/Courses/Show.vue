@@ -13,7 +13,7 @@
         onClick: destroy,
         label: 'Eliminar'
       }">
-        <template #additional-buttons>  
+        <template #additional-buttons>
           <CourseExportPopover :course="course" :school="school" :schoolLevel="selectedLevel" />
         </template>
       </AdminHeader>
@@ -24,7 +24,7 @@
       <q-card class="q-mb-md">
         <q-card-section>
           <div class="row">
-            <div class="col-6">
+            <div class="col-12 col-md-6">
               <div class="text-h3 q-mb-md">Datos básicos</div>
               <div class="row q-col-gutter-sm">
                 <div class="col-lg-2 col-md-3 col-4">
@@ -87,7 +87,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-md-6">
               <div class="text-h3 q-mb-md">Horarios</div>
               <div class="row q-col-gutter-sm">
                 LU MA MI JU VI
