@@ -241,11 +241,12 @@ class Role extends SpatieRole
         return collect(self::getFilteredConstants())
             ->mapWithKeys(function ($value, $constant) use ($records, $map) {
                 $record = $records->get($value);
-
+                $label = $map[$value]['label'] ?? ($record ? $record->name : ucfirst(str_replace('_', ' ', $value)));
                 return [$value => [
                     'id' => $record ? $record->id : null,
-                    'label' => $map[$value]['label'] ?? ucfirst(str_replace('_', ' ', $value)),
+                    'label' => $label,
                     'code' => $value,
+                    'short' => $record->short ?? substr($label, 0, 4),
                 ]];
             })
             ->toArray();

@@ -52,4 +52,10 @@
     color: variables.$color-text;
     border: 0 none;
   }
+
+  // Selected variants with shadow
+  &--selected {
+    border: 1px solid variables.$color-shift-morning-text;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
 }

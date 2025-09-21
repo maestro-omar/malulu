@@ -87,7 +87,7 @@ trait UserServiceList
 
     public function getStaffBySchool(Request $request, int $schoolId)
     {
-        $expectedFilters = ['search', 'sort', 'direction', 'per_page'];
+        $expectedFilters = ['search', 'sort', 'direction', 'per_page', 'shift', 'roles'];
 
         $workersIds = Role::select('id')->whereIn('code', Role::workersCodes())->pluck('id')->toArray();
 
@@ -96,9 +96,15 @@ trait UserServiceList
                 'roleRelationships.role',
                 'roleRelationships.teacherCourses.course.schoolLevel',
                 'roleRelationships.teacherCourses.course.schoolShift',
-                'roleRelationships.teacherCourses.course.school'
+                'roleRelationships.teacherCourses.course.school',
+                'roleRelationships.workerRelationship',
+                'roleRelationships.workerRelationship.classSubject'
             ]);
+
+        // Apply filters
         $query = $this->addTextSearch($request, $query);
+        $query = $this->addShiftFilter($request, $query);
+        $query = $this->addRolesFilter($request, $query);
         $query = $this->addSorting($request, $query);
 
         // Handle pagination
@@ -112,8 +118,8 @@ trait UserServiceList
             $user['roles'] = $user->roleRelationships
                 ->filter(function ($roleRelationship) use ($schoolId) {
                     // Only include roles for this specific school and that are worker roles
-                    return $roleRelationship->school_id == $schoolId && 
-                           Role::isWorker($roleRelationship->role->code);
+                    return $roleRelationship->school_id == $schoolId &&
+                        Role::isWorker($roleRelationship->role->code);
                 })
                 ->map(function ($roleRelationship) {
                     return [
@@ -146,8 +152,11 @@ trait UserServiceList
             }
             $user['courses'] = $courses->toArray();
 
-            $workerRelationships = $user->workerRelationships;
-            $workerRelationships = $workerRelationships ? $workerRelationships->whereNull('deleted_at') : null;
+            // Get worker relationships through role relationships
+            $workerRelationships = $user->roleRelationships
+                ->pluck('workerRelationship')
+                ->filter()
+                ->whereNull('deleted_at');
             $user['workerRelationships'] = $workerRelationships;
             return $user;
         })->toArray();
@@ -431,5 +440,43 @@ trait UserServiceList
             return strcmp($a['firstname'], $b['firstname']);
         })->values()->all();
         return $return;
+    }
+
+    /**
+     * Add shift filter to the query
+     */
+    protected function addShiftFilter(Request $request, $query)
+    {
+        $shiftId = $request->input('shift');
+
+        if ($shiftId && is_numeric($shiftId)) {
+            // Filter users who have courses in the selected shift
+            $query->whereHas('roleRelationships.teacherCourses.course', function ($q) use ($shiftId) {
+                $q->where('school_shift_id', $shiftId);
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Add roles filter to the query
+     */
+    protected function addRolesFilter(Request $request, $query)
+    {
+        $roleIds = $request->input('roles', []);
+
+        if (!empty($roleIds) && is_array($roleIds)) {
+            // Filter out any non-numeric values
+            $roleIds = array_filter($roleIds, 'is_numeric');
+
+            if (!empty($roleIds)) {
+                $query->whereHas('roleRelationships', function ($q) use ($roleIds) {
+                    $q->whereIn('role_id', $roleIds);
+                });
+            }
+        }
+
+        return $query;
     }
 }

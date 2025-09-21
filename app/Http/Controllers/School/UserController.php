@@ -34,14 +34,40 @@ class UserController extends SchoolBaseController
     }
 
     public function staff(Request $request, $slug): Response{
-        $this->setSchool($slug);
+        try {
+            $this->setSchool($slug);
+            
+            // Load school with shifts relationship
+            $this->school->load('shifts');
 
-        return $this->render($request, 'Users/BySchool/Staff', [
-            'users' => $this->userService->getStaffBySchool($request, $this->school->id),
-            'school' => $this->school,
-            'filters' => $request->only(['search', 'sort', 'direction']),
-            'breadcrumbs' => Breadcrumbs::generate('schools.staff', $this->school),
-        ]);
+            // Transform school shifts to match the expected format
+            $school = $this->school->toArray();
+            $school['shifts'] = $this->school->shifts ? $this->school->shifts->map(function ($shift) {
+                return [
+                    'id' => $shift->id,
+                    'name' => $shift->name,
+                    'label' => $shift->name, // Use name as label for consistency
+                    'code' => $shift->code
+                ];
+            })->toArray() : [];
+
+            return $this->render($request, 'Users/BySchool/Staff', [
+                'users' => $this->userService->getStaffBySchool($request, $this->school->id),
+                'school' => $school,
+                'filters' => $request->only(['search', 'sort', 'direction', 'shift', 'roles']),
+                'breadcrumbs' => Breadcrumbs::generate('schools.staff', $this->school),
+            ]);
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            Log::error('Staff page error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Re-throw the exception to see the error
+            throw $e;
+        }
     }
 
     public function students(Request $request, $slug): Response
