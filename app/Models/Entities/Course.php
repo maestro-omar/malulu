@@ -138,4 +138,10 @@ class Course extends Model
 
         return Str::slug($label);
     }
+
+    public function getScheduleAttribute()
+    {
+        //TODO maybe in the future, schedule will be defined in school configuration
+        return $this->schoolShift->schedule;
+    }
 }

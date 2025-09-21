@@ -16,6 +16,15 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyles
 {
+    // Color constants for styling
+    const COLOR_HEADER_LABELS = '004473';      // Blue for header section labels (Escuela, Nivel, etc.)
+    const COLOR_TABLE_HEADER_TEXT = 'FFFFFF';  // White text for table headers
+
+    // Separate colors for teachers and students tables
+    const COLOR_TEACHERS_HEADERS = 'F5B54E';   // Blue for teachers table header backgrounds
+    const COLOR_STUDENTS_HEADERS = '059669';   // Green for students table header backgrounds
+    const COLOR_SCHEDULE_HEADERS = '7C3AED';   // Purple for schedule table header backgrounds
+
     protected Course $course;
     protected array $exportOptions;
     protected CourseService $courseService;
@@ -42,12 +51,76 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
             $exportData[] = ['Turno:', $this->course->schoolShift->name];
             $exportData[] = ['Curso:', $this->course->nice_name];
             $currentRow += 4;
+
+            // Add 2 empty rows
+            $exportData[] = ['', ''];
+            $exportData[] = ['', ''];
+            $currentRow += 2;
         }
 
-        // Add 2 empty rows
-        $exportData[] = ['', ''];
-        $exportData[] = ['', ''];
-        $currentRow += 2;
+        // Schedule data
+        if ($this->exportOptions['schedule'] ?? false) {
+            // Schedule section header
+            $exportData[] = ['HORARIOS', ''];
+            $currentRow++;
+
+            // Add empty row
+            $exportData[] = ['', ''];
+            $currentRow++;
+
+            $courseSchedule = $this->course->schedule;
+
+            if ($courseSchedule && isset($courseSchedule['schedule'])) {
+                // Generate day headers based on the days array (1 = Monday)
+                $dayNames = [1 => 'LU', 2 => 'MA', 3 => 'MI', 4 => 'JU', 5 => 'VI', 6 => 'SA', 7 => 'DO'];
+                $dayHeaders = ['', '']; // Start with empty cells for period and time columns
+
+                if (isset($courseSchedule['days'])) {
+                    foreach ($courseSchedule['days'] as $dayNumber) {
+                        $dayHeaders[] = $dayNames[$dayNumber] ?? '';
+                    }
+                } else {
+                    // Fallback to default weekdays if days array is not provided
+                    $dayHeaders = ['', '', 'LU', 'MA', 'MI', 'JU', 'VI'];
+                }
+
+                // Add header row with day names
+                $exportData[] = $dayHeaders;
+                $currentRow++;
+
+                // Generate schedule rows based on the schedule data
+                foreach ($courseSchedule['schedule'] as $periodKey => $timeRange) {
+                    $periodLabel = $periodKey;
+
+                    // Handle special period labels
+                    if (strpos($periodKey, 'break') !== false) {
+                        $periodLabel = '(recreo)';
+                    } elseif (strpos($periodKey, 'lunch') !== false) {
+                        $periodLabel = '(almuerzo)';
+                    }
+
+                    // Create time range string
+                    $timeString = $timeRange[0] . ' - ' . $timeRange[1];
+
+                    // Create schedule row with empty cells for each day
+                    $scheduleRow = [$periodLabel, $timeString];
+
+                    // Add empty cells for each day in the schedule
+                    $dayCount = isset($courseSchedule['days']) ? count($courseSchedule['days']) : 5;
+                    for ($i = 0; $i < $dayCount; $i++) {
+                        $scheduleRow[] = '';
+                    }
+
+                    $exportData[] = $scheduleRow;
+                    $currentRow++;
+                }
+            }
+
+            // Add 2 empty rows
+            $exportData[] = ['', ''];
+            $exportData[] = ['', ''];
+            $currentRow += 2;
+        }
 
         // Teachers data
         if ($this->exportOptions['teachers'] ?? false) {
@@ -75,12 +148,12 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
                 ];
                 $currentRow++;
             }
+            // Add 2 empty rows
+            $exportData[] = ['', ''];
+            $exportData[] = ['', ''];
+            $currentRow += 2;
         }
 
-        // Add 2 empty rows
-        $exportData[] = ['', ''];
-        $exportData[] = ['', ''];
-        $currentRow += 2;
 
         // Students data
         if ($this->exportOptions['students'] ?? false) {
@@ -141,9 +214,9 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
     public function columnWidths(): array
     {
         return [
-            'A' => 20,  // Labels and first column (Nombre)
-            'B' => 15,  // Gender column
-            'C' => 30,  // Email column
+            'A' => 25,  // Labels and first column (Nombre)
+            'B' => 10,  // Gender column
+            'C' => 40,  // Email column
             'D' => 18,  // Birthdate column
             'E' => 15,  // ID Number column
             'F' => 20,  // Role column (teachers only)
@@ -171,7 +244,7 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
         $sheet->getStyle('A1:A4')->applyFromArray([
             'font' => [
                 'bold' => true,
-                'color' => ['rgb' => '2F5597'],
+                'color' => ['rgb' => self::COLOR_HEADER_LABELS],
             ],
         ]);
 
@@ -188,16 +261,34 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
                 $rowCount = $sheet->getHighestRow();
 
                 // Find and style section headers and table headers
+                $currentSection = null;
                 for ($row = 1; $row <= $rowCount; $row++) {
                     $cellValue = $sheet->getCell("A{$row}")->getValue();
 
-                    // Style section headers (DOCENTES, ESTUDIANTES)
-                    if (in_array($cellValue, ['DOCENTES', 'ESTUDIANTES'])) {
+                    // Track current section
+                    if ($cellValue === 'DOCENTES') {
+                        $currentSection = 'teachers';
+                    } elseif ($cellValue === 'ESTUDIANTES') {
+                        $currentSection = 'students';
+                    } elseif ($cellValue === 'HORARIOS') {
+                        $currentSection = 'schedule';
+                    }
+
+                    // Determine the appropriate header color based on current section
+                    $headerColor = self::COLOR_TEACHERS_HEADERS; // Default to teachers
+                    if ($currentSection === 'students') {
+                        $headerColor = self::COLOR_STUDENTS_HEADERS;
+                    } elseif ($currentSection === 'schedule') {
+                        $headerColor = self::COLOR_SCHEDULE_HEADERS;
+                    }
+
+                    // Style section headers (DOCENTES, ESTUDIANTES, HORARIOS)
+                    if (in_array($cellValue, ['DOCENTES', 'ESTUDIANTES', 'HORARIOS'])) {
                         $sheet->getStyle("A{$row}")->applyFromArray([
                             'font' => [
                                 'bold' => true,
                                 'size' => 14,
-                                'color' => ['rgb' => '2F5597'],
+                                'color' => ['rgb' => $headerColor],
                             ],
                             'alignment' => [
                                 'horizontal' => Alignment::HORIZONTAL_LEFT,
@@ -205,7 +296,58 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
                         ]);
                     }
 
-                    // Check if this is a table header row
+                    // Check if this is a schedule table header row (starts with empty A, B cells and has day headers)
+                    $cellB = $sheet->getCell("B{$row}")->getValue();
+                    $cellC = $sheet->getCell("C{$row}")->getValue();
+                    if ($currentSection === 'schedule' && empty($cellValue) && empty($cellB) && $cellC === 'LU') {
+                        // This is the schedule header row with day names
+                        // Calculate the last column dynamically based on the number of days
+                        $courseSchedule = $this->course->schedule;
+                        $dayCount = isset($courseSchedule['days']) ? count($courseSchedule['days']) : 5;
+                        $lastColumn = chr(67 + $dayCount - 1); // Start from C (67), add day count - 1
+
+                        // Style the header row
+                        $sheet->getStyle("A{$row}:{$lastColumn}{$row}")->applyFromArray([
+                            'font' => [
+                                'bold' => true,
+                                'color' => ['rgb' => self::COLOR_TABLE_HEADER_TEXT],
+                            ],
+                            'fill' => [
+                                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                'startColor' => ['rgb' => $headerColor],
+                            ],
+                            'alignment' => [
+                                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                            ],
+                            'borders' => [
+                                'allBorders' => [
+                                    'borderStyle' => Border::BORDER_THIN,
+                                ],
+                            ],
+                        ]);
+
+                        // Add borders to all schedule data cells
+                        $nextRow = $row + 1;
+                        while (
+                            $nextRow <= $rowCount &&
+                            ($sheet->getCell("A{$nextRow}")->getValue() !== '' || $sheet->getCell("B{$nextRow}")->getValue() !== '') &&
+                            !in_array($sheet->getCell("A{$nextRow}")->getValue(), ['DOCENTES', 'ESTUDIANTES', 'HORARIOS'])
+                        ) {
+                            $sheet->getStyle("A{$nextRow}:{$lastColumn}{$nextRow}")->applyFromArray([
+                                'borders' => [
+                                    'allBorders' => [
+                                        'borderStyle' => Border::BORDER_THIN,
+                                    ],
+                                ],
+                                'alignment' => [
+                                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                                ],
+                            ]);
+                            $nextRow++;
+                        }
+                    }
+
+                    // Check if this is a regular table header row (Nombre)
                     if ($cellValue === 'Nombre') {
                         $lastColumn = $sheet->getHighestColumn();
 
@@ -213,11 +355,11 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
                         $sheet->getStyle("A{$row}:{$lastColumn}{$row}")->applyFromArray([
                             'font' => [
                                 'bold' => true,
-                                'color' => ['rgb' => 'FFFFFF'],
+                                'color' => ['rgb' => self::COLOR_TABLE_HEADER_TEXT],
                             ],
                             'fill' => [
                                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                                'startColor' => ['rgb' => '2F5597'],
+                                'startColor' => ['rgb' => $headerColor],
                             ],
                             'alignment' => [
                                 'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -231,7 +373,7 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
 
                         // Add borders to all data cells in this table
                         $nextRow = $row + 1;
-                        while ($nextRow <= $rowCount && $sheet->getCell("A{$nextRow}")->getValue() !== '' && !in_array($sheet->getCell("A{$nextRow}")->getValue(), ['DOCENTES', 'ESTUDIANTES'])) {
+                        while ($nextRow <= $rowCount && $sheet->getCell("A{$nextRow}")->getValue() !== '' && !in_array($sheet->getCell("A{$nextRow}")->getValue(), ['DOCENTES', 'ESTUDIANTES', 'HORARIOS'])) {
                             $sheet->getStyle("A{$nextRow}:{$lastColumn}{$nextRow}")->applyFromArray([
                                 'borders' => [
                                     'allBorders' => [
