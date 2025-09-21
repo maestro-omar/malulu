@@ -53,16 +53,20 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
         if ($this->exportOptions['teachers'] ?? false) {
             $teachers = $this->courseService->getTeachers($this->course);
 
+            // Teachers section header
+            $exportData[] = ['DOCENTES', ''];
+            $currentRow++;
+
             // Teachers header
-            $exportData[] = ['Nombre', 'Email', 'Teléfono', 'Fecha Nacimiento', 'DNI', 'Rol', 'Materia', 'A Cargo'];
+            $exportData[] = ['Nombre', 'Género', 'Email', 'Fecha Nacimiento', 'DNI', 'Rol', 'Materia', 'A Cargo'];
             $currentRow++;
 
             // Teachers data rows
             foreach ($teachers as $teacher) {
                 $exportData[] = [
                     $teacher['name'],
+                    $teacher['gender'] ?? 'N/A',
                     $teacher['email'],
-                    $teacher['phone'],
                     $this->formatBirthdate($teacher['birthdate']),
                     $teacher['id_number'],
                     $teacher['rel_role']->name,
@@ -82,8 +86,12 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
         if ($this->exportOptions['students'] ?? false) {
             $students = $this->courseService->getStudents($this->course, true);
 
-            // Students header
-            $exportData[] = ['Nombre', 'Género', 'Email', 'Teléfono', 'Fecha Nacimiento', 'DNI'];
+            // Students section header
+            $exportData[] = ['ESTUDIANTES', ''];
+            $currentRow++;
+
+            // Students header (only 6 columns to match the data)
+            $exportData[] = ['Nombre', 'Género', 'Email', 'Fecha Nacimiento', 'DNI'];
             $currentRow++;
 
             // Students data rows
@@ -92,7 +100,6 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
                     $student['name'],
                     $student['gender'],
                     $student['email'],
-                    $student['phone'],
                     $this->formatBirthdate($student['birthdate']),
                     $student['id_number'],
                 ];
@@ -134,14 +141,14 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
     public function columnWidths(): array
     {
         return [
-            'A' => 20,  // Labels and first column
-            'B' => 35,  // Values and data
-            'C' => 20,  // Additional columns
-            'D' => 15,
-            'E' => 15,
-            'F' => 15,
-            'G' => 20,
-            'H' => 10,
+            'A' => 20,  // Labels and first column (Nombre)
+            'B' => 15,  // Gender column
+            'C' => 30,  // Email column
+            'D' => 18,  // Birthdate column
+            'E' => 15,  // ID Number column
+            'F' => 20,  // Role column (teachers only)
+            'G' => 20,  // Subject column (teachers only)
+            'H' => 10,  // In charge column (teachers only)
         ];
     }
 
@@ -180,9 +187,23 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
                 $sheet = $event->sheet->getDelegate();
                 $rowCount = $sheet->getHighestRow();
 
-                // Find and style table headers
+                // Find and style section headers and table headers
                 for ($row = 1; $row <= $rowCount; $row++) {
                     $cellValue = $sheet->getCell("A{$row}")->getValue();
+
+                    // Style section headers (DOCENTES, ESTUDIANTES)
+                    if (in_array($cellValue, ['DOCENTES', 'ESTUDIANTES'])) {
+                        $sheet->getStyle("A{$row}")->applyFromArray([
+                            'font' => [
+                                'bold' => true,
+                                'size' => 14,
+                                'color' => ['rgb' => '2F5597'],
+                            ],
+                            'alignment' => [
+                                'horizontal' => Alignment::HORIZONTAL_LEFT,
+                            ],
+                        ]);
+                    }
 
                     // Check if this is a table header row
                     if ($cellValue === 'Nombre') {
@@ -210,7 +231,7 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
 
                         // Add borders to all data cells in this table
                         $nextRow = $row + 1;
-                        while ($nextRow <= $rowCount && $sheet->getCell("A{$nextRow}")->getValue() !== '') {
+                        while ($nextRow <= $rowCount && $sheet->getCell("A{$nextRow}")->getValue() !== '' && !in_array($sheet->getCell("A{$nextRow}")->getValue(), ['DOCENTES', 'ESTUDIANTES'])) {
                             $sheet->getStyle("A{$nextRow}:{$lastColumn}{$nextRow}")->applyFromArray([
                                 'borders' => [
                                     'allBorders' => [

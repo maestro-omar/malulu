@@ -68,7 +68,6 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { router } from '@inertiajs/vue3'
 import { getCourseSlug } from '@/Utils/strings'
 
 const props = defineProps({
@@ -112,7 +111,7 @@ const closePopover = () => {
   isOpen.value = false
 }
 
-const handleExport = () => {
+const handleExport = async () => {
   if (!hasSelectedOptions.value) {
     return
   }
@@ -120,14 +119,42 @@ const handleExport = () => {
   // Close popover
   closePopover()
 
-  // Redirect to export route with parameters
-  router.post(route('school.course.export', {
-    school: props.school.slug,
-    schoolLevel: props.schoolLevel.code,
-    idAndLabel: getCourseSlug(props.course)
-  }), {
-    export_options: exportOptions.value
-  })
+  try {
+    // Create a form to submit the export request
+    const form = document.createElement('form')
+    form.method = 'POST'
+    form.action = route('school.course.export', {
+      school: props.school.slug,
+      schoolLevel: props.schoolLevel.code,
+      idAndLabel: getCourseSlug(props.course)
+    })
+
+    // Add CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+    if (csrfToken) {
+      const csrfInput = document.createElement('input')
+      csrfInput.type = 'hidden'
+      csrfInput.name = '_token'
+      csrfInput.value = csrfToken
+      form.appendChild(csrfInput)
+    }
+
+    // Add export options
+    Object.keys(exportOptions.value).forEach(key => {
+      const input = document.createElement('input')
+      input.type = 'hidden'
+      input.name = `export_options[${key}]`
+      input.value = exportOptions.value[key] ? '1' : '0'
+      form.appendChild(input)
+    })
+
+    // Submit the form to trigger the download
+    document.body.appendChild(form)
+    form.submit()
+    document.body.removeChild(form)
+  } catch (error) {
+    console.error('Error exporting course:', error)
+  }
 }
 
 // Click outside to close
