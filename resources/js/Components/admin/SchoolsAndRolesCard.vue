@@ -38,23 +38,23 @@
               <div v-for="relationship in getWorkerRelationshipsForRole(role.id, school.id)" :key="relationship.id"
                 class="schools-roles-card__relationship">
                 <div class="row q-col-gutter-sm">
-                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+                  <div class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                     <DataFieldShow label="Estado:" :value="relationship.job_status" />
                   </div>
-                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+                  <div class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                     <DataFieldShow label="Título:" :value="relationship.degree_title" />
                   </div>
-                  <div v-if="relationship.role" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                  <div v-if="relationship.role" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                     <DataFieldShow label="Rol:" :value="relationship.role.name" />
                   </div>
-                  <div v-if="relationship.decree_number" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                  <div v-if="relationship.decree_number" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                     <DataFieldShow label="Decreto:" :value="relationship.decree_number" />
                   </div>
-                  <div v-if="relationship.job_status_date" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                  <div v-if="relationship.job_status_date" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                     <DataFieldShow label="Fecha:" :value="relationship.job_status_date" type="date" />
                   </div>
                   <div v-if="hasTeacherRelationshipsForRole(role.id, school.id) && relationship.class_subject"
-                    class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                     <DataFieldShow label="Asignatura:" :value="relationship.class_subject.name" />
                   </div>
                   <div v-if="relationship.schedule" class="col-12">
@@ -70,11 +70,11 @@
                   </div>
                 </div>
 
-                <div class="row q-col-gutter-sm">
-                  <div v-if="relationship.creator" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                <div v-if="showCreator" class="row q-col-gutter-sm">
+                  <div v-if="relationship.creator" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                     <DataFieldShow label="Creado por:" :value="relationship.creator.name" />
                   </div>
-                  <div v-if="relationship.start_date" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                  <div v-if="relationship.start_date" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                     <DataFieldShow label="Fecha de Inicio:" :value="relationship.start_date" type="date" />
                   </div>
                 </div>
@@ -89,20 +89,7 @@
               <div v-for="relationship in getGuardianRelationshipsForRole(role.id, school.id)" :key="relationship.id"
                 class="schools-roles-card__relationship">
                 <div class="row q-col-gutter-sm">
-                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
-                    <DataFieldShow label="Tipo:" :value="relationship.relationship_type" />
-                  </div>
-                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
-                    <DataFieldShow label="Contacto de Emergencia:"
-                      :value="relationship.is_emergency_contact ? 'Sí' : 'No'" />
-                  </div>
-                  <div v-if="relationship.is_emergency_contact" class="col-6 col-xs-6 col-sm-4 col-md-3">
-                    <DataFieldShow label="Prioridad:" :value="relationship.emergency_contact_priority" />
-                  </div>
-                  <div class="col-6 col-xs-6 col-sm-4 col-md-3">
-                    <DataFieldShow label="Restricción:" :value="relationship.is_restricted ? 'Sí' : 'No'" />
-                  </div>
-                  <div v-if="relationship.student" class="col-12">
+                  <div v-if="relationship.student" class="col-4 col-xs-4 col-sm-3 col-md-2">
                     <DataFieldShow label="Estudiante:">
                       <template #slotValue>
                         <div class="schools-roles-card__field-content">
@@ -114,16 +101,30 @@
                       </template>
                     </DataFieldShow>
                   </div>
+                  <div class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
+                    <DataFieldShow label="Tipo:" :value="relationship.relationship_type" />
+                  </div>
+                  <div class="col-4 col-xs-4 col-sm-3 col-md-2">
+                    <DataFieldShow label="Contacto de Emergencia:"
+                      :value="relationship.is_emergency_contact ? 'Sí' : 'No'" />
+                  </div>
+                  <div v-if="relationship.is_emergency_contact" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
+                    <DataFieldShow label="Prioridad:" :value="relationship.emergency_contact_priority" />
+                  </div>
+                  <div class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
+                    <DataFieldShow label="Restricción:" :value="relationship.is_restricted ? 'Sí' : 'No'" />
+                  </div>
                   <div v-if="relationship.notes" class="col-12">
                     <DataFieldShow label="Notas:" :value="relationship.notes" />
                   </div>
                 </div>
 
-                <div class="row q-col-gutter-sm">
-                  <div v-if="relationship.creator" class="col-6 col-xs-6 col-sm-4 col-md-3">
+
+                <div v-if="showCreator" class="row q-col-gutter-sm">
+                  <div v-if="relationship.creator" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                     <DataFieldShow label="Creado por:" :value="relationship.creator.name" />
                   </div>
-                  <div v-if="relationship.start_date" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                  <div v-if="relationship.start_date" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                     <DataFieldShow label="Fecha de Inicio:" :value="relationship.start_date" type="date" />
                   </div>
                 </div>
@@ -141,7 +142,7 @@
                 <div v-if="relationship.current_course"
                   class="schools-roles-card__relationship-content schools-roles-card__relationship-content--student-course">
                   <div class="row q-col-gutter-sm">
-                    <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <div class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                       <DataFieldShow label="Curso:">
                         <template #slotValue>
                           <a class="schools-roles-card__field-value"
@@ -150,7 +151,7 @@
                         </template>
                       </DataFieldShow>
                     </div>
-                    <div v-if="false && relationship.current_course.level" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <div v-if="false && relationship.current_course.level" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                       <DataFieldShow label="Nivel:">
                         <template #slotValue>
                           <SchoolLevelBadge :level="relationship.current_course.level" />
@@ -162,11 +163,11 @@
                     </div>
                   </div>
 
-                  <div class="row q-col-gutter-sm">
-                    <div v-if="relationship.creator" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                  <div v-if="showCreator" class="row q-col-gutter-sm">
+                    <div v-if="relationship.creator" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                       <DataFieldShow label="Creado por:" :value="relationship.creator.name" />
                     </div>
-                    <div v-if="relationship.start_date" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                    <div v-if="relationship.start_date" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                       <DataFieldShow label="Fecha de Inicio:" :value="relationship.start_date" type="date" />
                     </div>
                   </div>
@@ -189,11 +190,11 @@
                   <!-- Add other general role relationship fields here if needed -->
                 </div>
 
-                <div class="row q-col-gutter-sm">
-                  <div v-if="relationship.creator" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                <div v-if="showCreator" class="row q-col-gutter-sm">
+                  <div v-if="relationship.creator" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                     <DataFieldShow label="Creado por:" :value="relationship.creator.name" />
                   </div>
-                  <div v-if="relationship.start_date" class="col-6 col-xs-6 col-sm-4 col-md-3">
+                  <div v-if="relationship.start_date" class="col-4 col-xs-4 col-sm-3 col-md-2 col-lg-1">
                     <DataFieldShow label="Fecha de Inicio:" :value="relationship.start_date" type="date" />
                   </div>
                 </div>
@@ -254,6 +255,10 @@ const props = defineProps({
   userId: {
     type: Number,
     required: true
+  },
+  showCreator: {
+    type: Boolean,
+    default: false
   }
 });
 

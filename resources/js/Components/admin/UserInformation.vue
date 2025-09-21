@@ -57,15 +57,7 @@
               <DataFieldShow label="DNI" :value="user.id_number" type="text" />
             </div>
             <div class="col-6 col-xs-6 col-sm-4 col-md-3">
-              <DataFieldShow label="Fecha de Nacimiento" :value="user.birthdate" type="date">
-                <template v-if="user.birthdate" #slotValue>
-                  {{ formatDateShort(user.birthdate) }}
-                  &nbsp;({{ calculateAge(user.birthdate) }} años)
-                </template>
-                <template v-else #slotValue>
-                  <span>-</span>
-                </template>
-              </DataFieldShow>
+              <DataFieldShow label="Fecha de Nacimiento" :value="user.birthdate" type="birthdate" />
             </div>
             <div class="col-6 col-xs-6 col-sm-4 col-md-3">
               <DataFieldShow label="Nacionalidad" :value="user.nationality" type="text" />

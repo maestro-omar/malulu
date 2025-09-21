@@ -289,7 +289,7 @@ class UserService
             'schoolLevel' => $currentCourse->schoolLevel->code,
             'idAndLabel' => $currentCourse->idAndLabel
         ]);
-        $data['enrollment_date'] = $roleRelationship->start_date->toDateString();
+        $data['enrollment_date'] = $roleRelationship->start_date ? $roleRelationship->start_date->toDateString() : null;
         return $data;
     }
 
