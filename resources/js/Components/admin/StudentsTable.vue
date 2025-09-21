@@ -19,8 +19,8 @@
     <q-table class="mll-table mll-table--students striped-table" dense :rows="students" :columns="columns" row-key="id"
       binary-state-sort>
 
-      <!-- Custom cell for photo -->
-      <template #body-cell-photo="props">
+      <!-- Custom cell for picture -->
+      <template #body-cell-picture="props">
         <q-td :props="props">
           <q-avatar size="40px">
             <img :src="props.row.picture || noImage" :alt="props.row.name" />
@@ -51,6 +51,13 @@
         </q-td>
       </template>
 
+      <!-- Custom cell for birthdate -->
+      <template #body-cell-birthdate="props">
+        <q-td :props="props">
+          <BirthdateAge :birthdate="props.row.birthdate" />
+        </q-td>
+      </template>
+
       <!-- Custom cell for actions -->
       <template #body-cell-actions="props">
         <q-td :props="props">
@@ -78,6 +85,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { Link, Head } from '@inertiajs/vue3'
+import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
 import EmailField from '@/Components/admin/EmailField.vue';
 import noImage from "@images/no-image-person.png";
 import { route_school_student } from '@/Utils/routes';
@@ -97,8 +105,8 @@ const props = defineProps({
 // Table columns definition
 const columns = [
   {
-    name: 'photo',
-    label: 'Foto',
+    name: 'picture',
+    label: '',
     field: 'picture',
     align: 'center',
     sortable: false,
@@ -132,6 +140,13 @@ const columns = [
     name: 'id_number',
     label: 'DNI',
     field: 'id_number',
+    align: 'left',
+    sortable: true
+  },
+  {
+    name: 'birthdate',
+    label: 'Fecha de Nacimiento',
+    field: 'birthdate',
     align: 'left',
     sortable: true
   },

@@ -107,6 +107,14 @@
             </q-td>
           </template>
 
+          <!-- Custom cell for birthdate -->
+          <template #body-cell-birthdate="props">
+            <q-td :props="props">
+              <BirthdateAge v-if="props.row.birthdate" :birthdate="props.row.birthdate" />
+              <span v-else class="text-grey-5">-</span>
+            </q-td>
+          </template>
+
           <!-- Custom cell for level -->
           <template #body-cell-level="props">
             <q-td :props="props">
@@ -199,6 +207,7 @@
 
 <script setup>
 import EmailField from '@/Components/admin/EmailField.vue';
+import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
 import RoleBadge from '@/Components/Badges/RoleBadge.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
@@ -532,6 +541,13 @@ const columns = [
     name: 'id_number',
     label: 'DNI',
     field: 'id_number',
+    align: 'left',
+    sortable: true
+  },
+  {
+    name: 'birthdate',
+    label: 'Cumpleaños',
+    field: 'birthdate',
     align: 'left',
     sortable: true
   },

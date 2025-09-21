@@ -60,6 +60,7 @@ trait UserServiceList
                 ];
             })->toArray();
 
+
             return $user;
         })->toArray();
 

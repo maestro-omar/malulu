@@ -51,6 +51,14 @@
           </q-td>
         </template>
 
+        <!-- Custom cell for birthdate -->
+        <template #body-cell-birthdate="props">
+          <q-td :props="props">
+            <BirthdateAge v-if="props.row.birthdate" :birthdate="props.row.birthdate" />
+            <span v-else class="text-grey-5">-</span>
+          </q-td>
+        </template>
+
         <!-- Custom cell for schools -->
         <template #body-cell-schools="props">
           <q-td :props="props">
@@ -99,6 +107,7 @@
 
 <script setup>
 import EmailField from '@/Components/admin/EmailField.vue';
+import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
 import RoleBadge from '@/Components/Badges/RoleBadge.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
@@ -247,12 +256,19 @@ const columns = [
     align: 'left',
     field: 'lastname',
     sortable: true
-  }, {
+  },   {
     name: 'email',
     required: true,
     label: 'Email',
     align: 'left',
     field: 'email',
+    sortable: true
+  },
+  {
+    name: 'birthdate',
+    label: 'Cumpleaños',
+    field: 'birthdate',
+    align: 'left',
     sortable: true
   },
   {

@@ -34,7 +34,7 @@ class CourseService
     public function getCourses(Request $request, ?int $schoolId = null)
     {
         $expectedFilters = ['search', 'school_level_id', 'school_id', 'year', 'active', 'shift', 'school_shift_id', 'no_next', 'per_page', 'sort', 'direction'];
-        
+
         $query = Course::query()
             ->with(['school', 'schoolLevel', 'schoolShift', 'previousCourse', 'nextCourses'])
             ->when($request->input('search'), function ($query, $search) {
@@ -358,7 +358,6 @@ class CourseService
         $student = [
             "rel_id" => $studentRel->id,
             "id" => $user->id,
-            "photo" => $user->photo,
             "name" => $user->name,
             "firstname" => $user->firstname,
             "lastname" => $user->lastname,
@@ -386,11 +385,14 @@ class CourseService
 
     private function parseRelatedTeacher(object $teacherRel)
     {
-        $user = $teacherRel->roleRelationship->user->load(['province']);
+        $roleRel = $teacherRel->roleRelationship;
+        $workerRel = $roleRel->workerRelationship; // is it ok if it is null? how should i handle it?
+        $subject = $workerRel ? $workerRel->classSubject : null; //can be null
+        $role = $roleRel->role;
+        $user = $roleRel->user->load(['province']);
         $teacher = [
             "rel_id" => $teacherRel->id,
             "id" => $user->id,
-            "photo" => $user->photo,
             "name" => $user->name,
             "firstname" => $user->firstname,
             "lastname" => $user->lastname,
@@ -408,6 +410,8 @@ class CourseService
             "rel_end_date" => $teacherRel->end_date ? $teacherRel->end_date->format('Y-m-d') : null,
             "rel_in_charge" => $teacherRel->in_charge,
             "rel_notes" => $teacherRel->notes,
+            "rel_subject" => $subject ? $subject->name : null,
+            'rel_role' => $role,
         ];
         return $teacher;
     }

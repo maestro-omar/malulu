@@ -95,12 +95,8 @@
       </q-card>
 
       <!-- Teachers Card -->
-      <q-card class="q-mb-md">
-        <q-card-section>
-          <div class="text-h3 q-mb-md">Docentes</div>
-          <TeachersTable :teachers="teachers" />
-        </q-card-section>
-      </q-card>
+      <TeachersTable :teachers="teachers" :courseId="getCourseSlug(course)" :schoolLevel="selectedLevel.code"
+        :school="school" />
 
       <StudentsTable :students="students" :courseId="getCourseSlug(course)" :schoolLevel="selectedLevel.code"
         :school="school" />
