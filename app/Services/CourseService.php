@@ -331,7 +331,7 @@ class CourseService
     }
 
 
-    public function getStudents(Course $course, bool $withGuardians)
+    public function getStudents(Course $course, bool $withGuardians): array
     {
         $students = $course->courseStudents->load(['roleRelationship.user', 'endReason']);
         // student_relationships OMAR PREGUNTA ¿esta relacion es redundante? ¿estuvo hecha para facilitar búsquedas?
@@ -342,14 +342,14 @@ class CourseService
         return $parsedStudents->values()->all();
     }
 
-    public function getTeachers(Course $course)
+    public function getTeachers(Course $course): array
     {
         $teachers = $course->courseTeachers->load(['roleRelationship.user',]);
         $parsedTeachers =  $teachers->map(function ($oneRel) {
             return $this->parseRelatedTeacher($oneRel);
         });
         $parsedTeachers = $parsedTeachers->sortBy([['rel.in_charge'], ['user.lastname'], ['user.firstname']]);
-        return $parsedTeachers;
+        return $parsedTeachers->values()->all();
     }
 
     private function parseRelatedStudent(object $studentRel, bool $withGuardians)
@@ -529,38 +529,38 @@ class CourseService
             $exportData['basic_data'] = [
                 'id' => $course->id,
                 'nice_name' => $course->nice_name,
-                'number' => $course->number,
-                'letter' => $course->letter,
-                'name' => $course->name,
-                'start_date' => $course->start_date,
-                'end_date' => $course->end_date,
-                'active' => $course->active,
+                // 'number' => $course->number,
+                // 'letter' => $course->letter,
+                // 'name' => $course->name,
+                // 'start_date' => $course->start_date,
+                // 'end_date' => $course->end_date,
+                // 'active' => $course->active,
                 'school' => [
-                    'id' => $course->school->id,
+                    // 'id' => $course->school->id,
                     'name' => $course->school->name,
-                    'slug' => $course->school->slug,
+                    // 'slug' => $course->school->slug,
                 ],
                 'school_level' => [
-                    'id' => $course->schoolLevel->id,
+                    // 'id' => $course->schoolLevel->id,
                     'name' => $course->schoolLevel->name,
-                    'code' => $course->schoolLevel->code,
+                    // 'code' => $course->schoolLevel->code,
                 ],
                 'school_shift' => [
-                    'id' => $course->schoolShift->id,
+                    // 'id' => $course->schoolShift->id,
                     'name' => $course->schoolShift->name,
                 ],
-                'previous_course' => $course->previousCourse ? [
-                    'id' => $course->previousCourse->id,
-                    'nice_name' => $course->previousCourse->nice_name,
-                ] : null,
-                'next_courses' => $course->nextCourses->map(function ($nextCourse) {
-                    return [
-                        'id' => $nextCourse->id,
-                        'nice_name' => $nextCourse->nice_name,
-                    ];
-                }),
-                'created_at' => $course->created_at,
-                'updated_at' => $course->updated_at,
+                // 'previous_course' => $course->previousCourse ? [
+                //     'id' => $course->previousCourse->id,
+                //     'nice_name' => $course->previousCourse->nice_name,
+                // ] : null,
+                // 'next_courses' => $course->nextCourses->map(function ($nextCourse) {
+                //     return [
+                //         'id' => $nextCourse->id,
+                //         'nice_name' => $nextCourse->nice_name,
+                //     ];
+                // }),
+                // 'created_at' => $course->created_at,
+                // 'updated_at' => $course->updated_at,
             ];
         }
 
@@ -577,32 +577,35 @@ class CourseService
         // Teachers data
         if ($exportOptions['teachers'] ?? false) {
             $teachers = $this->getTeachers($course);
-            $exportData['teachers'] = $teachers->map(function ($teacher) {
+            $exportData['teachers'] = array_map(function ($teacher) {
                 return [
-                    'id' => $teacher->id,
-                    'name' => $teacher->name,
-                    'email' => $teacher->email,
-                    'phone' => $teacher->phone,
-                    'role' => $teacher->pivot->role ?? 'teacher',
-                    'assigned_at' => $teacher->pivot->created_at ?? null,
+                    // 'id' => $teacher['id'],
+                    'name' => $teacher['name'],
+                    'email' => $teacher['email'],
+                    'phone' => $teacher['phone'],
+                    'birthdate' => $teacher['birthdate'],
+                    'id_number' => $teacher['id_number'],
+                    'role' => $teacher['rel_role']->name,
+                    'subject' => $teacher['rel_in_charge'],
+                    'in_charge' => $teacher['rel_in_charge'],
                 ];
-            });
+            }, $teachers);
         }
 
         // Students data
         if ($exportOptions['students'] ?? false) {
             $students = $this->getStudents($course, true);
-            $exportData['students'] = $students->map(function ($student) {
+            $exportData['students'] = array_map(function ($student) {
                 return [
-                    'id' => $student->id,
-                    'name' => $student->name,
-                    'email' => $student->email,
-                    'phone' => $student->phone,
-                    'birth_date' => $student->birth_date,
-                    'enrolled_at' => $student->pivot->created_at ?? null,
-                    'status' => $student->pivot->status ?? 'active',
+                    // 'id' => $student['id'],
+                    'name' => $student['name'],
+                    'gender' => $student['gender'],
+                    'email' => $student['email'],
+                    'phone' => $student['phone'],
+                    'birthdate' => $student['birthdate'],
+                    'id_number' => $student['id_number'],
                 ];
-            });
+            }, $students);
         }
 
         // For now, return JSON response

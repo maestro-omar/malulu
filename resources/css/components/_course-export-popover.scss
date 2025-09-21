@@ -11,7 +11,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.5rem 0.75rem;
-    background: variables.$color-brand;
+    background: variables.$color-amber;
     color: white;
     border-radius: 0.375rem;
     cursor: pointer;
@@ -19,7 +19,7 @@
     min-width: 100px;
 
     &:hover {
-      background: color.scale(variables.$color-brand, $lightness: -10%);
+      background: color.scale(variables.$color-amber, $lightness: 20%);
     }
 
     &:focus {
@@ -88,30 +88,6 @@
     margin: 0;
   }
 
-  .course-export-popover &__close {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    background: none;
-    border: none;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    color: variables.$color-grey-dark;
-    transition: all 0.15s ease-in-out;
-
-    &:hover {
-      background: variables.$color-grey;
-      color: variables.$color-text;
-    }
-
-    svg {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-  }
-
   .course-export-popover &__options {
     padding: 1rem;
   }
@@ -136,7 +112,7 @@
     margin-right: 0.75rem;
     width: 1rem;
     height: 1rem;
-    accent-color: variables.$color-brand;
+    accent-color: variables.$color-amber;
   }
 
   .course-export-popover &__checkbox-text {
@@ -149,50 +125,6 @@
     gap: 0.75rem;
     padding: 1rem;
     border-top: 1px solid variables.$color-grey-dark;
-  }
-
-  .course-export-popover &__btn {
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    @include mixins.fz(1.4);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s ease-in-out;
-    border: none;
-
-    &--cancel {
-      background: variables.$color-grey;
-      color: variables.$color-text;
-
-      &:hover {
-        background: color.scale(variables.$color-grey, $lightness: -10%);
-      }
-
-      &:focus {
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.2);
-      }
-    }
-
-    &--export {
-      background: variables.$color-brand;
-      color: white;
-
-      &:hover:not(:disabled) {
-        background: color.scale(variables.$color-brand, $lightness: -10%);
-      }
-
-      &:focus:not(:disabled) {
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(0, 68, 115, 0.2);
-      }
-
-      &:disabled {
-        background: color.scale(variables.$color-grey-dark, $lightness: 20%);
-        color: color.scale(variables.$color-grey-dark, $lightness: 40%);
-        cursor: not-allowed;
-      }
-    }
   }
 }
 
