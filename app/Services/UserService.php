@@ -12,11 +12,14 @@ use App\Services\FileService;
 class UserService
 {
     use UserServiceCrud, UserServiceList;
-    private FileService $fileService;
 
-    public function __construct(FileService $fileService)
+    protected FileService $fileService;
+    protected AttendanceService $attendanceService;
+
+    public function __construct(FileService $fileService, AttendanceService $attendanceService)
     {
         $this->fileService = $fileService;
+        $this->attendanceService = $attendanceService;
     }
     /**
      * Get user data for show view with all relationships

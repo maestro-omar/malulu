@@ -4,7 +4,7 @@ namespace App\Traits;
 
 use App\Models\Entities\School;
 use App\Models\Entities\User;
-use App\Models\Entities\Course;
+use App\Models\Entities\AcademicYear;
 use App\Models\Catalogs\Role;
 use Illuminate\Http\Request;
 use App\Services\PaginationTrait;
@@ -485,4 +485,3 @@ trait UserServiceList
 
         return $query;
     }
-}

@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // Static catalogs
             JobStatusSeeder::class,
+            AttendanceStatusesTableSeeder::class,
 
             FileTypeSeeder::class,
             FileSubtypeSeeder::class,

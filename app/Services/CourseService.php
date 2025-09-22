@@ -346,16 +346,21 @@ class CourseService
             'schoolLevel' => $course->schoolLevel->code,
             'idAndLabel' => $course->idAndLabel
         ]);
+        $data['attendance_url'] = route('school.course.attendance.edit', [
+            'school' => $course->school->slug,
+            'schoolLevel' => $course->schoolLevel->code,
+            'idAndLabel' => $course->idAndLabel
+        ]);
         return $data;
     }
 
 
-    public function getStudents(Course $course, bool $withGuardians): array
+    public function getStudents(Course $course, bool $withGuardians, ?string $attendanceDate): array
     {
         $students = $course->courseStudents->load(['roleRelationship.user', 'endReason']);
         // student_relationships OMAR PREGUNTA ¿esta relacion es redundante? ¿estuvo hecha para facilitar búsquedas?
-        $parsedStudents = $students->map(function ($oneRel) use ($withGuardians) {
-            return $this->parseRelatedStudent($oneRel, $withGuardians);
+        $parsedStudents = $students->map(function ($oneRel) use ($course, $withGuardians, $attendanceDate) {
+            return $this->parseRelatedStudent($course, $oneRel, $withGuardians, $attendanceDate);
         }, $students);
         $parsedStudents = $parsedStudents->sortBy([['rel.end_date'], ['user.lastname'], ['user.firstname']]);
         return $parsedStudents->values()->all();
@@ -371,7 +376,7 @@ class CourseService
         return $parsedTeachers->values()->all();
     }
 
-    private function parseRelatedStudent(object $studentRel, bool $withGuardians)
+    private function parseRelatedStudent(Course $course, object $studentRel, bool $withGuardians, ?string $attendanceDate)
     {
         $user = $studentRel->roleRelationship->user->load(['province']);
         $student = [
@@ -399,6 +404,9 @@ class CourseService
         ];
         if ($withGuardians) {
             $student["guardians"] = $this->userservice->getStudentParents($user);
+        }
+        if (!empty($attendanceDate)) {
+            $student["attendance"] = $this->userservice->getAttendance($user, $course, $attendanceDate);
         }
         return $student;
     }

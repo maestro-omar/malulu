@@ -240,4 +240,12 @@ class CourseController extends SchoolBaseController
 
         return redirect()->route('school.courses', ['school' => $school->slug, 'schoolLevel' => $schoolLevel->code])->with('success', $message);
     }
+
+    public function attendanceEdit(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
+    {
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        $date = $request->input('date', date('Y-m-d'));
+        $students = $this->courseService->getStudents($course, true, $date);
+        dd('WIP');
+    }
 }
