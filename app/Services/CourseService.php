@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Entities\Course;
 use App\Models\Entities\User;
+use App\Models\Relations\TeacherCourse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -300,7 +301,7 @@ class CourseService
         }
 
         // Check if already assigned (active)
-        $existing = \App\Models\Relations\TeacherCourse::where('role_relationship_id', $roleRelationshipId)
+        $existing = TeacherCourse::where('role_relationship_id', $roleRelationshipId)
             ->where('course_id', $courseId)
             ->whereNull('end_date')
             ->first();
@@ -312,7 +313,7 @@ class CourseService
         }
 
         // Create assignment
-        return \App\Models\Relations\TeacherCourse::create([
+        return TeacherCourse::create([
             'role_relationship_id' => $roleRelationshipId,
             'course_id' => $courseId,
             'start_date' => $data['start_date'],
@@ -327,9 +328,25 @@ class CourseService
     {
         if (!is_array($teacherCourses))
             $teacherCourses = $teacherCourses->all();
+        $ret = [];
         foreach ($teacherCourses as $teacherCourse) {
-            dd('parseTeacherCourses', $teacherCourse->course);
+            $ret[] = $this->parseTeacherCourse($teacherCourse);
         }
+        $ret = array_filter($ret);
+        return $ret;
+    }
+
+    public function parseTeacherCourse(?TeacherCourse $teacherCourse)
+    {
+        if (empty($teacherCourse) || empty($teacherCourse->course)) return null;
+        $course = $teacherCourse->course;
+        $data = $course->toArray();
+        $data['url'] = route('school.course.show', [
+            'school' => $course->school->slug,
+            'schoolLevel' => $course->schoolLevel->code,
+            'idAndLabel' => $course->idAndLabel
+        ]);
+        return $data;
     }
 
 

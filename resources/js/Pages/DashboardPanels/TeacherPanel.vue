@@ -94,51 +94,36 @@
                     <q-card-section>
                         <h3 class="dbsub-panel__section-title">Cursos Asignados</h3>
                         <div class="dbsub-panel__courses-list">
-                            <q-list bordered separator>
-                                <q-item 
+                            <div class="row q-col-gutter-xs justify-center">
+                                <div 
                                     v-for="course in teacherData.courses" 
                                     :key="course.id"
-                                    class="dbsub-panel__course-item"
+                                    class="col-2 dbsub-panel__course-item"
                                 >
-                                    <q-item-section>
-                                        <q-item-label class="dbsub-panel__course-name">
-                                            {{ course.nice_name }}
-                                        </q-item-label>
-                                        <q-item-label caption class="dbsub-panel__course-details">
-                                            ID: {{ course.id }} | Nivel: {{ course.school_level?.name || 'N/A' }}
-                                        </q-item-label>
-                                    </q-item-section>
-                                    
-                                    <q-item-section side>
-                                        <div class="dbsub-panel__course-actions">
+                                    <div class="dbsub-panel__course-content column items-center">
+                                        <div class="dbsub-panel__course-name text-center q-mb-sm">
+                                            <a :href="course.url" class="dbsub-panel__course-link">
+                                                {{ course.nice_name }}
+                                            </a>
+                                        </div>
+                                        
+                                        <div class="dbsub-panel__course-actions row q-gutter-xs">
                                             <q-btn 
                                                 flat 
                                                 round 
                                                 color="primary" 
                                                 icon="visibility"
                                                 size="sm"
-                                                @click="viewCourse(course)"
+                                                :href="course.url"
                                                 class="dbsub-panel__action-btn"
                                             >
                                                 <q-tooltip>Ver Curso</q-tooltip>
                                             </q-btn>
-                                            
+
                                             <q-btn 
                                                 flat 
                                                 round 
-                                                color="secondary" 
-                                                icon="people"
-                                                size="sm"
-                                                @click="viewStudents(course)"
-                                                class="dbsub-panel__action-btn"
-                                            >
-                                                <q-tooltip>Ver Estudiantes</q-tooltip>
-                                            </q-btn>
-                                            
-                                            <q-btn 
-                                                flat 
-                                                round 
-                                                color="positive" 
+                                                color="amber" 
                                                 icon="check_circle"
                                                 size="sm"
                                                 @click="takeAttendance(course)"
@@ -147,9 +132,9 @@
                                                 <q-tooltip>Tomar Asistencia</q-tooltip>
                                             </q-btn>
                                         </div>
-                                    </q-item-section>
-                                </q-item>
-                            </q-list>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </q-card-section>
                 </q-card>
