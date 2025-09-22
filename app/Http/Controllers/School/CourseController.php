@@ -9,10 +9,12 @@ use App\Services\SchoolService;
 use App\Services\SchoolLevelService;
 use App\Services\SchoolShiftService;
 use App\Services\FileService;
+use App\Services\AttendanceService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\ValidationException;
 use App\Models\Entities\School;
+use App\Models\Entities\User;
 use App\Models\Catalogs\SchoolLevel;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
@@ -25,19 +27,22 @@ class CourseController extends SchoolBaseController
     protected $schoolLevelService;
     protected $schoolShiftService;
     protected $fileService;
+    protected $attendanceService;
 
     public function __construct(
         CourseService $courseService,
         SchoolService $schoolService,
         SchoolLevelService $schoolLevelService,
         SchoolShiftService $schoolShiftService,
-        FileService $fileService
+        FileService $fileService,
+        AttendanceService $attendanceService
     ) {
         $this->courseService = $courseService;
         $this->schoolService = $schoolService;
         $this->schoolLevelService = $schoolLevelService;
         $this->schoolShiftService = $schoolShiftService;
         $this->fileService = $fileService;
+        $this->attendanceService = $attendanceService;
     }
 
     public function index(Request $request, School $school, SchoolLevel $schoolLevel)
@@ -177,6 +182,7 @@ class CourseController extends SchoolBaseController
 
     public function show(School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
+        /** @var User $user */
         $user = auth()->user();
         if ($user->isSuperadmin() || $user->hasPermissionToSchool('course.manage', $school->id)) {
             $view = 'Courses/Show';
@@ -187,7 +193,7 @@ class CourseController extends SchoolBaseController
         $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse', 'nextCourses']);
 
 
-        $students = $this->courseService->getStudents($course, true);
+        $students = $this->courseService->getStudents($course, true, null, true);
         $teachers = $this->courseService->getTeachers($course);
         $files = $this->courseService->getFiles($course, $user);
         return Inertia::render($view, [
@@ -245,7 +251,13 @@ class CourseController extends SchoolBaseController
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         $date = $request->input('date', date('Y-m-d'));
-        $students = $this->courseService->getStudents($course, true, $date);
-        dd('WIP');
+        $students = $this->courseService->getStudents($course, true, $date, false);
+
+        // TODO: Implement attendance edit view
+        return response()->json([
+            'message' => 'Attendance edit functionality is work in progress',
+            'students' => $students,
+            'date' => $date
+        ]);
     }
 }

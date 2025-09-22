@@ -485,3 +485,4 @@ trait UserServiceList
 
         return $query;
     }
+}

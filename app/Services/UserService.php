@@ -14,12 +14,10 @@ class UserService
     use UserServiceCrud, UserServiceList;
 
     protected FileService $fileService;
-    protected AttendanceService $attendanceService;
 
-    public function __construct(FileService $fileService, AttendanceService $attendanceService)
+    public function __construct(FileService $fileService)
     {
         $this->fileService = $fileService;
-        $this->attendanceService = $attendanceService;
     }
     /**
      * Get user data for show view with all relationships

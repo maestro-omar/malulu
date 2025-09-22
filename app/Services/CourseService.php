@@ -13,6 +13,7 @@ use App\Models\Relations\StudentCourse;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 use App\Services\FileService;
+use App\Services\AttendanceService;
 use App\Services\PaginationTrait;
 use App\Traits\CourseNext;
 use App\Exports\CourseExport;
@@ -22,13 +23,13 @@ class CourseService
 {
     use CourseNext, PaginationTrait;
 
-    protected $userservice;
-    protected $fileService;
+    protected $userservice, $fileService, $attendanceService;
 
-    public function __construct(UserService $userservice, FileService $fileService)
+    public function __construct(UserService $userservice, FileService $fileService, AttendanceService $attendanceService)
     {
         $this->userservice = $userservice;
         $this->fileService = $fileService;
+        $this->attendanceService = $attendanceService;
     }
 
     /**
@@ -355,12 +356,15 @@ class CourseService
     }
 
 
-    public function getStudents(Course $course, bool $withGuardians, ?string $attendanceDate): array
+    public function getStudents(Course $course, bool $withGuardians, ?string $attendanceDate, bool $withAttendanceSu): array
     {
         $students = $course->courseStudents->load(['roleRelationship.user', 'endReason']);
+        $studentsIds = $students->pluck('id')->toArray();
+        $attendanceMinimalSummary = $this->attendanceService->getStudentsAttendanceMinimal($studentsIds, null, null);
+
         // student_relationships OMAR PREGUNTA ¿esta relacion es redundante? ¿estuvo hecha para facilitar búsquedas?
-        $parsedStudents = $students->map(function ($oneRel) use ($course, $withGuardians, $attendanceDate) {
-            return $this->parseRelatedStudent($course, $oneRel, $withGuardians, $attendanceDate);
+        $parsedStudents = $students->map(function ($oneRel) use ($course, $withGuardians, $attendanceDate, $attendanceMinimalSummary) {
+            return $this->parseRelatedStudent($course, $oneRel, $withGuardians, $attendanceDate, $attendanceMinimalSummary);
         }, $students);
         $parsedStudents = $parsedStudents->sortBy([['rel.end_date'], ['user.lastname'], ['user.firstname']]);
         return $parsedStudents->values()->all();
@@ -376,7 +380,7 @@ class CourseService
         return $parsedTeachers->values()->all();
     }
 
-    private function parseRelatedStudent(Course $course, object $studentRel, bool $withGuardians, ?string $attendanceDate)
+    private function parseRelatedStudent(Course $course, object $studentRel, bool $withGuardians, ?string $attendanceDate, ?array $entireCourseAttendanceSummary)
     {
         $user = $studentRel->roleRelationship->user->load(['province']);
         $student = [
@@ -406,8 +410,12 @@ class CourseService
             $student["guardians"] = $this->userservice->getStudentParents($user);
         }
         if (!empty($attendanceDate)) {
-            $student["attendance"] = $this->userservice->getAttendance($user, $course, $attendanceDate);
+            $student["attendance"] = $this->attendanceService->getStudentAttendance($user, $course, $attendanceDate);
         }
+        if (!empty($entireCourseAttendanceSummary)) {
+            $student["attendanceSummary"] = $entireCourseAttendanceSummary[$user->id] ?? null;
+        }
+        dd($student);
         return $student;
     }
 

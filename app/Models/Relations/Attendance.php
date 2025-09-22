@@ -2,12 +2,14 @@
 
 namespace App\Models\Relations;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Base\BaseModel as Model;
 use App\Models\Entities\User;
 use App\Models\Catalogs\AttendanceStatus;
 
 class Attendance extends Model
 {
+    protected $table = 'attendance';
+
     protected $fillable = [
         'user_id',
         'date',

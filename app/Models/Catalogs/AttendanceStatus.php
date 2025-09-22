@@ -2,11 +2,13 @@
 
 namespace App\Models\Catalogs;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Base\BaseCatalogModel as Model;
 use App\Models\Relations\Attendance;
 
 class AttendanceStatus extends Model
 {
+    protected $table = 'attendance_statuses';
+
     protected $fillable = [
         'code',
         'name',
