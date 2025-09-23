@@ -46,6 +46,7 @@ class User extends Authenticatable
         'locality',
         'province_id',
         'country_id',
+        'birth_place',
         'nationality',
         'email',
         'password',

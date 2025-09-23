@@ -123,6 +123,7 @@ class InitialUsersSeeder extends Seeder
         $gender = $this->mapGender($userData['Género'] ?? '');
         $birthdate = $this->parseDate($userData['Fecha de nacimiento'] ?? '');
         $phone = $this->formatPhone($userData['Teléfono móvil'] ?? '');
+        $birth_place = $userData['Lugar de nacimiento'] ?? 'San Luis';
         $nationality = $userData['Nacionalidad'] ?? 'Argentina';
         $shift = $this->mapShift($userData['Turno'] ?? '');
 
@@ -140,6 +141,7 @@ class InitialUsersSeeder extends Seeder
             'locality' => 'San Luis', // Default locality
             'province_id' => $this->province->id,
             'country_id' => $this->country->id,
+            'birth_place' => $birth_place,
             'nationality' => $nationality,
             'password' => '123123123', // Default password
             'password_confirmation' => '123123123', // Required for validation

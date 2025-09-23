@@ -12,6 +12,7 @@ use App\Models\Entities\User;
 use App\Models\Catalogs\Role;
 use App\Models\Catalogs\SchoolLevel;
 use App\Models\Catalogs\SchoolShift;
+use App\Models\Catalogs\AttendanceStatus;
 // use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -91,6 +92,7 @@ class HandleInertiaRequests extends Middleware
                 'catalogs' => [
                     'schoolLevels' => SchoolLevel::vueOptions(),
                     'schoolShifts' => SchoolShift::vueOptions(),
+                    'attendanceStatuses' => AttendanceStatus::vueOptions(),
                     'roles' => Role::vueOptions(),
                 ],
             ],

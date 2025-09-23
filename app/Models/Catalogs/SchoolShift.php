@@ -43,7 +43,7 @@ class SchoolShift extends Model
 
                 return [$value => [
                     'id' => $record ? $record->id : null,
-                    'label' => $map[$value]['label'] ?? ucfirst($value),
+                    'label' => $map[$value]['label'] ?? ($record ? $record->name : ucfirst($value)),
                     'code' => $value,
                 ]];
             })

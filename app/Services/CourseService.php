@@ -546,7 +546,7 @@ class CourseService
     {
         $filename = $course->nice_name . '-' . now()->toISOString() . '.xlsx';
         $return = Excel::download(
-            new CourseExport($this, $course, $exportOptions),
+            new CourseExport($this, $this->attendanceService, $course, $exportOptions),
             $filename
         );
         return $return;

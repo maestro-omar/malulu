@@ -1,5 +1,5 @@
 <?php
-
+//TODO make it by school (so should search course_id is null or course is related with given school)
 namespace App\Services;
 
 use App\Models\Entities\Course;
@@ -7,6 +7,7 @@ use App\Models\Entities\User;
 use App\Models\Relations\Attendance;
 use App\Models\Catalogs\AttendanceStatus;
 use App\Models\Entities\AcademicYear;
+use Carbon\Carbon;
 
 class AttendanceService
 {
@@ -25,6 +26,57 @@ class AttendanceService
         $forDate = $this->getStudentAttendanceForDate($student, $date);
         return ['summary' => $summary, 'forDate' => $forDate];
     }
+
+    public function getStudentAttendanceInPeriod(User $student, \DateTime $from, \DateTime $to)
+    {
+        $attendances = Attendance::with('status')
+            ->where('user_id', $student->id)
+            ->whereBetween('date', [$from->format('Y-m-d'), $to->format('Y-m-d')])
+            ->orderBy('date')
+            ->get();
+
+        return $attendances;
+    }
+
+    public function getStudentsAttendanceInAcademicYear(array $studentsIds, ?AcademicYear $academicYear)
+    {
+        if (empty($academicYear)) {
+            $academicYear = AcademicYear::getCurrent();
+        }
+        return $this->getStudentsAttendanceInPeriod($studentsIds, $academicYear->start_date, $academicYear->end_date);
+    }
+
+    public function getStudentsAttendanceInPeriod(array $studentsIds, \DateTime $from, \DateTime $to)
+    {
+        $attendances = Attendance::select('user_id', 'date', 'status_id', 'file_id', 'course_id')
+            ->with('file')
+            ->whereIn('user_id', $studentsIds)
+            ->whereBetween('date', [$from->format('Y-m-d'), $to->format('Y-m-d')])
+            ->get();
+
+        $minDate = $attendances->min('date');
+        $maxDate = $attendances->max('date');
+        $datesWithoutAttendance = $this->getDatesWithoutAttendance($attendances);
+        //Group by student
+        $attendances = $attendances->groupBy('user_id');
+        return ['attendances' => $attendances, 'min_date' => $minDate, 'max_date' => $maxDate, 'dates_without_attendance' => $datesWithoutAttendance];
+    }
+
+    private function getDatesWithoutAttendance(\Illuminate\Database\Eloquent\Collection $attendances)
+    {
+        $minDate = Carbon::create($attendances->min('date'));
+        $maxDate = Carbon::create($attendances->max('date'));
+        $attendances = $attendances->sortBy('date');
+        $allDates = $attendances->pluck('date')->unique()->sort()->toArray();
+        $datesWithoutAttendance = [];
+        for ($date = $minDate; $date <= $maxDate; $date->modify('+1 day')) {
+            if (!in_array($date->format('Y-m-d'), $allDates)) {
+                $datesWithoutAttendance[] = $date->format('Y-m-d');
+            }
+        }
+        return $datesWithoutAttendance;
+    }
+
 
     /*
     Return Structure

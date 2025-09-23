@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Services\CourseService;
 use App\Models\Entities\Course;
+use App\Traits\ExportsTrait;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
@@ -16,6 +17,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithStyles, WithTitle
 {
+    use ExportsTrait;
     // Color constants for styling
     const COLOR_HEADER_LABELS = '004473';      // Blue for header section labels (Escuela, Nivel, etc.)
     const COLOR_TABLE_HEADER_TEXT = 'FFFFFF';  // White text for table headers
@@ -28,15 +30,17 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
     protected Course $course;
     protected array $exportOptions;
     protected CourseService $courseService;
+    protected ?array $students;
 
     protected array $teachersHeaderRow;
     protected array $studentsHeaderRow;
 
-    public function __construct(CourseService $courseService, Course $course, array $exportOptions)
+    public function __construct(CourseService $courseService, Course $course, array $exportOptions, ?array $students)
     {
         $this->course = $course;
         $this->exportOptions = $exportOptions;
         $this->courseService = $courseService;
+        $this->students = $students;
     }
 
     public function array(): array
@@ -122,20 +126,20 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
             $currentRow++;
 
             // Teachers header
-            $this->teachersHeaderRow = ['Nombre', 'Género', 'Email', 'Fecha Nacimiento', 'DNI', 'Rol', 'Materia', 'A Cargo'];
+            $this->teachersHeaderRow = ['Nombre', 'Apellido', 'Género', 'Email', 'Fecha Nacimiento', 'DNI', 'Rol', 'Materia', 'A Cargo'];
             $exportData[] = $this->teachersHeaderRow;
             $currentRow++;
 
             // Teachers data rows
             foreach ($teachers as $teacher) {
                 $exportData[] = [
-                    $teacher['name'],
-                    $teacher['gender'] ?? 'N/A',
+                    $teacher['firstname'],
+                    $teacher['lastname'],
+                    $teacher['gender'],
                     $teacher['email'],
                     $this->formatBirthdate($teacher['birthdate']),
                     $teacher['id_number'],
                     $teacher['rel_role']->name,
-                    $teacher['rel_in_charge'] ?: 'N/A',
                     $teacher['rel_in_charge'] ? 'Sí' : 'No',
                 ];
                 $currentRow++;
@@ -144,7 +148,6 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
 
         // Students data
         if ($this->exportOptions['students'] ?? false) {
-            $students = $this->courseService->getStudents($this->course, true, null, false);
 
             // Students section header
             $exportData[] = [''];
@@ -152,18 +155,20 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
             $exportData[] = ['ALUMNOS/AS', ''];
             $currentRow++;
 
-            // Students header (only 6 columns to match the data)
-            $this->studentsHeaderRow = ['Nombre', 'Género', 'Email', 'Fecha Nacimiento', 'DNI'];
+            // Students header (only 7 columns to match the data)
+            $this->studentsHeaderRow = ['Nombre', 'Apellido', 'Género', 'Email', 'Fecha Nacimiento', 'Lugar de Nacimiento', 'DNI'];
             $exportData[] = $this->studentsHeaderRow;
             $currentRow++;
 
             // Students data rows
-            foreach ($students as $student) {
+            foreach ($this->students as $student) {
                 $exportData[] = [
-                    $student['name'],
+                    $student['firstname'],
+                    $student['lastname'],
                     $student['gender'],
                     $student['email'],
                     $this->formatBirthdate($student['birthdate']),
+                    $student['birth_place'],
                     $student['id_number'],
                 ];
                 $currentRow++;
@@ -181,30 +186,6 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
         return 'Datos';
     }
 
-    /**
-     * Format birthdate from Y-m-d to d/m/Y format
-     *
-     * @param string|null $birthdate
-     * @return string|null
-     */
-    private function formatBirthdate(?string $birthdate): ?string
-    {
-        if (empty($birthdate)) {
-            return null;
-        }
-
-        try {
-            $date = \DateTime::createFromFormat('Y-m-d', $birthdate);
-            if ($date === false) {
-                // If the format doesn't match, return the original value
-                return $birthdate;
-            }
-            return $date->format('d/m/Y');
-        } catch (\Exception $e) {
-            // If any error occurs, return the original value
-            return $birthdate;
-        }
-    }
 
     /**
      * Set column widths for better formatting
@@ -213,13 +194,15 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
     {
         return [
             'A' => 25,  // Labels and first column (Nombre)
-            'B' => 10,  // Gender column
-            'C' => 40,  // Email column
-            'D' => 18,  // Birthdate column
-            'E' => 15,  // ID Number column
-            'F' => 20,  // Role column (teachers only)
-            'G' => 20,  // Subject column (teachers only)
-            'H' => 10,  // In charge column (teachers only)
+            'B' => 25,  // Lastname column (Apellido)
+            'C' => 10,  // Gender column
+            'D' => 40,  // Email column
+            'E' => 18,  // Birthdate column
+            'F' => 20,  // Birth place column
+            'G' => 15,  // ID Number column
+            'H' => 20,  // Role column (teachers only)
+            'I' => 20,  // Subject column (teachers only)
+            'J' => 10,  // In charge column (teachers only)
         ];
     }
 
@@ -266,7 +249,7 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
                     // Track current section
                     if ($cellValue === 'DOCENTES') {
                         $currentSection = 'teachers';
-                    } elseif ($cellValue === 'ESTUDIANTES') {
+                    } elseif ($cellValue === 'ALUMNOS/AS') {
                         $currentSection = 'students';
                     } elseif ($cellValue === 'HORARIOS') {
                         $currentSection = 'schedule';
@@ -280,8 +263,8 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
                         $headerColor = self::COLOR_SCHEDULE_HEADERS;
                     }
 
-                    // Style section headers (DOCENTES, ESTUDIANTES, HORARIOS)
-                    if (in_array($cellValue, ['DOCENTES', 'ESTUDIANTES', 'HORARIOS'])) {
+                    // Style section headers (DOCENTES, ALUMNOS/AS, HORARIOS)
+                    if (in_array($cellValue, ['DOCENTES', 'ALUMNOS/AS', 'HORARIOS'])) {
                         $sheet->getStyle("A{$row}")->applyFromArray([
                             'font' => [
                                 'bold' => true,
@@ -329,7 +312,7 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
                         while (
                             $nextRow <= $rowCount &&
                             ($sheet->getCell("A{$nextRow}")->getValue() !== '' || $sheet->getCell("B{$nextRow}")->getValue() !== '') &&
-                            !in_array($sheet->getCell("A{$nextRow}")->getValue(), ['DOCENTES', 'ESTUDIANTES', 'HORARIOS'])
+                            !in_array($sheet->getCell("A{$nextRow}")->getValue(), ['DOCENTES', 'ALUMNOS/AS', 'HORARIOS'])
                         ) {
                             $sheet->getStyle("A{$nextRow}:{$lastColumn}{$nextRow}")->applyFromArray([
                                 'borders' => [
@@ -347,7 +330,9 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
 
                     // Check if this is a regular table header row (Nombre)
                     if ($cellValue === 'Nombre') {
-                        $lastColumn = $sheet->getHighestColumn();
+                        // Determine the number of columns based on the current section
+                        $headerColumns = $currentSection === 'teachers' ? $this->teachersHeaderRow : $this->studentsHeaderRow;
+                        $lastColumn = chr(65 + count($headerColumns) - 1); // Convert to letter (A=65, B=66, etc.)
 
                         // Style the header row
                         $sheet->getStyle("A{$row}:{$lastColumn}{$row}")->applyFromArray([
@@ -371,7 +356,7 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
 
                         // Add borders to all data cells in this table
                         $nextRow = $row + 1;
-                        while ($nextRow <= $rowCount && $sheet->getCell("A{$nextRow}")->getValue() !== '' && !in_array($sheet->getCell("A{$nextRow}")->getValue(), ['DOCENTES', 'ESTUDIANTES', 'HORARIOS'])) {
+                        while ($nextRow <= $rowCount && $sheet->getCell("A{$nextRow}")->getValue() !== '' && !in_array($sheet->getCell("A{$nextRow}")->getValue(), ['DOCENTES', 'ALUMNOS/AS', 'HORARIOS'])) {
                             $sheet->getStyle("A{$nextRow}:{$lastColumn}{$nextRow}")->applyFromArray([
                                 'borders' => [
                                     'allBorders' => [

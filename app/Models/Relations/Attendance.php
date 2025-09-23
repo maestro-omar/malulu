@@ -4,6 +4,7 @@ namespace App\Models\Relations;
 
 use App\Models\Base\BaseModel as Model;
 use App\Models\Entities\User;
+use App\Models\Entities\File;
 use App\Models\Entities\Course;
 use App\Models\Catalogs\AttendanceStatus;
 
@@ -26,6 +27,11 @@ class Attendance extends Model
     public function student()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function file()
+    {
+        return $this->belongsTo(File::class, 'file_id');
     }
 
     public function status()

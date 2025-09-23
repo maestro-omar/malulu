@@ -3,7 +3,10 @@
 namespace App\Exports;
 
 use App\Services\CourseService;
+use App\Services\AttendanceService;
 use App\Models\Entities\Course;
+use App\Models\Catalogs\AttendanceStatus;
+use App\Traits\ExportsTrait;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
@@ -13,9 +16,11 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use Carbon\Carbon;
 
 class CourseAttendanceSheet implements FromArray, WithEvents, WithColumnWidths, WithStyles, WithTitle
 {
+    use ExportsTrait;
     // Color constants for styling
     const COLOR_HEADER_LABELS = '004473';      // Blue for header section labels
     const COLOR_TABLE_HEADER_TEXT = 'FFFFFF';  // White text for table headers
@@ -24,12 +29,16 @@ class CourseAttendanceSheet implements FromArray, WithEvents, WithColumnWidths, 
     protected Course $course;
     protected array $exportOptions;
     protected CourseService $courseService;
+    protected AttendanceService $attendanceService;
+    protected array $students;
 
-    public function __construct(CourseService $courseService, Course $course, array $exportOptions)
+    public function __construct(CourseService $courseService, AttendanceService $attendanceService, Course $course, array $exportOptions, array $students)
     {
         $this->course = $course;
         $this->exportOptions = $exportOptions;
         $this->courseService = $courseService;
+        $this->attendanceService = $attendanceService;
+        $this->students = $students;
     }
 
     public function array(): array
@@ -37,15 +46,55 @@ class CourseAttendanceSheet implements FromArray, WithEvents, WithColumnWidths, 
         $exportData = [];
 
         // Attendance section header
+        $currentRow = 1;
         $exportData[] = ['ASISTENCIA DIARIA', ''];
+        $currentRow++;
         $exportData[] = ['', '']; // Empty row
+        $currentRow++;
 
-        // TODO: Implement daily attendance data export
-        // This will be implemented based on your attendance data structure
-        $exportData[] = ['Nota:', 'La exportación de asistencia diaria aún no está implementada'];
-        $exportData[] = ['', 'Esta funcionalidad se implementará según la estructura de datos de asistencia'];
+        $statuses = AttendanceStatus::all();
 
+        $studentsIds = array_map(function ($student) {
+            return $student['id'];
+        }, $this->students);
+        $response = $this->attendanceService->getStudentsAttendanceInAcademicYear($studentsIds, null);
+
+        $attendance = $response['attendances'];
+        $datesWithoutAttendance = $response['dates_without_attendance'];
+        $minDate = Carbon::create($response['min_date']);
+        $maxDate = Carbon::create($response['max_date']);
+
+        $headerRow = $this->buildHeader($minDate, $maxDate);
+        $exportData[] = $headerRow;
+        $currentRow++;
+
+        // Students data rows
+        foreach ($this->students as $student) {
+            $row = [
+                // ['Nombre', 'Apellido', 'Género', 'Fecha de nacimiento', 'Lugar de nacimiento', 'Nacionalidad', 'DNI', 'Domicilio', 'Teléfono'];
+                $student['firstname'],
+                $student['lastname'],
+                $student['gender'],
+                $this->formatBirthdate($student['birthdate']),
+                $student['birth_place'],
+                $student['nationality'],
+                $student['id_number'],
+                $student['address'],
+                $student['phone'],
+            ];
+
+            $currentRow++;
+        }
         return $exportData;
+    }
+
+    private function buildHeader($minDate, $maxDate)
+    {
+        $cells = ['Nombre', 'Apellido', 'Género', 'Fecha de nacimiento', 'Lugar de nacimiento', 'Nacionalidad', 'DNI', 'Domicilio', 'Teléfono'];
+        for ($date = $minDate; $date <= $maxDate; $date->modify('+1 day')) {
+            $cells[] = $date->format('d/m');
+        }
+        return $cells;
     }
 
     /**
@@ -62,8 +111,14 @@ class CourseAttendanceSheet implements FromArray, WithEvents, WithColumnWidths, 
     public function columnWidths(): array
     {
         return [
-            'A' => 25,  // Labels and first column
-            'B' => 40,  // Second column
+            'A' => 25,  // Labels and first column (Nombre)
+            'B' => 10,  // Gender column
+            'C' => 40,  // Email column
+            'D' => 18,  // Birthdate column
+            'E' => 15,  // ID Number column
+            'F' => 20,  // Role column (teachers only)
+            'G' => 20,  // Subject column (teachers only)
+            'H' => 10,  // In charge column (teachers only)
         ];
     }
 

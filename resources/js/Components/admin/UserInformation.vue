@@ -60,6 +60,9 @@
               <DataFieldShow label="Fecha de Nacimiento" :value="user.birthdate" type="birthdate" />
             </div>
             <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <DataFieldShow label="Lugar de Nacimiento" :value="user.birth_place" type="text" />
+            </div>
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
               <DataFieldShow label="Nacionalidad" :value="user.nationality" type="text" />
             </div>
           </div>

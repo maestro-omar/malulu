@@ -92,6 +92,7 @@ class UserService
             'id',
             'address',
             'birthdate',
+            'birth_place',
             'country',
             'email',
             'firstname',

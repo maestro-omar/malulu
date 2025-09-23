@@ -47,6 +47,7 @@ trait UserServiceCrud
             'locality' => ['nullable', 'string', 'max:255'],
             'province_id' => ['nullable', 'exists:provinces,id'],
             'country_id' => ['nullable', 'exists:countries,id'],
+            'birth_place' => ['nullable', 'string', 'max:255'],
             'nationality' => ['nullable', 'string', 'max:100'],
             'email' => [
                 'required',
@@ -97,6 +98,7 @@ trait UserServiceCrud
             'locality' => $validatedData['locality'] ?? null,
             'province_id' => $validatedData['province_id'] ?? null,
             'country_id' => $validatedData['country_id'] ?? null,
+            'birth_place' => $validatedData['birth_place'] ?? null,
             'nationality' => $validatedData['nationality'] ?? null,
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
@@ -125,6 +127,7 @@ trait UserServiceCrud
             'locality' => $validatedData['locality'] ?? $user->locality,
             'province_id' => $validatedData['province_id'] ?? $user->province_id,
             'country_id' => $validatedData['country_id'] ?? $user->country_id,
+            'birth_place' => $validatedData['birth_place'] ?? $user->birth_place,
             'nationality' => $validatedData['nationality'] ?? $user->nationality,
             'email' => $validatedData['email'],
         ]);

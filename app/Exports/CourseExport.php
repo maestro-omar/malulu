@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Services\CourseService;
+use App\Services\AttendanceService;
 use App\Models\Entities\Course;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -17,26 +18,18 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyles, WithMultipleSheets
 {
-    // Color constants for styling
-    const COLOR_HEADER_LABELS = '004473';      // Blue for header section labels (Escuela, Nivel, etc.)
-    const COLOR_TABLE_HEADER_TEXT = 'FFFFFF';  // White text for table headers
-
-    // Separate colors for teachers and students tables
-    const COLOR_TEACHERS_HEADERS = 'F5B54E';   // Orange for teachers table header backgrounds
-    const COLOR_STUDENTS_HEADERS = '059669';   // Green for students table header backgrounds
-    const COLOR_SCHEDULE_HEADERS = '7C3AED';   // Purple for schedule table header backgrounds
-    const COLOR_ATTENDANCE_HEADERS = '004473'; // Blue for attendance table header backgrounds
-
     protected Course $course;
     protected array $exportOptions;
     protected CourseService $courseService;
+    protected AttendanceService $attendanceService;
 
-    public function __construct(CourseService $courseService, Course $course, array $exportOptions)
+    public function __construct(CourseService $courseService, AttendanceService $attendanceService, Course $course, array $exportOptions)
     {
         $this->course = $course;
         $this->exportOptions = $exportOptions;
         $this->exportOptions['attendance'] = true;
         $this->courseService = $courseService;
+        $this->attendanceService = $attendanceService;
     }
 
     public function array(): array
@@ -50,13 +43,17 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
      */
     public function sheets(): array
     {
+        $students = (($this->exportOptions['students'] ?? false) || ($this->exportOptions['attendance'] ?? false))
+            ? $this->courseService->getStudents($this->course, true, null, false)
+            : null;
+
         $sheets = [
-            new CourseMainSheet($this->courseService, $this->course, $this->exportOptions)
+            new CourseMainSheet($this->courseService, $this->course, $this->exportOptions, $students)
         ];
 
         // Add attendance sheet if attendance option is selected
         if ($this->exportOptions['attendance'] ?? false) {
-            $sheets[] = new CourseAttendanceSheet($this->courseService, $this->course, $this->exportOptions);
+            $sheets[] = new CourseAttendanceSheet($this->courseService, $this->attendanceService, $this->course, $this->exportOptions, $students);
         }
 
         return $sheets;
@@ -69,13 +66,14 @@ class CourseExport implements FromArray, WithEvents, WithColumnWidths, WithStyle
     {
         return [
             'A' => 25,  // Labels and first column (Nombre)
-            'B' => 10,  // Gender column
-            'C' => 40,  // Email column
-            'D' => 18,  // Birthdate column
-            'E' => 15,  // ID Number column
-            'F' => 20,  // Role column (teachers only)
-            'G' => 20,  // Subject column (teachers only)
-            'H' => 10,  // In charge column (teachers only)
+            'B' => 25,  // Lastname column (Apellido)
+            'C' => 10,  // Gender column
+            'D' => 40,  // Email column
+            'E' => 18,  // Birthdate column
+            'F' => 15,  // ID Number column
+            'G' => 20,  // Role column (teachers only)
+            'H' => 20,  // Subject column (teachers only)
+            'I' => 10,  // In charge column (teachers only)
         ];
     }
 
