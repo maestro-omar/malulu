@@ -14,6 +14,7 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithStyles, WithTitle
 {
@@ -63,7 +64,9 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
         // Schedule data
         if ($this->exportOptions['schedule'] ?? false) {
             // Schedule section header
-            $exportData[] = ['HORARIOS', ''];
+            $exportData[] = [''];
+            $currentRow++;
+            $exportData[] = ['HORARIOS'];
             $currentRow++;
 
             $courseSchedule = $this->course->schedule;
@@ -126,13 +129,15 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
             $currentRow++;
 
             // Teachers header
-            $this->teachersHeaderRow = ['Nombre', 'Apellido', 'Género', 'Email', 'Fecha Nacimiento', 'DNI', 'Rol', 'Materia', 'A Cargo'];
+            $this->teachersHeaderRow = ['#', 'Nombre', 'Apellido', 'Género', 'Email', 'Fecha Nacimiento', 'DNI', 'Rol', 'Materia', 'A Cargo'];
             $exportData[] = $this->teachersHeaderRow;
             $currentRow++;
 
             // Teachers data rows
+            $teacherNumber = 1;
             foreach ($teachers as $teacher) {
                 $exportData[] = [
+                    $teacherNumber,
                     $teacher['firstname'],
                     $teacher['lastname'],
                     $teacher['gender'],
@@ -140,8 +145,10 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
                     $this->formatBirthdate($teacher['birthdate']),
                     $teacher['id_number'],
                     $teacher['rel_role']->name,
+                    $teacher['rel_subject'] ?? '',
                     $teacher['rel_in_charge'] ? 'Sí' : 'No',
                 ];
+                $teacherNumber++;
                 $currentRow++;
             }
         }
@@ -155,23 +162,27 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
             $exportData[] = ['ALUMNOS/AS', ''];
             $currentRow++;
 
-            // Students header (only 7 columns to match the data)
-            $this->studentsHeaderRow = ['Nombre', 'Apellido', 'Género', 'DNI', 'Fecha Nacimiento', 'Lugar de Nacimiento', 'Nacionalidad', 'Email'];
+            // Students header (all columns from attendance sheet)
+            $this->studentsHeaderRow = ['#', 'Nombre', 'Apellido', 'Género', 'Fecha de nacimiento', 'Lugar de nacimiento', 'Nacionalidad', 'DNI', 'Domicilio', 'Teléfono'];
             $exportData[] = $this->studentsHeaderRow;
             $currentRow++;
 
             // Students data rows
+            $studentNumber = 1;
             foreach ($this->students as $student) {
                 $exportData[] = [
+                    $studentNumber,
                     $student['firstname'],
                     $student['lastname'],
                     $student['gender'],
-                    $student['id_number'],
                     $this->formatBirthdate($student['birthdate']),
                     $student['birth_place'],
                     $student['nationality'],
-                    $student['email'],
+                    $student['id_number'],
+                    $student['address'] ?? '',
+                    $student['phone'] ?? '',
                 ];
+                $studentNumber++;
                 $currentRow++;
             }
         }
@@ -194,16 +205,20 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
     public function columnWidths(): array
     {
         return [
-            'A' => 25,  // Labels and first column (Nombre)
-            'B' => 25,  // Lastname column (Apellido)
-            'C' => 10,  // Gender column
-            'D' => 40,  // Email column
+            'A' => 5,   // Sequential number column
+            'B' => 25,  // Labels and first column (Nombre)
+            'C' => 25,  // Lastname column (Apellido)
+            'D' => 10,  // Gender column
             'E' => 18,  // Birthdate column
             'F' => 20,  // Birth place column
-            'G' => 15,  // ID Number column
-            'H' => 20,  // Role column (teachers only)
-            'I' => 20,  // Subject column (teachers only)
-            'J' => 10,  // In charge column (teachers only)
+            'G' => 15,  // Nationality column
+            'H' => 15,  // ID Number column
+            'I' => 30,  // Address column
+            'J' => 15,  // Phone column
+            'K' => 40,  // Email column (teachers only)
+            'L' => 20,  // Role column (teachers only)
+            'M' => 20,  // Subject column (teachers only)
+            'N' => 10,  // In charge column (teachers only)
         ];
     }
 
@@ -286,7 +301,7 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
                         // Calculate the last column dynamically based on the number of days
                         $courseSchedule = $this->course->schedule;
                         $dayCount = isset($courseSchedule['days']) ? count($courseSchedule['days']) : 5;
-                        $lastColumn = chr(67 + $dayCount - 1); // Start from C (67), add day count - 1
+                        $lastColumn = Coordinate::stringFromColumnIndex(3 + $dayCount - 1); // 3 = 'C'
 
                         // Style the header row
                         $sheet->getStyle("A{$row}:{$lastColumn}{$row}")->applyFromArray([
@@ -329,11 +344,11 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
                         }
                     }
 
-                    // Check if this is a regular table header row (Nombre)
-                    if ($cellValue === 'Nombre') {
+                    // Check if this is a regular table header row (Nombre or #)
+                    if ($cellValue === 'Nombre' || $cellValue === '#') {
                         // Determine the number of columns based on the current section
                         $headerColumns = $currentSection === 'teachers' ? $this->teachersHeaderRow : $this->studentsHeaderRow;
-                        $lastColumn = chr(65 + count($headerColumns) - 1); // Convert to letter (A=65, B=66, etc.)
+                        $lastColumn = Coordinate::stringFromColumnIndex(count($headerColumns));
 
                         // Style the header row
                         $sheet->getStyle("A{$row}:{$lastColumn}{$row}")->applyFromArray([
@@ -355,13 +370,26 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
                             ],
                         ]);
 
-                        // Add borders to all data cells in this table
+                        // Add borders and alternating colors to all data cells in this table
                         $nextRow = $row + 1;
+                        $rowCounter = 0;
                         while ($nextRow <= $rowCount && $sheet->getCell("A{$nextRow}")->getValue() !== '' && !in_array($sheet->getCell("A{$nextRow}")->getValue(), ['DOCENTES', 'ALUMNOS/AS', 'HORARIOS'])) {
+                            $isEvenRow = $rowCounter % 2 === 0;
+                            $backgroundColor = $isEvenRow ? 'FFFFFF' : 'F8F9FA'; // White and light gray
+                            
                             $sheet->getStyle("A{$nextRow}:{$lastColumn}{$nextRow}")->applyFromArray([
+                                'fill' => [
+                                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                    'startColor' => ['rgb' => $backgroundColor],
+                                ],
                                 'borders' => [
                                     'allBorders' => [
                                         'borderStyle' => Border::BORDER_THIN,
+                                        'color' => ['rgb' => 'CCCCCC'],
+                                    ],
+                                    'inside' => [
+                                        'borderStyle' => Border::BORDER_THIN,
+                                        'color' => ['rgb' => 'E0E0E0'],
                                     ],
                                 ],
                                 'alignment' => [
@@ -369,6 +397,7 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
                                 ],
                             ]);
                             $nextRow++;
+                            $rowCounter++;
                         }
                     }
                 }
