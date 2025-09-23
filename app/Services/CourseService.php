@@ -365,7 +365,7 @@ class CourseService
         $parsedStudents = $students->map(function ($oneRel) use ($course, $withGuardians, $attendanceDate, $attendanceMinimalSummary) {
             return $this->parseRelatedStudent($course, $oneRel, $withGuardians, $attendanceDate, $attendanceMinimalSummary);
         }, $students);
-        $parsedStudents = $parsedStudents->sortBy([['rel.end_date'], ['user.lastname'], ['user.firstname']]);
+        $parsedStudents = $parsedStudents->sortBy([['rel_end_date'], ['lastname'], ['firstname']]);
         return $parsedStudents->values()->all();
     }
 
