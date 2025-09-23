@@ -17,7 +17,7 @@
     </template>
     <!-- Quasar Table -->
     <q-table class="mll-table mll-table--students striped-table" dense :rows="students" :columns="columns" row-key="id"
-      binary-state-sort>
+      binary-state-sort :pagination="pagination" :rows-per-page-options="[10, 20, 30, 50, 100]">
 
       <!-- Custom cell for picture -->
       <template #body-cell-picture="props">
@@ -58,6 +58,42 @@
         </q-td>
       </template>
 
+      <!-- Custom cell for attendance summary -->
+      <template #body-cell-attendance_summary="props">
+        <q-td :props="props">
+          <div class="text-center">
+            <div class="text-green-6 text-weight-bold">
+              {{ props.row.attendanceSummary?.total_presents || 0 }}
+            </div>
+            <div class="text-caption text-grey-6">Presente</div>
+          </div>
+        </q-td>
+      </template>
+
+      <!-- Custom cell for absences -->
+      <template #body-cell-absences="props">
+        <q-td :props="props">
+          <div class="text-center">
+            <div class="text-red-6 text-weight-bold">
+              {{ props.row.attendanceSummary?.total_absences || 0 }}
+            </div>
+            <div class="text-caption text-grey-6">Ausente</div>
+          </div>
+        </q-td>
+      </template>
+
+      <!-- Custom cell for attendance percentage -->
+      <template #body-cell-attendance_percentage="props">
+        <q-td :props="props">
+          <div class="text-center">
+            <div class="text-weight-bold" :class="getAttendancePercentageClass(props.row)">
+              {{ getAttendancePercentage(props.row) }}%
+            </div>
+            <div class="text-caption text-grey-6">Asistencia</div>
+          </div>
+        </q-td>
+      </template>
+
       <!-- Custom cell for actions -->
       <template #body-cell-actions="props">
         <q-td :props="props">
@@ -91,6 +127,25 @@ import { route_school_student } from '@/Utils/routes';
 import { formatNumber } from '@/Utils/strings';
 import { hasPermission, isAdmin, isCurrentUserAdmin } from '@/Utils/permissions';
 
+// Methods for attendance calculations
+const getAttendancePercentage = (student) => {
+  if (!student.attendanceSummary || student.attendanceSummary.total_records === 0) {
+    return 0;
+  }
+  
+  const percentage = (student.attendanceSummary.total_presents / student.attendanceSummary.total_records) * 100;
+  return Math.round(percentage);
+};
+
+const getAttendancePercentageClass = (student) => {
+  const percentage = getAttendancePercentage(student);
+  
+  if (percentage >= 90) return 'text-green-6';
+  if (percentage >= 80) return 'text-orange-6';
+  if (percentage >= 70) return 'text-yellow-6';
+  return 'text-red-6';
+};
+
 
 
 const props = defineProps({
@@ -100,6 +155,14 @@ const props = defineProps({
   schoolLevel: { type: String, required: true },
   school: { type: Object, required: true },
 });
+
+// Pagination configuration
+const pagination = {
+  sortBy: 'firstname',
+  descending: false,
+  page: 1,
+  rowsPerPage: 30
+};
 
 // Table columns definition
 const columns = [
@@ -148,6 +211,30 @@ const columns = [
     field: 'birthdate',
     align: 'left',
     sortable: true
+  },
+  {
+    name: 'attendance_summary',
+    label: 'Presente',
+    field: 'attendanceSummary.total_presents',
+    align: 'center',
+    sortable: true,
+    style: 'width: 100px'
+  },
+  {
+    name: 'absences',
+    label: 'Ausente',
+    field: 'attendanceSummary.total_absences',
+    align: 'center',
+    sortable: true,
+    style: 'width: 100px'
+  },
+  {
+    name: 'attendance_percentage',
+    label: 'Asistencia %',
+    field: 'attendancePercentage',
+    align: 'center',
+    sortable: true,
+    style: 'width: 120px'
   },
   {
     name: 'actions',

@@ -51,6 +51,13 @@
             <span class="course-export-popover__checkbox-text">Estudiantes</span>
           </label>
         </div>
+
+        <div class="course-export-popover__option">
+          <label class="course-export-popover__checkbox-label">
+            <input type="checkbox" v-model="exportOptions.attendance" class="course-export-popover__checkbox">
+            <span class="course-export-popover__checkbox-text">Asistencia diaria</span>
+          </label>
+        </div>
       </div>
 
       <!-- Action Buttons -->
@@ -91,10 +98,11 @@ const isOpen = ref(false)
 
 // Export options
 const exportOptions = ref({
-  basicData: true, // Default to true
-  schedule: true,  // Default to true
-  teachers: true,  // Default to true
-  students: true   // Default to true
+  basicData: true, 
+  schedule: true,  
+  teachers: true,  
+  students: true,  
+  attendance: false 
 })
 
 // Computed

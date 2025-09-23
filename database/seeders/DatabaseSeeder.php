@@ -75,7 +75,8 @@ class DatabaseSeeder extends Seeder
         
         $this->call([
             FakeUsersSeeder::class,
-            FakeFilesSeeder::class
+            FakeFilesSeeder::class,
+            FakeAttendanceSeeder::class
         ]);
     }
 }

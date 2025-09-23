@@ -216,7 +216,8 @@ class CourseController extends SchoolBaseController
             'basicData' => true,
             'schedule' => true,
             'teachers' => true,
-            'students' => true
+            'students' => true,
+            'attendance' => false
         ];
 
         // Get export options from request or use defaults
@@ -228,6 +229,7 @@ class CourseController extends SchoolBaseController
                 'export_options.schedule' => 'boolean',
                 'export_options.teachers' => 'boolean',
                 'export_options.students' => 'boolean',
+                'export_options.attendance' => 'boolean',
             ]);
             $exportOptions = $request->input('export_options');
         } else {

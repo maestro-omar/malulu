@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Relations\TeacherCourse;
 use App\Models\Relations\StudentCourse;
+use App\Models\Relations\Attendance;
 use App\Models\Entities\School;
 use App\Models\Catalogs\SchoolLevel;
 use App\Models\Catalogs\SchoolShift;
@@ -102,6 +103,14 @@ class Course extends Model
     public function courseTeachers(): HasMany
     {
         return $this->hasMany(TeacherCourse::class);
+    }
+
+    /**
+     * Get the attendance records for this course.
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
     }
 
     /**

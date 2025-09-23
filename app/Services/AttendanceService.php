@@ -133,7 +133,7 @@ class AttendanceService
         }
 
         // Get aggregated attendance data grouped by user and absence status
-        $attendanceData = Attendance::join('attendance_statuses', 'attendance.status_id', '=', 'attendance_statuses.id')
+        $query = Attendance::join('attendance_statuses', 'attendance.status_id', '=', 'attendance_statuses.id')
             ->whereIn('attendance.user_id', $studentsIds)
             ->whereBetween('attendance.date', [$from->format('Y-m-d'), $to->format('Y-m-d')])
             ->selectRaw('
@@ -141,8 +141,16 @@ class AttendanceService
                 attendance_statuses.is_absent,
                 COUNT(*) as count
             ')
-            ->groupBy('attendance.user_id', 'attendance_statuses.is_absent')
-            ->get();
+            ->groupBy('attendance.user_id', 'attendance_statuses.is_absent');
+        $attendanceData = $query->get();
+
+        // $sql = vsprintf(
+        //     str_replace('?', "'%s'", $query->toSql()),
+        //     $query->getBindings()
+        // );
+
+        // echo $sql;
+        // dd($attendanceData, $from->format('Y-m-d'), $to->format('Y-m-d'), $studentsIds);
 
         // Initialize result array for all students
         $result = [];

@@ -21,6 +21,10 @@ return new class extends Migration
             // Status FK
             $table->foreignId('status_id')->constrained('attendance_statuses');
 
+            // Course FK (optional - for course-specific attendance)
+            $table->foreignId('course_id')->nullable()->constrained('courses')->onDelete('set null');
+            $table->index('course_id');
+
             // Optional justification file (DNI scan, medical certificate, etc.)
             $table->foreignId('file_id')->nullable()->constrained('files')->onDelete('set null');
 

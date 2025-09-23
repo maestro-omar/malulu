@@ -21,6 +21,7 @@ use App\Models\Catalogs\Country;
 use App\Models\Relations\RoleRelationship;
 use App\Models\Relations\GuardianRelationship;
 use App\Models\Relations\StudentRelationship;
+use App\Models\Relations\Attendance;
 use App\Notifications\CustomResetPassword;
 use App\Models\Entities\Builders\User as Builder;
 
@@ -487,5 +488,13 @@ class User extends Authenticatable
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new CustomResetPassword($token));
+    }
+
+    /**
+     * Get the attendance records for this user.
+     */
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'user_id');
     }
 }
