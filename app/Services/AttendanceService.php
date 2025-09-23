@@ -66,6 +66,7 @@ class AttendanceService
     {
         $minDate = Carbon::create($attendances->min('date'));
         $maxDate = Carbon::create($attendances->max('date'));
+        // dd($minDate, $maxDate,$attendances->min('date'));
         $attendances = $attendances->sortBy('date');
         $allDates = $attendances->pluck('date')->unique()->sort()->toArray();
         $datesWithoutAttendance = [];

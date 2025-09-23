@@ -386,9 +386,9 @@ class CourseService
             "rel_id" => $studentRel->id,
             "id" => $user->id,
             "name" => $user->name,
-            "email" => $user->email,
             "firstname" => $user->firstname,
             "lastname" => $user->lastname,
+            "email" => $user->email,
             "id_number" => $user->id_number,
             "gender" => User::getGenderName($user->gender, true),
             "birthdate" => $user->birthdate->format('Y-m-d'),
@@ -397,6 +397,7 @@ class CourseService
             "address" => $user->address,
             "locality" => $user->locality,
             "province" => $user->province->name,
+            "birth_place" => $user->birth_place,
             "nationality" => $user->nationality,
             "picture" => $user->picture,
             "rel_start_date" => $studentRel->start_date->format('Y-m-d'),
@@ -407,6 +408,9 @@ class CourseService
         ];
         if ($withGuardians) {
             $student["guardians"] = $this->userservice->getStudentParents($user);
+            if (empty($student["phone"]) && !empty($student["guardians"])) {
+                $student["phone"] = $this->getStudentMainPhone($student["guardians"]);
+            }
         }
         if (!empty($attendanceDate)) {
             $student["attendance"] = $this->attendanceService->getStudentAttendance($user, $course, $attendanceDate);
@@ -415,6 +419,20 @@ class CourseService
             $student["attendanceSummary"] = $entireCourseAttendanceSummary[$user->id] ?? null;
         }
         return $student;
+    }
+
+    private function getStudentMainPhone(array $guardians)
+    {
+        $selected = null;
+        foreach ($guardians as $guardian) {
+            $checked = !empty($guardian["phone"]) && !($guardian["is_restricted"] ?? false);
+            if ((empty($selected) && $checked)
+                || (!empty($selected) && $checked && !($selected['is_emergency_contact'] ?? false) && ($guardian['is_emergency_contact'] ?? false))
+                || (!empty($selected) && $checked && ($selected['is_emergency_contact'] ?? false) == ($guardian['is_emergency_contact'] ?? false)  && ($selected['emergency_contact_priority'] ?? 0) > ($guardian['emergency_contact_priority'] ?? 0))
+            )
+                $selected = $guardian;
+        }
+        return $selected ? $selected["phone"] . ' (' . $selected['name'] . ' - ' . $selected['relationship_type'] . ')' : '';
     }
 
     private function parseRelatedTeacher(object $teacherRel)
@@ -439,6 +457,7 @@ class CourseService
             "address" => $user->address,
             "locality" => $user->locality,
             "province" => $user->province->name,
+            "birth_place" => $user->birth_place,
             "nationality" => $user->nationality,
             "picture" => $user->picture,
             "rel_start_date" => $teacherRel->start_date->format('Y-m-d'),

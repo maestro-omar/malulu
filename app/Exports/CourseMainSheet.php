@@ -156,7 +156,7 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
             $currentRow++;
 
             // Students header (only 7 columns to match the data)
-            $this->studentsHeaderRow = ['Nombre', 'Apellido', 'Género', 'Email', 'Fecha Nacimiento', 'Lugar de Nacimiento', 'DNI'];
+            $this->studentsHeaderRow = ['Nombre', 'Apellido', 'Género', 'DNI', 'Fecha Nacimiento', 'Lugar de Nacimiento', 'Nacionalidad', 'Email'];
             $exportData[] = $this->studentsHeaderRow;
             $currentRow++;
 
@@ -166,10 +166,11 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
                     $student['firstname'],
                     $student['lastname'],
                     $student['gender'],
-                    $student['email'],
+                    $student['id_number'],
                     $this->formatBirthdate($student['birthdate']),
                     $student['birth_place'],
-                    $student['id_number'],
+                    $student['nationality'],
+                    $student['email'],
                 ];
                 $currentRow++;
             }
