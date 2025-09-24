@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Http\Controllers\School\SchoolBaseController;
 use App\Models\Entities\Course;
+use App\Models\Entities\AcademicYear;
 use App\Services\CourseService;
 use App\Services\SchoolService;
 use App\Services\SchoolLevelService;
@@ -37,6 +38,7 @@ trait StudentsAttendance
         $sDate = $request->input('fecha', '');
         $date = $this->checkAttendanceDate($sDate);
         $students = $this->courseService->getStudents($course, true, $date->format('Y-m-d'), true);
+        $datesNavigation = $this->getDatesNavigation($date);
 
         return Inertia::render('Courses/AttendanceDayEdit', [
             'course' => $course,
@@ -44,6 +46,8 @@ trait StudentsAttendance
             'students' => $students,
             'selectedLevel' => $schoolLevel,
             'dateYMD' => $date->format('Y-m-d'),
+            'daysBefore' => $datesNavigation['daysBefore'],
+            'daysAfter' => $datesNavigation['daysAfter'],
             'breadcrumbs' => Breadcrumbs::generate('school.course.attendanceDayEdit', $school, $schoolLevel, $course, $date),
         ]);
     }
@@ -58,5 +62,44 @@ trait StudentsAttendance
             return $date;
         else
             throw new \Exception('La fecha de asistencia no puede ser mayor a la fecha actual');
+    }
+
+    private function getDatesNavigation(\DateTime $date, int $totalCount = 10)
+    {
+        $half = ceil($totalCount / 2);
+        $currentAcademicYear = AcademicYear::findByDate($date);
+        if (!$currentAcademicYear) return null;
+        $currentAcademicYear->winter_break_start;
+        $currentAcademicYear->winter_break_end;
+        $after = [];
+        $before = [];
+        $checkDate = new \DateTime($date->format('Y-m-d'));
+        while (count($before) < $half && $checkDate >= $currentAcademicYear->start_date) {
+            $checkDate->modify('-1 day');
+            if (
+                $checkDate->format('N') == 6
+                || $checkDate->format('N') == 7
+                || ($checkDate >= $currentAcademicYear->winter_break_start && $checkDate <= $currentAcademicYear->winter_break_end)
+            ) {
+                continue;
+            } else {
+                $before[] = $checkDate->format('Y-m-d');
+            }
+        }
+
+        $checkDate = new \DateTime($date->format('Y-m-d'));
+        while (count($after) < $half && $checkDate <= $currentAcademicYear->end_date) {
+            $checkDate->modify('+1 day');
+            if (
+                $checkDate->format('N') == 6
+                || $checkDate->format('N') == 7
+                || ($checkDate >= $currentAcademicYear->winter_break_start && $checkDate <= $currentAcademicYear->winter_break_end)
+            ) {
+                continue;
+            } else {
+                $after[] = $checkDate->format('Y-m-d');
+            }
+        }
+        return ['daysBefore' => $before, 'daysAfter' => $after];
     }
 }

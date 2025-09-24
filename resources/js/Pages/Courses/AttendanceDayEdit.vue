@@ -9,6 +9,21 @@
     </template>
 
     <template #main-page-content>
+      <!-- Date Navigation -->
+      <q-card class="q-mb-lg">
+        <q-card-section>
+          <div class="row items-center justify-between">
+            <div class="text-h6">Navegación de Fechas</div>
+            <div class="row q-gutter-sm">
+              <q-btn v-if="daysBefore > 0" color="primary" icon="chevron_left"
+                :label="`Anterior: ${formatDate(previousDate)}`" @click="navigateToDate(previousDate)" size="sm" />
+              <q-btn v-if="daysAfter > 0" color="primary" icon="chevron_right" :label="`Siguiente: ${formatDate(nextDate)}`"
+                @click="navigateToDate(nextDate)" size="sm" />
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+
       <!-- Massive Attendance Actions -->
       <q-card class="q-mb-lg">
         <q-card-section>
@@ -140,6 +155,14 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  daysBefore: {
+    type: Number,
+    default: 0,
+  },
+  daysAfter: {
+    type: Number,
+    default: 0,
+  },
 })
 
 // Get page props
@@ -154,6 +177,22 @@ const activeMassiveStatus = ref(null) // Track which massive status is currently
 // Computed properties
 const workDate = computed(() => {
   return new Date(props.dateYMD);
+})
+
+// Calculate previous date
+const previousDate = computed(() => {
+  if (props.daysBefore <= 0) return null;
+  const date = new Date(props.dateYMD);
+  date.setDate(date.getDate() - props.daysBefore);
+  return date.toISOString().split('T')[0]; // Return YYYY-MM-DD format
+})
+
+// Calculate next date
+const nextDate = computed(() => {
+  if (props.daysAfter <= 0) return null;
+  const date = new Date(props.dateYMD);
+  date.setDate(date.getDate() + props.daysAfter);
+  return date.toISOString().split('T')[0]; // Return YYYY-MM-DD format
 })
 
 // Get attendance statuses from global constants
@@ -361,6 +400,28 @@ const getUnassignedCount = () => {
   return props.students.filter(student =>
     !student.currentAttendanceStatus
   ).length;
+}
+
+// Format date for display
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('es-ES', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short'
+  });
+}
+
+// Navigate to specific date
+const navigateToDate = (dateString) => {
+  if (!dateString) return;
+  
+  // Navigate to the attendance day edit page for the new date
+  router.get(route('courses.attendance.day.edit', {
+    course: props.course.slug,
+    date: dateString
+  }));
 }
 
 // Clear all statuses (always available)
