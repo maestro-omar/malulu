@@ -432,7 +432,7 @@ class CourseService
             )
                 $selected = $guardian;
         }
-        return $selected ? $selected["phone"] . ' (' . $selected['name'] . ' - ' . $selected['relationship_type'] . ')' : '';
+        return $selected ? $selected["phone"] . ' (' . $selected['firstname'] . ' - ' . $selected['relationship_type'] . ')' : '';
     }
 
     private function parseRelatedTeacher(object $teacherRel)

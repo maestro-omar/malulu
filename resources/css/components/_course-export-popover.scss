@@ -106,6 +106,11 @@
     cursor: pointer;
     @include mixins.fz(1.4);
     color: variables.$color-text;
+
+    &--disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
   }
 
   .course-export-popover &__checkbox {
@@ -125,6 +130,31 @@
     gap: 0.75rem;
     padding: 1rem;
     border-top: 1px solid variables.$color-grey-dark;
+  }
+
+  .course-export-popover &__loading {
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+
+  .course-export-popover &__loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .course-export-popover &__loading-text {
+    @include mixins.fz(1.6);
+    font-weight: 600;
+    color: variables.$color-text;
+    margin: 0;
+  }
+
+  .course-export-popover &__loading-subtext {
+    @include mixins.fz(1.4);
+    color: variables.$color-grey-dark;
+    margin: 0;
   }
 }
 

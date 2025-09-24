@@ -14,19 +14,22 @@
     </div>
 
     <!-- Popover Content -->
-    <div v-if="isOpen" class="course-export-popover__overlay" @click="closePopover"></div>
+    <div v-if="isOpen" class="course-export-popover__overlay" @click="!isLoading && closePopover()"></div>
     <div v-if="isOpen" class="course-export-popover__content">
       <!-- Header -->
       <div class="course-export-popover__header">
         <h3 class="course-export-popover__title">Opciones de Exportación</h3>
-        <q-btn @click="closePopover" flat round icon="close" color="grey" size="sm" />
+        <q-btn @click="!isLoading && closePopover()" :disable="isLoading" flat round icon="close" color="grey"
+          size="sm" />
       </div>
 
       <!-- Export Options -->
-      <div class="course-export-popover__options">
+      <div class="course-export-popover__options" v-if="!isLoading">
         <div class="course-export-popover__option">
-          <label class="course-export-popover__checkbox-label">
-            <input type="checkbox" v-model="exportOptions.basicData" class="course-export-popover__checkbox">
+          <label class="course-export-popover__checkbox-label"
+            :class="{ 'course-export-popover__checkbox-label--disabled': exportOptions.attendance }">
+            <input type="checkbox" v-model="exportOptions.basicData" :disabled="exportOptions.attendance"
+              class="course-export-popover__checkbox">
             <span class="course-export-popover__checkbox-text">Datos básicos del curso</span>
           </label>
         </div>
@@ -46,8 +49,10 @@
         </div>
 
         <div class="course-export-popover__option">
-          <label class="course-export-popover__checkbox-label">
-            <input type="checkbox" v-model="exportOptions.students" class="course-export-popover__checkbox">
+          <label class="course-export-popover__checkbox-label"
+            :class="{ 'course-export-popover__checkbox-label--disabled': exportOptions.attendance }">
+            <input type="checkbox" v-model="exportOptions.students" :disabled="exportOptions.attendance"
+              class="course-export-popover__checkbox">
             <span class="course-export-popover__checkbox-text">Estudiantes</span>
           </label>
         </div>
@@ -60,8 +65,18 @@
         </div>
       </div>
 
+      <!-- Loading State -->
+      <div v-if="isLoading" class="course-export-popover__loading">
+        <div class="course-export-popover__loading-content">
+          <q-spinner-dots size="2em" color="amber" />
+          <p class="course-export-popover__loading-text">Generando archivo Excel...</p>
+          <p class="course-export-popover__loading-subtext">Por favor, espere mientras se procesan los datos y comienza
+            la descarga</p>
+        </div>
+      </div>
+
       <!-- Action Buttons -->
-      <div class="course-export-popover__actions">
+      <div class="course-export-popover__actions" v-if="!isLoading">
         <q-btn @click="closePopover" color="grey" outline>
           Cancelar
         </q-btn>
@@ -74,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { getCourseSlug } from '@/Utils/strings'
 
 const props = defineProps({
@@ -95,19 +110,29 @@ const props = defineProps({
 // Refs
 const popoverRef = ref(null)
 const isOpen = ref(false)
+const isLoading = ref(false)
 
 // Export options
 const exportOptions = ref({
-  basicData: true, 
-  schedule: true,  
-  teachers: true,  
-  students: true,  
-  attendance: false 
+  basicData: true,
+  schedule: true,
+  teachers: true,
+  students: true,
+  attendance: false
 })
 
 // Computed
 const hasSelectedOptions = computed(() => {
   return Object.values(exportOptions.value).some(option => option === true)
+})
+
+// Watch for attendance changes
+watch(() => exportOptions.value.attendance, (newValue) => {
+  if (newValue) {
+    // When attendance is checked, force basic data and students to be checked
+    exportOptions.value.basicData = true
+    exportOptions.value.students = true
+  }
 })
 
 // Methods
@@ -120,12 +145,12 @@ const closePopover = () => {
 }
 
 const handleExport = async () => {
-  if (!hasSelectedOptions.value) {
+  if (!hasSelectedOptions.value || isLoading.value) {
     return
   }
 
-  // Close popover
-  closePopover()
+  // Set loading state
+  isLoading.value = true
 
   try {
     // Create a form to submit the export request
@@ -160,8 +185,16 @@ const handleExport = async () => {
     document.body.appendChild(form)
     form.submit()
     document.body.removeChild(form)
+
+    // Keep popover open during loading
+    // Reset loading state after a delay (to allow for download to start)
+    setTimeout(() => {
+      isLoading.value = false
+      closePopover()
+    }, 8000)
   } catch (error) {
     console.error('Error exporting course:', error)
+    isLoading.value = false
   }
 }
 
@@ -192,4 +225,3 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
 })
 </script>
-
