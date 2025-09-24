@@ -19,12 +19,12 @@ class AttendanceService
     public function getStudentAttendance(User $student, string $attendanceDate)
     {
         $date = new \DateTime($attendanceDate);
-        $academicYear = AcademicYear::findByDate($date);
-        $from = $academicYear->start_date;
-        $to = $academicYear->end_date;
-        $summary = $this->getStudentAttendanceSummary($student, $from, $to);
-        $forDate = $this->getStudentAttendanceForDate($student, $date);
-        return ['summary' => $summary, 'forDate' => $forDate];
+        // $academicYear = AcademicYear::findByDate($date);
+        // $from = $academicYear->start_date;
+        // $to = $academicYear->end_date;
+        // $summary = $this->getStudentAttendanceSummary($student, $from, $to);
+        $ret = $this->getStudentAttendanceForDate($student, $date);
+        return $ret;
     }
 
     public function getStudentAttendanceInPeriod(User $student, \DateTime $from, \DateTime $to)

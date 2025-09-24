@@ -14,6 +14,11 @@
         label: 'Eliminar'
       }">
         <template #additional-buttons>
+          <q-btn size="sm"
+            :href="route('school.course.attendance.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) })"
+            color="lime-7">
+            Asistencia
+          </q-btn>
           <CourseExportPopover :course="course" :school="school" :schoolLevel="selectedLevel" />
         </template>
       </AdminHeader>

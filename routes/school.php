@@ -67,7 +67,7 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}/' . __('routes.edit'), [FileController::class, 'editForSchool'])->name('school.course.file.edit')->middleware('school.permission:course.files.manage');
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}/' . __('routes.replace'), [FileController::class, 'replaceForSchool'])->name('school.course.file.replace')->middleware('school.permission:course.files.manage');
 
-        Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.attendance') .'/' . __('routes.edit'), [CourseController::class, 'attendanceEdit'])->name('school.course.attendance.edit')->middleware('school.permission:course.manage');
+        Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.attendance') .'/' . __('routes.edit'), [CourseController::class, 'attendanceDayEdit'])->name('school.course.attendance.edit')->middleware('school.permission:course.manage');
 
         // Course Search for Popover
         Route::post('{schoolLevel}/' . __('routes.course') . '/' . __('routes.search'), [CourseController::class, 'search'])->name('school.courses.search')->middleware('school.permission:course.manage');

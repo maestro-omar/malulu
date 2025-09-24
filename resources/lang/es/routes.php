@@ -17,6 +17,7 @@ return [
     'profile' => 'perfil',
     'staff' => 'personal',
     'students' => 'estudiantes',
+    'attendance' => 'asistencia',
     'student' => 'estudiante',
     'guardians' => 'tutores',
     'guardian' => 'tutor',

@@ -19,9 +19,11 @@ use App\Models\Catalogs\SchoolLevel;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
 use Illuminate\Support\Facades\Log;
+use App\Traits\StudentsAttendance;
 
 class CourseController extends SchoolBaseController
 {
+    use StudentsAttendance;
     protected $courseService;
     protected $schoolService;
     protected $schoolLevelService;
@@ -249,17 +251,4 @@ class CourseController extends SchoolBaseController
         return redirect()->route('school.courses', ['school' => $school->slug, 'schoolLevel' => $schoolLevel->code])->with('success', $message);
     }
 
-    public function attendanceEdit(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
-    {
-        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
-        $date = $request->input('date', date('Y-m-d'));
-        $students = $this->courseService->getStudents($course, true, $date, false);
-
-        // TODO: Implement attendance edit view
-        return response()->json([
-            'message' => 'Attendance edit functionality is work in progress',
-            'students' => $students,
-            'date' => $date
-        ]);
-    }
 }

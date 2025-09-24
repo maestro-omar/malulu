@@ -25,6 +25,7 @@ class AttendanceStatus extends Model
         'symbol',
         'is_absent',
         'is_justified',
+        'is_massive',
     ];
 
     public function attendances(): HasMany
@@ -39,8 +40,8 @@ class AttendanceStatus extends Model
         $map = [
             self::PRESENT => ['label' => 'Presente'],
             self::LATE => ['label' => 'Tarde'],
-            self::ABSENT_JUSTIFIED => ['label' => 'Ausente (Justificado)'],
-            self::ABSENT_UNJUSTIFIED => ['label' => 'Ausente (Injustificado)'],
+            self::ABSENT_JUSTIFIED => ['label' => 'Ausente (Just)'],
+            self::ABSENT_UNJUSTIFIED => ['label' => 'Ausente (Injus)'],
             self::ABSENT_NO_CLASSES => ['label' => 'Ausente (Sin Clases)'],
             self::PRESENT_NO_CLASSES => ['label' => 'Presente (Sin Clases)'],
         ];
@@ -55,6 +56,9 @@ class AttendanceStatus extends Model
                     'label' => $label,
                     'code' => $value,
                     'symbol' => $record ? $record->symbol : substr($label, 0, 1),
+                    'is_massive' => $record ? $record->is_massive : false,
+                    'is_absent' => $record ? $record->is_absent : false,
+                    'is_justified' => $record ? $record->is_justified : false,
                 ]];
             })
             ->toArray();

@@ -214,6 +214,11 @@ Breadcrumbs::for('school.course.edit', function (Trail $trail, School $school, S
     $trail->push("Editar {$course->name}");
 });
 
+Breadcrumbs::for('school.course.attendanceDayEdit', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course, DateTime $date) {
+    $trail->parent('school.course.show', $school, $schoolLevel, $course);
+    $trail->push("Asistencia del dia {$course->name} {$date->format('d/m/Y')}");
+});
+
 Breadcrumbs::for('school.course.file.create', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
     $trail->parent('school.course.show', $school, $schoolLevel, $course);
     $trail->push("Nuevo archivo para {$course->nice_name}");

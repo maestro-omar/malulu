@@ -13,8 +13,10 @@ return new class extends Migration
             $table->id();
             $table->string('code')->unique(); // e.g. 'present', 'late', 'absent_justified'
             $table->string('name');           // Human-readable, can be localized in UI
+            $table->string('symbol', 4);      // Short symbol for display (max 4 chars)
             $table->boolean('is_absent')->default(false);
             $table->boolean('is_justified')->default(false);
+            $table->boolean('is_massive')->default(false);
             $table->timestamps();
         });
     }

@@ -356,11 +356,11 @@ class CourseService
     }
 
 
-    public function getStudents(Course $course, bool $withGuardians, ?string $attendanceDate, bool $withAttendanceSu): array
+    public function getStudents(Course $course, bool $withGuardians, ?string $attendanceDate, bool $withAttendanceSummary): array
     {
         $students = $course->courseStudents->load(['roleRelationship.user', 'endReason']);
         $studentsIds = $students->pluck('roleRelationship.user.id')->toArray();
-        $attendanceMinimalSummary = $this->attendanceService->getStudentsAttendanceMinimal($studentsIds, null, null);
+        $attendanceMinimalSummary = $withAttendanceSummary ? $this->attendanceService->getStudentsAttendanceMinimal($studentsIds, null, null) : null;
         // student_relationships OMAR PREGUNTA ¿esta relacion es redundante? ¿estuvo hecha para facilitar búsquedas?
         $parsedStudents = $students->map(function ($oneRel) use ($course, $withGuardians, $attendanceDate, $attendanceMinimalSummary) {
             return $this->parseRelatedStudent($course, $oneRel, $withGuardians, $attendanceDate, $attendanceMinimalSummary);
@@ -413,7 +413,7 @@ class CourseService
             }
         }
         if (!empty($attendanceDate)) {
-            $student["attendance"] = $this->attendanceService->getStudentAttendance($user, $course, $attendanceDate);
+            $student["attendanceForDate"] = $this->attendanceService->getStudentAttendance($user, $attendanceDate);
         }
         if (!empty($entireCourseAttendanceSummary)) {
             $student["attendanceSummary"] = $entireCourseAttendanceSummary[$user->id] ?? null;
