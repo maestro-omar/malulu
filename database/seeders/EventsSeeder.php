@@ -13,7 +13,7 @@ class EventsSeeder extends Seeder
     public function run(): void
     {
         // Tipos de eventos
-        DB::table('event_types')->insertOrIgnore([
+        $eventTypes = [
             ['code' => EventType::CODE_FERIADO_NACIONAL, 'scope' => EventType::SCOPE_NACIONAL, 'name' => 'Feriado'],
             ['code' => EventType::CODE_CONMEMORACION_NACIONAL, 'scope' => EventType::SCOPE_NACIONAL, 'name' => 'Conmemoración'],
             ['code' => EventType::CODE_SUSPENCION_NACIONAL, 'scope' => EventType::SCOPE_NACIONAL, 'name' => 'Suspensión de clases'],
@@ -35,7 +35,18 @@ class EventsSeeder extends Seeder
             ['code' => EventType::CODE_REUNION_DOCENTE, 'scope' => EventType::SCOPE_ESCOLAR, 'name' => 'Reunión docente'],
             ['code' => EventType::CODE_REUNION_GRUPAL, 'scope' => EventType::SCOPE_ESCOLAR, 'name' => 'Reunión grupal'],
             ['code' => EventType::CODE_SALIDA_DIDACTICA, 'scope' => EventType::SCOPE_ESCOLAR, 'name' => 'Salida didáctica'],
-        ]);
+        ];
+
+        // Get the first user ID for created_by field
+        $firstUserId = DB::table('users')->first()->id ?? 1;
+
+        foreach ($eventTypes as $eventType) {
+            DB::table('event_types')->insertOrIgnore(array_merge($eventType, [
+                'created_by' => $firstUserId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]));
+        }
 
         $allTypesByCode = EventType::all()->keyBy('code');
 
@@ -66,6 +77,9 @@ class EventsSeeder extends Seeder
                 'school_id' => null,
                 'academic_year_id' => null,
                 'notes' => 'Feriado nacional',
+                'created_by' => $firstUserId,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]));
         }
 
@@ -93,6 +107,9 @@ class EventsSeeder extends Seeder
                 'school_id' => null,
                 'academic_year_id' => null,
                 'notes' => 'Conmemoración nacional',
+                'created_by' => $firstUserId,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]));
         }
 
@@ -107,6 +124,9 @@ class EventsSeeder extends Seeder
             'academic_year_id' => null,
             'is_non_working_day' => true,
             'notes' => '',
+            'created_by' => $firstUserId,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         // Evento escolar (school_id=2)
@@ -120,6 +140,9 @@ class EventsSeeder extends Seeder
             'academic_year_id' => null,
             'is_non_working_day' => false,
             'notes' => 'Celebración interna de la escuela',
+            'created_by' => $firstUserId,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         // Eventos recurrentes especiales (Día del Padre, Madre, Niño)
@@ -136,6 +159,9 @@ class EventsSeeder extends Seeder
             'academic_year_id' => null,
             'is_non_working_day' => false,
             'notes' => '3er domingo de junio',
+            'created_by' => $firstUserId,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('events')->insert([
@@ -151,6 +177,9 @@ class EventsSeeder extends Seeder
             'academic_year_id' => null,
             'is_non_working_day' => false,
             'notes' => '3er domingo de octubre',
+            'created_by' => $firstUserId,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('events')->insert([
@@ -166,6 +195,9 @@ class EventsSeeder extends Seeder
             'academic_year_id' => null,
             'is_non_working_day' => false,
             'notes' => '2do domingo de agosto',
+            'created_by' => $firstUserId,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         // Eventos de Semana Santa (recurrencia especial)
@@ -182,6 +214,9 @@ class EventsSeeder extends Seeder
             'academic_year_id' => null,
             'is_non_working_day' => true,
             'notes' => 'Jueves Santo (fecha variable según calendario lunar)',
+            'created_by' => $firstUserId,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('events')->insert([
@@ -197,6 +232,9 @@ class EventsSeeder extends Seeder
             'academic_year_id' => null,
             'is_non_working_day' => true,
             'notes' => 'Viernes Santo (fecha variable según calendario lunar)',
+            'created_by' => $firstUserId,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         // Eventos de Carnaval (recurrencia especial - 47 días antes de Pascua)
@@ -213,6 +251,9 @@ class EventsSeeder extends Seeder
             'academic_year_id' => null,
             'is_non_working_day' => true,
             'notes' => 'Lunes de Carnaval (47 días antes de Pascua)',
+            'created_by' => $firstUserId,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('events')->insert([
@@ -228,6 +269,9 @@ class EventsSeeder extends Seeder
             'academic_year_id' => null,
             'is_non_working_day' => true,
             'notes' => 'Martes de Carnaval (46 días antes de Pascua)',
+            'created_by' => $firstUserId,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 }

@@ -10,8 +10,14 @@ return new class extends Migration {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->date('date'); // fixed date
-            $table->boolean('is_recurring')->default(false); // true = repeats every year
+            $table->date('date')->nullable(); // still useful for fixed-date events
+            $table->boolean('is_recurring')->default(false);
+        
+            // Recurrence rules
+            $table->unsignedTinyInteger('recurrence_month')->nullable();   // 1–12
+            $table->unsignedTinyInteger('recurrence_week')->nullable();    // 1 = first, 2 = second, etc.
+            $table->unsignedTinyInteger('recurrence_weekday')->nullable(); // 0=Sunday … 6=Saturday
+            
             $table->foreignId('event_type_id')->constrained('event_types');
 
             // Optional scope
