@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->boolean('active')->default(true);
 
             // Scope
+            $table->foreignId('province_id')->nullable()->constrained('provinces');
             $table->foreignId('school_id')->nullable()->constrained('schools')->onDelete('cascade');
             $table->foreignId('academic_year_id')->constrained('academic_years')->onDelete('cascade');
             $table->foreignId('event_type_id')->constrained('event_types');

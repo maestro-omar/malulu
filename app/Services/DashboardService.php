@@ -29,8 +29,10 @@ class DashboardService
     {
         $this->user = auth()->user();
         $data = $this->getFlagsForCards();
+        $eventsData = $this->academicEventService->getDashboardCalendar($this->user);
+        // dd($eventsData);
         return $data + [
-            'calendar' => $this->academicEventService->getDashboardCalendar($this->user),
+            'eventsData' => $eventsData,
             'loggedUserData' => $this->userService->getBasicUserShowData($this->user)
         ];
     }
