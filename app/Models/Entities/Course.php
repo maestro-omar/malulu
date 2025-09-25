@@ -12,6 +12,7 @@ use App\Models\Relations\Attendance;
 use App\Models\Entities\School;
 use App\Models\Catalogs\SchoolLevel;
 use App\Models\Catalogs\SchoolShift;
+use App\Models\Relations\AcademicEvent;
 use Illuminate\Support\Str;
 
 class Course extends Model
@@ -111,6 +112,12 @@ class Course extends Model
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    public function academicEvents()
+    {
+        return $this->belongsToMany(AcademicEvent::class, 'academic_event_course')
+            ->withTimestamps();
     }
 
     /**
