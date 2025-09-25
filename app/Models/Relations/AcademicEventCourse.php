@@ -3,7 +3,7 @@
 namespace App\Models\Relations;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Relations\AcademicEvent;
+use App\Models\Entities\AcademicEvent;
 use App\Models\Entities\Course;
 
 class AcademicEventCourse extends Model

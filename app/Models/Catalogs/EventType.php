@@ -4,8 +4,8 @@ namespace App\Models\Catalogs;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Relations\RecurrentEvent;
-use App\Models\Relations\AcademicEvent;
+use App\Models\Entities\RecurrentEvent;
+use App\Models\Entities\AcademicEvent;
 
 class EventType extends Model
 {

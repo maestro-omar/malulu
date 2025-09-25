@@ -8,7 +8,7 @@ use App\Models\Catalogs\EventType;
 use App\Models\Entities\School;
 use App\Models\Entities\AcademicYear;
 use App\Models\Entities\Course;
-use App\Models\Relations\AcademicEvent;
+use App\Models\Entities\AcademicEvent;
 use App\Models\Relations\AcademicEventCourse;
 use Faker\Factory as Faker;
 

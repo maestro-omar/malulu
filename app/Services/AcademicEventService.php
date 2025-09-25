@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Relations\AcademicEvent;
+use App\Models\Entities\AcademicEvent;
 use App\Models\Catalogs\EventType;
 use App\Models\Entities\User;
 use App\Models\Entities\AcademicYear;
