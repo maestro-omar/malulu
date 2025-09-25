@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Catalogs\JobStatus;
 use App\Services\UserService;
 use App\Services\CourseService;
+use App\Services\AcademicEventService;
 use App\Models\Catalogs\Role;
 use App\Models\Relations\RoleRelationship;
 use App\Models\Entities\User;
@@ -14,12 +15,14 @@ class DashboardService
 {
     private Userservice $userService;
     private CourseService $courseService;
+    private AcademicEventService $academicEventService;
     private User $user;
 
-    public function __construct(UserService $userService, CourseService $courseService)
+    public function __construct(UserService $userService, CourseService $courseService, AcademicEventService $academicEventService)
     {
         $this->userService = $userService;
         $this->courseService = $courseService;
+        $this->academicEventService = $academicEventService;
     }
 
     public function getData($request)
@@ -27,6 +30,7 @@ class DashboardService
         $this->user = auth()->user();
         $data = $this->getFlagsForCards();
         return $data + [
+            'calendar' => $this->academicEventService->getDashboardCalendar($this->user),
             'loggedUserData' => $this->userService->getBasicUserShowData($this->user)
         ];
     }

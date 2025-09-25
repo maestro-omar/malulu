@@ -7,17 +7,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('events', function (Blueprint $table) {
+        Schema::create('recurrent_events', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->date('date')->nullable(); // still useful for fixed-date events
-            $table->boolean('is_recurring')->default(false);
-        
+
             // Recurrence rules
             $table->unsignedTinyInteger('recurrence_month')->nullable();   // 1–12
-            $table->unsignedTinyInteger('recurrence_week')->nullable();    // 1 = first, 2 = second, etc.
+            $table->integer('recurrence_week')->nullable();    // 1 = first, 2 = second, etc. signed integer to support negative values 
             $table->unsignedTinyInteger('recurrence_weekday')->nullable(); // 0=Sunday … 6=Saturday
-            
+
             $table->foreignId('event_type_id')->constrained('event_types');
 
             // Optional scope
@@ -36,6 +35,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('events');
+        Schema::dropIfExists('recurrent_events');
     }
 };

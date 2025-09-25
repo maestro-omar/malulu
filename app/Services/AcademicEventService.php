@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Relations\AcademicEvent;
 use App\Models\Catalogs\EventType;
+use App\Models\Entities\User;
+use App\Models\Entities\AcademicYear;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -11,6 +13,25 @@ use App\Models\Entities\Course;
 
 class AcademicEventService
 {
+
+    public function getDashboardCalendar(User $user): Collection
+    {
+        $currentAcademicYear = AcademicYear::getCurrent();
+        $query = AcademicEvent::with(['type', 'school', 'academicYear', 'courses'])->where('academic_year_id', $currentAcademicYear->id);
+        if ($user->isSuperadmin()) {
+            $query = $query->whereNull('school_id');
+        } else {
+            $query = $query->where(function ($q) use ($user) {
+                $q->where('school_id', $user->school_id)
+                    ->orWhereNull('school_id');
+            });
+        }
+        $ret = $query
+            ->orderBy('date')
+            ->toSql();
+        dd($ret);
+        return $ret;
+    }
     /**
      * List all academic events for a given school and academic year.
      */

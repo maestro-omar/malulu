@@ -9,16 +9,15 @@ use App\Models\Catalogs\Province;
 use App\Models\Entities\School;
 use App\Models\Entities\AcademicYear;
 
-class Event extends Model
+class RecurrentEvent extends Model
 {
     use HasFactory;
 
-    protected $table = 'events';
+    protected $table = 'recurrent_events';
 
     protected $fillable = [
         'title',
         'date',
-        'is_recurring',
         'recurrence_month',
         'recurrence_week',
         'recurrence_weekday',

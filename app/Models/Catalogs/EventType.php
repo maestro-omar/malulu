@@ -4,7 +4,7 @@ namespace App\Models\Catalogs;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Relations\Event;
+use App\Models\Relations\RecurrentEvent;
 use App\Models\Relations\AcademicEvent;
 
 class EventType extends Model
@@ -61,9 +61,9 @@ class EventType extends Model
         return $query->where('scope', 'school');
     }
 
-    public function events()
+    public function recurrentEvents()
     {
-        return $this->hasMany(Event::class, 'event_type_id');
+        return $this->hasMany(RecurrentEvent::class, 'event_type_id');
     }
 
     public function academicEvents()
