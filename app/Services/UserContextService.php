@@ -10,7 +10,8 @@ class UserContextService
 {
     public static function load(): void
     {
-        $user = Auth::user(); // is App\Models\Entities\User;
+        /** @var \App\Models\Entities\User $user */
+        $user = Auth::user();
         if (!$user) return;
 
         $activeRoleRelationships = $user->activeRoleRelationships()->map(function ($rel) {

@@ -485,4 +485,282 @@ trait UserServiceList
 
         return $query;
     }
+
+    public function getLoggedUserRelevantBirthdays($from, $to)
+    {
+        // Check if user is superadmin
+        $loggedUserId = auth()->id();
+        if (!$loggedUserId) {
+            return [];
+        }
+
+        $loggedUser = User::find($loggedUserId);
+        if (!$loggedUser) {
+            return [];
+        }
+
+        // If user is superadmin, return all users within birthdate range
+        if ($loggedUser->isSuperadmin()) {
+            $return = User::whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
+                ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
+                ->get()
+                ->map(function ($user) {
+                    $user->context = ['superadmin_view'];
+                    return $user;
+                });
+
+            return $return->map(function ($user) {
+                return $this->parseUserForBirthdayCalendar($user);
+            })->toArray();
+        }
+
+        // Get user context from UserContextService
+        $userContext = \App\Services\UserContextService::get();
+        $activeRoleRelationships = $userContext['activeRoleRelationships'] ?? [];
+
+        if (empty($activeRoleRelationships)) {
+            return [];
+        }
+
+        $relatedUsers = collect();
+
+        foreach ($activeRoleRelationships as $roleRelationship) {
+            $roleCode = $roleRelationship['role_code'] ?? null;
+            $schoolId = $roleRelationship['school_id'] ?? null;
+
+            if (!$roleCode || !$schoolId) {
+                continue;
+            }
+
+            // Handle different role types
+            if (Role::isWorker($roleCode)) {
+                // If worker, get co-workers of same school
+                $relatedUsers = $relatedUsers->merge($this->getCoworkers($schoolId, $from, $to));
+
+                // If worker is related to class, get students
+                $relatedUsers = $relatedUsers->merge($this->getStudentsForWorkerFromContext($userContext, $schoolId, $from, $to));
+            } elseif ($roleCode === Role::STUDENT) {
+                // If student, get classmates and teachers
+                $relatedUsers = $relatedUsers->merge($this->getClassmatesAndTeachersFromContext($userContext, $schoolId, $from, $to));
+            } elseif ($roleCode === Role::GUARDIAN) {
+                // If guardian, get related students and their classmates/teachers
+                $relatedUsers = $relatedUsers->merge($this->getRelatedStudentsForGuardianFromContext($userContext, $from, $to));
+            }
+        }
+
+        // Remove duplicates and merge contexts, then filter by birthdate
+        $uniqueUsers = collect();
+
+        foreach ($relatedUsers as $user) {
+            $userId = $user->id;
+
+            if ($uniqueUsers->has($userId)) {
+                // User already exists, merge contexts
+                $existingUser = $uniqueUsers->get($userId);
+                $existingContexts = is_array($existingUser->context) ? $existingUser->context : [$existingUser->context];
+                $newContext = is_array($user->context) ? $user->context : [$user->context];
+                $mergedContexts = array_unique(array_merge($existingContexts, $newContext));
+                $existingUser->context = $mergedContexts;
+            } else {
+                // New user, ensure context is an array
+                $user->context = is_array($user->context) ? $user->context : [$user->context];
+                $uniqueUsers->put($userId, $user);
+            }
+        }
+
+        $return = $uniqueUsers
+            ->values()
+            ->filter(function ($user) use ($from, $to) {
+                if (!$user->birthdate) {
+                    return false;
+                }
+
+                $userBirthday = $user->birthdate->format('m-d');
+                $fromDate = $from->format('m-d');
+                $toDate = $to->format('m-d');
+
+                return $userBirthday >= $fromDate && $userBirthday <= $toDate;
+            });
+
+        return $return->map(function ($user) {
+            return $this->parseUserForBirthdayCalendar($user);
+        })->toArray();
+    }
+
+    private function parseUserForBirthdayCalendar($user): array
+    {
+        return [
+            'id' => $user->id,
+            'firstname' => $user->firstname,
+            'lastname' => $user->lastname,
+            'birthdate' => $user->birthdate->format('Y-m-d'),
+            'context' => $user->context,
+        ];
+    }
+
+    /**
+     * Get co-workers from the same school
+     */
+    private function getCoworkers($schoolId, $from, $to)
+    {
+        $workerRoleIds = Role::select('id')->whereIn('code', Role::workersCodes())->pluck('id')->toArray();
+
+        return User::withActiveRoleRelationships($workerRoleIds, $schoolId)
+            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
+            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
+            ->get()
+            ->map(function ($user) {
+                $user->context = 'coworker';
+                return $user;
+            });
+    }
+
+    /**
+     * Get students for a worker (if worker is related to classes) - using context
+     */
+    private function getStudentsForWorkerFromContext($userContext, $schoolId, $from, $to)
+    {
+        // Get the logged user from context
+        $loggedUserId = auth()->id();
+        if (!$loggedUserId) {
+            return collect();
+        }
+
+        // Get courses where the worker is a teacher
+        $courseIds = User::find($loggedUserId)
+            ->roleRelationships()
+            ->where('school_id', $schoolId)
+            ->whereHas('teacherCourses')
+            ->with('teacherCourses.course')
+            ->get()
+            ->pluck('teacherCourses')
+            ->flatten()
+            ->pluck('course_id')
+            ->unique();
+
+        if ($courseIds->isEmpty()) {
+            return collect();
+        }
+
+        // Get students in those courses
+        $studentRoleId = Role::where('code', Role::STUDENT)->first()->id;
+
+        return User::withActiveRoleRelationship($studentRoleId, $schoolId)
+            ->whereHas('studentRelationships', function ($query) use ($courseIds) {
+                $query->whereIn('current_course_id', $courseIds);
+            })
+            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
+            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
+            ->get()
+            ->map(function ($user) {
+                $user->context = 'student';
+                return $user;
+            });
+    }
+
+    /**
+     * Get classmates and teachers for a student - using context
+     */
+    private function getClassmatesAndTeachersFromContext($userContext, $schoolId, $from, $to)
+    {
+        $relatedUsers = collect();
+
+        // Get the logged user from context
+        $loggedUserId = auth()->id();
+        if (!$loggedUserId) {
+            return $relatedUsers;
+        }
+
+        $student = User::find($loggedUserId);
+        if (!$student) {
+            return $relatedUsers;
+        }
+
+        // Get student's current course
+        $studentRelationship = $student->studentRelationships()
+            ->whereNull('deleted_at')
+            ->first();
+
+        if (!$studentRelationship || !$studentRelationship->currentCourse) {
+            return $relatedUsers;
+        }
+
+        $currentCourseId = $studentRelationship->current_course_id;
+
+        // Get classmates (other students in the same course)
+        $studentRoleId = Role::where('code', Role::STUDENT)->first()->id;
+        $classmates = User::withActiveRoleRelationship($studentRoleId, $schoolId)
+            ->whereHas('studentRelationships', function ($query) use ($currentCourseId) {
+                $query->where('current_course_id', $currentCourseId);
+            })
+            ->where('id', '!=', $student->id) // Exclude the student themselves
+            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
+            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
+            ->get()
+            ->map(function ($user) {
+                $user->context = 'classmate';
+                return $user;
+            });
+
+        $relatedUsers = $relatedUsers->merge($classmates);
+
+        // Get teachers for this course
+        $teacherRoleIds = Role::select('id')->whereIn('code', Role::teacherCodes())->pluck('id')->toArray();
+        $teachers = User::withActiveRoleRelationships($teacherRoleIds, $schoolId)
+            ->whereHas('roleRelationships.teacherCourses', function ($query) use ($currentCourseId) {
+                $query->where('course_id', $currentCourseId);
+            })
+            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
+            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
+            ->get()
+            ->map(function ($user) {
+                $user->context = 'teacher';
+                return $user;
+            });
+
+        $relatedUsers = $relatedUsers->merge($teachers);
+
+        return $relatedUsers;
+    }
+
+    /**
+     * Get related students and their classmates/teachers for a guardian - using context
+     */
+    private function getRelatedStudentsForGuardianFromContext($userContext, $from, $to)
+    {
+        $relatedUsers = collect();
+
+        // Get the logged user from context
+        $loggedUserId = auth()->id();
+        if (!$loggedUserId) {
+            return $relatedUsers;
+        }
+
+        $guardian = User::find($loggedUserId);
+        if (!$guardian) {
+            return $relatedUsers;
+        }
+
+        // Get students that this guardian is responsible for
+        $relatedStudents = $guardian->myChildren();
+
+        foreach ($relatedStudents as $student) {
+            // Add the student themselves
+            if ($student->birthdate && $student->birthdate >= $from && $student->birthdate <= $to) {
+                $student->context = 'my_child';
+                $relatedUsers->push($student);
+            }
+
+            // Get classmates and teachers for each related student
+            $studentActiveRelationships = $student->activeRoleRelationships();
+            foreach ($studentActiveRelationships as $roleRelationship) {
+                if ($roleRelationship->role->code === Role::STUDENT) {
+                    $classmatesAndTeachers = $this->getClassmatesAndTeachersFromContext($userContext, $roleRelationship->school_id, $from, $to);
+                    $relatedUsers = $relatedUsers->merge($classmatesAndTeachers);
+                }
+            }
+        }
+
+        return $relatedUsers;
+    }
 }
