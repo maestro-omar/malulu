@@ -231,4 +231,153 @@ class AttendanceService
 
         return $result;
     }
+
+    /**
+     * Update or create attendance record for a single student
+     * 
+     * @param int $studentId Student user ID
+     * @param int $courseId Course ID
+     * @param string $date Attendance date (Y-m-d format)
+     * @param string|null $statusCode Attendance status code (null to remove attendance)
+     * @param int $createdBy User ID who created/updated the record
+     * @return Attendance|null The attendance record or null if removed
+     */
+    public function updateStudentAttendance(int $studentId, int $courseId, string $date, ?string $statusCode, int $createdBy): ?Attendance
+    {
+        // Find existing attendance record
+        $attendance = Attendance::where('user_id', $studentId)
+            ->where('course_id', $courseId)
+            ->where('date', $date)
+            ->first();
+
+        // If status is null, remove the attendance record
+        if ($statusCode === null) {
+            if ($attendance) {
+                $attendance->delete();
+            }
+            return null;
+        }
+
+        // Get the status ID
+        $status = AttendanceStatus::where('code', $statusCode)->first();
+        if (!$status) {
+            throw new \Exception("Invalid attendance status: {$statusCode}");
+        }
+
+        // Create or update attendance record
+        if ($attendance) {
+            // Update existing record
+            $attendance->update([
+                'status_id' => $status->id,
+                'updated_by' => $createdBy,
+            ]);
+        } else {
+            // Create new record
+            $attendance = Attendance::create([
+                'user_id' => $studentId,
+                'course_id' => $courseId,
+                'date' => $date,
+                'status_id' => $status->id,
+                'created_by' => $createdBy,
+                'updated_by' => $createdBy,
+            ]);
+        }
+
+        return $attendance->fresh(['status']);
+    }
+
+    /**
+     * Update attendance for multiple students (bulk operation)
+     * 
+     * @param array $studentIds Array of student user IDs
+     * @param int $courseId Course ID
+     * @param string $date Attendance date (Y-m-d format)
+     * @param string $statusCode Attendance status code
+     * @param int $createdBy User ID who created/updated the record
+     * @return array Array of created/updated attendance records
+     */
+    public function updateBulkAttendance(array $studentIds, int $courseId, string $date, string $statusCode, int $createdBy): array
+    {
+        $results = [];
+        
+        foreach ($studentIds as $studentId) {
+            $attendance = $this->updateStudentAttendance($studentId, $courseId, $date, $statusCode, $createdBy);
+            if ($attendance) {
+                $results[] = $attendance;
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get current attendance status for students on a specific date
+     * 
+     * @param array $studentIds Array of student user IDs
+     * @param int $courseId Course ID
+     * @param string $date Attendance date (Y-m-d format)
+     * @return array Array with student_id as key and status_code as value
+     */
+    public function getStudentsAttendanceStatusForDate(array $studentIds, int $courseId, string $date): array
+    {
+        $attendances = Attendance::with('status')
+            ->whereIn('user_id', $studentIds)
+            ->where('course_id', $courseId)
+            ->where('date', $date)
+            ->get();
+
+        $result = [];
+        foreach ($attendances as $attendance) {
+            $result[$attendance->user_id] = $attendance->status->code;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get students attendance for current date and N days before
+     * Returns array grouped by user with N days of status codes
+     * 
+     * @param array $studentIds Array of student user IDs
+     * @param int $courseId Course ID
+     * @param string $currentDate Current date in Y-m-d format
+     * @param int $days Number of days to retrieve (default: 5)
+     * @return array Array with user_id as key and array of N status codes as value
+     */
+    public function getStudentsAttendanceLastNDays(array $studentIds, int $courseId, string $currentDate, int $days = 5): array
+    {
+        // Calculate the N days before current date
+        $dates = [];
+        $current = new \DateTime($currentDate);
+        
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = clone $current;
+            $date->modify("-{$i} days");
+            $dates[] = $date->format('Y-m-d');
+        }
+        
+        // Get all attendances for the N days
+        $attendances = Attendance::with('status')
+            ->whereIn('user_id', $studentIds)
+            ->where('course_id', $courseId)
+            ->whereIn('date', $dates)
+            ->get();
+        
+        // Group by user_id and date
+        $grouped = [];
+        foreach ($attendances as $attendance) {
+            $grouped[$attendance->user_id][$attendance->date] = $attendance->status->code;
+        }
+        
+        // Build result array with N days for each user
+        $result = [];
+        foreach ($studentIds as $studentId) {
+            $result[$studentId] = [];
+            foreach ($dates as $date) {
+                $result[$studentId][] = $grouped[$studentId][$date] ?? null;
+            }
+        }
+        
+        return $result;
+    }
 }

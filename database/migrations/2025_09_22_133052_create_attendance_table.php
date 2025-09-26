@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('date');
 
             // Status FK
-            $table->foreignId('status_id')->constrained('attendance_statuses');
+            $table->foreignId('status_id')->nullable()->constrained('attendance_statuses');
 
             // Course FK (optional - for course-specific attendance)
             $table->foreignId('course_id')->nullable()->constrained('courses')->onDelete('set null');

@@ -36,18 +36,41 @@ trait StudentsAttendance
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         $sDate = $request->input('fecha', '');
-        $date = $this->checkAttendanceDate($sDate);
-        $students = $this->courseService->getStudents($course, true, $date->format('Y-m-d'), true);
-        $datesNavigation = $this->getDatesNavigation($date);
+        $invalidDateMsg = '';
+        try {
+            $date = $this->checkAttendanceDate($sDate);
+        } catch (\Exception $e) {
+            // $invalidDateMsg = $e->getMessage();
+            $invalidDateMsg = 'La fecha para tomar asistencia no es válida';
+        }
+
+        $students = $invalidDateMsg ? null : $this->courseService->getStudents($course, true, $date->format('Y-m-d'), true);
+        $studentIds = $invalidDateMsg ? null : array_column($students, 'id');
+
+        $datesNavigation = $invalidDateMsg ? null : $this->getDatesNavigation($date, 8, false);
+        // Get current attendance status for all students on this date
+        $currentAttendanceStatuses = $invalidDateMsg ? null :
+            $this->attendanceService->getStudentsAttendanceStatusForDate(
+                $studentIds,
+                $course->id,
+                $date->format('Y-m-d')
+            );
+
+        if (!$invalidDateMsg)
+            // Add current attendance status to each student
+            foreach ($students as &$student) {
+                $student['currentAttendanceStatus'] = $currentAttendanceStatuses[$student['id']] ?? null;
+            }
 
         return Inertia::render('Courses/AttendanceDayEdit', [
             'course' => $course,
             'school' => $school,
-            'students' => $students,
             'selectedLevel' => $schoolLevel,
+            'students' => $students,
             'dateYMD' => $date->format('Y-m-d'),
-            'daysBefore' => $datesNavigation['daysBefore'],
-            'daysAfter' => $datesNavigation['daysAfter'],
+            'daysBefore' => $invalidDateMsg ? null : $datesNavigation['daysBefore'],
+            'daysAfter' => $invalidDateMsg ? null : $datesNavigation['daysAfter'],
+            'invalidDateMsg' => $invalidDateMsg,
             'breadcrumbs' => Breadcrumbs::generate('school.course.attendanceDayEdit', $school, $schoolLevel, $course, $date),
         ]);
     }
@@ -64,11 +87,14 @@ trait StudentsAttendance
             throw new \Exception('La fecha de asistencia no puede ser mayor a la fecha actual');
     }
 
-    private function getDatesNavigation(\DateTime $date, int $totalCount = 10)
+    private function getDatesNavigation(\DateTime $date, int $totalCount = 10, bool $futureDates = false)
     {
-        $half = ceil($totalCount / 2);
+        $today = new \DateTime();
+        if (!$futureDates && $date > $today) return null;
         $currentAcademicYear = AcademicYear::findByDate($date);
         if (!$currentAcademicYear) return null;
+
+        $half = ceil($totalCount / 2);
         $currentAcademicYear->winter_break_start;
         $currentAcademicYear->winter_break_end;
         $after = [];
@@ -79,21 +105,24 @@ trait StudentsAttendance
             if (
                 $checkDate->format('N') == 6
                 || $checkDate->format('N') == 7
-                || ($checkDate >= $currentAcademicYear->winter_break_start && $checkDate <= $currentAcademicYear->winter_break_end)
+                || ($checkDate >= $currentAcademicYear->winter_break_start
+                    && $checkDate <= $currentAcademicYear->winter_break_end)
             ) {
                 continue;
             } else {
                 $before[] = $checkDate->format('Y-m-d');
             }
         }
+        $before = array_reverse($before);
 
         $checkDate = new \DateTime($date->format('Y-m-d'));
-        while (count($after) < $half && $checkDate <= $currentAcademicYear->end_date) {
+        while (count($after) < $half && $checkDate <= $currentAcademicYear->end_date && ($futureDates || $checkDate <= $today)) {
             $checkDate->modify('+1 day');
             if (
                 $checkDate->format('N') == 6
                 || $checkDate->format('N') == 7
-                || ($checkDate >= $currentAcademicYear->winter_break_start && $checkDate <= $currentAcademicYear->winter_break_end)
+                || ($checkDate >= $currentAcademicYear->winter_break_start
+                    && $checkDate <= $currentAcademicYear->winter_break_end)
             ) {
                 continue;
             } else {
@@ -101,5 +130,135 @@ trait StudentsAttendance
             }
         }
         return ['daysBefore' => $before, 'daysAfter' => $after];
+    }
+
+    /**
+     * Update attendance for a single student
+     * 
+     * @param Request $request
+     * @param School $school
+     * @param SchoolLevel $schoolLevel
+     * @param string $courseIdAndLabel
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function attendanceDayUpdate(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
+    {
+        try {
+            // Validate request
+            $request->validate([
+                'student_id' => 'required|integer|exists:users,id',
+                'status' => 'nullable|string|exists:attendance_statuses,code',
+                'date' => 'required|date_format:Y-m-d',
+            ]);
+
+            $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+            $user = auth()->user();
+
+            // Update attendance using the service
+            $attendance = $this->attendanceService->updateStudentAttendance(
+                $request->student_id,
+                $course->id,
+                $request->date,
+                $request->status,
+                $user->id
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Asistencia actualizada correctamente',
+                'attendance' => $attendance,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la asistencia: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Update attendance for multiple students (bulk operation)
+     * 
+     * @param Request $request
+     * @param School $school
+     * @param SchoolLevel $schoolLevel
+     * @param string $courseIdAndLabel
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function attendanceBulkUpdate(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
+    {
+        try {
+            // Validate request
+            $request->validate([
+                'student_ids' => 'required|array|min:1',
+                'student_ids.*' => 'integer|exists:users,id',
+                'status' => 'required|string|exists:attendance_statuses,code',
+                'date' => 'required|date_format:Y-m-d',
+            ]);
+
+            $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+            $user = auth()->user();
+
+            // Update bulk attendance using the service
+            $attendances = $this->attendanceService->updateBulkAttendance(
+                $request->student_ids,
+                $course->id,
+                $request->date,
+                $request->status,
+                $user->id
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Asistencias actualizadas correctamente',
+                'count' => count($attendances),
+                'attendances' => $attendances,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar las asistencias: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get current attendance status for students on a specific date
+     * 
+     * @param Request $request
+     * @param School $school
+     * @param SchoolLevel $schoolLevel
+     * @param string $courseIdAndLabel
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAttendanceStatus(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
+    {
+        try {
+            // Validate request
+            $request->validate([
+                'student_ids' => 'required|array|min:1',
+                'student_ids.*' => 'integer|exists:users,id',
+                'date' => 'required|date_format:Y-m-d',
+            ]);
+
+            $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+
+            // Get current attendance status
+            $statuses = $this->attendanceService->getStudentsAttendanceStatusForDate(
+                $request->student_ids,
+                $course->id,
+                $request->date
+            );
+
+            return response()->json([
+                'success' => true,
+                'statuses' => $statuses,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener el estado de asistencia: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

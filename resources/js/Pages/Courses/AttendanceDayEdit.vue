@@ -1,31 +1,74 @@
 <template>
 
-  <Head :title="`${course.nice_name} - Asistencia ${workDate}`" />
+  <Head :title="`${course.nice_name} - Asistencia ${workDateString}`" />
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader :title="`${course.nice_name} - Asistencia ${workDate}`">
+      <AdminHeader :title="`${course.nice_name} - Asistencia ${workDateString}`">
       </AdminHeader>
     </template>
 
     <template #main-page-content>
+      <!-- Loading Overlay -->
+      <div v-if="navigationLoading" class="fixed-full bg-grey-1 flex flex-center" style="z-index: 9999;">
+        <div class="text-center">
+          <q-spinner-dots size="50px" color="primary" />
+          <div class="text-h6 q-mt-md">Cargando fecha...</div>
+        </div>
+      </div>
+
       <!-- Date Navigation -->
       <q-card class="q-mb-lg">
         <q-card-section>
-          <div class="row items-center justify-between">
-            <div class="text-h6">Navegación de Fechas</div>
-            <div class="row q-gutter-sm">
-              <q-btn v-if="daysBefore > 0" color="primary" icon="chevron_left"
-                :label="`Anterior: ${formatDate(previousDate)}`" @click="navigateToDate(previousDate)" size="sm" />
-              <q-btn v-if="daysAfter > 0" color="primary" icon="chevron_right" :label="`Siguiente: ${formatDate(nextDate)}`"
-                @click="navigateToDate(nextDate)" size="sm" />
+          <!-- Invalid Date Message -->
+          <div v-if="hasInvalidDate" class="text-center q-mb-md">
+            <q-icon name="warning" color="orange" size="24px" class="q-mr-sm" />
+            <span class="text-h6 text-orange">{{ invalidDateMsg }}</span>
+          </div>
+
+          <div class="row items-center justify-center">
+            <!-- Date sequence (centered) - only show if no invalid date -->
+            <div v-if="!hasInvalidDate" class="row q-gutter-xs">
+              <!-- Previous dates (daysBefore) -->
+              <q-btn v-for="(date, index) in previousDates" :key="`prev-${index}`" color="primary" outline
+                :label="formatDate(date)" @click="navigateToDate(date)" size="sm" />
+
+              <!-- Current date (not clickable) -->
+              <q-btn color="primary" :label="formatDate(dateYMD)" size="sm" disable />
+
+              <!-- Next dates (daysAfter) -->
+              <q-btn v-for="(date, index) in nextDates" :key="`next-${index}`" color="primary" outline
+                :label="formatDate(date)" @click="navigateToDate(date)" size="sm" />
+            </div>
+
+            <!-- Calendar picker (always visible) -->
+            <div :class="hasInvalidDate ? '' : 'q-ml-auto'">
+              <q-btn color="secondary" icon="event" label="Calendario" @click="openCalendar" size="sm" />
             </div>
           </div>
         </q-card-section>
       </q-card>
 
-      <!-- Massive Attendance Actions -->
-      <q-card class="q-mb-lg">
+      <!-- Calendar Dialog -->
+      <q-dialog v-model="showCalendar">
+        <q-card style="min-width: 300px">
+          <q-card-section>
+            <div class="text-h6">Seleccionar Fecha</div>
+          </q-card-section>
+
+          <q-card-section>
+            <q-date v-model="selectedDate" color="primary" today-btn flat bordered />
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn flat label="Cancelar" color="primary" v-close-popup />
+            <q-btn flat label="Ir a Fecha" color="primary" @click="navigateToSelectedDate" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+
+      <!-- Massive Attendance Actions - only show if no invalid date -->
+      <q-card v-if="!hasInvalidDate" class="q-mb-lg">
         <q-card-section>
           <!-- Non-massive statuses (first row) -->
           <div class="row q-gutter-sm q-mb-sm">
@@ -36,7 +79,7 @@
               }" @click="setMassiveAttendance(status.code)" :loading="massiveLoading" />
             <!-- Legend for unassigned students -->
             <q-badge color="blue-grey" :label="`Sin asignar: ${getUnassignedCount()}`"
-              class="text-weight-bold q-ml-lg" />
+              class="text-weight-bold q-ml-sm q-ml-md-md q-ml-lg-lg" />
           </div>
 
 
@@ -50,13 +93,14 @@
               }" @click="setMassiveAttendance(status.code)" :loading="massiveLoading" />
 
             <!-- Clean button (always visible) -->
-            <q-btn color="grey" icon="clear" label="Limpiar" @click="clearAllStatuses" class="q-ml-lg" />
+            <q-btn color="grey" icon="clear" label="Limpiar" @click="clearAllStatuses"
+              class="q-ml-sm q-ml-md-md q-ml-lg-lg" />
           </div>
         </q-card-section>
       </q-card>
 
-      <!-- Students Attendance Grid -->
-      <div class="row">
+      <!-- Students Attendance Grid - only show if no invalid date -->
+      <div v-if="!hasInvalidDate" class="row">
         <div v-for="(student, index) in students" :key="student.id" class="col-12 col-sm-6 col-md-4 col-lg-3 q-pa-sm">
           <q-card class="student-attendance-card"
             :class="{ 'student-attendance-card--focused': focusedStudentId === student.id }"
@@ -133,6 +177,7 @@ import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import { getCourseSlug } from '@/Utils/strings';
 import noImage from "@images/no-image-person.png";
+import axios from 'axios';
 
 const props = defineProps({
   course: {
@@ -156,12 +201,16 @@ const props = defineProps({
     required: true,
   },
   daysBefore: {
-    type: Number,
-    default: 0,
+    type: Array,
+    default: () => [],
   },
   daysAfter: {
-    type: Number,
-    default: 0,
+    type: Array,
+    default: () => [],
+  },
+  invalidDateMsg: {
+    type: String,
+    default: null,
   },
 })
 
@@ -173,27 +222,47 @@ const focusedStudentId = ref(null)
 const massiveLoading = ref(false)
 const savingStudents = reactive({})
 const activeMassiveStatus = ref(null) // Track which massive status is currently active
+const showCalendar = ref(false)
+const selectedDate = ref('')
+const navigationLoading = ref(false)
+
+// Initialize selectedDate with current dateYMD in YYYY/MM/DD format (Quasar format)
+const initializeSelectedDate = () => {
+  const [year, month, day] = props.dateYMD.split('-')
+  selectedDate.value = `${year}/${month}/${day}`
+  console.log('Selected date:', selectedDate.value)
+}
+
+// Initialize on component mount
+initializeSelectedDate()
+
+// Open calendar and set current date
+const openCalendar = () => {
+  showCalendar.value = true
+  // Use nextTick to ensure the calendar is rendered before setting the date
+  nextTick(() => {
+    initializeSelectedDate()
+  })
+}
 
 // Computed properties
-const workDate = computed(() => {
-  return new Date(props.dateYMD);
+const workDateString = computed(() => {
+  // Parse date as local date to avoid timezone issues
+  const [year, month, day] = props.dateYMD.split('-').map(Number);
+  const date = new Date(year, month - 1, day); // month is 0-indexed
+  return date.toLocaleDateString('es-ES', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long'
+  });
 })
 
-// Calculate previous date
-const previousDate = computed(() => {
-  if (props.daysBefore <= 0) return null;
-  const date = new Date(props.dateYMD);
-  date.setDate(date.getDate() - props.daysBefore);
-  return date.toISOString().split('T')[0]; // Return YYYY-MM-DD format
-})
+// Use the date arrays directly from the controller
+const previousDates = computed(() => props.daysBefore)
+const nextDates = computed(() => props.daysAfter)
 
-// Calculate next date
-const nextDate = computed(() => {
-  if (props.daysAfter <= 0) return null;
-  const date = new Date(props.dateYMD);
-  date.setDate(date.getDate() + props.daysAfter);
-  return date.toISOString().split('T')[0]; // Return YYYY-MM-DD format
-})
+// Check if there's an invalid date message
+const hasInvalidDate = computed(() => !!props.invalidDateMsg)
 
 // Get attendance statuses from global constants
 const attendanceStatuses = computed(() => {
@@ -301,28 +370,33 @@ const setStudentAttendance = async (studentId, statusCode) => {
     // Check if the student already has this status selected
     const isCurrentlySelected = student.currentAttendanceStatus === statusCode;
 
-    // TODO: Replace with actual API call
-    // await router.post(route('attendance.update'), {
-    //   student_id: studentId,
-    //   status: isCurrentlySelected ? null : statusCode,
-    //   date: props.dateYMD,
-    //   course_id: props.course.id
-    // });
+    // Make API call to update attendance using axios instead of Inertia router
+    const response = await axios.post(route('school.course.attendance.update', {
+      school: props.school.slug,
+      schoolLevel: props.selectedLevel.code,
+      idAndLabel: props.course.id_and_label
+    }), {
+      student_id: studentId,
+      status: isCurrentlySelected ? null : statusCode,
+      date: props.dateYMD,
+    });
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Check if the API call was successful
+    if (response.data.success) {
+      // Toggle behavior: if already selected, remove status; otherwise, set status
+      if (isCurrentlySelected) {
+        // Remove status (set to unassigned)
+        student.currentAttendanceStatus = null;
+      } else {
+        // Set new status
+        student.currentAttendanceStatus = statusCode;
+      }
 
-    // Toggle behavior: if already selected, remove status; otherwise, set status
-    if (isCurrentlySelected) {
-      // Remove status (set to unassigned)
-      student.currentAttendanceStatus = null;
+      // Move focus to next student
+      await moveToNextStudent(studentId);
     } else {
-      // Set new status
-      student.currentAttendanceStatus = statusCode;
+      console.error('API returned error:', response.data.message);
     }
-
-    // Move focus to next student
-    await moveToNextStudent(studentId);
 
   } catch (error) {
     console.error('Error updating attendance:', error);
@@ -351,34 +425,39 @@ const setMassiveAttendance = async (statusCode) => {
       }
     }
 
-    // TODO: Replace with actual API call
-    // await router.post(route('attendance.massive'), {
-    //   status: statusCode,
-    //   date: props.dateYMD,
-    //   course_id: props.course.id,
-    //   student_ids: props.students.map(s => s.id)
-    // });
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Check if this is a massive status (is_massive: true)
-    const isMassiveStatus = massiveAttendanceStatuses.value.some(status =>
-      status.code === statusCode && status.is_massive
-    );
-
-    // Only set active massive status and disable individual buttons for massive statuses
-    if (isMassiveStatus) {
-      activeMassiveStatus.value = statusCode;
-    } else {
-      // For non-massive statuses, clear the active massive status
-      activeMassiveStatus.value = null;
-    }
-
-    // Update all students' current status
-    props.students.forEach(student => {
-      student.currentAttendanceStatus = statusCode;
+    // Make API call to update bulk attendance using axios instead of Inertia router
+    const response = await axios.post(route('school.course.attendance.update', {
+      school: props.school.slug,
+      schoolLevel: props.selectedLevel.code,
+      idAndLabel: props.course.id_and_label
+    }), {
+      student_ids: props.students.map(s => s.id),
+      status: statusCode,
+      date: props.dateYMD,
     });
+
+    // Check if the API call was successful
+    if (response.data.success) {
+      // Check if this is a massive status (is_massive: true)
+      const isMassiveStatus = massiveAttendanceStatuses.value.some(status =>
+        status.code === statusCode && status.is_massive
+      );
+
+      // Only set active massive status and disable individual buttons for massive statuses
+      if (isMassiveStatus) {
+        activeMassiveStatus.value = statusCode;
+      } else {
+        // For non-massive statuses, clear the active massive status
+        activeMassiveStatus.value = null;
+      }
+
+      // Update all students' current status
+      props.students.forEach(student => {
+        student.currentAttendanceStatus = statusCode;
+      });
+    } else {
+      console.error('API returned error:', response.data.message);
+    }
 
   } catch (error) {
     console.error('Error updating massive attendance:', error);
@@ -405,7 +484,9 @@ const getUnassignedCount = () => {
 // Format date for display
 const formatDate = (dateString) => {
   if (!dateString) return '';
-  const date = new Date(dateString);
+  // Parse date as local date to avoid timezone issues
+  const [year, month, day] = dateString.split('-').map(Number);
+  const date = new Date(year, month - 1, day); // month is 0-indexed
   return date.toLocaleDateString('es-ES', {
     weekday: 'short',
     day: 'numeric',
@@ -416,12 +497,118 @@ const formatDate = (dateString) => {
 // Navigate to specific date
 const navigateToDate = (dateString) => {
   if (!dateString) return;
-  
+
+  // Show loading state
+  navigationLoading.value = true;
+
   // Navigate to the attendance day edit page for the new date
-  router.get(route('courses.attendance.day.edit', {
-    course: props.course.slug,
-    date: dateString
-  }));
+  router.get(route('school.course.attendance.edit', {
+    school: props.school.slug,
+    schoolLevel: props.selectedLevel.code,
+    idAndLabel: props.course.id_and_label,
+    fecha: dateString
+  }), {
+    onFinish: () => {
+      // Hide loading when navigation completes (success or error)
+      navigationLoading.value = false;
+    }
+  });
+}
+
+// Check if a date is selectable (today and before)
+const isDateSelectable = (date) => {
+  try {
+    // Handle invalid or empty dates
+    if (!date || typeof date !== 'string') {
+      return false;
+    }
+
+    // Convert from DD-MM-YYYY to Date object for comparison
+    const parts = date.split('-');
+    if (parts.length !== 3) {
+      return false;
+    }
+
+    const [day, month, year] = parts;
+    const selectedDate = new Date(year, month - 1, day); // month is 0-indexed
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // End of today
+
+    // Allow only today and past dates
+    return selectedDate <= today;
+  } catch (error) {
+    console.error('Error in isDateSelectable:', error, 'Date:', date);
+    return false;
+  }
+}
+
+// Check if a date is available (school is open) - kept for reference
+const isDateAvailable = (date) => {
+  try {
+    // Handle invalid or empty dates
+    if (!date || typeof date !== 'string') {
+      return false;
+    }
+
+    // Convert from DD-MM-YYYY to YYYY-MM-DD format for comparison
+    const parts = date.split('-');
+    if (parts.length !== 3) {
+      return false;
+    }
+
+    const [day, month, year] = parts;
+    const dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+
+    // Check if date is in the available dates (previous + current + next)
+    const allAvailableDates = [
+      ...props.daysBefore,
+      props.dateYMD,
+      ...props.daysAfter
+    ];
+
+    // Debug: log the comparison
+    console.log('Checking date:', dateStr, 'Available dates:', allAvailableDates);
+
+    return allAvailableDates.includes(dateStr);
+  } catch (error) {
+    console.error('Error in isDateAvailable:', error, 'Date:', date);
+    return false;
+  }
+}
+
+// Navigate to selected date from calendar
+const navigateToSelectedDate = () => {
+  try {
+    if (!selectedDate.value) {
+      console.warn('No date selected');
+      return;
+    }
+
+    console.log('Selected date:', selectedDate.value);
+
+    // Handle different date formats from q-date
+    let dateStr;
+
+    if (selectedDate.value.includes('/')) {
+      // Format: YYYY/MM/DD (Quasar format)
+      const [year, month, day] = selectedDate.value.split('/');
+      dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    } else if (selectedDate.value.includes('-')) {
+      // Format: DD-MM-YYYY
+      const [day, month, year] = selectedDate.value.split('-');
+      dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    } else {
+      console.error('Unknown date format:', selectedDate.value);
+      return;
+    }
+
+    console.log('Converted date:', dateStr);
+
+    showCalendar.value = false;
+    navigateToDate(dateStr);
+  } catch (error) {
+    console.error('Error in navigateToSelectedDate:', error);
+  }
 }
 
 // Clear all statuses (always available)
