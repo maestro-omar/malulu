@@ -1,137 +1,153 @@
 <template>
-  <div class="calendar-panel">
-    <div class="calendar-panel__header">
-      <div class="calendar-panel__header-content">
-        <h3 class="calendar-panel__title">Agenda</h3>
-        <div class="calendar-panel__controls">
-          <button @click="toggleView" class="calendar-panel__toggle-btn"
-            :class="{ 'calendar-panel__toggle-btn--active': isListView }">
-            {{ isListView ? '📅' : '📋' }}
-            {{ isListView ? 'Calendario' : 'Lista' }}
-          </button>
-          <div v-if="hasBirthdates" @click="toggleBirthdates" class="calendar-panel__toggle-btn"
-            :class="{ 'calendar-panel__birthdate-btn--active': showBirthdates }">
-            🎂
-            {{ showBirthdates ? 'Ocultar' : 'Mostrar' }} Cumpleaños
-          </div>
-          <div v-else class="calendar-panel__toggle-btn calendar-panel__toggle-btn--disabled">
-            🎂
-            Sin Cumpleaños
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Debug info - remove this in production -->
-    <div v-if="!calendarData" class="calendar-panel__debug">
-      No calendar data available
-    </div>
-    <div v-else-if="!calendarData.events" class="calendar-panel__debug">
-      No events data available
-    </div>
-
-    <!-- Calendar Grid View -->
-    <div v-if="!isListView">
-      <div class="calendar-panel__weekdays">
-        <div v-for="day in weekDays" :key="day" class="calendar-panel__weekday">
-          {{ day }}
-        </div>
+  <div class="dbsub-panel q-mt-lg">
+    <div class="row q-col-gutter-md">
+      <!-- Welcome Section -->
+      <div class="col-12">
+        <q-card class="dbsub-panel__welcome-card">
+          <q-card-section>
+            <h2 class="dbsub-panel__title">Agenda</h2>
+          </q-card-section>
+        </q-card>
       </div>
 
-      <div class="calendar-panel__calendar">
-        <div v-for="(week, weekIndex) in calendarWeeks" :key="weekIndex" class="calendar-panel__week">
-          <div v-for="(day, dayIndex) in week" :key="dayIndex" class="calendar-panel__day" :class="getDayClasses(day)">
-            <div class="calendar-panel__day-number">
-              <span class="calendar-panel__day-date">{{ day.date.getDate() }}</span><span
-                class="calendar-panel__day-month">{{ getMonthAbbreviation(day.date) }}</span>
-            </div>
-            <div v-if="day.isFeriado" class="calendar-panel__day-feriado">FERIADO</div>
-            <div class="calendar-panel__events">
-              <div v-for="event in day.events" :key="event.id" class="calendar-panel__event"
-                :class="getEventClasses(event)" :title="event.title">
-                <span class="calendar-panel__event-title">
-                  {{ event.title }}
-                </span>
-                <span
-                  v-if="event.event_type && event.event_type.code !== 'conmemoracion_nacional' && event.event_type.code !== 'conmemoracion_provincial' && event.event_type.code !== 'conmemoracion_escolar' && event.event_type.code !== 'feriado_nacional' && event.event_type.code !== 'feriado_provincial'"
-                  class="calendar-panel__event-type">
-                  {{ event.event_type.name }}
-                </span>
+      <!-- Teacher Information Grid -->
+      <div class="col-12">
+        <q-card class="dbsub-panel__info-card">
+          <q-card-section>
+            <div class="calendar-panel">
+              <div class="calendar-panel__controls q-gutter-md">
+                <q-btn-toggle v-model="isListView" toggle-color="info" :options="[
+                  { label: '📅 Calendario', value: false },
+                  { label: '📋 Lista', value: true }
+                ]" class="calendar-panel__view-toggle" />
+
+                <q-toggle v-if="hasBirthdates" v-model="showBirthdates" label="🎂 Mostrar Cumpleaños" color="warning"
+                  class="calendar-panel__birthdate-toggle" />
+
+                <div v-else class="calendar-panel__no-birthdates text-grey-6">
+                  🎂 Sin Cumpleaños
+                </div>
               </div>
-            </div>
-            <div v-if="day.birthdates && day.birthdates.length > 0" class="calendar-panel__birthdates">
-              <div v-for="birthdate in day.birthdates" :key="birthdate.id" class="calendar-panel__birthdate"
-                :class="getBirthdateClasses(birthdate)" :title="getBirthdateTooltip(birthdate, true)">
-                <span class="calendar-panel__birthdate-icon">🎂</span>
-                <span class="calendar-panel__birthdate-name">{{ birthdate.shortname }}</span>
+
+              <!-- Debug info - remove this in production -->
+              <div v-if="!calendarData" class="calendar-panel__debug">
+                No calendar data available
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              <div v-else-if="!calendarData.events" class="calendar-panel__debug">
+                No events data available
+              </div>
 
-    <!-- Event List View -->
-    <div v-if="isListView" class="calendar-panel__list-view">
-      <div class="calendar-panel__events-list">
-        <div v-for="item in sortedEvents" :key="`${item.type}-${item.data.id}`"
-          v-show="item.type === 'event' || (item.type === 'birthdate' && showBirthdates)"
-          class="calendar-panel__list-event"
-          :class="item.type === 'event' ? getListEventClasses(item.data) : getListBirthdateClasses(item.data)">
+              <!-- Calendar Grid View -->
+              <div v-if="!isListView">
+                <div class="calendar-panel__weekdays">
+                  <div v-for="day in weekDays" :key="day" class="calendar-panel__weekday">
+                    {{ day }}
+                  </div>
+                </div>
 
-          <!-- Event rendering -->
-          <template v-if="item.type === 'event'">
-            <div class="calendar-panel__list-event-date">
-              <span class="calendar-panel__list-event-date-text">
-                {{ formatEventDayName(item.data.date) }} {{ formatEventDate(item.data.date) }}{{
-                  formatEventMonth(item.data.date) }}
-              </span>
-              <q-badge
-                v-if="item.data.event_type && item.data.event_type.code !== 'conmemoracion_nacional' && item.data.event_type.code !== 'conmemoracion_provincial' && item.data.event_type.code !== 'conmemoracion_escolar'"
-                :color="getEventBadgeColor(item.data.event_type.code)" class="calendar-panel__list-event-type-badge">
-                {{ item.data.event_type.name }}
-              </q-badge>
-            </div>
-            <div class="calendar-panel__list-event-content">
-              <h5 class="calendar-panel__list-event-title">{{ item.data.title }}</h5>
-              <div class="calendar-panel__list-event-meta">
-                <span v-if="item.data.notes" class="calendar-panel__list-event-notes">
-                  {{ item.data.notes }}
-                </span>
-                <div v-if="item.data.courses && item.data.courses.length > 0"
-                  class="calendar-panel__list-event-courses">
-                  <span class="calendar-panel__list-event-courses-label">Cursos:</span>
-                  <span v-for="(course, index) in item.data.courses" :key="course.id"
-                    class="calendar-panel__list-event-course">
-                    {{ course.name }}<span v-if="index < item.data.courses.length - 1">, </span>
-                  </span>
+                <div class="calendar-panel__calendar">
+                  <div v-for="(week, weekIndex) in calendarWeeks" :key="weekIndex" class="calendar-panel__week">
+                    <div v-for="(day, dayIndex) in week" :key="dayIndex" class="calendar-panel__day"
+                      :class="getDayClasses(day)">
+                      <div class="calendar-panel__day-number">
+                        <span class="calendar-panel__day-date">{{ day.date.getDate() }}</span><span
+                          class="calendar-panel__day-month">{{ getMonthAbbreviation(day.date) }}</span>
+                      </div>
+                      <div v-if="day.isFeriado" class="calendar-panel__day-feriado">FERIADO</div>
+                      <div class="calendar-panel__events">
+                        <div v-for="event in day.events" :key="event.id" class="calendar-panel__event"
+                          :class="getEventClasses(event)" :title="event.title">
+                          <span class="calendar-panel__event-title">
+                            {{ event.title }}
+                          </span>
+                          <span
+                            v-if="event.event_type && event.event_type.code !== 'conmemoracion_nacional' && event.event_type.code !== 'conmemoracion_provincial' && event.event_type.code !== 'conmemoracion_escolar' && event.event_type.code !== 'feriado_nacional' && event.event_type.code !== 'feriado_provincial'"
+                            class="calendar-panel__event-type">
+                            {{ event.event_type.name }}
+                          </span>
+                        </div>
+                      </div>
+                      <div v-if="day.birthdates && day.birthdates.length > 0" class="calendar-panel__birthdates">
+                        <div v-for="birthdate in day.birthdates" :key="birthdate.id" class="calendar-panel__birthdate"
+                          :class="getBirthdateClasses(birthdate)" :title="getBirthdateTooltip(birthdate, true)">
+                          <span class="calendar-panel__birthdate-icon">🎂</span>
+                          <span class="calendar-panel__birthdate-name">{{ birthdate.shortname }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Event List View -->
+              <div v-if="isListView" class="calendar-panel__list-view">
+                <div class="calendar-panel__events-list">
+                  <div v-for="item in sortedEvents" :key="`${item.type}-${item.data.id}`"
+                    v-show="item.type === 'event' || (item.type === 'birthdate' && showBirthdates)"
+                    class="calendar-panel__list-event"
+                    :class="item.type === 'event' ? getListEventClasses(item.data) : getListBirthdateClasses(item.data)">
+
+                    <!-- Event rendering -->
+                    <template v-if="item.type === 'event'">
+                      <div class="calendar-panel__list-event-date">
+                        <span class="calendar-panel__list-event-date-text">
+                          {{ formatEventDayName(item.data.date) }} {{ formatEventDate(item.data.date) }}{{
+                            formatEventMonth(item.data.date) }}
+                        </span>
+                        <q-badge
+                          v-if="item.data.event_type && item.data.event_type.code !== 'conmemoracion_nacional' && item.data.event_type.code !== 'conmemoracion_provincial' && item.data.event_type.code !== 'conmemoracion_escolar'"
+                          :color="getEventBadgeColor(item.data.event_type.code)"
+                          class="calendar-panel__list-event-type-badge">
+                          {{ item.data.event_type.name }}
+                        </q-badge>
+                      </div>
+                      <div class="calendar-panel__list-event-content">
+                        <h5 class="calendar-panel__list-event-title">{{ item.data.title }}</h5>
+                        <div class="calendar-panel__list-event-meta">
+                          <span v-if="item.data.notes" class="calendar-panel__list-event-notes">
+                            {{ item.data.notes }}
+                          </span>
+                          <div v-if="item.data.courses && item.data.courses.length > 0"
+                            class="calendar-panel__list-event-courses">
+                            <span class="calendar-panel__list-event-courses-label">Cursos:</span>
+                            <span v-for="(course, index) in item.data.courses" :key="course.id"
+                              class="calendar-panel__list-event-course">
+                              {{ course.name }}<span v-if="index < item.data.courses.length - 1">, </span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+
+                    <!-- Birthdate rendering -->
+                    <template v-else-if="item.type === 'birthdate'">
+                      <div class="calendar-panel__list-event-date">
+                        <span class="calendar-panel__list-event-date-text">
+                          {{ formatEventDayName(item.data.birthdate) }} {{ formatEventDate(item.data.birthdate) }}{{
+                            formatEventMonth(item.data.birthdate) }}
+                        </span>
+                      </div>
+                      <div class="calendar-panel__list-event-content">
+                        <h5 class="calendar-panel__list-event-title">🎂 {{ item.data.firstname }} {{ item.data.lastname
+                          }}
+                        </h5>
+                        <div class="calendar-panel__list-event-meta">
+                          <span class="calendar-panel__list-event-notes">
+                            {{ getBirthdateTooltip(item.data, false) }}
+                          </span>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
                 </div>
               </div>
             </div>
-          </template>
-
-          <!-- Birthdate rendering -->
-          <template v-else-if="item.type === 'birthdate'">
-            <div class="calendar-panel__list-event-date">
-              <span class="calendar-panel__list-event-date-text">
-                {{ formatEventDayName(item.data.birthdate) }} {{ formatEventDate(item.data.birthdate) }}{{
-                  formatEventMonth(item.data.birthdate) }}
-              </span>
-              <span class="calendar-panel__list-event-type-birthday ">🎂</span>
-            </div>
-            <div class="calendar-panel__list-event-content">
-              <h5 class="calendar-panel__list-event-title">{{ item.data.firstname }} {{ item.data.lastname }}</h5>
-              <div class="calendar-panel__list-event-meta">
-                <span class="calendar-panel__list-event-notes">
-                  {{ getBirthdateTooltip(item.data, false) }}
-                </span>
-              </div>
-            </div>
-          </template>
-        </div>
+          </q-card-section>
+        </q-card>
       </div>
     </div>
   </div>
+
 </template>
 
 <script setup>
@@ -153,13 +169,6 @@ const weekDays = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá']
 const isListView = ref(false)
 const showBirthdates = ref(false)
 
-const toggleView = () => {
-  isListView.value = !isListView.value
-}
-
-const toggleBirthdates = () => {
-  showBirthdates.value = !showBirthdates.value
-}
 
 // Helper function to parse dates as local dates without UTC conversion
 const parseLocalDate = (dateString) => {
