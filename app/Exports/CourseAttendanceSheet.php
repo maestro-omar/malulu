@@ -198,8 +198,8 @@ class CourseAttendanceSheet implements FromArray, WithEvents, WithColumnWidths, 
                 if ($isFirstStudent)
                     $this->countByMonth[$monthNum]['days'] = ($this->countByMonth[$monthNum]['days'] ?? 0) + 1;
                 $statusId = $studentAttendance[$ymd] ?? null;
-                $status = $statusId ? $this->statuses->where('id', $statusId)->first() : '-';
-                $row[] = $status->symbol;
+                $status = $statusId ? $this->statuses->where('id', $statusId)->first() : null;
+                $row[] = $status ? $status->symbol : '-';
                 if (!empty($status)) {
                     $this->countByDay[$ymd][$statusId] = ($this->countByDay[$ymd][$statusId] ?? 0) + 1;
                     if ($status->is_absent) {
