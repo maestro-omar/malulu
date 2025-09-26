@@ -18,7 +18,7 @@ class CourseExport implements WithMultipleSheets
     {
         $this->course = $course;
         $this->exportOptions = $this->checkOptions($exportOptions);
-        $this->exportOptions['attendance'] = true;
+        // $this->exportOptions['attendance'] = true;
         $this->courseService = $courseService;
         $this->attendanceService = $attendanceService;
     }

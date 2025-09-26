@@ -41,6 +41,17 @@
           </q-td>
         </template>
 
+        <!-- Custom cell for critical info -->
+        <template #body-cell-critical_info="props">
+          <q-td :props="props">
+            <q-icon v-if="props.row.critical_info" name="warning" color="orange" size="sm" class="cursor-pointer">
+              <q-tooltip class="bg-orange text-white" anchor="top middle" self="bottom middle">
+                {{ props.row.critical_info }}
+              </q-tooltip>
+            </q-icon>
+          </q-td>
+        </template>
+
         <!-- Custom cell for firstname with link -->
         <template #body-cell-firstname="props">
           <q-td :props="props">
@@ -304,6 +315,14 @@ const columns = [
     align: 'center',
     sortable: false,
     style: 'width: 80px'
+  },
+  {
+    name: 'critical_info',
+    label: '',
+    field: 'critical_info',
+    align: 'center',
+    sortable: false,
+    style: 'width: 50px'
   },
   {
     name: 'firstname',

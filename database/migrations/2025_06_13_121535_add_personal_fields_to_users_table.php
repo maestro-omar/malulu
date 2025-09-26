@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('birth_place')->nullable()->after('country_id');
             $table->string('nationality')->nullable()->after('birth_place');
             $table->string('picture')->nullable()->after('nationality');
+            $table->string('critical_info')->nullable()->after('picture');
         });
 
         $sql = "ALTER TABLE users 

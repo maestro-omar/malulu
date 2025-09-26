@@ -108,6 +108,7 @@ class UserService
             'phone',
             'picture',
             'province',
+            'critical_info',
             'created_at',
             'updated_at'
         ];

@@ -50,144 +50,198 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
         $this->course->load(['school', 'schoolLevel', 'schoolShift']);
 
         $exportData = [];
-        $currentRow = 1;
 
-        // Basic course data header section
+        // Build each section based on export options
         if ($this->exportOptions['basicData'] ?? false) {
-            $exportData[] = ['Escuela:', $this->course->school->name];
-            $exportData[] = ['Nivel:', $this->course->schoolLevel->name];
-            $exportData[] = ['Turno:', $this->course->schoolShift->name];
-            $exportData[] = ['Curso:', $this->course->nice_name];
-            $currentRow += 4;
+            $exportData = array_merge($exportData, $this->buildBasicDataSection());
         }
 
-        // Schedule data
         if ($this->exportOptions['schedule'] ?? false) {
-            // Schedule section header
-            $exportData[] = [''];
-            $currentRow++;
-            $exportData[] = ['HORARIOS'];
-            $currentRow++;
-
-            $courseSchedule = $this->course->schedule;
-
-            if ($courseSchedule && isset($courseSchedule['schedule'])) {
-                // Generate day headers based on the days array (1 = Monday)
-                $dayNames = [1 => 'LU', 2 => 'MA', 3 => 'MI', 4 => 'JU', 5 => 'VI', 6 => 'SA', 7 => 'DO'];
-                $dayHeaders = ['', '']; // Start with empty cells for period and time columns
-
-                if (isset($courseSchedule['days'])) {
-                    foreach ($courseSchedule['days'] as $dayNumber) {
-                        $dayHeaders[] = $dayNames[$dayNumber] ?? '';
-                    }
-                } else {
-                    // Fallback to default weekdays if days array is not provided
-                    $dayHeaders = ['', '', 'LU', 'MA', 'MI', 'JU', 'VI'];
-                }
-
-                // Add header row with day names
-                $exportData[] = $dayHeaders;
-                $currentRow++;
-
-                // Generate schedule rows based on the schedule data
-                foreach ($courseSchedule['schedule'] as $periodKey => $timeRange) {
-                    $periodLabel = $periodKey;
-
-                    // Handle special period labels
-                    if (strpos($periodKey, 'break') !== false) {
-                        $periodLabel = '(recreo)';
-                    } elseif (strpos($periodKey, 'lunch') !== false) {
-                        $periodLabel = '(almuerzo)';
-                    }
-
-                    // Create time range string
-                    $timeString = $timeRange[0] . ' - ' . $timeRange[1];
-
-                    // Create schedule row with empty cells for each day
-                    $scheduleRow = [$periodLabel, $timeString];
-
-                    // Add empty cells for each day in the schedule
-                    $dayCount = isset($courseSchedule['days']) ? count($courseSchedule['days']) : 5;
-                    for ($i = 0; $i < $dayCount; $i++) {
-                        $scheduleRow[] = '';
-                    }
-
-                    $exportData[] = $scheduleRow;
-                    $currentRow++;
-                }
-            }
+            $exportData = array_merge($exportData, $this->buildScheduleSection());
         }
 
-        // Teachers data
         if ($this->exportOptions['teachers'] ?? false) {
-            $teachers = $this->courseService->getTeachers($this->course);
-
-            // Teachers section header
-            $exportData[] = [''];
-            $currentRow++;
-            $exportData[] = ['DOCENTES', ''];
-            $currentRow++;
-
-            // Teachers header
-            $this->teachersHeaderRow = ['#', 'Nombre', 'Apellido', 'Género', 'Email', 'Fecha Nacimiento', 'DNI', 'Rol', 'Materia', 'A Cargo'];
-            $exportData[] = $this->teachersHeaderRow;
-            $currentRow++;
-
-            // Teachers data rows
-            $teacherNumber = 1;
-            foreach ($teachers as $teacher) {
-                $exportData[] = [
-                    $teacherNumber,
-                    $teacher['firstname'],
-                    $teacher['lastname'],
-                    $teacher['gender'],
-                    $teacher['email'],
-                    $this->formatBirthdate($teacher['birthdate']),
-                    $teacher['id_number'],
-                    $teacher['rel_role']->name,
-                    $teacher['rel_subject'] ?? '',
-                    $teacher['rel_in_charge'] ? 'Sí' : 'No',
-                ];
-                $teacherNumber++;
-                $currentRow++;
-            }
+            $exportData = array_merge($exportData, $this->buildTeachersSection());
         }
 
-        // Students data
         if ($this->exportOptions['students'] ?? false) {
+            $exportData = array_merge($exportData, $this->buildStudentsSection());
+        }
 
-            // Students section header
-            $exportData[] = [''];
-            $currentRow++;
-            $exportData[] = ['ALUMNOS/AS', ''];
-            $currentRow++;
+        return $exportData;
+    }
 
-            // Students header (all columns from attendance sheet)
-            $this->studentsHeaderRow = ['#', 'Nombre', 'Apellido', 'Género', 'Fecha de nacimiento', 'Lugar de nacimiento', 'Nacionalidad', 'DNI', 'Domicilio', 'Teléfono'];
-            $exportData[] = $this->studentsHeaderRow;
-            $currentRow++;
+    /**
+     * Build the basic course data section
+     */
+    private function buildBasicDataSection(): array
+    {
+        return [
+            ['Escuela:', $this->course->school->name],
+            ['Nivel:', $this->course->schoolLevel->name],
+            ['Turno:', $this->course->schoolShift->name],
+            ['Curso:', $this->course->nice_name],
+        ];
+    }
 
-            // Students data rows
-            $studentNumber = 1;
-            foreach ($this->students as $student) {
-                $exportData[] = [
-                    $studentNumber,
-                    $student['firstname'],
-                    $student['lastname'],
-                    $student['gender'],
-                    $this->formatBirthdate($student['birthdate']),
-                    $student['birth_place'],
-                    $student['nationality'],
-                    $student['id_number'],
-                    $student['address'] ?? '',
-                    $student['phone'] ?? '',
-                ];
-                $studentNumber++;
-                $currentRow++;
+    /**
+     * Build the schedule section
+     */
+    private function buildScheduleSection(): array
+    {
+        $exportData = [];
+
+        // Schedule section header
+        $exportData[] = [''];
+        $exportData[] = ['HORARIOS'];
+
+        $courseSchedule = $this->course->schedule;
+
+        if ($courseSchedule && isset($courseSchedule['schedule'])) {
+            // Generate day headers based on the days array (1 = Monday)
+            $dayNames = [1 => 'LU', 2 => 'MA', 3 => 'MI', 4 => 'JU', 5 => 'VI', 6 => 'SA', 7 => 'DO'];
+            $dayHeaders = ['', '']; // Start with empty cells for period and time columns
+
+            if (isset($courseSchedule['days'])) {
+                foreach ($courseSchedule['days'] as $dayNumber) {
+                    $dayHeaders[] = $dayNames[$dayNumber] ?? '';
+                }
+            } else {
+                // Fallback to default weekdays if days array is not provided
+                $dayHeaders = ['', '', 'LU', 'MA', 'MI', 'JU', 'VI'];
+            }
+
+            // Add header row with day names
+            $exportData[] = $dayHeaders;
+
+            // Generate schedule rows based on the schedule data
+            foreach ($courseSchedule['schedule'] as $periodKey => $timeRange) {
+                $periodLabel = $this->formatPeriodLabel($periodKey);
+                $timeString = $timeRange[0] . ' - ' . $timeRange[1];
+
+                // Create schedule row with empty cells for each day
+                $scheduleRow = [$periodLabel, $timeString];
+
+                // Add empty cells for each day in the schedule
+                $dayCount = isset($courseSchedule['days']) ? count($courseSchedule['days']) : 5;
+                for ($i = 0; $i < $dayCount; $i++) {
+                    $scheduleRow[] = '';
+                }
+
+                $exportData[] = $scheduleRow;
             }
         }
 
         return $exportData;
+    }
+
+    /**
+     * Build the teachers section
+     */
+    private function buildTeachersSection(): array
+    {
+        $exportData = [];
+        $teachers = $this->courseService->getTeachers($this->course);
+
+        // Teachers section header
+        $exportData[] = [''];
+        $exportData[] = ['DOCENTES', ''];
+
+        // Teachers header
+        $this->teachersHeaderRow = ['#', 'Nombre', 'Apellido', 'Género', 'Email', 'Fecha Nacimiento', 'DNI', 'Rol', 'Materia', 'A Cargo'];
+        $exportData[] = $this->teachersHeaderRow;
+
+        // Teachers data rows
+        $teacherNumber = 1;
+        foreach ($teachers as $teacher) {
+            $exportData[] = [
+                $teacherNumber,
+                $teacher['firstname'],
+                $teacher['lastname'],
+                $teacher['gender'],
+                $teacher['email'],
+                $this->formatBirthdate($teacher['birthdate']),
+                $teacher['id_number'],
+                $teacher['rel_role']->name,
+                $teacher['rel_subject'] ?? '',
+                $teacher['rel_in_charge'] ? 'Sí' : 'No',
+            ];
+            $teacherNumber++;
+        }
+
+        return $exportData;
+    }
+
+    /**
+     * Build the students section
+     */
+    private function buildStudentsSection(): array
+    {
+        $exportData = [];
+
+        // Students section header
+        $exportData[] = [''];
+        $exportData[] = ['ALUMNOS/AS', ''];
+
+        // Students header (all columns from attendance sheet)
+        $this->studentsHeaderRow = ['#', 'Nombre', 'Apellido', 'Género', 'Fecha de nacimiento', 'Lugar de nacimiento', 'Nacionalidad', 'DNI', 'Domicilio', 'Teléfono', 'Información Crítica'];
+        $exportData[] = $this->studentsHeaderRow;
+
+        // Students data rows
+        $studentNumber = 1;
+        foreach ($this->students as $student) {
+            $address = $student['address'] ?? '';
+            if ($student['locality']) {
+                $address .= ($address ?  ', ' : '') . $student['locality'];
+            }
+            // if ($student['province']) {
+            //     $address .= ', ' . $student['province'];
+            // }
+            $exportData[] = [
+                $studentNumber,
+                $student['firstname'],
+                $student['lastname'],
+                $student['gender'],
+                $this->formatBirthdate($student['birthdate']),
+                $student['birth_place'],
+                $student['nationality'],
+                $student['id_number'],
+                $address,
+                $student['phone'] ?? '',
+                $student['critical_info'] ?? '',
+            ];
+            $studentNumber++;
+        }
+
+        return $exportData;
+    }
+
+    /**
+     * Format period label for schedule
+     */
+    private function formatPeriodLabel(string $periodKey): string
+    {
+        if (strpos($periodKey, 'break') !== false) {
+            return '(recreo)';
+        } elseif (strpos($periodKey, 'lunch') !== false) {
+            return '(almuerzo)';
+        }
+
+        return $periodKey;
+    }
+
+    /**
+     * Calculate the last row of the schedule section
+     */
+    private function calculateScheduleLastRow(int $headerRow, array $courseSchedule): int
+    {
+        if (!isset($courseSchedule['schedule'])) {
+            return $headerRow;
+        }
+
+        // Count the number of schedule periods
+        $schedulePeriodsCount = count($courseSchedule['schedule']);
+        return $headerRow + $schedulePeriodsCount;
     }
 
     /**
@@ -303,6 +357,9 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
                         $dayCount = isset($courseSchedule['days']) ? count($courseSchedule['days']) : 5;
                         $lastColumn = Coordinate::stringFromColumnIndex(3 + $dayCount - 1); // 3 = 'C'
 
+                        // Calculate the last row of the schedule section
+                        $scheduleLastRow = $this->calculateScheduleLastRow($row, $courseSchedule);
+
                         // Style the header row
                         $sheet->getStyle("A{$row}:{$lastColumn}{$row}")->applyFromArray([
                             'font' => [
@@ -326,7 +383,7 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
                         // Add borders to all schedule data cells
                         $nextRow = $row + 1;
                         while (
-                            $nextRow <= $rowCount &&
+                            $nextRow <= $scheduleLastRow &&
                             ($sheet->getCell("A{$nextRow}")->getValue() !== '' || $sheet->getCell("B{$nextRow}")->getValue() !== '') &&
                             !in_array($sheet->getCell("A{$nextRow}")->getValue(), ['DOCENTES', 'ALUMNOS/AS', 'HORARIOS'])
                         ) {
@@ -376,7 +433,7 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
                         while ($nextRow <= $rowCount && $sheet->getCell("A{$nextRow}")->getValue() !== '' && !in_array($sheet->getCell("A{$nextRow}")->getValue(), ['DOCENTES', 'ALUMNOS/AS', 'HORARIOS'])) {
                             $isEvenRow = $rowCounter % 2 === 0;
                             $backgroundColor = $isEvenRow ? 'FFFFFF' : 'F8F9FA'; // White and light gray
-                            
+
                             $sheet->getStyle("A{$nextRow}:{$lastColumn}{$nextRow}")->applyFromArray([
                                 'fill' => [
                                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,

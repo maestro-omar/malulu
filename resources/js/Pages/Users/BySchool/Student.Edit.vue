@@ -39,6 +39,7 @@ const form = useForm({
     password_confirmation: '',
     role: props.user.roles?.[0]?.name || '',
     gender: props.user.gender || '',
+    critical_info: props.user.critical_info || '',
 });
 
 const userAge = computed(() => {
@@ -128,6 +129,13 @@ const submit = () => {
                                             v-model="form.nationality" />
                                         <InputError class="admin-form__error" :message="form.errors.nationality" />
                                     </div>
+                                </div>
+
+                                <div class="admin-form__field">
+                                    <InputLabel for="critical_info" value="Información Crítica" />
+                                    <TextInput id="critical_info" type="text" class="admin-form__input"
+                                        v-model="form.critical_info" />
+                                    <InputError class="admin-form__error" :message="form.errors.critical_info" />
                                 </div>
                                 <div class="admin-form__field">
                                     <InputLabel for="name" value="Nombre de usuario" />

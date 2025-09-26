@@ -209,7 +209,7 @@ class CourseAttendanceSheet implements FromArray, WithEvents, WithColumnWidths, 
                     }
 
                     if (!isset($this->countByMonth[$monthNum])) {
-                        $this->countByMonth[$monthNum] = [];
+                        $this->countByMonth[$monthNum] = ['A'];
                     }
                     $this->countByMonth[$monthNum][$statusId] = ($this->countByMonth[$monthNum][$statusId] ?? 0) + 1;
                     if ($status->is_absent) {
@@ -298,6 +298,8 @@ class CourseAttendanceSheet implements FromArray, WithEvents, WithColumnWidths, 
         $this->currentRow++;
 
         foreach ($this->countByMonth as $monthNum => $statuses) {
+            $statuses['A'] = $statuses['A'] ?? 0;
+            $statuses['P'] = $statuses['P'] ?? 0;
             $monthName = $this->monthNames[$monthNum - 1];
             $sum = $statuses['P'] + $statuses['A'];
             $pctRow = round(($statuses['P'] / $sum) * 100, 2) . '%';

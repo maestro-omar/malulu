@@ -51,6 +51,7 @@ class User extends Authenticatable
         'email',
         'password',
         'picture',
+        'critical_info',
     ];
 
     /**
