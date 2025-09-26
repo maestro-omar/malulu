@@ -22,7 +22,6 @@ return new class extends Migration {
             // Optional scope
             $table->foreignId('province_id')->nullable()->constrained('provinces');
             $table->foreignId('school_id')->nullable()->constrained('schools');
-            $table->foreignId('academic_year_id')->nullable()->constrained('academic_years');
 
             $table->boolean('is_non_working_day')->default(false); // true = holiday, no classes
             $table->text('notes')->nullable();

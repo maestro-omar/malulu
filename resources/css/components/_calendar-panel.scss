@@ -2,11 +2,165 @@
 @use "../abstracts/variables";
 @use "sass:color";
 
+// Mixin for event type colors to avoid duplication
+@mixin event-type-colors {
+  &--default {
+    background: color.adjust(variables.$color-grey, $lightness: -5%);
+    color: variables.$color-text;
+    border-left-color: variables.$color-gray;
+  }
+
+  // National Events
+  &--feriado_nacional {
+    background: color.adjust(variables.$color-cyan, $alpha: -0.8);
+    color: color.adjust(variables.$color-cyan, $lightness: -20%);
+    border-left-color: variables.$color-cyan;
+  }
+
+  &--conmemoracion_nacional {
+    background: color.adjust(variables.$color-sky, $alpha: -0.7);
+    color: color.adjust(variables.$color-sky, $lightness: -30%);
+    border-left-color: variables.$color-sky;
+  }
+
+  &--suspencion_nacional {
+    background: color.adjust(variables.$color-rose, $alpha: -0.6);
+    color: color.adjust(variables.$color-rose, $lightness: -40%);
+    border-left-color: variables.$color-rose;
+  }
+
+  // Provincial Events
+  &--feriado_provincial {
+    background: color.adjust(variables.$color-blue, $alpha: -0.8);
+    color: color.adjust(variables.$color-blue, $lightness: -20%);
+    border-left-color: variables.$color-blue;
+  }
+
+  &--conmemoracion_provincial {
+    background: color.adjust(variables.$color-green, $alpha: -0.7);
+    color: color.adjust(variables.$color-green, $lightness: -30%);
+    border-left-color: variables.$color-green;
+  }
+
+  &--suspencion_provincial {
+    background: color.adjust(variables.$color-emerald, $alpha: -0.6);
+    color: color.adjust(variables.$color-emerald, $lightness: -40%);
+    border-left-color: variables.$color-emerald;
+  }
+
+  &--academico_provincial {
+    background: color.adjust(variables.$color-orange, $alpha: -0.8);
+    color: color.adjust(variables.$color-orange, $lightness: -20%);
+    border-left-color: variables.$color-orange;
+  }
+
+  // School Events
+  &--conmemoracion_escolar {
+    background: color.adjust(variables.$color-yellow, $alpha: -0.8);
+    color: color.adjust(variables.$color-yellow, $lightness: -20%);
+    border-left-color: variables.$color-yellow;
+  }
+
+  &--suspencion_escolar {
+    background: color.adjust(variables.$color-indigo, $alpha: -0.8);
+    color: color.adjust(variables.$color-indigo, $lightness: -20%);
+    border-left-color: variables.$color-indigo;
+  }
+
+  &--inicio_escolar {
+    background: color.adjust(variables.$color-emerald, $alpha: -0.8);
+    color: color.adjust(variables.$color-emerald, $lightness: -20%);
+    border-left-color: variables.$color-emerald;
+  }
+
+  &--fin_escolar {
+    background: color.adjust(variables.$color-slate, $alpha: -0.8);
+    color: color.adjust(variables.$color-slate, $lightness: -20%);
+    border-left-color: variables.$color-slate;
+  }
+
+  &--inicio_invierno,
+  &--fin_invierno {
+    background: color.adjust(variables.$color-cyan, $alpha: -0.8);
+    color: color.adjust(variables.$color-cyan, $lightness: -20%);
+    border-left-color: variables.$color-cyan;
+  }
+
+  &--entrega_libreta {
+    background: color.adjust(variables.$color-brand, $alpha: -0.8);
+    color: color.adjust(variables.$color-brand, $lightness: -20%);
+    border-left-color: variables.$color-brand;
+  }
+
+  &--salida_didactica {
+    background: color.adjust(variables.$color-orange, $alpha: -0.8);
+    color: color.adjust(variables.$color-orange, $lightness: -20%);
+    border-left-color: variables.$color-orange;
+  }
+
+  &--reunion_docente {
+    background: color.adjust(variables.$color-pink, $alpha: -0.8);
+    color: color.adjust(variables.$color-pink, $lightness: -20%);
+    border-left-color: variables.$color-pink;
+  }
+
+  &--reunion_grupal {
+    background: color.adjust(variables.$color-gray, $alpha: -0.7);
+    color: color.adjust(variables.$color-gray, $lightness: -30%);
+    border-left-color: variables.$color-gray;
+  }
+
+  &--examen {
+    background: color.adjust(variables.$color-orange, $alpha: -0.8);
+    color: color.adjust(variables.$color-orange, $lightness: -20%);
+    border-left-color: variables.$color-orange;
+  }
+
+  &--academico_escolar {
+    background: color.adjust(variables.$color-orange, $alpha: -0.8);
+    color: color.adjust(variables.$color-orange, $lightness: -20%);
+    border-left-color: variables.$color-orange;
+  }
+
+  // Birthdate context modifiers for list view
+  &--coworker,
+  &--teacher {
+    background: color.adjust(variables.$color-blue, $alpha: -0.8);
+    color: color.adjust(variables.$color-blue, $lightness: -20%);
+    border-left-color: variables.$color-blue;
+  }
+
+  &--student {
+    background: color.adjust(variables.$color-green, $alpha: -0.8);
+    color: color.adjust(variables.$color-green, $lightness: -20%);
+    border-left-color: variables.$color-green;
+  }
+
+  &--classmate {
+    background: color.adjust(variables.$color-teal, $alpha: -0.8);
+    color: color.adjust(variables.$color-teal, $lightness: -20%);
+    border-left-color: variables.$color-teal;
+  }
+
+  &--my_child {
+    background: color.adjust(variables.$color-pink, $alpha: -0.8);
+    color: color.adjust(variables.$color-pink, $lightness: -20%);
+    border-left-color: variables.$color-pink;
+  }
+
+  &--superadmin_view {
+    background: color.adjust(variables.$color-rose, $alpha: -0.8);
+    color: color.adjust(variables.$color-rose, $lightness: -20%);
+    border-left-color: variables.$color-rose;
+  }
+}
+
 .calendar-panel {
   background: white;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   overflow: hidden;
+  margin-top: 2rem;
 
   // Mobile-first: Default styles for mobile
   &__header {
@@ -32,9 +186,10 @@
   }
 
   &__toggle-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    margin-left: 0.75rem;
     padding: 0.5rem 1rem;
     background: color.adjust(white, $alpha: -0.9);
     color: white;
@@ -55,6 +210,14 @@
     &--active {
       background: color.adjust(white, $alpha: -0.7);
       border-color: white;
+    }
+
+    &--disabled {
+      background: color.adjust(white, $alpha: -0.95);
+      color: color.adjust(white, $alpha: -0.2);
+      border-color: color.adjust(white, $alpha: -0.8);
+      cursor: default;
+      pointer-events: none;
     }
   }
 
@@ -226,123 +389,7 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    &--default {
-      background: color.adjust(variables.$color-grey, $lightness: -5%);
-      color: variables.$color-text;
-      border-left-color: variables.$color-gray;
-    }
-
-    // National Events
-    &--feriado_nacional {
-      background: color.adjust(variables.$color-cyan, $alpha: -0.8);
-      color: color.adjust(variables.$color-cyan, $lightness: -20%);
-      border-left-color: variables.$color-cyan;
-    }
-
-    &--conmemoracion_nacional {
-      background: color.adjust(variables.$color-sky, $alpha: -0.7);
-      color: color.adjust(variables.$color-sky, $lightness: -30%);
-      border-left-color: variables.$color-sky;
-    }
-
-    &--suspencion_nacional {
-      background: color.adjust(variables.$color-rose, $alpha: -0.6);
-      color: color.adjust(variables.$color-rose, $lightness: -40%);
-      border-left-color: variables.$color-rose;
-    }
-
-    // Provincial Events
-    &--feriado_provincial {
-      background: color.adjust(variables.$color-blue, $alpha: -0.8);
-      color: color.adjust(variables.$color-blue, $lightness: -20%);
-      border-left-color: variables.$color-blue;
-    }
-
-    &--conmemoracion_provincial {
-      background: color.adjust(variables.$color-green, $alpha: -0.7);
-      color: color.adjust(variables.$color-green, $lightness: -30%);
-      border-left-color: variables.$color-green;
-    }
-
-    &--suspencion_provincial {
-      background: color.adjust(variables.$color-emerald, $alpha: -0.6);
-      color: color.adjust(variables.$color-emerald, $lightness: -40%);
-      border-left-color: variables.$color-emerald;
-    }
-
-    &--academico_provincial {
-      background: color.adjust(variables.$color-orange, $alpha: -0.8);
-      color: color.adjust(variables.$color-orange, $lightness: -20%);
-      border-left-color: variables.$color-orange;
-    }
-
-    // School Events
-    &--conmemoracion_escolar {
-      background: color.adjust(variables.$color-yellow, $alpha: -0.8);
-      color: color.adjust(variables.$color-yellow, $lightness: -20%);
-      border-left-color: variables.$color-yellow;
-    }
-
-    &--suspencion_escolar {
-      background: color.adjust(variables.$color-indigo, $alpha: -0.8);
-      color: color.adjust(variables.$color-indigo, $lightness: -20%);
-      border-left-color: variables.$color-indigo;
-    }
-
-    &--inicio_escolar {
-      background: color.adjust(variables.$color-emerald, $alpha: -0.8);
-      color: color.adjust(variables.$color-emerald, $lightness: -20%);
-      border-left-color: variables.$color-emerald;
-    }
-
-    &--fin_escolar {
-      background: color.adjust(variables.$color-slate, $alpha: -0.8);
-      color: color.adjust(variables.$color-slate, $lightness: -20%);
-      border-left-color: variables.$color-slate;
-    }
-
-    &--inicio_invierno,
-    &--fin_invierno {
-      background: color.adjust(variables.$color-cyan, $alpha: -0.8);
-      color: color.adjust(variables.$color-cyan, $lightness: -20%);
-      border-left-color: variables.$color-cyan;
-    }
-
-    &--entrega_libreta {
-      background: color.adjust(variables.$color-brand, $alpha: -0.8);
-      color: color.adjust(variables.$color-brand, $lightness: -20%);
-      border-left-color: variables.$color-brand;
-    }
-
-    &--salida_didactica {
-      background: color.adjust(variables.$color-orange, $alpha: -0.8);
-      color: color.adjust(variables.$color-orange, $lightness: -20%);
-      border-left-color: variables.$color-orange;
-    }
-
-    &--reunion_docente {
-      background: color.adjust(variables.$color-pink, $alpha: -0.8);
-      color: color.adjust(variables.$color-pink, $lightness: -20%);
-      border-left-color: variables.$color-pink;
-    }
-
-    &--reunion_grupal {
-      background: color.adjust(variables.$color-gray, $alpha: -0.7);
-      color: color.adjust(variables.$color-gray, $lightness: -30%);
-      border-left-color: variables.$color-gray;
-    }
-
-    &--examen {
-      background: color.adjust(variables.$color-orange, $alpha: -0.8);
-      color: color.adjust(variables.$color-orange, $lightness: -20%);
-      border-left-color: variables.$color-orange;
-    }
-
-    &--academico_escolar {
-      background: color.adjust(variables.$color-orange, $alpha: -0.8);
-      color: color.adjust(variables.$color-orange, $lightness: -20%);
-      border-left-color: variables.$color-orange;
-    }
+    @include event-type-colors;
 
     // Special modifiers
     &--non-working {
@@ -384,10 +431,6 @@
   // Default styles are for mobile (xs)
 
   // Header elements - Mobile (default)
-  &__header {
-    padding: 1rem;
-  }
-
   &__header-content {
     flex-direction: row;
     align-items: flex-start;
@@ -459,123 +502,7 @@
     position: relative;
 
     // Event type colors as left border and background (matching __event modifiers)
-    &--default {
-      background: color.adjust(variables.$color-grey, $lightness: -5%);
-      color: variables.$color-text;
-      border-left-color: variables.$color-gray;
-    }
-
-    // National Events
-    &--feriado_nacional {
-      background: color.adjust(variables.$color-cyan, $alpha: -0.8);
-      color: color.adjust(variables.$color-cyan, $lightness: -20%);
-      border-left-color: variables.$color-cyan;
-    }
-
-    &--conmemoracion_nacional {
-      background: color.adjust(variables.$color-sky, $alpha: -0.7);
-      color: color.adjust(variables.$color-sky, $lightness: -30%);
-      border-left-color: variables.$color-sky;
-    }
-
-    &--suspencion_nacional {
-      background: color.adjust(variables.$color-rose, $alpha: -0.6);
-      color: color.adjust(variables.$color-rose, $lightness: -40%);
-      border-left-color: variables.$color-rose;
-    }
-
-    // Provincial Events
-    &--feriado_provincial {
-      background: color.adjust(variables.$color-blue, $alpha: -0.8);
-      color: color.adjust(variables.$color-blue, $lightness: -20%);
-      border-left-color: variables.$color-blue;
-    }
-
-    &--conmemoracion_provincial {
-      background: color.adjust(variables.$color-green, $alpha: -0.7);
-      color: color.adjust(variables.$color-green, $lightness: -30%);
-      border-left-color: variables.$color-green;
-    }
-
-    &--suspencion_provincial {
-      background: color.adjust(variables.$color-emerald, $alpha: -0.6);
-      color: color.adjust(variables.$color-emerald, $lightness: -40%);
-      border-left-color: variables.$color-emerald;
-    }
-
-    &--academico_provincial {
-      background: color.adjust(variables.$color-orange, $alpha: -0.8);
-      color: color.adjust(variables.$color-orange, $lightness: -20%);
-      border-left-color: variables.$color-orange;
-    }
-
-    // School Events
-    &--conmemoracion_escolar {
-      background: color.adjust(variables.$color-yellow, $alpha: -0.8);
-      color: color.adjust(variables.$color-yellow, $lightness: -20%);
-      border-left-color: variables.$color-yellow;
-    }
-
-    &--suspencion_escolar {
-      background: color.adjust(variables.$color-indigo, $alpha: -0.8);
-      color: color.adjust(variables.$color-indigo, $lightness: -20%);
-      border-left-color: variables.$color-indigo;
-    }
-
-    &--inicio_escolar {
-      background: color.adjust(variables.$color-emerald, $alpha: -0.8);
-      color: color.adjust(variables.$color-emerald, $lightness: -20%);
-      border-left-color: variables.$color-emerald;
-    }
-
-    &--fin_escolar {
-      background: color.adjust(variables.$color-slate, $alpha: -0.8);
-      color: color.adjust(variables.$color-slate, $lightness: -20%);
-      border-left-color: variables.$color-slate;
-    }
-
-    &--inicio_invierno,
-    &--fin_invierno {
-      background: color.adjust(variables.$color-cyan, $alpha: -0.8);
-      color: color.adjust(variables.$color-cyan, $lightness: -20%);
-      border-left-color: variables.$color-cyan;
-    }
-
-    &--entrega_libreta {
-      background: color.adjust(variables.$color-brand, $alpha: -0.8);
-      color: color.adjust(variables.$color-brand, $lightness: -20%);
-      border-left-color: variables.$color-brand;
-    }
-
-    &--salida_didactica {
-      background: color.adjust(variables.$color-orange, $alpha: -0.8);
-      color: color.adjust(variables.$color-orange, $lightness: -20%);
-      border-left-color: variables.$color-orange;
-    }
-
-    &--reunion_docente {
-      background: color.adjust(variables.$color-pink, $alpha: -0.8);
-      color: color.adjust(variables.$color-pink, $lightness: -20%);
-      border-left-color: variables.$color-pink;
-    }
-
-    &--reunion_grupal {
-      background: color.adjust(variables.$color-gray, $alpha: -0.7);
-      color: color.adjust(variables.$color-gray, $lightness: -30%);
-      border-left-color: variables.$color-gray;
-    }
-
-    &--examen {
-      background: color.adjust(variables.$color-orange, $alpha: -0.8);
-      color: color.adjust(variables.$color-orange, $lightness: -20%);
-      border-left-color: variables.$color-orange;
-    }
-
-    &--academico_escolar {
-      background: color.adjust(variables.$color-orange, $alpha: -0.8);
-      color: color.adjust(variables.$color-orange, $lightness: -20%);
-      border-left-color: variables.$color-orange;
-    }
+    @include event-type-colors;
   }
 
   &__list-event-date {
@@ -713,13 +640,7 @@
     }
 
     // List view elements
-    &__list-view {
-      padding: 0;
-    }
 
-    &__list-event {
-      padding: 0.75rem;
-    }
 
     &__list-event-date {
       min-width: 8.5rem;
@@ -764,9 +685,6 @@
   @include mixins.mq(md) {
 
     // Header elements
-    &__header {
-      padding: 1rem;
-    }
 
     &__title {
       @include mixins.fz(1.6);
@@ -823,13 +741,7 @@
     }
 
     // List view elements
-    &__list-view {
-      padding: 0;
-    }
 
-    &__list-event {
-      padding: 0.75rem;
-    }
 
     &__list-event-date {
       min-width: 9rem;
@@ -933,13 +845,7 @@
     }
 
     // List view elements
-    &__list-view {
-      padding: 0;
-    }
 
-    &__list-event {
-      padding: 0.75rem;
-    }
 
     &__list-event-date {
       min-width: 9.5rem;
@@ -978,5 +884,60 @@
     &__list-event-course {
       @include mixins.fz(0.95);
     }
+  }
+
+  // Birthdate styles
+  &__birthdates {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+  }
+
+  &__birthdate {
+    @include mixins.fz(1.3);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    &--default {
+      background: color.adjust(variables.$color-purple, $alpha: -0.8);
+      color: color.adjust(variables.$color-purple, $lightness: -20%);
+      border-left-color: variables.$color-purple;
+    }
+
+    // Birthdate context modifiers
+    &--coworker,
+    &--teacher {
+      background: color.adjust(variables.$color-blue, $alpha: -0.8);
+      color: color.adjust(variables.$color-blue, $lightness: -20%);
+      border-left-color: variables.$color-blue;
+    }
+  }
+
+  &__birthdate-icon {
+    @include mixins.fz(0.9);
+    flex-shrink: 0;
+  }
+
+  &__birthdate-name {
+    font-weight: 500;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
   }
 }

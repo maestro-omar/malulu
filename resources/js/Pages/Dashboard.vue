@@ -9,7 +9,6 @@
 
         <Head :title="pageTitle" />
 
-        <CalendarPanel :calendar-data="$page.props.eventsData" />
         <GlobalAdminPanel v-if="isGlobalAdmin" data="" />
         <SchoolAdminPanel v-if="isSchoolAdmin" :data="isSchoolAdmin" :schools="schools"
           :combinationCount="combinationCount" />
@@ -22,6 +21,7 @@
           :combinationCount="combinationCount" />
         <FormerStudentPanel v-if="isFormerStudent" :data="isFormerStudent" :schools="schools"
           :combinationCount="combinationCount" />
+        <CalendarPanel :calendar-data="$page.props.eventsData" />
         <DefaultPanel />
       </div>
     </template>

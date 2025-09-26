@@ -486,17 +486,12 @@ trait UserServiceList
         return $query;
     }
 
-    public function getLoggedUserRelevantBirthdays($from, $to)
+    public function getLoggedUserRelevantBirthdays($user, $from, $to)
     {
-        // Check if user is superadmin
-        $loggedUserId = auth()->id();
-        if (!$loggedUserId) {
-            return [];
-        }
-
-        $loggedUser = User::find($loggedUserId);
-        if (!$loggedUser) {
-            return [];
+        /** @var User $loggedUser */
+        $loggedUser = auth()->user();
+        if ($loggedUser->id !== $user->id) {
+            throw new \Exception('User should be logged one. If necesary, improve this method to stop using context to optimize performance');
         }
 
         // If user is superadmin, return all users within birthdate range
@@ -523,7 +518,7 @@ trait UserServiceList
         }
 
         $relatedUsers = collect();
-
+        dd($activeRoleRelationships);
         foreach ($activeRoleRelationships as $roleRelationship) {
             $roleCode = $roleRelationship['role_code'] ?? null;
             $schoolId = $roleRelationship['school_id'] ?? null;
@@ -593,6 +588,7 @@ trait UserServiceList
             'id' => $user->id,
             'firstname' => $user->firstname,
             'lastname' => $user->lastname,
+            'shortname' => $user->shortName,
             'birthdate' => $user->birthdate->format('Y-m-d'),
             'context' => $user->context,
         ];

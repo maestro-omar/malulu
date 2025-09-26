@@ -74,6 +74,7 @@ class User extends Authenticatable
         'deleted_at' => 'datetime',
         'birthdate' => 'date',
     ];
+    protected $appends = ['short_name'];
 
     // Gender type constants
     const GENDER_MALE = 'masc';
@@ -497,5 +498,52 @@ class User extends Authenticatable
     public function attendances()
     {
         return $this->hasMany(Attendance::class, 'user_id');
+    }
+
+    public function getShortNameAttribute()
+    {
+        $firstNames = explode(' ', $this->firstname);
+        $lastNames = explode(' ', $this->lastname);
+        $oneName = $firstNames[0];
+
+        // Special handling for María/Maria names
+        if (strtolower($oneName) === 'maría' || strtolower($oneName) === 'maria') {
+            if (count($firstNames) > 1) {
+                $otherNames = array_slice($firstNames, 1);
+                $filteredNames = [];
+
+                foreach ($otherNames as $name) {
+                    $lowerName = strtolower($name);
+                    // Skip short words like "de", "del", "los", "la", "las", "el"
+                    if (!in_array($lowerName, ['de', 'del', 'los', 'la', 'las', 'el'])) {
+                        $filteredNames[] = $name;
+                    }
+                }
+
+                if (!empty($filteredNames)) {
+                    $otherNamesInitials = ' ' . implode(' ', array_map(function ($name) {
+                        return substr($name, 0, 1);
+                    }, $filteredNames));
+                } else {
+                    $otherNamesInitials = '';
+                }
+            } else {
+                $otherNamesInitials = '';
+            }
+        } else {
+            // Regular handling for other names
+            if (count($firstNames) > 1) {
+                $otherNamesInitials = ' ' . implode(' ', array_map(function ($name) {
+                    return substr($name, 0, 1);
+                }, array_slice($firstNames, 1)));
+            } else {
+                $otherNamesInitials = '';
+            }
+        }
+
+        $lastNamesInitials = ' ' . implode(' ', array_map(function ($name) {
+            return substr($name, 0, 1);
+        }, $lastNames));
+        return $oneName . $otherNamesInitials . $lastNamesInitials;
     }
 }

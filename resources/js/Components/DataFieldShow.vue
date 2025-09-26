@@ -48,8 +48,8 @@
 
 <script setup>
 import { computed } from 'vue'
-import { formatDate } from '@/Utils/date'
-import { calculateAge, getBirthdayStatus } from '@/Utils/birthday'
+import { calculateAge, formatDate } from '@/Utils/date'
+import { getBirthdayStatus } from '@/Utils/birthday'
 
 const props = defineProps({
   label: {

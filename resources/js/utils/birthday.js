@@ -63,19 +63,6 @@ export const parseBirthdate = (dateString) => {
 };
 
 /**
- * Calculate age from birthdate
- * @param {string} birthdate - The birthdate string
- * @returns {number} - The calculated age
- */
-export const calculateAge = (birthdate) => {
-  const today = new Date();
-  const birthDate = parseBirthdate(birthdate);
-  return today.getFullYear() - birthDate.getFullYear() - 
-    (today.getMonth() < birthDate.getMonth() || 
-     (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate()) ? 1 : 0);
-};
-
-/**
  * Get birthday status information
  * @param {string} birthdate - The birthdate string
  * @returns {object} - Object with status text, class, and text class

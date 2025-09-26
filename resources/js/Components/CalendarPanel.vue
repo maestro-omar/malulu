@@ -2,12 +2,24 @@
   <div class="calendar-panel">
     <div class="calendar-panel__header">
       <div class="calendar-panel__header-content">
-        <h3 class="calendar-panel__title">Calendario - Próximos eventos</h3>
-        <button @click="toggleView" class="calendar-panel__toggle-btn"
-          :class="{ 'calendar-panel__toggle-btn--active': isListView }">
-          {{ isListView ? '📅' : '📋' }}
-          {{ isListView ? 'Calendario' : 'Lista' }}
-        </button>
+        <h3 class="calendar-panel__title">
+          Próximos eventos</h3>
+        <div class="calendar-panel__controls">
+          <button @click="toggleView" class="calendar-panel__toggle-btn"
+            :class="{ 'calendar-panel__toggle-btn--active': isListView }">
+            {{ isListView ? '📅' : '📋' }}
+            {{ isListView ? 'Calendario' : 'Lista' }}
+          </button>
+          <div v-if="hasBirthdates" @click="toggleBirthdates" class="calendar-panel__toggle-btn"
+            :class="{ 'calendar-panel__birthdate-btn--active': showBirthdates }">
+            🎂
+            {{ showBirthdates ? 'Ocultar' : 'Mostrar' }} Cumpleaños
+          </div>
+          <div v-else class="calendar-panel__toggle-btn calendar-panel__toggle-btn--disabled">
+            🎂
+            Sin Cumpleaños
+          </div>
+        </div>
       </div>
     </div>
 
@@ -48,6 +60,13 @@
                 </span>
               </div>
             </div>
+            <div v-if="day.birthdates && day.birthdates.length > 0" class="calendar-panel__birthdates">
+              <div v-for="birthdate in day.birthdates" :key="birthdate.id" class="calendar-panel__birthdate"
+                :class="getBirthdateClasses(birthdate)" :title="getBirthdateTooltip(birthdate, true)">
+                <span class="calendar-panel__birthdate-icon">🎂</span>
+                <span class="calendar-panel__birthdate-name">{{ birthdate.shortname }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -56,33 +75,60 @@
     <!-- Event List View -->
     <div v-if="isListView" class="calendar-panel__list-view">
       <div class="calendar-panel__events-list">
-        <div v-for="event in sortedEvents" :key="event.id" class="calendar-panel__list-event"
-          :class="getListEventClasses(event)">
-          <div class="calendar-panel__list-event-date">
-            <span class="calendar-panel__list-event-date-text">
-              {{ formatEventDayName(event.date) }} {{ formatEventDate(event.date) }}{{ formatEventMonth(event.date) }}
-            </span>
-            <q-badge
-              v-if="event.event_type && event.event_type.code !== 'conmemoracion_nacional' && event.event_type.code !== 'conmemoracion_provincial' && event.event_type.code !== 'conmemoracion_escolar'"
-              :color="getEventBadgeColor(event.event_type.code)" class="calendar-panel__list-event-type-badge">
-              {{ event.event_type.name }}
-            </q-badge>
-          </div>
-          <div class="calendar-panel__list-event-content">
-            <h5 class="calendar-panel__list-event-title">{{ event.title }}</h5>
-            <div class="calendar-panel__list-event-meta">
-              <span v-if="event.notes" class="calendar-panel__list-event-notes">
-                {{ event.notes }}
+        <div v-for="item in sortedEvents" :key="`${item.type}-${item.data.id}`"
+          v-show="item.type === 'event' || (item.type === 'birthdate' && showBirthdates)"
+          class="calendar-panel__list-event"
+          :class="item.type === 'event' ? getListEventClasses(item.data) : getListBirthdateClasses(item.data)">
+
+          <!-- Event rendering -->
+          <template v-if="item.type === 'event'">
+            <div class="calendar-panel__list-event-date">
+              <span class="calendar-panel__list-event-date-text">
+                {{ formatEventDayName(item.data.date) }} {{ formatEventDate(item.data.date) }}{{
+                  formatEventMonth(item.data.date) }}
               </span>
-              <div v-if="event.courses && event.courses.length > 0" class="calendar-panel__list-event-courses">
-                <span class="calendar-panel__list-event-courses-label">Cursos:</span>
-                <span v-for="(course, index) in event.courses" :key="course.id"
-                  class="calendar-panel__list-event-course">
-                  {{ course.name }}<span v-if="index < event.courses.length - 1">, </span>
+              <q-badge
+                v-if="item.data.event_type && item.data.event_type.code !== 'conmemoracion_nacional' && item.data.event_type.code !== 'conmemoracion_provincial' && item.data.event_type.code !== 'conmemoracion_escolar'"
+                :color="getEventBadgeColor(item.data.event_type.code)" class="calendar-panel__list-event-type-badge">
+                {{ item.data.event_type.name }}
+              </q-badge>
+            </div>
+            <div class="calendar-panel__list-event-content">
+              <h5 class="calendar-panel__list-event-title">{{ item.data.title }}</h5>
+              <div class="calendar-panel__list-event-meta">
+                <span v-if="item.data.notes" class="calendar-panel__list-event-notes">
+                  {{ item.data.notes }}
+                </span>
+                <div v-if="item.data.courses && item.data.courses.length > 0"
+                  class="calendar-panel__list-event-courses">
+                  <span class="calendar-panel__list-event-courses-label">Cursos:</span>
+                  <span v-for="(course, index) in item.data.courses" :key="course.id"
+                    class="calendar-panel__list-event-course">
+                    {{ course.name }}<span v-if="index < item.data.courses.length - 1">, </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Birthdate rendering -->
+          <template v-else-if="item.type === 'birthdate'">
+            <div class="calendar-panel__list-event-date">
+              <span class="calendar-panel__list-event-date-text">
+                {{ formatEventDayName(item.data.birthdate) }} {{ formatEventDate(item.data.birthdate) }}{{
+                  formatEventMonth(item.data.birthdate) }}
+              </span>
+              <span class="calendar-panel__list-event-type-birthday ">🎂</span>
+            </div>
+            <div class="calendar-panel__list-event-content">
+              <h5 class="calendar-panel__list-event-title">{{ item.data.firstname }} {{ item.data.lastname }}</h5>
+              <div class="calendar-panel__list-event-meta">
+                <span class="calendar-panel__list-event-notes">
+                  {{ getBirthdateTooltip(item.data, false) }}
                 </span>
               </div>
             </div>
-          </div>
+          </template>
         </div>
       </div>
     </div>
@@ -91,6 +137,8 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { calculateAge } from '@/Utils/date'
+
 
 const props = defineProps({
   calendarData: {
@@ -104,9 +152,14 @@ const weekDays = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá']
 
 // Toggle between calendar and list view
 const isListView = ref(false)
+const showBirthdates = ref(false)
 
 const toggleView = () => {
   isListView.value = !isListView.value
+}
+
+const toggleBirthdates = () => {
+  showBirthdates.value = !showBirthdates.value
 }
 
 // Helper function to parse dates as local dates without UTC conversion
@@ -130,18 +183,38 @@ const parseLocalDate = (dateString) => {
   return new Date(cleanDate + 'T00:00:00')
 }
 
-// Convert events object to array if needed
+// Separate events and birthdates from combined data
 const eventsArray = computed(() => {
   if (!props.calendarData?.events) {
     return []
   }
 
   // Convert object to array if needed (PHP arrays with numeric keys become objects in JS)
-  if (!Array.isArray(props.calendarData.events)) {
-    return Object.values(props.calendarData.events)
+  const events = !Array.isArray(props.calendarData.events)
+    ? Object.values(props.calendarData.events)
+    : props.calendarData.events
+
+  // Filter only events (type === 'event')
+  return events.filter(item => item.type === 'event').map(item => item.data)
+})
+
+const birthdatesArray = computed(() => {
+  if (!props.calendarData?.events) {
+    return []
   }
 
-  return props.calendarData.events
+  // Convert object to array if needed (PHP arrays with numeric keys become objects in JS)
+  const events = !Array.isArray(props.calendarData.events) 
+    ? Object.values(props.calendarData.events) 
+    : props.calendarData.events
+
+  // Filter only birthdates (type === 'birthdate')
+  return events.filter(item => item.type === 'birthdate').map(item => item.data)
+})
+
+// Check if there are any birthdates in the current data
+const hasBirthdates = computed(() => {
+  return birthdatesArray.value.length > 0
 })
 
 const calendarWeeks = computed(() => {
@@ -173,6 +246,7 @@ const calendarWeeks = computed(() => {
     for (let i = 0; i < 7; i++) {
       const dayDate = new Date(currentDate)
       const dayEvents = getEventsForDate(dayDate)
+      const dayBirthdates = getBirthdatesForDate(dayDate)
 
       const hasFeriado = dayEvents.some(event =>
         event.event_type && (event.event_type.code === 'feriado_nacional' || event.event_type.code === 'feriado_provincial')
@@ -181,6 +255,7 @@ const calendarWeeks = computed(() => {
       week.push({
         date: dayDate,
         events: dayEvents,
+        birthdates: dayBirthdates,
         isCurrentMonth: dayDate >= from && dayDate <= to,
         isToday: isToday(dayDate),
         isPast: dayDate < from || dayDate < new Date(new Date().setHours(0, 0, 0, 0)),
@@ -214,6 +289,29 @@ const getEventsForDate = (date) => {
       String(eventDate.getDate()).padStart(2, '0')
 
     return eventDateStr === dateStr
+  })
+}
+
+const getBirthdatesForDate = (date) => {
+  if (!showBirthdates.value || !birthdatesArray.value || birthdatesArray.value.length === 0) {
+    return []
+  }
+
+  // Format date as MM-DD for birthday comparison
+  const dateStr = String(date.getMonth() + 1).padStart(2, '0') + '-' +
+    String(date.getDate()).padStart(2, '0')
+
+  return birthdatesArray.value.filter(birthdate => {
+    if (!birthdate || !birthdate.birthdate) return false
+
+    // Parse birthdate and format as MM-DD
+    const birthDate = parseLocalDate(birthdate.birthdate)
+    if (!birthDate) return false
+
+    const birthDateStr = String(birthDate.getMonth() + 1).padStart(2, '0') + '-' +
+      String(birthDate.getDate()).padStart(2, '0')
+
+    return birthDateStr === dateStr
   })
 }
 
@@ -273,11 +371,33 @@ const getMonthAbbreviation = (date) => {
   return months[date.getMonth()]
 }
 
-// Sorted events for list view
+// Combined sorted list for list view (events and birthdates mixed)
 const sortedEvents = computed(() => {
-  return [...eventsArray.value].sort((a, b) => {
-    const dateA = parseLocalDate(a.date)
-    const dateB = parseLocalDate(b.date)
+  if (!props.calendarData?.events) {
+    return []
+  }
+
+  // Convert object to array if needed (PHP arrays with numeric keys become objects in JS)
+  const events = !Array.isArray(props.calendarData.events)
+    ? Object.values(props.calendarData.events)
+    : props.calendarData.events
+
+  // Sort by the sort_date field (MM-DD format) that was created in the backend
+  return [...events].sort((a, b) => {
+    if (!a.sort_date || !b.sort_date) return 0
+    return a.sort_date.localeCompare(b.sort_date)
+  })
+})
+
+// Sorted birthdates for list view (kept for backward compatibility)
+const sortedBirthdates = computed(() => {
+  if (!birthdatesArray.value || birthdatesArray.value.length === 0) {
+    return []
+  }
+
+  return [...birthdatesArray.value].sort((a, b) => {
+    const dateA = parseLocalDate(a.birthdate)
+    const dateB = parseLocalDate(b.birthdate)
     if (!dateA || !dateB) return 0
     return dateA - dateB
   })
@@ -330,5 +450,56 @@ const getEventBadgeColor = (eventTypeCode) => {
     'inscripcion': 'lime'
   }
   return colorMap[eventTypeCode] || 'grey'
+}
+
+// Birthdate helper functions
+const getBirthdateClasses = (birthdate) => {
+  const classes = ['calendar-panel__birthdate--default']
+
+  if (birthdate.context && Array.isArray(birthdate.context)) {
+    birthdate.context.forEach(context => {
+      classes.push(`calendar-panel__birthdate--${context}`)
+    })
+  } else if (birthdate.context) {
+    classes.push(`calendar-panel__birthdate--${birthdate.context}`)
+  }
+
+  return classes
+}
+
+const getBirthdateTooltip = (birthdate, withName) => {
+  const contexts = Array.isArray(birthdate.context) ? birthdate.context : [birthdate.context]
+  const contextLabels = contexts.map(context => getBirthdateContextLabel(context)).join(', ')
+  const age = '(' + birthdate.birthdate.substring(0, 4) + ' - ' + calculateAge(birthdate.birthdate) + ' años)'
+  let label = withName ? `${birthdate.firstname} ${birthdate.lastname}` : ``;
+  label += contextLabels === '' ? `` : ` - ${contextLabels}`;
+  label += ` ${age}`
+  return label;
+}
+
+const getBirthdateContextLabel = (context) => {
+  const contextMap = {
+    'coworker': 'Compañero',
+    'student': 'Estudiante',
+    'teacher': 'Profesor',
+    'classmate': 'Compañero de clase',
+    'my_child': '',
+    'superadmin_view': '',
+  }
+  return contextMap[context] || ''
+}
+
+const getListBirthdateClasses = (birthdate) => {
+  const classes = ['calendar-panel__list-event--default']
+
+  if (birthdate.context && Array.isArray(birthdate.context)) {
+    birthdate.context.forEach(context => {
+      classes.push(`calendar-panel__list-event--${context}`)
+    })
+  } else if (birthdate.context) {
+    classes.push(`calendar-panel__list-event--${birthdate.context}`)
+  }
+
+  return classes
 }
 </script>
