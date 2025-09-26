@@ -500,7 +500,7 @@ trait UserServiceList
                 ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
                 ->get()
                 ->map(function ($user) {
-                    $user->context = ['superadmin_view'];
+                    $user->context = ['code' => 'superadmin_view', 'name' => 'Vista admin'];
                     return $user;
                 });
 
@@ -518,7 +518,6 @@ trait UserServiceList
         }
 
         $relatedUsers = collect();
-        dd($activeRoleRelationships);
         foreach ($activeRoleRelationships as $roleRelationship) {
             $roleCode = $roleRelationship['role_code'] ?? null;
             $schoolId = $roleRelationship['school_id'] ?? null;
@@ -552,17 +551,37 @@ trait UserServiceList
             if ($uniqueUsers->has($userId)) {
                 // User already exists, merge contexts
                 $existingUser = $uniqueUsers->get($userId);
-                $existingContexts = is_array($existingUser->context) ? $existingUser->context : [$existingUser->context];
-                $newContext = is_array($user->context) ? $user->context : [$user->context];
-                $mergedContexts = array_unique(array_merge($existingContexts, $newContext));
+                $existingContexts = $existingUser->context ?? [];
+                $newContext = $user->context ?? [];
+
+                // Merge contexts and remove duplicates based on context code
+                $mergedContexts = $existingContexts;
+                foreach ($newContext as $newCtx) {
+                    $exists = false;
+                    foreach ($mergedContexts as $existingCtx) {
+                        if (
+                            is_array($existingCtx) && is_array($newCtx) &&
+                            ($existingCtx['code'] ?? '') === ($newCtx['code'] ?? '')
+                        ) {
+                            $exists = true;
+                            break;
+                        } elseif (!is_array($existingCtx) && !is_array($newCtx) && $existingCtx === $newCtx) {
+                            $exists = true;
+                            break;
+                        }
+                    }
+                    if (!$exists) {
+                        $mergedContexts[] = $newCtx;
+                    }
+                }
                 $existingUser->context = $mergedContexts;
             } else {
-                // New user, ensure context is an array
-                $user->context = is_array($user->context) ? $user->context : [$user->context];
+                $user->context = [$user->context];
+                // New user, context is already an array
                 $uniqueUsers->put($userId, $user);
             }
         }
-
+        
         $return = $uniqueUsers
             ->values()
             ->filter(function ($user) use ($from, $to) {
@@ -594,6 +613,7 @@ trait UserServiceList
         ];
     }
 
+
     /**
      * Get co-workers from the same school
      */
@@ -602,11 +622,23 @@ trait UserServiceList
         $workerRoleIds = Role::select('id')->whereIn('code', Role::workersCodes())->pluck('id')->toArray();
 
         return User::withActiveRoleRelationships($workerRoleIds, $schoolId)
+            ->with(['roleRelationships.role'])
             ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
             ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
             ->get()
-            ->map(function ($user) {
-                $user->context = 'coworker';
+            ->map(function ($user) use ($schoolId) {
+                // Get the specific role for this school
+                $roleRelationship = $user->roleRelationships
+                    ->where('school_id', $schoolId)
+                    ->whereNull('deleted_at')
+                    ->whereNull('end_date')
+                    ->first();
+                $user->context =
+                    $roleRelationship && $roleRelationship->role
+                    ? ['code' => $roleRelationship->role->code, 'name' => $roleRelationship->role->name]
+                    : ['code' => 'coworker', 'name' => 'Compañero/a'];
+
+
                 return $user;
             });
     }
@@ -649,7 +681,7 @@ trait UserServiceList
             ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
             ->get()
             ->map(function ($user) {
-                $user->context = 'student';
+                $user->context = ['code' => 'student', 'name' => 'Estudiante'];
                 return $user;
             });
     }
@@ -694,7 +726,7 @@ trait UserServiceList
             ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
             ->get()
             ->map(function ($user) {
-                $user->context = 'classmate';
+                $user->context = ['code' => 'classmate', 'name' => 'Compañero/a'];
                 return $user;
             });
 
@@ -710,7 +742,7 @@ trait UserServiceList
             ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
             ->get()
             ->map(function ($user) {
-                $user->context = 'teacher';
+                $user->context = ['code' => 'teacher', 'name' => 'Docente'];
                 return $user;
             });
 
@@ -743,7 +775,7 @@ trait UserServiceList
         foreach ($relatedStudents as $student) {
             // Add the student themselves
             if ($student->birthdate && $student->birthdate >= $from && $student->birthdate <= $to) {
-                $student->context = 'my_child';
+                $student->context = ['code' => 'my_child', 'name' => 'Mi hijo/a'];
                 $relatedUsers->push($student);
             }
 

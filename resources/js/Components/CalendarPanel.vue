@@ -2,8 +2,7 @@
   <div class="calendar-panel">
     <div class="calendar-panel__header">
       <div class="calendar-panel__header-content">
-        <h3 class="calendar-panel__title">
-          Próximos eventos</h3>
+        <h3 class="calendar-panel__title">Agenda</h3>
         <div class="calendar-panel__controls">
           <button @click="toggleView" class="calendar-panel__toggle-btn"
             :class="{ 'calendar-panel__toggle-btn--active': isListView }">
@@ -204,8 +203,8 @@ const birthdatesArray = computed(() => {
   }
 
   // Convert object to array if needed (PHP arrays with numeric keys become objects in JS)
-  const events = !Array.isArray(props.calendarData.events) 
-    ? Object.values(props.calendarData.events) 
+  const events = !Array.isArray(props.calendarData.events)
+    ? Object.values(props.calendarData.events)
     : props.calendarData.events
 
   // Filter only birthdates (type === 'birthdate')
@@ -227,7 +226,7 @@ const calendarWeeks = computed(() => {
   const from = parseLocalDate(props.calendarData.from)
   const to = parseLocalDate(props.calendarData.to)
 
-  console.log('Parsed dates:', { from, to, originalFrom: props.calendarData.from, originalTo: props.calendarData.to })
+  // console.log('Parsed dates:', { from, to, originalFrom: props.calendarData.from, originalTo: props.calendarData.to })
   const weeks = []
 
   // Start from the Sunday of the week containing the 'from' date
@@ -458,10 +457,10 @@ const getBirthdateClasses = (birthdate) => {
 
   if (birthdate.context && Array.isArray(birthdate.context)) {
     birthdate.context.forEach(context => {
-      classes.push(`calendar-panel__birthdate--${context}`)
+      classes.push(`calendar-panel__birthdate--${context.code}`)
     })
   } else if (birthdate.context) {
-    classes.push(`calendar-panel__birthdate--${birthdate.context}`)
+    classes.push(`calendar-panel__birthdate--${birthdate.context.code}`)
   }
 
   return classes
@@ -469,7 +468,16 @@ const getBirthdateClasses = (birthdate) => {
 
 const getBirthdateTooltip = (birthdate, withName) => {
   const contexts = Array.isArray(birthdate.context) ? birthdate.context : [birthdate.context]
-  const contextLabels = contexts.map(context => getBirthdateContextLabel(context)).join(', ')
+  const contextLabels = contexts.map(context => {
+    // Handle both old string format and new object format
+    if (typeof context === 'string') {
+      return getBirthdateContextLabel(context)
+    } else if (context && context.name) {
+      return context.name
+    }
+    return ''
+  }).filter(label => label !== '').join(', ')
+
   const age = '(' + birthdate.birthdate.substring(0, 4) + ' - ' + calculateAge(birthdate.birthdate) + ' años)'
   let label = withName ? `${birthdate.firstname} ${birthdate.lastname}` : ``;
   label += contextLabels === '' ? `` : ` - ${contextLabels}`;
@@ -477,27 +485,26 @@ const getBirthdateTooltip = (birthdate, withName) => {
   return label;
 }
 
-const getBirthdateContextLabel = (context) => {
-  const contextMap = {
-    'coworker': 'Compañero',
-    'student': 'Estudiante',
-    'teacher': 'Profesor',
-    'classmate': 'Compañero de clase',
-    'my_child': '',
-    'superadmin_view': '',
-  }
-  return contextMap[context] || ''
-}
 
 const getListBirthdateClasses = (birthdate) => {
   const classes = ['calendar-panel__list-event--default']
 
   if (birthdate.context && Array.isArray(birthdate.context)) {
     birthdate.context.forEach(context => {
-      classes.push(`calendar-panel__list-event--${context}`)
+      // Handle both old string format and new object format
+      if (typeof context === 'string') {
+        classes.push(`calendar-panel__list-event--${context}`)
+      } else if (context && context.code) {
+        classes.push(`calendar-panel__list-event--${context.code}`)
+      }
     })
   } else if (birthdate.context) {
-    classes.push(`calendar-panel__list-event--${birthdate.context}`)
+    // Handle single context (not array)
+    if (typeof birthdate.context === 'string') {
+      classes.push(`calendar-panel__list-event--${birthdate.context}`)
+    } else if (birthdate.context.code) {
+      classes.push(`calendar-panel__list-event--${birthdate.context.code}`)
+    }
   }
 
   return classes

@@ -292,8 +292,8 @@
     }
 
     &--past {
-      background: color.adjust(variables.$color-rose, $alpha: -0.9);
-      color: color.adjust(variables.$color-rose, $lightness: -10%);
+      background: color.adjust(variables.$color-rose, $alpha: -0.9) !important;
+      color: color.adjust(variables.$color-rose, $lightness: -10%) !important;
     }
 
     &--today {
@@ -919,11 +919,100 @@
     }
 
     // Birthdate context modifiers
-    &--coworker,
-    &--teacher {
+    &--coworker {
       background: color.adjust(variables.$color-blue, $alpha: -0.8);
       color: color.adjust(variables.$color-blue, $lightness: -20%);
       border-left-color: variables.$color-blue;
+    }
+
+    &--student {
+      background: color.adjust(variables.$color-green, $alpha: -0.8);
+      color: color.adjust(variables.$color-green, $lightness: -20%);
+      border-left-color: variables.$color-green;
+    }
+
+    &--teacher,
+    &--professor,
+    &--grade_teacher,
+    &--assistant_teacher,
+    &--curricular_teacher,
+    &--special_teacher {
+      background: color.adjust(variables.$color-purple, $alpha: -0.8);
+      color: color.adjust(variables.$color-purple, $lightness: -20%);
+      border-left-color: variables.$color-purple;
+    }
+
+    &--classmate {
+      background: color.adjust(variables.$color-teal, $alpha: -0.8);
+      color: color.adjust(variables.$color-teal, $lightness: -20%);
+      border-left-color: variables.$color-teal;
+    }
+
+    &--my_child {
+      background: color.adjust(variables.$color-pink, $alpha: -0.8);
+      color: color.adjust(variables.$color-pink, $lightness: -20%);
+      border-left-color: variables.$color-pink;
+    }
+
+    &--superadmin_view,
+    &--superadmin {
+      background: color.adjust(variables.$color-danger, $alpha: -0.8);
+      color: color.adjust(variables.$color-danger, $lightness: -20%);
+      border-left-color: variables.$color-danger;
+    }
+
+    &--admin {
+      background: color.adjust(variables.$color-purple, $alpha: -0.8);
+      color: color.adjust(variables.$color-purple, $lightness: -20%);
+      border-left-color: variables.$color-purple;
+    }
+
+    &--director {
+      background: color.adjust(variables.$color-blue, $alpha: -0.8);
+      color: color.adjust(variables.$color-blue, $lightness: -20%);
+      border-left-color: variables.$color-blue;
+    }
+
+    &--regent {
+      background: color.adjust(variables.$color-green, $alpha: -0.8);
+      color: color.adjust(variables.$color-green, $lightness: -20%);
+      border-left-color: variables.$color-green;
+    }
+
+    &--secretary {
+      background: color.adjust(variables.$color-orange, $alpha: -0.8);
+      color: color.adjust(variables.$color-orange, $lightness: -20%);
+      border-left-color: variables.$color-orange;
+    }
+
+    &--class_assistant {
+      background: color.adjust(variables.$color-blue, $alpha: -0.8);
+      color: color.adjust(variables.$color-blue, $lightness: -20%);
+      border-left-color: variables.$color-blue;
+    }
+
+    &--librarian {
+      background: color.adjust(variables.$color-indigo, $alpha: -0.8);
+      color: color.adjust(variables.$color-indigo, $lightness: -20%);
+      border-left-color: variables.$color-indigo;
+    }
+
+    &--guardian {
+      background: color.adjust(variables.$color-pink, $alpha: -0.8);
+      color: color.adjust(variables.$color-pink, $lightness: -20%);
+      border-left-color: variables.$color-pink;
+    }
+
+    &--cooperative {
+      background: color.adjust(variables.$color-amber, $alpha: -0.8);
+      color: color.adjust(variables.$color-amber, $lightness: -20%);
+      border-left-color: variables.$color-amber;
+    }
+
+    &--former_student {
+      background: color.adjust(variables.$color-gray, $alpha: -0.8);
+      color: color.adjust(variables.$color-gray, $lightness: -20%);
+      border-left-color: variables.$color-gray;
     }
   }
 

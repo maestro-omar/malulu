@@ -237,7 +237,7 @@ const takeAttendance = (course) => {
     // router.push({ name: 'attendance.create', params: { courseId: course.id } })
 }
 
-console.log('TEACHERADMIN', props);
-console.log('TEACHER_DATA', teacherData.value);
-console.log('ALL_SCHOOL_DATA', allSchoolData.value);
+// console.log('TEACHERADMIN', props);
+// console.log('TEACHER_DATA', teacherData.value);
+// console.log('ALL_SCHOOL_DATA', allSchoolData.value);
 </script>

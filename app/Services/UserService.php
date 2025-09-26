@@ -8,16 +8,19 @@ use Illuminate\Support\Facades\Auth;
 use App\Traits\UserServiceCrud;
 use App\Traits\UserServiceList;
 use App\Services\FileService;
+use App\Services\AcademicEventService;
 
 class UserService
 {
     use UserServiceCrud, UserServiceList;
 
     protected FileService $fileService;
+    protected AcademicEventService $academicEventService;
 
-    public function __construct(FileService $fileService)
+    public function __construct(FileService $fileService, AcademicEventService $academicEventService)
     {
         $this->fileService = $fileService;
+        $this->academicEventService = $academicEventService;
     }
     /**
      * Get user data for show view with all relationships
@@ -298,5 +301,55 @@ class UserService
     public function getFiles(User $user, User $loggedUser)
     {
         return $this->fileService->getUserFiles($user, $loggedUser);
+    }
+
+    public function getCalendarData($user)
+    {
+        $eventsData = $this->academicEventService->getDashboardCalendar($user);
+        $from = $eventsData['from'];
+        $to = $eventsData['to'];
+        $birthdates = $this->getLoggedUserRelevantBirthdays($user, $from, $to);
+
+        // Combine events and birthdates
+        $combinedData = $this->combineEventsAndBirthdates($eventsData['events'], $birthdates);
+        return [
+            'from' => $from,
+            'to' => $to,
+            'events' => $combinedData
+        ];
+    }
+
+    private function combineEventsAndBirthdates($events, $birthdates)
+    {
+        $combined = collect();
+
+        // Add events to the collection
+        foreach ($events as $event) {
+            $combined->push([
+                'type' => 'event',
+                'date' => $event['date'],
+                'sort_date' => $this->getSortDate($event['date']),
+                'data' => $event
+            ]);
+        }
+
+        // Add birthdates to the collection
+        foreach ($birthdates as $birthdate) {
+            $combined->push([
+                'type' => 'birthdate',
+                'date' => $birthdate['birthdate'],
+                'sort_date' => $this->getSortDate($birthdate['birthdate']),
+                'data' => $birthdate
+            ]);
+        }
+
+        // Sort by month and day (not year)
+        return $combined->sortBy('sort_date')->values()->toArray();
+    }
+
+    private function getSortDate($dateString)
+    {
+        $date = \Carbon\Carbon::parse($dateString);
+        return $date->format('m-d');
     }
 }

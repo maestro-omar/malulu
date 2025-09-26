@@ -17,6 +17,7 @@ class UserContextService
         $activeRoleRelationships = $user->activeRoleRelationships()->map(function ($rel) {
             return [
                 'role_id'        => $rel->role_id,
+                'role_code'      => $rel->role->code,
                 'school_id'      => $rel->school_id,
                 'school_level_id' => $rel->school_level_id,
                 'custom_fields'  => $rel->custom_fields,
