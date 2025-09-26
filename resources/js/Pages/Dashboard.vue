@@ -1,7 +1,7 @@
 <template>
   <AuthenticatedLayout :title="pageTitle">
     <template #admin-header>
-      <AdminHeader  title="Panel principal"></AdminHeader>
+      <AdminHeader title="Panel principal"></AdminHeader>
     </template>
 
     <template #main-page-content>
@@ -9,15 +9,13 @@
 
         <Head :title="pageTitle" />
 
+        <CalendarPanel :calendar-data="$page.props.eventsData" />
         <GlobalAdminPanel v-if="isGlobalAdmin" data="" />
         <SchoolAdminPanel v-if="isSchoolAdmin" :data="isSchoolAdmin" :schools="schools"
           :combinationCount="combinationCount" />
-        <TeacherPanel v-if="isTeacher" :data="isTeacher" :schools="schools"
-          :combinationCount="combinationCount" />
-        <StudentPanel v-if="isStudent" :data="isStudent" :schools="schools"
-          :combinationCount="combinationCount" />
-        <ParentPanel v-if="isGuardian" :data="isGuardian" :schools="schools"
-          :combinationCount="combinationCount" />
+        <TeacherPanel v-if="isTeacher" :data="isTeacher" :schools="schools" :combinationCount="combinationCount" />
+        <StudentPanel v-if="isStudent" :data="isStudent" :schools="schools" :combinationCount="combinationCount" />
+        <ParentPanel v-if="isGuardian" :data="isGuardian" :schools="schools" :combinationCount="combinationCount" />
         <CooperativePanel v-if="isCooperative" :data="isCooperative" :schools="schools"
           :combinationCount="combinationCount" />
         <OtherWorkerPanel v-if="isOtherWorker" :data="isOtherWorker" :schools="schools"
@@ -48,6 +46,7 @@ import CooperativePanel from '@/Pages/DashboardPanels/CooperativePanel.vue';
 import OtherWorkerPanel from '@/Pages/DashboardPanels/OtherWorkerPanel.vue';
 import FormerStudentPanel from '@/Pages/DashboardPanels/FormerStudentPanel.vue';
 import DefaultPanel from '@/Pages/DashboardPanels/DefaultPanel.vue';
+import CalendarPanel from '@/Components/CalendarPanel.vue';
 
 const pageTitle = ref('Inicio');
 

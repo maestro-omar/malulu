@@ -22,7 +22,12 @@ class AcademicEventService
     public function getDashboardCalendar(User $user): array
     {
         $provinceId = $user->province_id;
-        return $this->listAround($provinceId, null, 25, 5);
+        $today = Carbon::now()->startOfDay();
+        // Set $from to the previous Sunday (or today if today is Sunday)
+        $from = $today->copy()->startOfWeek(Carbon::SUNDAY);
+        // Set $to to 27 days after $from (to cover 4 full weeks)
+        $to = $from->copy()->addDays(27);
+        return $this->listAround($provinceId, null, $from, $to);
     }
     /**
      * List all academic events for a given school and academic year.
@@ -39,12 +44,8 @@ class AcademicEventService
     /**
      * List academic events for the next N days and the past M days.
      */
-    public function listAround(?int $provinceId, ?int $schoolId, int $nextDays = 25, int $pastDays = 5): array
+    public function listAround(?int $provinceId, ?int $schoolId, $from, $to): array
     {
-        $today = Carbon::now()->startOfDay();
-        $from = $today->copy()->subDays($pastDays);
-        $to = $today->copy()->addDays($nextDays);
-
         $academicEvents = $this->getAcademicEventsByDateRange($provinceId, $schoolId, $from, $to);
         $recurrentEvents = $this->getRecurrentEventsByDateRange($provinceId, $schoolId, $from, $to);
 

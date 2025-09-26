@@ -21,6 +21,7 @@ Route::prefix(__('routes.system'))->group(function () {
     });
 
     Route::get('/' . __('routes.home'), [DashboardController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+    Route::get('/api/dashboard/calendar', [DashboardController::class, 'calendar'])->middleware(['auth', 'verified'])->name('dashboard.calendar');
 
     Route::middleware('guest')->group(function () {
         // Route::get('registro', [RegisteredUserController::class, 'create'])
