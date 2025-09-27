@@ -59,8 +59,4 @@ const destroy = () => {
     router.delete(route_school_student(props.school, props.user, 'destroy'));
   }
 };
-
-console.log('user', props.user);
-console.log('guardians', props.guardians);
-
 </script>

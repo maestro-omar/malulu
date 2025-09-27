@@ -45,7 +45,7 @@ Breadcrumbs::for('users.edit', function (Trail $trail, $user) {
 
 Breadcrumbs::for('users.file.create', function (Trail $trail, $user) {
     $trail->parent('users.show', $user);
-    $trail->push("Nuevo archivo para {$user->firstname} {$user->lastname}");
+    $trail->push("Nuevo archivo para {$user->first_name} {$user->lastname}");
 });
 
 Breadcrumbs::for('users.file.show', function (Trail $trail, $user, $file) {
@@ -107,6 +107,11 @@ Breadcrumbs::for('school.show', function (Trail $trail, $school) {
 Breadcrumbs::for('schools.staff', function (Trail $trail, $school) {
     $trail->parent('school.show', $school);
     $trail->push('Staff', route('school.staff', $school));
+});
+
+Breadcrumbs::for('schools.staff.show', function (Trail $trail, $school, $staff) {
+    $trail->parent('schools.staff', $school);
+    $trail->push($staff['firstname'] . ' ' . $staff['lastname'], route('school.staff.show', [$school, $staff['id'] . '-' . $staff['name'] . ' ' . $staff['lastname']]));
 });
 
 Breadcrumbs::for('schools.students', function (Trail $trail, $school) {

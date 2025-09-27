@@ -48,7 +48,7 @@
                 <div class="calendar-panel__calendar">
                   <div v-for="(week, weekIndex) in calendarWeeks" :key="weekIndex" class="calendar-panel__week">
                     <div v-for="(day, dayIndex) in week" :key="dayIndex" class="calendar-panel__day"
-                      :class="getDayClasses(day)">
+                      :class="getDayClasses(day)" @click="openDatePopup(day.date)">
                       <div class="calendar-panel__day-number">
                         <span class="calendar-panel__day-date">{{ day.date.getDate() }}</span><span
                           class="calendar-panel__day-month">{{ getMonthAbbreviation(day.date) }}</span>
@@ -129,7 +129,7 @@
                       </div>
                       <div class="calendar-panel__list-event-content">
                         <h5 class="calendar-panel__list-event-title">🎂 {{ item.data.firstname }} {{ item.data.lastname
-                          }}
+                        }}
                         </h5>
                         <div class="calendar-panel__list-event-meta">
                           <span class="calendar-panel__list-event-notes">
@@ -147,6 +147,70 @@
       </div>
     </div>
   </div>
+
+  <!-- Date Events Popup -->
+  <q-dialog v-model="showPopup" class="calendar-popup">
+    <q-card class="calendar-popup__card">
+      <q-card-section class="calendar-popup__header">
+        <div class="calendar-popup__title">
+          {{ selectedDate ? formatPopupDate(selectedDate) : '' }}
+        </div>
+        <q-btn icon="close" flat round dense @click="closePopup" class="calendar-popup__close" />
+      </q-card-section>
+
+      <q-card-section class="calendar-popup__content">
+        <!-- Events Section -->
+        <div v-if="selectedDateEvents.length > 0" class="calendar-popup__section">
+          <h6 class="calendar-popup__section-title">Eventos</h6>
+          <div class="calendar-popup__events">
+            <div v-for="event in selectedDateEvents" :key="event.id" class="calendar-popup__event"
+              :class="getEventClasses(event)">
+              <div class="calendar-popup__event-header">
+                <h6 class="calendar-popup__event-title">{{ event.title }}</h6>
+                <q-badge
+                  v-if="event.event_type && event.event_type.code !== 'conmemoracion_nacional' && event.event_type.code !== 'conmemoracion_provincial' && event.event_type.code !== 'conmemoracion_escolar'"
+                  :color="getEventBadgeColor(event.event_type.code)" class="calendar-popup__event-badge">
+                  {{ event.event_type.name }}
+                </q-badge>
+              </div>
+              <div v-if="event.notes" class="calendar-popup__event-notes">
+                {{ event.notes }}
+              </div>
+              <div v-if="event.courses && event.courses.length > 0" class="calendar-popup__event-courses">
+                <span class="calendar-popup__event-courses-label">Cursos:</span>
+                <span v-for="(course, index) in event.courses" :key="course.id" class="calendar-popup__event-course">
+                  {{ course.name }}<span v-if="index < event.courses.length - 1">, </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Birthdates Section -->
+        <div v-if="selectedDateBirthdates.length > 0" class="calendar-popup__section">
+          <h6 class="calendar-popup__section-title">Cumpleaños</h6>
+          <div class="calendar-popup__birthdates">
+            <div v-for="birthdate in selectedDateBirthdates" :key="birthdate.id" class="calendar-popup__birthdate"
+              :class="getBirthdateClasses(birthdate)">
+              <div class="calendar-popup__birthdate-header">
+                <span class="calendar-popup__birthdate-icon">🎂</span>
+                <h6 class="calendar-popup__birthdate-name">{{ birthdate.firstname }} {{ birthdate.lastname }}</h6>
+              </div>
+              <div class="calendar-popup__birthdate-info">
+                {{ getBirthdateTooltip(birthdate, false) }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- No events message -->
+        <div v-if="selectedDateEvents.length === 0 && selectedDateBirthdates.length === 0"
+          class="calendar-popup__no-events">
+          <p>Sin eventos</p>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 
 </template>
 
@@ -168,6 +232,12 @@ const weekDays = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá']
 // Toggle between calendar and list view
 const isListView = ref(false)
 const showBirthdates = ref(false)
+
+// Popup state management
+const showPopup = ref(false)
+const selectedDate = ref(null)
+const selectedDateEvents = ref([])
+const selectedDateBirthdates = ref([])
 
 
 // Helper function to parse dates as local dates without UTC conversion
@@ -254,7 +324,7 @@ const calendarWeeks = computed(() => {
     for (let i = 0; i < 7; i++) {
       const dayDate = new Date(currentDate)
       const dayEvents = getEventsForDate(dayDate)
-      const dayBirthdates = getBirthdatesForDate(dayDate)
+      const dayBirthdates = getBirthdatesForDate(dayDate, false)
 
       const hasFeriado = dayEvents.some(event =>
         event.event_type && (event.event_type.code === 'feriado_nacional' || event.event_type.code === 'feriado_provincial')
@@ -300,8 +370,8 @@ const getEventsForDate = (date) => {
   })
 }
 
-const getBirthdatesForDate = (date) => {
-  if (!showBirthdates.value || !birthdatesArray.value || birthdatesArray.value.length === 0) {
+const getBirthdatesForDate = (date, ignoreBirthdayToggle) => {
+  if ((!showBirthdates.value && !ignoreBirthdayToggle) || !birthdatesArray.value || birthdatesArray.value.length === 0) {
     return []
   }
 
@@ -517,5 +587,27 @@ const getListBirthdateClasses = (birthdate) => {
   }
 
   return classes
+}
+
+// Popup functions
+const openDatePopup = (date) => {
+  selectedDate.value = date
+  selectedDateEvents.value = getEventsForDate(date)
+  selectedDateBirthdates.value = getBirthdatesForDate(date, true)
+  showPopup.value = true
+}
+
+const closePopup = () => {
+  showPopup.value = false
+  selectedDate.value = null
+  selectedDateEvents.value = []
+  selectedDateBirthdates.value = []
+}
+
+const formatPopupDate = (date) => {
+  const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+  const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+
+  return `${dayNames[date.getDay()]}, ${date.getDate()} de ${monthNames[date.getMonth()]}`
 }
 </script>

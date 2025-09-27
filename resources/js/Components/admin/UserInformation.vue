@@ -11,9 +11,9 @@
     </template>
     <div class="row q-col-gutter-sm">
       <!-- Profile Image -->
-      <div class="col-12 col-md-3 text-center">
+      <div class="col-12 col-md-4 text-center">
         <div class="row">
-          <div class="col-4 col-md-12">
+          <div class="col-md-12 col-sm-3 col-xs-12">
             <q-avatar size="100px">
               <EditableImage v-model="user.picture" type="picture" :model-id="user.id" :can-edit="editablePicture"
                 upload-route="users.upload-image" delete-route="users.delete-image"
@@ -21,7 +21,7 @@
             </q-avatar>
           </div>
 
-          <div class="col-8 col-md-12">
+          <div class="col-md-12 col-sm-9 col-xs-12">
             <!-- User Info under image -->
             <DataFieldShow label="Nombre de usuario" :value="user.name" type="text" />
             <DataFieldShow label="">
@@ -39,8 +39,18 @@
         </div>
       </div>
 
+
       <!-- Basic Information -->
-      <div class="col-12 col-md-9">
+      <div class="col-12 col-md-8">
+        <!-- Critical Information -->
+        <div v-if="user.critical_info" class="col-12">
+          <q-banner class="bg-orange q-pa-md q-mb-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="warning" color="white" size="sm" />
+            </template>
+            <div class="text-weight-bold text-h4" v-html="user.critical_info.replace(/\n/g, '<br>')"></div>
+          </q-banner>
+        </div>
         <div class="col-12">
           <div class="text-h4 q-mb-sm">Datos personales</div>
           <div class="row q-col-gutter-sm">
@@ -70,7 +80,8 @@
         <div v-if="guardians && Array.isArray(guardians) && guardians.length > 0" class="col-12 q-mt-md">
           <div class="text-h4 q-mb-sm">Tutores</div>
           <div class="row q-col-gutter-sm">
-              <StudentGuardian v-for="guardian in guardians" :key="guardian.id" :guardian="guardian"  class="col-6 col-xs-6 col-sm-4 col-md-3"/>
+            <StudentGuardian v-for="guardian in guardians" :key="guardian.id" :guardian="guardian"
+              class="col-6 col-xs-6 col-sm-4 col-md-3" />
           </div>
         </div>
         <div class="col-12 q-mt-md">
@@ -84,12 +95,12 @@
             <div class="col-6 col-xs-6 col-sm-4 col-md-3">
               <DataFieldShow label="Localidad" :value="user.locality" type="text" />
             </div>
-            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+            <!-- <div class="col-6 col-xs-6 col-sm-4 col-md-3">
               <DataFieldShow label="Provincia" :value="user.province?.name" type="text" />
-            </div>
-            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+            </div> -->
+            <!-- <div class="col-6 col-xs-6 col-sm-4 col-md-3">
               <DataFieldShow label="País" :value="user.country?.name" type="text" />
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -113,5 +124,4 @@ const props = defineProps({
   editablePicture: { type: Boolean, default: true },
   currentCourse: { type: Object, required: false },
 });
-console.log('guardians', props.guardians);
 </script>

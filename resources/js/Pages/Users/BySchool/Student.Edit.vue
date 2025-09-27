@@ -133,8 +133,8 @@ const submit = () => {
 
                                 <div class="admin-form__field">
                                     <InputLabel for="critical_info" value="Información Crítica" />
-                                    <TextInput id="critical_info" type="text" class="admin-form__input"
-                                        v-model="form.critical_info" />
+                                    <textarea id="critical_info" class="admin-form__textarea"
+                                        v-model="form.critical_info" rows="3"></textarea>
                                     <InputError class="admin-form__error" :message="form.errors.critical_info" />
                                 </div>
                                 <div class="admin-form__field">

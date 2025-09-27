@@ -72,7 +72,6 @@
       <template #body-cell-in_charge="props">
         <q-td :props="props">
           <q-icon v-if="props.row.rel_in_charge" name="check_circle" color="positive" size="sm" />
-          <q-icon v-else name="cancel" color="negative" size="sm" />
         </q-td>
       </template>
 

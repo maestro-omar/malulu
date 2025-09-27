@@ -49,3 +49,37 @@ body {
 .q-layout .q-page {
     // min-height: auto !important;
 }
+
+.q-expansion-item .q-item__section--avatar {
+    min-width: 24px;
+    padding-right: 8px;
+
+    @include mixins.mq(sm) {
+        min-width: 30px;
+        padding-right: 5px;
+    }
+}
+
+.q-item.q-item--clickable {
+    padding: 8px 4px;
+
+    @include mixins.mq(sm) {
+        padding: 8px 16px;
+    }
+}
+
+.q-item .q-item__section--main ~ .q-item__section--side {
+    padding-left: 8px;
+
+    @include mixins.mq(sm) {
+        padding-left: 16px;
+    }
+}
+
+.q-item--clickable .q-item__section .q-btn {
+    max-width: 100px;
+
+    @include mixins.mq(sm) {
+        max-width: auto;
+    }
+}

@@ -101,11 +101,27 @@ class UserController extends SchoolBaseController
         ]);
     }
 
+    public function staffView(Request $request, $schoolSlug, $staffIdAndName): Response
+    {
+        $this->setSchool($schoolSlug);
+        $data = $this->getStaffData($staffIdAndName);
+        $staff = $data ? $data['user'] : null;
+        $files = $staff ? $this->fileService->getUserFiles($staff, $request->user()) : null;
+        
+        return $this->render($request, 'Users/BySchool/Staff.Show', [
+            'user' => $data['data'],
+            'files' => $files,
+            'genders' => User::genders(),
+            'school' => $this->school,
+            'breadcrumbs' => Breadcrumbs::generate('schools.staff.show', $this->school, $staff),
+        ]);
+    }
+
     public function studentEdit(Request $request, $schoolSlug, $studentIdAndName): Response
     {
         $this->setSchool($schoolSlug);
-        $student = $this->getUserData($studentIdAndName);
-
+        $data = $this->getUserData($studentIdAndName);
+        $student = $data ? $data['user'] : null;
         return Inertia::render('Users/BySchool/Student.Edit', [
             'school' => $this->school,
             'user' => $student, //->load(['roles']
@@ -179,5 +195,11 @@ class UserController extends SchoolBaseController
     {
         $student = $this->getUserFromUrlParameter($studentIdAndName);
         return ['user' => $student, 'data' => $student ? $this->userService->getStudentUserShowData($student) : null];
+    }
+
+    private function getStaffData(string $staffIdAndName)
+    {
+        $staff = $this->getUserFromUrlParameter($staffIdAndName);
+        return ['user' => $staff, 'data' => $staff ? $this->userService->getWorkerUserShowData($staff) : null];
     }
 }
