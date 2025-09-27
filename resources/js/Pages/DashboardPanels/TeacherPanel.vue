@@ -126,7 +126,7 @@
                                                 color="amber" 
                                                 icon="check_circle"
                                                 size="sm"
-                                                @click="takeAttendance(course)"
+                                                :href="course.attendance_url"
                                                 class="dbsub-panel__action-btn"
                                             >
                                                 <q-tooltip>Tomar Asistencia</q-tooltip>
@@ -217,27 +217,4 @@ const formatDate = (date) => {
         day: 'numeric'
     })
 }
-
-// Course actions
-const viewCourse = (course) => {
-    console.log('View course:', course)
-    // TODO: Implement navigation to course details
-    // router.push({ name: 'courses.show', params: { id: course.id } })
-}
-
-const viewStudents = (course) => {
-    console.log('View students for course:', course)
-    // TODO: Implement navigation to course students
-    // router.push({ name: 'courses.students', params: { id: course.id } })
-}
-
-const takeAttendance = (course) => {
-    console.log('Take attendance for course:', course)
-    // TODO: Implement navigation to attendance page
-    // router.push({ name: 'attendance.create', params: { courseId: course.id } })
-}
-
-// console.log('TEACHERADMIN', props);
-// console.log('TEACHER_DATA', teacherData.value);
-// console.log('ALL_SCHOOL_DATA', allSchoolData.value);
 </script>

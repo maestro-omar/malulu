@@ -35,14 +35,18 @@
         @include mixins.fz(2.6);
         @include mixins.lh(2.6);
 
-        @include mixins.mq(sm) {}
+        white-space: normal;
+        @include mixins.mq(sm) {
+            white-space: normal;
+        }
     }
 
     & &__actions {
         flex: 1;
         display: flex;
         justify-content: flex-end;
-        flex-direction: column;
+        flex-direction: row;
+        margin-top: 5px;
         gap: 0.5rem; // space-y-2
 
         &--more {
@@ -53,6 +57,7 @@
 
         @include mixins.mq(sm) {
             // md: breakpoint
+            margin-top: 0;
             margin-left: 20px;
             flex-direction: row;
             gap: 1rem; // md:space-x-4

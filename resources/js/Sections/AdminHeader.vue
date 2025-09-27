@@ -7,7 +7,10 @@
         <q-toolbar-title class="mll-sub-header__title">
           {{ title }}
         </q-toolbar-title>
-        <div class="mll-sub-header__actions">
+        <div
+          v-if="(add && add.show) || (trashed && trashed.show) || (edit && edit.show) || (del && del.show)"
+          class="mll-sub-header__actions"
+        >
           <q-btn v-if="add && add.show" :href="add.href" color="green" size="md" :label="add.label || 'Nuevo'" />
           <q-btn v-if="trashed && trashed.show" :href="trashed.href" color="grey-6" size="md"
             :label="trashed.label || 'Eliminados'" />

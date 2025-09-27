@@ -106,11 +106,8 @@ import TextInput from '@/Components/admin/TextInput.vue'
 import SelectSchoolShift from '@/Components/admin/SelectSchoolShift.vue'
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
-import { ref, computed } from 'vue'
-import { formatDateForInput } from '@/Utils/date'
-import { getFullYear } from '@/Utils/date'
+import { ref, } from 'vue'
 import { Head, useForm } from '@inertiajs/vue3'
-import { getCourseSlug } from '@/Utils/strings'
 
 const props = defineProps({
   school: Object,

@@ -1,13 +1,13 @@
 <template>
   <q-layout view="hHr lpR fFf">
     <!-- Header with only toolbar -->
-    <q-header reveal elevated class="bg-white text-primary" height-hint="90">
-      <q-toolbar>
-        <SystemLogo :href="route('dashboard')" />
-        <q-toolbar-title>
+    <q-header reveal elevated class="bg-white text-primary mll-header" height-hint="90">
+      <q-toolbar class="mll-header__toolbar">
+        <SystemLogo :href="route('dashboard')" class="mll-header__logo" />
+        <q-toolbar-title class="mll-header__title">
           {{ $page.props.appName }}
         </q-toolbar-title>
-        <q-tabs>
+        <q-tabs class="mll-header__tabs">
           <q-route-tab v-for="item in $page.props.menu.items" :key="item.route || item.href"
             :href="item.href ? item.href : (item.route ? route(item.route) : undefined)"
             :active="item.route ? route().current(item.route) : (item.href ? $page.url === item.href : false)"
@@ -16,8 +16,8 @@
         </q-tabs>
 
 
-        {{ $page.props.auth.user.name }}
-        <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
+        <span class="mll-header__user">{{ $page.props.auth.user.name }}</span>
+        <q-btn class="mll-header__hamburger" dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
       <!-- AdminHeader slot -->
       <slot name="admin-header" />

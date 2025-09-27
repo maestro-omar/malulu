@@ -187,7 +187,6 @@ import { computed, ref, reactive, nextTick } from 'vue';
 import { Head, router, usePage } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
-import { getCourseSlug } from '@/Utils/strings';
 import noImage from "@images/no-image-person.png";
 import axios from 'axios';
 
