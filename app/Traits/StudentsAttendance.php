@@ -50,10 +50,11 @@ trait StudentsAttendance
         $datesNavigation = $invalidDateMsg ? null : $this->getDatesNavigation($date, 8, false);
         // Get current attendance status for all students on this date
         $currentAttendanceStatuses = $invalidDateMsg ? null :
-            $this->attendanceService->getStudentsAttendanceStatusForDate(
+            $this->attendanceService->getStudentsAttendanceLastNDays(
                 $studentIds,
                 $course->id,
-                $date->format('Y-m-d')
+                $date->format('Y-m-d'),
+                5
             );
 
         if (!$invalidDateMsg)
@@ -144,30 +145,58 @@ trait StudentsAttendance
     public function attendanceDayUpdate(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
         try {
-            // Validate request
-            $request->validate([
-                'student_id' => 'required|integer|exists:users,id',
-                'status' => 'nullable|string|exists:attendance_statuses,code',
-                'date' => 'required|date_format:Y-m-d',
-            ]);
-
             $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
             $user = auth()->user();
 
-            // Update attendance using the service
-            $attendance = $this->attendanceService->updateStudentAttendance(
-                $request->student_id,
-                $course->id,
-                $request->date,
-                $request->status,
-                $user->id
-            );
+            // Check if this is a bulk update (multiple students) or individual update
+            if ($request->has('student_ids')) {
+                // Bulk update for multiple students
+                $request->validate([
+                    'student_ids' => 'required|array|min:1',
+                    'student_ids.*' => 'integer|exists:users,id',
+                    'status' => 'nullable|string|exists:attendance_statuses,code',
+                    'date' => 'required|date_format:Y-m-d',
+                ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Asistencia actualizada correctamente',
-                'attendance' => $attendance,
-            ]);
+                $attendances = [];
+                foreach ($request->student_ids as $studentId) {
+                    $attendance = $this->attendanceService->updateStudentAttendance(
+                        $studentId,
+                        $course->id,
+                        $request->date,
+                        $request->status,
+                        $user->id
+                    );
+                    $attendances[] = $attendance;
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Asistencias actualizadas correctamente',
+                    'attendances' => $attendances,
+                ]);
+            } else {
+                // Individual update for single student
+                $request->validate([
+                    'student_id' => 'required|integer|exists:users,id',
+                    'status' => 'nullable|string|exists:attendance_statuses,code',
+                    'date' => 'required|date_format:Y-m-d',
+                ]);
+
+                $attendance = $this->attendanceService->updateStudentAttendance(
+                    $request->student_id,
+                    $course->id,
+                    $request->date,
+                    $request->status,
+                    $user->id
+                );
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Asistencia actualizada correctamente',
+                    'attendance' => $attendance,
+                ]);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

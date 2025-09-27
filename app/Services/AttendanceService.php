@@ -299,7 +299,7 @@ class AttendanceService
     public function updateBulkAttendance(array $studentIds, int $courseId, string $date, string $statusCode, int $createdBy): array
     {
         $results = [];
-        
+
         foreach ($studentIds as $studentId) {
             $attendance = $this->updateStudentAttendance($studentId, $courseId, $date, $statusCode, $createdBy);
             if ($attendance) {
@@ -349,35 +349,35 @@ class AttendanceService
         // Calculate the N days before current date
         $dates = [];
         $current = new \DateTime($currentDate);
-        
+
         for ($i = $days - 1; $i >= 0; $i--) {
             $date = clone $current;
             $date->modify("-{$i} days");
             $dates[] = $date->format('Y-m-d');
         }
-        
+
         // Get all attendances for the N days
         $attendances = Attendance::with('status')
             ->whereIn('user_id', $studentIds)
             ->where('course_id', $courseId)
             ->whereIn('date', $dates)
             ->get();
-        
+
         // Group by user_id and date
         $grouped = [];
         foreach ($attendances as $attendance) {
             $grouped[$attendance->user_id][$attendance->date] = $attendance->status->code;
         }
-        
+
         // Build result array with N days for each user
         $result = [];
         foreach ($studentIds as $studentId) {
             $result[$studentId] = [];
             foreach ($dates as $date) {
-                $result[$studentId][] = $grouped[$studentId][$date] ?? null;
+                $result[$studentId][$date] = $grouped[$studentId][$date] ?? null;
             }
         }
-        
+
         return $result;
     }
 }

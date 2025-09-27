@@ -28,7 +28,7 @@
 
           <div class="row items-center justify-center">
             <!-- Date sequence (centered) - only show if no invalid date -->
-            <div v-if="!hasInvalidDate" class="row q-gutter-xs">
+            <div v-if="!hasInvalidDate" class="row q-gutter-xs col-12 col-md-auto">
               <!-- Previous dates (daysBefore) -->
               <q-btn v-for="(date, index) in previousDates" :key="`prev-${index}`" color="primary" outline
                 :label="formatDate(date)" @click="navigateToDate(date)" size="sm" />
@@ -42,7 +42,8 @@
             </div>
 
             <!-- Calendar picker (always visible) -->
-            <div :class="hasInvalidDate ? '' : 'q-ml-auto'">
+            <div
+              :class="hasInvalidDate ? 'col-12 text-center q-mt-sm' : 'q-ml-auto col-12 col-md-auto text-center q-mt-sm'">
               <q-btn color="secondary" icon="event" label="Calendario" @click="openCalendar" size="sm" />
             </div>
           </div>
@@ -143,11 +144,22 @@
                 </div>
               </div>
 
+              <!-- Previous 4 Days Attendance -->
+              <div class="q-mb-md">
+                <div class="row q-gutter-xs">
+                  <div v-for="(status, date) in getPreviousDaysAttendance(student)" :key="date" class="col text-center">
+                    <div class="text-caption text-grey-6">{{ formatDateShort(date) }}</div>
+                    <q-badge :color="getStatusBadgeColor(status)" :label="getStatusSymbol(status)" size="sm"
+                      class="q-mt-xs" />
+                  </div>
+                </div>
+              </div>
               <!-- Current Attendance Status -->
               <div class="text-center q-mb-md">
-                <q-badge :color="getCurrentStatusColor(student)" :label="getCurrentStatusLabel(student)"
-                  class="text-weight-bold" />
+                {{ formatDateShort(props.dateYMD) }}: <q-badge :color="getCurrentStatusColor(student)"
+                  :label="getCurrentStatusLabel(student)" class="text-weight-bold" />
               </div>
+
 
               <!-- Attendance Status Buttons -->
               <div class="q-gutter-xs">
@@ -230,7 +242,6 @@ const navigationLoading = ref(false)
 const initializeSelectedDate = () => {
   const [year, month, day] = props.dateYMD.split('-')
   selectedDate.value = `${year}/${month}/${day}`
-  console.log('Selected date:', selectedDate.value)
 }
 
 // Initialize on component mount
@@ -302,9 +313,32 @@ const getAttendancePercentageClass = (student) => {
 
 // Get current attendance status for a student
 const getCurrentAttendanceStatus = (student) => {
-  // This would come from the student's attendance record for this date
-  // For now, return null (no attendance recorded)
+  // Get the status for the current date
+  if (student.currentAttendanceStatus && typeof student.currentAttendanceStatus === 'object') {
+    return student.currentAttendanceStatus[props.dateYMD] || null;
+  }
   return student.currentAttendanceStatus || null;
+}
+
+// Get previous days attendance for a student
+const getPreviousDaysAttendance = (student) => {
+  if (!student.currentAttendanceStatus || typeof student.currentAttendanceStatus !== 'object') {
+    return {};
+  }
+
+  // Get all dates except the current date
+  const previousDays = { ...student.currentAttendanceStatus };
+  delete previousDays[props.dateYMD];
+
+  // Sort by date to show in chronological order
+  const sortedDays = {};
+  Object.keys(previousDays)
+    .sort()
+    .forEach(date => {
+      sortedDays[date] = previousDays[date];
+    });
+
+  return sortedDays;
 }
 
 // Get current status color and label
@@ -385,11 +419,19 @@ const setStudentAttendance = async (studentId, statusCode) => {
     if (response.data.success) {
       // Toggle behavior: if already selected, remove status; otherwise, set status
       if (isCurrentlySelected) {
-        // Remove status (set to unassigned)
-        student.currentAttendanceStatus = null;
+        // Remove status (set to unassigned) - preserve historical data
+        if (typeof student.currentAttendanceStatus === 'object') {
+          student.currentAttendanceStatus[props.dateYMD] = null;
+        } else {
+          student.currentAttendanceStatus = null;
+        }
       } else {
-        // Set new status
-        student.currentAttendanceStatus = statusCode;
+        // Set new status - preserve historical data
+        if (typeof student.currentAttendanceStatus === 'object') {
+          student.currentAttendanceStatus[props.dateYMD] = statusCode;
+        } else {
+          student.currentAttendanceStatus = { [props.dateYMD]: statusCode };
+        }
       }
 
       // Move focus to next student
@@ -426,15 +468,19 @@ const setMassiveAttendance = async (statusCode) => {
     }
 
     // Make API call to update bulk attendance using axios instead of Inertia router
+    const requestData = {
+      student_ids: props.students.map(s => s.id),
+      status: statusCode,
+      date: props.dateYMD,
+    };
+
+    console.log('Massive attendance request:', requestData);
+
     const response = await axios.post(route('school.course.attendance.update', {
       school: props.school.slug,
       schoolLevel: props.selectedLevel.code,
       idAndLabel: props.course.id_and_label
-    }), {
-      student_ids: props.students.map(s => s.id),
-      status: statusCode,
-      date: props.dateYMD,
-    });
+    }), requestData);
 
     // Check if the API call was successful
     if (response.data.success) {
@@ -451,9 +497,13 @@ const setMassiveAttendance = async (statusCode) => {
         activeMassiveStatus.value = null;
       }
 
-      // Update all students' current status
+      // Update all students' current status - preserve historical data
       props.students.forEach(student => {
-        student.currentAttendanceStatus = statusCode;
+        if (typeof student.currentAttendanceStatus === 'object') {
+          student.currentAttendanceStatus[props.dateYMD] = statusCode;
+        } else {
+          student.currentAttendanceStatus = { [props.dateYMD]: statusCode };
+        }
       });
     } else {
       console.error('API returned error:', response.data.message);
@@ -461,6 +511,17 @@ const setMassiveAttendance = async (statusCode) => {
 
   } catch (error) {
     console.error('Error updating massive attendance:', error);
+
+    // Log more details about the error
+    if (error.response) {
+      console.error('Server response:', error.response.data);
+      console.error('Status code:', error.response.status);
+    } else if (error.request) {
+      console.error('Request error:', error.request);
+    } else {
+      console.error('Error message:', error.message);
+    }
+
     // TODO: Show error notification
   } finally {
     massiveLoading.value = false;
@@ -469,16 +530,24 @@ const setMassiveAttendance = async (statusCode) => {
 
 // Get count of students with a specific status
 const getStatusCount = (statusCode) => {
-  return props.students.filter(student =>
-    student.currentAttendanceStatus === statusCode
-  ).length;
+  return props.students.filter(student => {
+    // Handle both old format (string) and new format (object)
+    if (typeof student.currentAttendanceStatus === 'object' && student.currentAttendanceStatus !== null) {
+      return student.currentAttendanceStatus[props.dateYMD] === statusCode;
+    }
+    return student.currentAttendanceStatus === statusCode;
+  }).length;
 }
 
 // Get count of unassigned students
 const getUnassignedCount = () => {
-  return props.students.filter(student =>
-    !student.currentAttendanceStatus
-  ).length;
+  return props.students.filter(student => {
+    // Handle both old format (string) and new format (object)
+    if (typeof student.currentAttendanceStatus === 'object' && student.currentAttendanceStatus !== null) {
+      return !student.currentAttendanceStatus[props.dateYMD];
+    }
+    return !student.currentAttendanceStatus;
+  }).length;
 }
 
 // Format date for display
@@ -492,6 +561,47 @@ const formatDate = (dateString) => {
     day: 'numeric',
     month: 'short'
   });
+}
+
+// Format date for short display (previous days)
+const formatDateShort = (dateString) => {
+  if (!dateString) return '';
+  // Parse date as local date to avoid timezone issues
+  const [year, month, day] = dateString.split('-').map(Number);
+  const date = new Date(year, month - 1, day); // month is 0-indexed
+  return date.toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'short'
+  });
+}
+
+// Get status symbol for badges
+const getStatusSymbol = (status) => {
+  if (!status) return '—';
+
+  const symbolMap = {
+    'presente': '✓',
+    'tarde': '⏰',
+    'ausente_justificado': 'J',
+    'ausente_injustificado': '✗',
+    'ausente_sin_clases': '—',
+    'presente_sin_clases': '✓'
+  };
+
+  return symbolMap[status] || status.charAt(0).toUpperCase();
+}
+
+// Get status badge color for previous days
+const getStatusBadgeColor = (status) => {
+  if (!status) return 'grey-5';
+
+  if (status === 'presente' || status === 'presente_sin_clases') return 'green';
+  if (status === 'tarde') return 'orange';
+  if (status === 'ausente_justificado') return 'blue';
+  if (status === 'ausente_injustificado') return 'red';
+  if (status === 'ausente_sin_clases') return 'grey';
+
+  return 'grey';
 }
 
 // Navigate to specific date
@@ -566,8 +676,6 @@ const isDateAvailable = (date) => {
       ...props.daysAfter
     ];
 
-    // Debug: log the comparison
-    console.log('Checking date:', dateStr, 'Available dates:', allAvailableDates);
 
     return allAvailableDates.includes(dateStr);
   } catch (error) {
@@ -583,8 +691,6 @@ const navigateToSelectedDate = () => {
       console.warn('No date selected');
       return;
     }
-
-    console.log('Selected date:', selectedDate.value);
 
     // Handle different date formats from q-date
     let dateStr;
@@ -602,8 +708,6 @@ const navigateToSelectedDate = () => {
       return;
     }
 
-    console.log('Converted date:', dateStr);
-
     showCalendar.value = false;
     navigateToDate(dateStr);
   } catch (error) {
@@ -613,9 +717,13 @@ const navigateToSelectedDate = () => {
 
 // Clear all statuses (always available)
 const clearAllStatuses = () => {
-  // Reset all students' status to unassigned
+  // Reset all students' current date status to unassigned - preserve historical data
   props.students.forEach(student => {
-    student.currentAttendanceStatus = null;
+    if (typeof student.currentAttendanceStatus === 'object') {
+      student.currentAttendanceStatus[props.dateYMD] = null;
+    } else {
+      student.currentAttendanceStatus = null;
+    }
   });
 
   // Clear the active massive status
@@ -630,10 +738,14 @@ const clearMassiveStatus = () => {
       status.code === activeMassiveStatus.value && status.is_massive
     );
 
-  // If it was a massive action, reset all students' status
+  // If it was a massive action, reset all students' current date status - preserve historical data
   if (wasMassiveAction) {
     props.students.forEach(student => {
-      student.currentAttendanceStatus = null;
+      if (typeof student.currentAttendanceStatus === 'object') {
+        student.currentAttendanceStatus[props.dateYMD] = null;
+      } else {
+        student.currentAttendanceStatus = null;
+      }
     });
   }
 
