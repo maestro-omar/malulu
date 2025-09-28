@@ -14,7 +14,6 @@
       <div class="col-12">
         <div class="row q-col-gutter-sm">
           <div class="col-12">
-            <div class="text-h4 q-mb-sm">Horarios</div>
             <div class="row q-col-gutter-sm">
               <!-- Placeholder for schedule content -->
               <div class="col-12">
