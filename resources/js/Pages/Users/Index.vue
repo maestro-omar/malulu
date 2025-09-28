@@ -307,13 +307,13 @@ const columns = [
     align: 'left',
     sortable: true
   },
-  {
-    name: 'schools',
-    label: 'Escuelas',
-    field: 'schools',
-    align: 'left',
-    sortable: false
-  },
+  // {
+  //   name: 'schools',
+  //   label: 'Escuelas',
+  //   field: 'schools',
+  //   align: 'left',
+  //   sortable: false
+  // },
   {
     name: 'roles',
     label: 'Roles',

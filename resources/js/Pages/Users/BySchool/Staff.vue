@@ -145,7 +145,7 @@
                 </div>
                 <!-- Subjects -->
                 <div v-if="getUniqueSubjects(props.row.workerRelationships).length > 0" class="row q-gutter-xs">
-                  <q-chip v-for="subject in getUniqueSubjects(props.row.workerRelationships)" :key="subject.id" 
+                  <q-chip v-for="subject in getUniqueSubjects(props.row.workerRelationships)" :key="subject.id"
                     size="sm" color="blue-grey" text-color="white" outline>
                     {{ subject.name }}
                   </q-chip>
@@ -158,16 +158,15 @@
           <template #body-cell-course="props">
             <q-td :props="props">
               <div class="row q-gutter-xs">
-                <template v-for="(course, index) in getVisibleCourses(props.row.courses, props.rowIndex)" :key="course.id">
+                <template v-for="(course, index) in getVisibleCourses(props.row.courses, props.rowIndex)"
+                  :key="course.id">
                   <Link :href="course.url" class="text-primary">
-                    {{ course.nice_name }}
+                  {{ course.nice_name }}
                   </Link>
                 </template>
-                <q-btn v-if="hasMoreCourses(props.row.courses, props.rowIndex)" 
-                  flat dense size="sm" color="primary" 
+                <q-btn v-if="hasMoreCourses(props.row.courses, props.rowIndex)" flat dense size="sm" color="primary"
                   :icon="expandedRows.has(props.rowIndex) ? 'keyboard_arrow_left' : 'more_horiz'"
-                  @click="toggleCourseExpansion(props.rowIndex)"
-                  class="course-expand-btn">
+                  @click="toggleCourseExpansion(props.rowIndex)" class="course-expand-btn">
                   <q-tooltip>{{ expandedRows.has(props.rowIndex) ? 'Ocultar cursos' : 'Ver más cursos' }}</q-tooltip>
                 </q-btn>
               </div>
@@ -406,11 +405,11 @@ const getUniqueSubjects = (workerRelationships) => {
   if (!workerRelationships || !Array.isArray(workerRelationships)) {
     return [];
   }
-  
+
   const subjects = workerRelationships
     .filter(relationship => relationship.class_subject)
     .map(relationship => relationship.class_subject);
-    
+
   return subjects.filter((subject, index, self) =>
     index === self.findIndex((s) => s.id === subject.id)
   );
@@ -419,7 +418,7 @@ const getUniqueSubjects = (workerRelationships) => {
 // Course expansion methods
 const getVisibleCourses = (courses, rowIndex) => {
   if (!courses || !Array.isArray(courses)) return [];
-  
+
   const isExpanded = expandedRows.value.has(rowIndex);
   return isExpanded ? courses : courses.slice(0, 3);
 };
@@ -546,7 +545,7 @@ const columns = [
   },
   {
     name: 'birthdate',
-    label: 'Cumpleaños',
+    label: 'Fecha nacimiento',
     field: 'birthdate',
     align: 'left',
     sortable: true
@@ -577,6 +576,7 @@ const columns = [
     label: 'Curso',
     field: 'courses',
     align: 'left',
+    classes: 'mll-table__cell-courses',
     sortable: false
   },
   {
@@ -587,54 +587,6 @@ const columns = [
     sortable: false,
     classes: 'mll-table__cell-actions',
     headerClasses: 'mll-table__cell-actions-header',
-    style: 'width: 150px'
   }
 ];
 </script>
-
-<style scoped>
-.table__filter-group {
-  margin-bottom: 0;
-}
-
-.table__filter-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.5rem;
-}
-
-.table__filter-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-}
-
-.table__filter-buttons .q-chip {
-  margin: 0;
-}
-
-.table__filter-clear-container {
-  display: flex;
-  align-items: flex-end;
-  /* Align with the bottom of other filter elements */
-  padding-bottom: 0;
-  /* Remove any default padding */
-}
-
-.table__filter-clear-btn {
-  height: 40px;
-  /* Match the height of q-input and q-select */
-  min-height: 40px;
-  width: 40px;
-  /* Make it square */
-}
-
-.course-expand-btn {
-  min-width: 24px;
-  height: 24px;
-  padding: 0;
-  margin-left: 4px;
-}
-</style>

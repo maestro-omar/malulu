@@ -18,7 +18,7 @@ export const parseBirthdate = (dateString) => {
       return parsedDate;
     }
   }
-  
+
   // Handle ISO format without timezone (e.g., "1983-09-21")
   if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
     const [year, month, day] = dateString.split('-').map(Number);
@@ -27,7 +27,7 @@ export const parseBirthdate = (dateString) => {
       return parsedDate;
     }
   }
-  
+
   // Handle DD/MM/YYYY or DD-MM-YYYY format
   if (typeof dateString === 'string' && (dateString.includes('/') || dateString.includes('-'))) {
     const parts = dateString.split(/[\/\-]/);
@@ -36,7 +36,7 @@ export const parseBirthdate = (dateString) => {
       const day = parseInt(parts[0], 10);
       const month = parseInt(parts[1], 10);
       const year = parseInt(parts[2], 10);
-      
+
       if (day > 12) { // If day > 12, it's likely DD/MM/YYYY
         const parsedDate = new Date(year, month - 1, day);
         if (!isNaN(parsedDate.getTime())) {
@@ -50,13 +50,13 @@ export const parseBirthdate = (dateString) => {
       }
     }
   }
-  
+
   // Fallback: try direct parsing
   const parsedDate = new Date(dateString);
   if (!isNaN(parsedDate.getTime())) {
     return parsedDate;
   }
-  
+
   // Final fallback: return current date if parsing fails
   console.warn('Failed to parse birthdate:', dateString);
   return new Date();
@@ -70,42 +70,35 @@ export const parseBirthdate = (dateString) => {
 export const getBirthdayStatus = (birthdate) => {
   const today = new Date();
   const birthDate = parseBirthdate(birthdate);
-  
+
   // Get today's date at midnight
   const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  
+
   // Get this year's birthday at midnight
   const thisYearBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
-  
+
   // Calculate days difference (more reliable than hours)
   const daysDiff = Math.round((thisYearBirthday.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
-  
+
   // Determine status text
   let statusText = null;
   if (daysDiff === 0) statusText = 'HOY';
   else if (daysDiff === 1) statusText = 'MAÑANA';
   else if (daysDiff > 1 && daysDiff <= 7) statusText = 'PRONTO';
   else if (daysDiff === -1) statusText = 'AYER';
-  
+
   // Determine status class
   let statusClass = '';
-  if (daysDiff === 0) statusClass = 'birthday-today';
-  else if (daysDiff === 1) statusClass = 'birthday-tomorrow';
-  else if (daysDiff > 1 && daysDiff <= 7) statusClass = 'birthday-soon';
-  else if (daysDiff > 7 && daysDiff <= 20) statusClass = 'birthday-upcoming';
-  else if (daysDiff === -1) statusClass = 'birthday-yesterday';
-  else if (daysDiff < -1 && daysDiff >= -7) statusClass = 'birthday-recent';
-  
-  // Determine text class
-  let textClass = 'text-grey-6';
-  if (daysDiff === 0 || daysDiff === 1) textClass = 'text-white';
-  else if (daysDiff > 1 && daysDiff <= 7) textClass = 'text-white';
-  else if (daysDiff > 7 && daysDiff <= 20) textClass = 'text-grey-8';
-  else if (daysDiff < 0 && daysDiff >= -7) textClass = 'text-white';
-  
+  if (daysDiff === 0) statusClass = 'birthdate-age--today';
+  else if (daysDiff === 1) statusClass = 'birthdate-age--tomorrow';
+  else if (daysDiff > 1 && daysDiff <= 7) statusClass = 'birthdate-age--soon';
+  else if (daysDiff > 7 && daysDiff <= 20) statusClass = 'birthdate-age--upcoming';
+  else if (daysDiff === -1) statusClass = 'birthdate-age--yesterday';
+  else if (daysDiff < -1 && daysDiff >= -7) statusClass = 'birthdate-age--recent';
+
+
   return {
     statusText,
-    statusClass,
-    textClass
+    statusClass
   };
 };

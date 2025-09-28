@@ -538,7 +538,7 @@ trait UserServiceList
             }
 
             // Handle different role types
-            if (Role::isWorker($roleCode)) {
+            if (Role::isWorker($roleCode) || $roleCode === Role::SCHOOL_ADMIN) {
                 // If worker, get co-workers of same school
                 $relatedUsers = $relatedUsers->merge($this->getCoworkers($schoolId, $from, $to));
 

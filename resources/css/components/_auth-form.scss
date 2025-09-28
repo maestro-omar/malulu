@@ -1,0 +1,60 @@
+@use "../abstracts/variables";
+@use "../abstracts/mixins";
+
+// Auth Form Component
+.auth {
+  &__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+  }
+
+  &__card {
+    box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  &__header {
+    text-align: center;
+    padding-bottom: 16px;
+
+    &-title {
+      margin-bottom: 0;
+    }
+  }
+
+  &__content {
+    padding: 16px 0;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__row {
+    display: flex;
+    gap: 16px;
+  }
+
+  &__col {
+    flex: 1;
+  }
+
+  &__link {
+    color: #1976d2;
+    font-size: 0.875rem;
+    text-decoration: none;
+  }
+
+  &__button {
+    width: 100%;
+  }
+}

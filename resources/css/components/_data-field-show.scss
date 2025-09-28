@@ -1,0 +1,117 @@
+@use "../abstracts/variables";
+@use "../abstracts/mixins";
+
+// Data Field Show Component
+.data-field-show {
+  &__birthdate-display {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  &__birthday-today {
+    background-color: #4caf50;
+    color: white;
+  }
+
+  &__birthday-tomorrow {
+    background-color: #a5d6a7;
+    color: #2e7d32;
+  }
+
+  &__birthday-soon {
+    background-color: #c8e6c9;
+    color: #2e7d32;
+  }
+
+  &__birthday-upcoming {
+    background-color: #fff9c4;
+    color: #f57f17;
+  }
+
+  &__birthday-yesterday {
+    background-color: #ffcdd2;
+    color: #c62828;
+  }
+
+  &__birthday-recent {
+    background-color: #ffcdd2;
+    color: #c62828;
+  }
+
+  &__birthday-status {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    margin-top: 2px;
+  }
+}
+
+// Birthdate Age Component (similar to DataFieldShow)
+.birthdate-age {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+
+  &__date {
+    @include mixins.fz(1.4);
+  }
+
+  &__age {
+    @include mixins.fz(1);
+
+  }
+
+  &__status {
+    display: inline;
+    @include mixins.fz(1.2);
+    background-color: white;
+    border: 1px solid;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin-right: 4px;
+
+  }
+
+  &--today {
+    background-color: #4caf50;
+    color: white;
+  }
+
+  &--tomorrow {
+    background-color: #a5d6a7;
+    color: #2e7d32;
+  }
+
+  &--soon {
+    background-color: #c8e6c9;
+    color: #2e7d32;
+  }
+
+  &--upcoming {
+    background-color: #fff9c4;
+    color: #f57f17;
+  }
+
+  &--yesterday {
+    background-color: #ffcdd2;
+    color: #c62828;
+  }
+
+  &--recent {
+    background-color: #ffcdd2;
+    color: #c62828;
+  }
+
+  &__status {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    margin-top: 2px;
+  }
+}

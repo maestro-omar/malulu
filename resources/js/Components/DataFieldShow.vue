@@ -23,10 +23,10 @@
 
         <!-- Handle birthdate fields with birthday status -->
         <template v-else-if="type === 'birthdate'">
-          <div v-if="value" class="birthdate-display" :class="birthdayStatus.statusClass">
+          <div v-if="value" class="data-field-show__birthdate-display" :class="birthdayStatus.statusClass">
             <div class="text-weight-medium">{{ formatDate(value) }}</div>
             <div class="text-caption" :class="birthdayStatus.textClass">{{ age }} años</div>
-            <div v-if="birthdayStatus.statusText" class="text-caption birthday-status">{{ birthdayStatus.statusText }}</div>
+            <div v-if="birthdayStatus.statusText" class="text-caption data-field-show__birthday-status">{{ birthdayStatus.statusText }}</div>
           </div>
           <span v-else>-</span>
         </template>
@@ -92,49 +92,3 @@ const birthdayStatus = computed(() => {
 })
 </script>
 
-<style scoped>
-.birthdate-display {
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
-
-.birthday-today {
-  background-color: #4caf50;
-  color: white;
-}
-
-.birthday-tomorrow {
-  background-color: #a5d6a7;
-  color: #2e7d32;
-}
-
-.birthday-soon {
-  background-color: #c8e6c9;
-  color: #2e7d32;
-}
-
-.birthday-upcoming {
-  background-color: #fff9c4;
-  color: #f57f17;
-}
-
-.birthday-yesterday {
-  background-color: #ffcdd2;
-  color: #c62828;
-}
-
-.birthday-recent {
-  background-color: #ffcdd2;
-  color: #c62828;
-}
-
-.birthday-status {
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  margin-top: 2px;
-}
-</style>

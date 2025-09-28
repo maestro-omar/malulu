@@ -10,9 +10,21 @@
     max-width: 800px;
   }
 
+  &__cell-courses {
+    .row {
+
+      flex-wrap: nowrap;
+    }
+  }
+
   &__cell-actions {
     .row {
-      justify-content: space-around;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 0.5rem;
     }
 
     &-header {
@@ -38,4 +50,64 @@
       /* white */
     }
   }
+}
+
+// Table Filter Styles
+.table {
+  &__filter-group {
+    margin-bottom: 0;
+  }
+
+  &__filter-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+
+  &__filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+
+    .q-chip {
+      margin: 0;
+    }
+  }
+
+  &__filter-clear-container {
+    display: flex;
+    align-items: flex-end;
+    /* Align with the bottom of other filter elements */
+    padding-bottom: 0;
+    /* Remove any default padding */
+  }
+
+  &__filter-clear-btn {
+    height: 40px;
+    /* Match the height of q-input and q-select */
+    min-height: 40px;
+    width: 40px;
+    /* Make it square */
+  }
+}
+
+// Course expansion button
+.course-expand-btn {
+  min-width: 24px;
+  height: 24px;
+  padding: 0;
+  margin-left: 4px;
+}
+
+
+.q-virtual-scroll__content .q-item.q-router-link--active,
+.q-virtual-scroll__content .q-item--active {
+  background-color: variables.$color-terciary;
+  color: white;
+  border-radius: 4px;
+  padding: 4px;
+  margin: 4px;
+  border: 1px solid variables.$color-grey-dark;
 }

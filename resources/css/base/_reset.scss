@@ -80,6 +80,6 @@ body {
     max-width: 100px;
 
     @include mixins.mq(sm) {
-        max-width: auto;
+        max-width: fit-content;
     }
 }

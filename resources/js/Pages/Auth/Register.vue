@@ -95,62 +95,6 @@
   </GuestLayout>
 </template>
 
-<style scoped>
-.auth__container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f5f5f5;
-}
-
-.auth__card {
-  box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.1);
-}
-
-.auth__header {
-  text-align: center;
-  padding-bottom: 16px;
-}
-
-.auth__header-title {
-  margin-bottom: 0;
-}
-
-.auth__content {
-  padding: 16px 0;
-}
-
-.auth__form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.auth__field {
-  display: flex;
-  flex-direction: column;
-}
-
-.auth__row {
-  display: flex;
-  gap: 16px;
-}
-
-.auth__col {
-  flex: 1;
-}
-
-.auth__link {
-  color: #1976d2;
-  font-size: 0.875rem;
-  text-decoration: none;
-}
-
-.auth__button {
-  width: 100%;
-}
-</style>
 
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
