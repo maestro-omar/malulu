@@ -33,6 +33,7 @@ trait UserServiceList
         }
         $transformedUsers['data'] = collect($transformedUsers['data'])->map(function ($user) {
             // Get unique school IDs from roles
+            $user = $user->toArray();
             $schoolIds = collect($user['all_roles_across_teams'])
                 ->pluck('pivot.team_id')
                 ->filter()
@@ -157,13 +158,14 @@ trait UserServiceList
                     }
                 }
             }
-            $user['courses'] = $courses->toArray();
 
             // Get worker relationships through role relationships
             $workerRelationships = $user->roleRelationships
                 ->pluck('workerRelationship')
                 ->filter()
                 ->whereNull('deleted_at');
+            $user = $user->toArray();
+            $user['courses'] = $courses->toArray();
             $user['workerRelationships'] = $workerRelationships;
             return $user;
         })->toArray();
