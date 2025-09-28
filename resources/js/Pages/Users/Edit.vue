@@ -36,13 +36,26 @@
                     </div>
                   </div>
 
-                  <div class="admin-form__grid admin-form__grid--3">
+                  <div class="admin-form__grid admin-form__grid--2">
                     <div class="admin-form__field">
                       <InputLabel for="id_number" value="DNI" />
                       <TextInput id="id_number" type="text" class="admin-form__input" v-model="form.id_number" />
                       <InputError class="admin-form__error" :message="form.errors.id_number" />
                     </div>
 
+                    <div class="admin-form__field">
+                      <InputLabel for="gender" value="Género" />
+                      <select id="gender" class="admin-form__select" v-model="form.gender">
+                        <option value="">Seleccionar género</option>
+                        <option v-for="(label, value) in genders" :key="value" :value="value">
+                          {{ label }}
+                        </option>
+                      </select>
+                      <InputError class="admin-form__error" :message="form.errors.gender" />
+                    </div>
+                  </div>
+
+                  <div class="admin-form__grid admin-form__grid--2">
                     <div class="admin-form__field">
                       <InputLabel for="birthdate" value="Fecha de Nacimiento" />
                       <TextInput id="birthdate" type="date" class="admin-form__input" v-model="form.birthdate" />
@@ -66,7 +79,7 @@
 
                   <div class="admin-form__field">
                     <InputLabel for="critical_info" value="Información Crítica" />
-                    <TextInput id="critical_info" type="text" class="admin-form__input" v-model="form.critical_info" />
+                    <textarea id="critical_info" class="admin-form__textarea" v-model="form.critical_info" rows="3"></textarea>
                     <InputError class="admin-form__error" :message="form.errors.critical_info" />
                   </div>
                 </div>
@@ -156,7 +169,7 @@ const props = defineProps({
   roles: Array,
   provinces: Array,
   countries: Array,
-
+  genders: Array,
 });
 
 const form = useForm({
@@ -164,6 +177,7 @@ const form = useForm({
   firstname: props.user.firstname || '',
   lastname: props.user.lastname || '',
   id_number: props.user.id_number || '',
+  gender: props.user.gender || '',
   birthdate: props.user.birthdate ? new Date(props.user.birthdate).toISOString().split('T')[0] : '',
   birth_place: props.user.birth_place || '',
   phone: props.user.phone || '',

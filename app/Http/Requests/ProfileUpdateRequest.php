@@ -18,6 +18,19 @@ class ProfileUpdateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
+            'firstname' => ['nullable', 'string', 'max:255'],
+            'lastname' => ['nullable', 'string', 'max:255'],
+            'id_number' => ['nullable', 'string', 'max:255'],
+            'gender' => ['nullable', 'string', 'max:255'],
+            'birthdate' => ['nullable', 'date'],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'locality' => ['nullable', 'string', 'max:255'],
+            'province_id' => ['nullable', 'exists:provinces,id'],
+            'country_id' => ['nullable', 'exists:countries,id'],
+            'birth_place' => ['nullable', 'string', 'max:255'],
+            'nationality' => ['nullable', 'string', 'max:255'],
+            'critical_info' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

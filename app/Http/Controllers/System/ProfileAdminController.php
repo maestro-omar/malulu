@@ -22,6 +22,9 @@ class ProfileAdminController extends SystemBaseController
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'provinces' => \App\Models\Catalogs\Province::orderBy('order')->get(),
+            'countries' => \App\Models\Catalogs\Country::orderBy('order')->get(),
+            'genders' => \App\Models\Entities\User::genders(),
             'breadcrumbs' => Breadcrumbs::generate('profile.edit'),
         ]);
     }

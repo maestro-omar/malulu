@@ -2,31 +2,24 @@
 
   <Head title="Tu perfil de usuario" />
 
-  <AuthenticatedLayout pageClass="q-pa-md row justify-center">
+  <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader  title="Tu perfil de usuario"></AdminHeader>
+      <AdminHeader title="Tu perfil de usuario"></AdminHeader>
     </template>
 
     <template #main-page-content>
-      <div class="">
-        <div class="row">
-          <q-card class="col-12">
-            <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status" />
-          </q-card>
-        </div>
-        <div class="row q-mt-md">
-          <q-card class="col-12">
-            <UpdatePasswordForm />
-          </q-card>
+      <div class="container">
+        <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status" :provinces="provinces"
+          :countries="countries" :genders="genders" />
+        <UpdatePasswordForm />
 
-          <!--
+        <!--
           <div class="col-12">
             <q-card class="profile-form__card">
               <DeleteUserForm />
             </q-card>
           </div>
           -->
-        </div>
       </div>
     </template>
   </AuthenticatedLayout>
@@ -47,6 +40,17 @@ defineProps({
   status: {
     type: String,
   },
-  
+  provinces: {
+    type: Array,
+    default: () => [],
+  },
+  countries: {
+    type: Array,
+    default: () => [],
+  },
+  genders: {
+    type: Array,
+    default: () => [],
+  },
 });
 </script>
