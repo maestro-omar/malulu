@@ -55,6 +55,15 @@
           </q-td>
         </template>
 
+        <!-- Custom cell for firstname with link -->
+        <template #body-cell-firstname="props">
+          <q-td :props="props">
+            <Link :href="route('users.show', props.row.id)" class="text-primary">
+            {{ props.row.firstname }}
+            </Link>
+          </q-td>
+        </template>
+
         <!-- Custom cell for email -->
         <template #body-cell-email="props">
           <q-td :props="props">
@@ -117,6 +126,7 @@
 </template>
 
 <script setup>
+import { Link } from '@inertiajs/vue3'
 import EmailField from '@/Components/admin/EmailField.vue';
 import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
 import RoleBadge from '@/Components/Badges/RoleBadge.vue';
@@ -261,7 +271,7 @@ const columns = [
     style: 'width: 50px'
   },
   {
-    name: 'name',
+    name: 'firstname',
     required: true,
     label: 'Nombre',
     align: 'left',
@@ -275,12 +285,19 @@ const columns = [
     align: 'left',
     field: 'lastname',
     sortable: true
-  },   {
+  }, {
     name: 'email',
     required: true,
     label: 'Email',
     align: 'left',
     field: 'email',
+    sortable: true
+  },
+  {
+    name: 'id_number',
+    label: 'DNI',
+    field: 'id_number',
+    align: 'left',
     sortable: true
   },
   {

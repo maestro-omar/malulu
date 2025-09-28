@@ -37,3 +37,17 @@
 
     & &__user {}
 }
+
+
+.mll-sidebar {
+    & &__side-item {
+
+        &--only-sm {
+            display: block;
+
+            @include mixins.mq(sm) {
+                display: none;
+            }
+        }
+    }
+}

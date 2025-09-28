@@ -26,17 +26,33 @@
     </q-header>
 
     <!-- Drawer -->
-    <q-drawer v-model="rightDrawerOpen" side="right" overlay elevated>
+    <q-drawer v-model="rightDrawerOpen" side="right" overlay elevated class="mll-sidebar">
       <q-btn flat round dense size="10px" icon="close" class="absolute-top-right q-ma-xs"
         @click="rightDrawerOpen = false" />
       <q-list class="q-mt-lg">
+        <template v-if="$page.props.menu.items">
+
+          <template v-for="item in $page.props.menu.items" :key="item.route || item.href">
+            <q-item clickable="true" v-ripple dense
+              :class="['mll-sidebar__side-item mll-sidebar__side-item--only-sm', headerStyles.textColor, headerStyles.hoverColor]"
+              :href="item.href ? item.href : (item.route ? route(item.route) : undefined)">
+              <q-item-section>
+                <q-item-label>
+                  <q-icon v-if="item.icon" :name="item.icon" /> {{ item.name }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </template>
+          <q-separator />
+        </template>
+
         <template v-for="item in $page.props.menu.userItems" :key="item.route || item.href || 'separator'">
           <template v-if="item.type === 'separator'">
             <q-separator />
           </template>
           <template v-else>
             <q-item :clickable="(item.route !== 'logout.get')" v-ripple dense
-              :class="['authenticated-layout__responsive-settings-item', headerStyles.textColor, headerStyles.hoverColor]"
+              :class="['mll-sidebar__side-item', headerStyles.textColor, headerStyles.hoverColor]"
               :href="item.href ? item.href : (item.route ? route(item.route) : undefined)">
               <q-item-section>
                 <q-item-label>
