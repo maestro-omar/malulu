@@ -5,13 +5,9 @@
     <AuthenticatedLayout>
         <template #admin-header>
             <AdminHeader :title="`${user.firstname} ${user.lastname}`" :edit="{
-                show: hasPermission($page.props, 'staff.edit'),
-                href: route_school_staff(school, user, 'edit'),
+                show: hasPermission($page.props, 'school.edit'),
+                href: route('school.staff.edit', { school: school.slug, idAndName: getUserIdAndName() }),
                 label: 'Editar'
-            }" :del="{
-                show: hasPermission($page.props, 'staff.delete'),
-                onClick: destroy,
-                label: 'Eliminar'
             }">
             </AdminHeader>
         </template>
@@ -19,7 +15,7 @@
         <template #main-page-content>
 
             <UserInformation :user="user" :genders="genders"
-                :editable-picture="hasPermission($page.props, 'staff.edit')" />
+                :editable-picture="hasPermission($page.props, 'school.edit')" />
 
             <WorkerInformation :user="user" />
 
@@ -55,6 +51,10 @@ const props = defineProps({
 });
 
 const $page = usePage();
+
+const getUserIdAndName = () => {
+    return `${props.user.id}-${props.user.name.toLowerCase().replace(/\s+/g, '-')}`;
+};
 
 const destroy = () => {
     if (confirm("¿Está seguro que desea eliminar este miembro del personal?")) {

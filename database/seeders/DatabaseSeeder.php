@@ -38,7 +38,6 @@ class DatabaseSeeder extends Seeder
             SchoolSeeder::class,
             ClassSubjectSeeder::class,
             CourseSeeder::class,
-            EventsSeeder::class,
 
             StudentCourseEndReasonSeeder::class,
             RoleRelationshipEndReasonSeeder::class,
@@ -65,13 +64,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // Roles and permissions
             RoleAndPermissionSeeder::class,
-        ]);
 
-        $this->call([
             SchoolPageSeeder::class,
-        ]);
-        $this->call([
+
             InitialUsersSeeder::class,
+
+            EventsSeeder::class,
         ]);
 
         $this->call([

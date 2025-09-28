@@ -47,17 +47,21 @@ class EventsSeeder extends Seeder
         ];
 
         foreach ($eventTypes as $eventType) {
-            DB::table('event_types')->insertOrIgnore(array_merge($eventType, [
+            $row = array_merge($eventType, [
                 'created_by' => $this->firstUserId,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]));
+            ]);
+            DB::table('event_types')->insert($row);
         }
     }
 
     private function recursiveEvents(): void
     {
         $allTypesByCode = EventType::all()->keyBy('code');
+        if ($allTypesByCode->count() === 0) {
+            throw new \Exception('No se encontraron tipos de eventos');
+        }
 
         // Feriados nacionales (recurren todos los años)
         $feriados = [
@@ -84,7 +88,6 @@ class EventsSeeder extends Seeder
             DB::table('recurrent_events')->insert(array_merge($feriado, [
                 'province_id' => null,
                 'school_id' => null,
-                'academic_year_id' => null,
                 'notes' => 'Feriado nacional',
                 'created_by' => $this->firstUserId,
                 'created_at' => now(),
@@ -114,7 +117,6 @@ class EventsSeeder extends Seeder
             DB::table('recurrent_events')->insert(array_merge($conmemoracion, [
                 'province_id' => null,
                 'school_id' => null,
-                'academic_year_id' => null,
                 'notes' => 'Conmemoración nacional',
                 'created_by' => $this->firstUserId,
                 'created_at' => now(),
@@ -129,7 +131,6 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_PROVINCIAL]->id,
             'province_id' => 1,
             'school_id' => null,
-            'academic_year_id' => null,
             'is_non_working_day' => true,
             'notes' => '',
             'created_by' => $this->firstUserId,
@@ -147,7 +148,6 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_CONMEMORACION_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'academic_year_id' => null,
             'is_non_working_day' => false,
             'notes' => '3er domingo de junio',
             'created_by' => $this->firstUserId,
@@ -164,7 +164,6 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_CONMEMORACION_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'academic_year_id' => null,
             'is_non_working_day' => false,
             'notes' => '3er domingo de octubre',
             'created_by' => $this->firstUserId,
@@ -181,7 +180,6 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_CONMEMORACION_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'academic_year_id' => null,
             'is_non_working_day' => false,
             'notes' => '2do domingo de agosto',
             'created_by' => $this->firstUserId,
@@ -199,7 +197,6 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'academic_year_id' => null,
             'is_non_working_day' => true,
             'notes' => 'Jueves Santo (fecha variable según calendario lunar)',
             'created_by' => $this->firstUserId,
@@ -216,7 +213,6 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'academic_year_id' => null,
             'is_non_working_day' => true,
             'notes' => 'Viernes Santo (fecha variable según calendario lunar)',
             'created_by' => $this->firstUserId,
@@ -234,7 +230,6 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'academic_year_id' => null,
             'is_non_working_day' => true,
             'notes' => 'Lunes de Carnaval (47 días antes de Pascua)',
             'created_by' => $this->firstUserId,
@@ -251,7 +246,6 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'academic_year_id' => null,
             'is_non_working_day' => true,
             'notes' => 'Martes de Carnaval (46 días antes de Pascua)',
             'created_by' => $this->firstUserId,
@@ -267,7 +261,6 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_CONMEMORACION_ESCOLAR]->id,
             'province_id' => null,
             'school_id' => School::where('code', School::CUE_LUCIO_LUCERO)->first()->id,
-            'academic_year_id' => null,
             'is_non_working_day' => false,
             'notes' => 'Celebración interna de la escuela',
             'created_by' => $this->firstUserId,

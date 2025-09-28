@@ -155,6 +155,41 @@ class UserController extends SchoolBaseController
                 ->withInput();
         }
     }
+
+    public function staffEdit(Request $request, $schoolSlug, $staffIdAndName): Response
+    {
+        $this->setSchool($schoolSlug);
+        $data = $this->getStaffData($staffIdAndName);
+        $staff = $data ? $data['user'] : null;
+        
+        return Inertia::render('Users/BySchool/Staff.Edit', [
+            'school' => $this->school,
+            'user' => $staff,
+            'roles' => Role::all(),
+            'provinces' => Province::orderBy('order')->get(),
+            'countries' => Country::orderBy('order')->get(),
+            'genders' => User::genders(),
+            'breadcrumbs' => Breadcrumbs::generate('schools.staff.edit', $this->school, $staff),
+        ]);
+    }
+
+    public function staffUpdate(Request $request, $schoolSlug, $staffIdAndName)
+    {
+        $this->setSchool($schoolSlug);
+        $staff = $this->getUserFromUrlParameter($staffIdAndName);
+        try {
+            $this->userService->updateUser($staff, $request->all());
+            return redirect()->route('school.staff.show', ['school' => $schoolSlug, 'idAndName' => $staffIdAndName])->with('success', 'Personal actualizado exitosamente.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()])
+                ->withInput();
+        }
+    }
     /**
      * Update the specified user in storage.
      */

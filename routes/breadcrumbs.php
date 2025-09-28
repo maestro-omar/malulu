@@ -114,6 +114,11 @@ Breadcrumbs::for('schools.staff.show', function (Trail $trail, $school, $staff) 
     $trail->push($staff['firstname'] . ' ' . $staff['lastname'], route('school.staff.show', [$school, $staff['id'] . '-' . $staff['name'] . ' ' . $staff['lastname']]));
 });
 
+Breadcrumbs::for('schools.staff.edit', function (Trail $trail, $school, $staff) {
+    $trail->parent('schools.staff.show', $school, $staff);
+    $trail->push('Editar');
+});
+
 Breadcrumbs::for('schools.students', function (Trail $trail, $school) {
     $trail->parent('school.show', $school);
     $trail->push('Estudiantes', route('school.students', $school));
