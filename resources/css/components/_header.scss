@@ -3,6 +3,11 @@
 
 // Admin Header Layout Utilities
 .mll-header {
+    & &__right {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 
     & &__toolbar {
         display: flex;

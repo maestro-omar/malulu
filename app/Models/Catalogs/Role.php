@@ -246,7 +246,7 @@ class Role extends SpatieRole
                     'id' => $record ? $record->id : null,
                     'label' => $label,
                     'code' => $value,
-                    'short' => $record->short ?? substr($label, 0, 4),
+                    'short' => $record->short ?? mb_substr($label, 0, 4),
                 ]];
             })
             ->toArray();

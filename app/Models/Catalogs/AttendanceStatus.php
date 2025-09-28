@@ -55,7 +55,7 @@ class AttendanceStatus extends Model
                     'id' => $record ? $record->id : null,
                     'label' => $label,
                     'code' => $value,
-                    'symbol' => $record ? $record->symbol : substr($label, 0, 1),
+                    'symbol' => $record ? $record->symbol : mb_substr($label, 0, 1),
                     'is_massive' => $record ? $record->is_massive : false,
                     'is_absent' => $record ? $record->is_absent : false,
                     'is_justified' => $record ? $record->is_justified : false,

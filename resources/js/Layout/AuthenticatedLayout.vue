@@ -7,17 +7,19 @@
         <q-toolbar-title class="mll-header__title">
           {{ $page.props.appName }}
         </q-toolbar-title>
-        <q-tabs class="mll-header__tabs">
-          <q-route-tab v-for="item in $page.props.menu.items" :key="item.route || item.href"
-            :href="item.href ? item.href : (item.route ? route(item.route) : undefined)"
-            :active="item.route ? route().current(item.route) : (item.href ? $page.url === item.href : false)"
-            :label="item.name" :icon="item.icon ? item.icon : undefined"
-            :class="item.colorClass ? item.colorClass : 'text-teal'" />
-        </q-tabs>
+        <div class="mll-header__right">
+          <q-tabs class="mll-header__tabs">
+            <q-route-tab v-for="item in $page.props.menu.items" :key="item.route || item.href"
+              :href="item.href ? item.href : (item.route ? route(item.route) : undefined)"
+              :active="item.route ? route().current(item.route) : (item.href ? $page.url === item.href : false)"
+              :label="item.name" :icon="item.icon ? item.icon : undefined"
+              :class="item.colorClass ? item.colorClass : 'text-teal'" />
+          </q-tabs>
 
 
-        <span class="mll-header__user">{{ $page.props.auth.user.name }}</span>
-        <q-btn class="mll-header__hamburger" dense flat round icon="menu" @click="toggleRightDrawer" />
+          <span class="mll-header__user">{{ $page.props.auth.user.name }}</span>
+          <q-btn class="mll-header__hamburger" dense flat round icon="menu" @click="toggleRightDrawer" />
+        </div>
       </q-toolbar>
       <!-- AdminHeader slot -->
       <slot name="admin-header" />
