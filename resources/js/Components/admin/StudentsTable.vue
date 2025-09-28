@@ -32,7 +32,7 @@
       <template #body-cell-critical_info="props">
         <q-td :props="props">
           <q-icon v-if="props.row.critical_info" name="warning" color="orange" size="sm" class="cursor-pointer">
-            <q-tooltip class="bg-orange text-white" anchor="top middle" self="bottom middle">
+            <q-tooltip v-model="toggle" class="bg-orange text-white" anchor="top middle" self="bottom middle">
               <div v-html="props.row.critical_info.replace(/\n/g, '<br>')"></div>
             </q-tooltip>
           </q-icon>

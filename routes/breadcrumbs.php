@@ -193,9 +193,10 @@ Breadcrumbs::for('file-subtypes.edit', function (Trail $trail, $fileSubtype) {
 
 
 // 🏫 Niveles de escuela (desde una escuela)
-Breadcrumbs::for('school.courses', function (Trail $trail, School $school, SchoolLevel $schoolLevel) {
+Breadcrumbs::for('school.courses', function (Trail $trail, School $school, SchoolLevel $schoolLevel, bool $hide = false) {
     $trail->parent('school.show', $school); // usa breadcrumb ya definido para la escuela
-    $trail->push('Cursos de ' . $schoolLevel->name, route('school.courses', [$school, $schoolLevel]));
+    if (!$hide)
+        $trail->push('Cursos de ' . $schoolLevel->name, route('school.courses', [$school, $schoolLevel]));
 });
 
 Breadcrumbs::for('school.course.create', function (Trail $trail, School $school, SchoolLevel $schoolLevel) {
@@ -209,7 +210,7 @@ Breadcrumbs::for('school.course.create-next', function (Trail $trail, School $sc
 });
 
 Breadcrumbs::for('school.course.show', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
-    $trail->parent('school.courses', $school, $schoolLevel);
+    $trail->parent('school.courses', $school, $schoolLevel, true);
     $trail->push($course->start_date->format('Y') . ' - ' . $course->nice_name, route('school.course.show', ['school' => $school, 'schoolLevel' => $schoolLevel, 'idAndLabel' => $course->idAndLabel]));
     // $trail->push($course->number . ' º ' . $course->letter, route('school.course.show', [$school, $schoolLevel, $course]));
 });
@@ -219,9 +220,9 @@ Breadcrumbs::for('school.course.edit', function (Trail $trail, School $school, S
     $trail->push("Editar {$course->name}");
 });
 
-Breadcrumbs::for('school.course.attendanceDayEdit', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course, DateTime $date) {
+Breadcrumbs::for('school.course.attendanceDayEdit', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course, ?DateTime $date) {
     $trail->parent('school.course.show', $school, $schoolLevel, $course);
-    $trail->push("Asistencia del dia {$course->name} {$date->format('d/m/Y')}");
+    $trail->push("Asistencia del dia " . ($date ? $date->format('d/m/Y') : '(Error)'));
 });
 
 Breadcrumbs::for('school.course.file.create', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {

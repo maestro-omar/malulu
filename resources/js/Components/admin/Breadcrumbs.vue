@@ -5,9 +5,11 @@
       :key="i"
       :label="crumb.title"
       :href="crumb.url"
-      class="admin-nav-breadcrumbs__item"
+      :class="`admin-nav-breadcrumbs__item aaa ${crumb?.extraClass || 'bb'}`"
       :icon="crumb.icon"
-    />
+    >
+    </q-breadcrumbs-el>
+    
   </q-breadcrumbs>
 </template>
 

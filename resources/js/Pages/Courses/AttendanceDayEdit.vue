@@ -257,6 +257,7 @@ const openCalendar = () => {
 
 // Computed properties
 const workDateString = computed(() => {
+  if (!props.dateYMD) return 'Error';
   // Parse date as local date to avoid timezone issues
   const [year, month, day] = props.dateYMD.split('-').map(Number);
   const date = new Date(year, month - 1, day); // month is 0-indexed

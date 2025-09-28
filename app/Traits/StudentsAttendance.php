@@ -42,6 +42,7 @@ trait StudentsAttendance
         } catch (\Exception $e) {
             // $invalidDateMsg = $e->getMessage();
             $invalidDateMsg = 'La fecha para tomar asistencia no es válida';
+            $date = null;
         }
 
         $students = $invalidDateMsg ? null : $this->courseService->getStudents($course, true, $date->format('Y-m-d'), true);
@@ -68,7 +69,7 @@ trait StudentsAttendance
             'school' => $school,
             'selectedLevel' => $schoolLevel,
             'students' => $students,
-            'dateYMD' => $date->format('Y-m-d'),
+            'dateYMD' => $date ? $date->format('Y-m-d') : '',
             'daysBefore' => $invalidDateMsg ? null : $datesNavigation['daysBefore'],
             'daysAfter' => $invalidDateMsg ? null : $datesNavigation['daysAfter'],
             'invalidDateMsg' => $invalidDateMsg,
@@ -120,7 +121,8 @@ trait StudentsAttendance
         while (count($after) < $half && $checkDate <= $currentAcademicYear->end_date && ($futureDates || $checkDate <= $today)) {
             $checkDate->modify('+1 day');
             if (
-                $checkDate->format('N') == 6
+                (!$futureDates && $checkDate > $today)
+                || $checkDate->format('N') == 6
                 || $checkDate->format('N') == 7
                 || ($checkDate >= $currentAcademicYear->winter_break_start
                     && $checkDate <= $currentAcademicYear->winter_break_end)
