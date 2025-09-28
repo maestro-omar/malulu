@@ -129,7 +129,7 @@ class InitialUsersSeeder extends Seeder
 
         // Create user data array
         $userDataArray = [
-            'name' => $firstName . ' ' . substr($lastName, 0, 1),
+            'name' => $firstName . ' ' . mb_substr($lastName, 0, 1),
             'firstname' => $firstName,
             'lastname' => $lastName,
             'email' => $email,

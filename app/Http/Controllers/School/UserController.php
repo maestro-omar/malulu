@@ -33,10 +33,11 @@ class UserController extends SchoolBaseController
         $this->middleware('permission:delete users')->only(['destroy', 'restore', 'forceDelete']);
     }
 
-    public function staff(Request $request, $slug): Response{
+    public function staff(Request $request, $slug): Response
+    {
         try {
             $this->setSchool($slug);
-            
+
             // Load school with shifts relationship
             $this->school->load('shifts');
 
@@ -64,7 +65,7 @@ class UserController extends SchoolBaseController
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             // Re-throw the exception to see the error
             throw $e;
         }
@@ -74,8 +75,9 @@ class UserController extends SchoolBaseController
     {
         $this->setSchool($slug);
 
+        $students = $this->userService->getStudentsBySchool($request, $this->school->id);
         return $this->render($request, 'Users/BySchool/Students', [
-            'users' => $this->userService->getStudentsBySchool($request, $this->school->id),
+            'users' => $students,
             'school' => $this->school,
             'filters' => $request->only(['search', 'sort', 'direction']),
             'breadcrumbs' => Breadcrumbs::generate('schools.students', $this->school),
@@ -107,7 +109,7 @@ class UserController extends SchoolBaseController
         $data = $this->getStaffData($staffIdAndName);
         $staff = $data ? $data['user'] : null;
         $files = $staff ? $this->fileService->getUserFiles($staff, $request->user()) : null;
-        
+
         return $this->render($request, 'Users/BySchool/Staff.Show', [
             'user' => $data['data'],
             'files' => $files,

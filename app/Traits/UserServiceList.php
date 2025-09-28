@@ -27,7 +27,10 @@ trait UserServiceList
         $users = $this->handlePagination($query, $perPage, 30);
 
         // Transform the data to include roles in the expected format
-        $transformedUsers = json_decode(json_encode($users), true);
+        $transformedUsers = $this->decodeLengthAwarePaginator($users);
+        if (empty($transformedUsers)) {
+            throw new \Exception('Parsing error in getUsers');
+        }
         $transformedUsers['data'] = collect($transformedUsers['data'])->map(function ($user) {
             // Get unique school IDs from roles
             $schoolIds = collect($user['all_roles_across_teams'])
@@ -113,7 +116,10 @@ trait UserServiceList
         $users = $this->handlePagination($query, $perPage, 30);
 
         // Transform the data to include roles and courses in the expected format, similar to getUsers
-        $transformedUsers = json_decode(json_encode($users), true);
+        $transformedUsers = $this->decodeLengthAwarePaginator($users);
+        if (empty($transformedUsers)) {
+            throw new \Exception('Parsing error in getStaffBySchool for school ' . $schoolId);
+        }
         $transformedUsers['data'] = $users->map(function ($user) use ($schoolId) {
             // Add roles data similar to lines 42-50, but only worker roles for this school
             $user['roles'] = $user->roleRelationships
@@ -195,19 +201,22 @@ trait UserServiceList
         $users = $this->handlePagination($query, $request->input('per_page'), 30);
 
         // Transform the data to include roles in the expected format, similar to getUsers
-        $transformedUsers = json_decode(json_encode($users), true);
+        $transformedUsers = $this->decodeLengthAwarePaginator($users);
+        if (empty($transformedUsers)) {
+            throw new \Exception('Parsing error in getStudentsBySchool for school ' . $schoolId);
+        }
+
         $transformedUsers['data'] = $users->map(function ($user) {
             $studentRelationship = $user->studentRelationships->whereNull('deleted_at')->first();
             $currentCourse = empty($studentRelationship) ? null : $studentRelationship->currentCourse;
             if (!empty($currentCourse)) {
                 $currentCourse->load(['schoolLevel', 'schoolShift']);
-                // dd($currentCourse);
+                $currentCourse->url = route('school.course.show', [
+                    'school' => $currentCourse->school->slug,
+                    'schoolLevel' => $currentCourse->schoolLevel->code,
+                    'idAndLabel' => $currentCourse->idAndLabel
+                ]);
             }
-            $currentCourse->url = route('school.course.show', [
-                'school' => $currentCourse->school->slug,
-                'schoolLevel' => $currentCourse->schoolLevel->code,
-                'idAndLabel' => $currentCourse->idAndLabel
-            ]);
             // Add student relationships to the user data
             $user['course'] = $currentCourse;
             return $user;
@@ -228,7 +237,7 @@ trait UserServiceList
         $users = $this->handlePagination($query, $request->input('per_page'), 30);
 
         // Transform the data to include roles in the expected format
-        $transformedUsers = json_decode(json_encode($users), true);
+        $transformedUsers = $this->decodeLengthAwarePaginator($users);
         $transformedUsers['data'] = collect($transformedUsers['data'])->map(function ($user) {
             // Get unique school IDs from roles
             $schoolIds = collect($user['all_roles_across_teams'])
@@ -581,7 +590,7 @@ trait UserServiceList
                 $uniqueUsers->put($userId, $user);
             }
         }
-        
+
         $return = $uniqueUsers
             ->values()
             ->filter(function ($user) use ($from, $to) {
@@ -775,7 +784,7 @@ trait UserServiceList
         foreach ($relatedStudents as $student) {
             // Add the student themselves
             if ($student->birthdate && $student->birthdate >= $from && $student->birthdate <= $to) {
-                $student->context = ['code' => 'my_child', 'name' => 'Mi hijo/a'];
+                $student->context = ['code' => 'my_child', 'label' => 'Mi hijo/a'];
                 $relatedUsers->push($student);
             }
 

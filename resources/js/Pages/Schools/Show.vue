@@ -23,7 +23,7 @@
           <q-btn size="sm" :href="route('school.students', { school: school.slug })" color="positive">
             Estudiantes
           </q-btn>
-          <q-btn size="sm" :href="route('school.guardians', { school: school.slug })" color="blue-grey">
+          <q-btn v-if="false" size="sm" :href="route('school.guardians', { school: school.slug })" color="blue-grey">
             Madres/padres
           </q-btn>
           <q-btn size="sm" :href="route('school.staff', { school: school.slug })" color="orange">

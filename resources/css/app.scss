@@ -11,7 +11,6 @@
 @use 'pages/error.scss';
 @use 'pages/welcome.scss';
 @use 'pages/dashboard.scss';
-@use 'pages/staff-show.scss';
 
 @use 'components/table.scss';
 @use 'components/admin-form.scss';
@@ -34,3 +33,4 @@
 @use 'components/schedule-simple.scss';
 @use 'components/schools-roles-card.scss';
 @use 'components/calendar-panel.scss';
+@use 'components/worker-information.scss';

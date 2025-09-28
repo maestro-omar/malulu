@@ -21,4 +21,29 @@ trait PaginationTrait
             return $query->paginate($perPage, ['*'], __('pagination.parameters.page'));
         }
     }
+
+    public function decodeLengthAwarePaginator($response)
+    {
+        // If it's not a LengthAwarePaginator, return as is
+        if (!$response instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            return $response;
+        }
+
+        // Manually extract pagination data to avoid json_encode/json_decode issues
+        return [
+            'current_page' => $response->currentPage(),
+            'data' => $response->items(), // This will return the collection items
+            'first_page_url' => $response->url(1),
+            'from' => $response->firstItem(),
+            'last_page' => $response->lastPage(),
+            'last_page_url' => $response->url($response->lastPage()),
+            'links' => $response->linkCollection()->toArray(),
+            'next_page_url' => $response->nextPageUrl(),
+            'path' => $response->path(),
+            'per_page' => $response->perPage(),
+            'prev_page_url' => $response->previousPageUrl(),
+            'to' => $response->lastItem(),
+            'total' => $response->total(),
+        ];
+    }
 }

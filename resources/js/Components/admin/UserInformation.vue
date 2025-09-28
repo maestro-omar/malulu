@@ -9,6 +9,7 @@
         {{ title }}
       </q-item-section>
     </template>
+    
     <div class="row q-col-gutter-sm">
       <!-- Profile Image -->
       <div class="col-12 col-md-4 text-center">
@@ -38,8 +39,6 @@
           </div>
         </div>
       </div>
-
-
       <!-- Basic Information -->
       <div class="col-12 col-md-8">
         <!-- Critical Information -->
@@ -52,7 +51,6 @@
           </q-banner>
         </div>
         <div class="col-12">
-          <div class="text-h4 q-mb-sm">Datos personales</div>
           <div class="row q-col-gutter-sm">
             <div class="col-6 col-xs-6 col-sm-4 col-md-3">
               <DataFieldShow label="Nombre" :value="user.firstname" type="text" />
@@ -85,14 +83,11 @@
           </div>
         </div>
         <div class="col-12 q-mt-md">
-          <div class="text-h4 q-mb-sm">Domicilio</div>
           <div class="row q-col-gutter-sm">
-            <div class="col-6 col-xs-6 col-sm-4 col-md-6">
+            <div class="col-8 col-xs-12 col-sm-8">
               <DataFieldShow label="Dirección" :value="user.address" type="text" />
             </div>
-          </div>
-          <div class="row q-col-gutter-sm">
-            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+            <div class="col-4 col-xs-12 col-sm-4">
               <DataFieldShow label="Localidad" :value="user.locality" type="text" />
             </div>
             <!-- <div class="col-6 col-xs-6 col-sm-4 col-md-3">
@@ -117,7 +112,7 @@ import StudentGuardian from '@/Components/admin/StudentGuardian.vue';
 import { formatDateShort, calculateAge } from "@/Utils/date";
 
 const props = defineProps({
-  title: { type: String, default: 'Datos del usuario' },
+  title: { type: String, default: 'Datos personales' },
   user: { type: Object, required: true },
   guardians: { type: Object, required: false },
   genders: { type: Object, required: true },

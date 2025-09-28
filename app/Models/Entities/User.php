@@ -523,7 +523,7 @@ class User extends Authenticatable
 
                 if (!empty($filteredNames)) {
                     $otherNamesInitials = ' ' . implode(' ', array_map(function ($name) {
-                        return substr($name, 0, 1);
+                        return mb_substr($name, 0, 1);
                     }, $filteredNames));
                 } else {
                     $otherNamesInitials = '';
@@ -535,7 +535,7 @@ class User extends Authenticatable
             // Regular handling for other names
             if (count($firstNames) > 1) {
                 $otherNamesInitials = ' ' . implode(' ', array_map(function ($name) {
-                    return substr($name, 0, 1);
+                    return mb_substr($name, 0, 1);
                 }, array_slice($firstNames, 1)));
             } else {
                 $otherNamesInitials = '';
@@ -543,8 +543,9 @@ class User extends Authenticatable
         }
 
         $lastNamesInitials = ' ' . implode(' ', array_map(function ($name) {
-            return substr($name, 0, 1);
+            return mb_substr($name, 0, 1);
         }, $lastNames));
-        return $oneName . $otherNamesInitials . $lastNamesInitials;
+        $return = $oneName . $otherNamesInitials . $lastNamesInitials;
+        return $return;
     }
 }
