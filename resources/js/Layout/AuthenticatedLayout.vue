@@ -33,7 +33,7 @@
         <template v-if="$page.props.menu.items">
 
           <template v-for="item in $page.props.menu.items" :key="item.route || item.href">
-            <q-item clickable="true" v-ripple dense
+            <q-item :clickable="true" v-ripple dense
               :class="['mll-sidebar__side-item mll-sidebar__side-item--only-sm', headerStyles.textColor, headerStyles.hoverColor]"
               :href="item.href ? item.href : (item.route ? route(item.route) : undefined)">
               <q-item-section>

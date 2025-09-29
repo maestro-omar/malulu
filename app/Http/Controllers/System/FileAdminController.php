@@ -27,8 +27,6 @@ class FileAdminController extends SystemBaseController
 
     public function createForUser(Request $request, User $user)
     {
-        $loggedUser = auth()->user();
-        $files = $this->userService->getFiles($user, $loggedUser);
         $subTypes = $this->fileService->getSubtypesForUser($user);
 
         return Inertia::render('Files/byUser/Create', [

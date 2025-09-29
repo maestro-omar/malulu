@@ -118,9 +118,10 @@
           <!-- Custom cell for level -->
           <template #body-cell-level="props">
             <q-td :props="props">
-              <div class="row q-gutter-xs">
-                <SchoolLevelBadge v-for="course in getUniqueLevels(props.row.courses)" :key="course.school_level.id"
-                  :level="course.school_level" />
+              <div class="row q-gutter-xs items-center justify-center">
+                <SchoolLevelBadge v-for="level in getUniqueLevels(props.row)" :key="level.school_level.id"
+                  :level="level.school_level" />
+
               </div>
             </q-td>
           </template>
@@ -128,9 +129,9 @@
           <!-- Custom cell for shift -->
           <template #body-cell-shift="props">
             <q-td :props="props">
-              <div class="row q-gutter-xs">
-                <SchoolShiftBadge v-for="course in getUniqueShifts(props.row.courses)" :key="course.school_shift.id"
-                  :shift="course.school_shift" />
+              <div class="row q-gutter-xs items-center justify-center">
+                <SchoolShiftBadge v-for="shift in getUniqueShifts(props.row)"
+                  :key="shift.school_shift.id" :shift="shift.school_shift" />
               </div>
             </q-td>
           </template>
@@ -140,11 +141,11 @@
             <q-td :props="props">
               <div class="column q-gutter-xs">
                 <!-- Roles -->
-                <div class="row q-gutter-xs">
+                <div class="row q-gutter-xs items-center justify-center">
                   <RoleBadge v-for="role in getUniqueRoles(props.row.roles)" :key="role.id" :role="role" />
                 </div>
                 <!-- Subjects -->
-                <div v-if="getUniqueSubjects(props.row.workerRelationships).length > 0" class="row q-gutter-xs">
+                <div v-if="getUniqueSubjects(props.row.workerRelationships).length > 0" class="row q-gutter-xs items-center justify-center">
                   <q-chip v-for="subject in getUniqueSubjects(props.row.workerRelationships)" :key="subject.id"
                     size="sm" color="blue-grey" text-color="white" outline>
                     {{ subject.name }}
@@ -381,20 +382,108 @@ const getUniqueRoles = (roles) => {
   );
 };
 
-const getUniqueLevels = (courses) => {
+const getUniqueLevels = (row) => {
+  try {
+    const $page = usePage();
+
+    // Check if constants are available
+    if (!$page.props.constants ||
+      !$page.props.constants.catalogs ||
+      !$page.props.constants.catalogs.schoolLevels) {
+      console.warn('School levels constants not available, falling back to courses');
+      return getUniqueLevelsFromCourses(row);
+    }
+
+    // Convert schoolLevels object to array for easier processing
+    const schoolLevelsArray = Object.values($page.props.constants.catalogs.schoolLevels);
+
+    // Check if role_relationships have school_level_id and get the object from constants
+    if (row.role_relationships && Array.isArray(row.role_relationships)) {
+      const roleLevels = row.role_relationships
+        .filter(rel => rel && rel.school_level_id)
+        .map(rel => {
+          const schoolLevel = schoolLevelsArray.find(level => level.id === rel.school_level_id);
+          return schoolLevel ? { school_level: schoolLevel } : null;
+        })
+        .filter(level => level !== null);
+
+      if (roleLevels.length > 0) {
+        // Filter unique levels from role relationships
+        return roleLevels.filter((level, index, self) =>
+          index === self.findIndex((l) => l.school_level.id === level.school_level.id)
+        );
+      }
+    }
+
+    // Fall back to courses if no role relationship levels are available
+    return getUniqueLevelsFromCourses(row);
+  } catch (error) {
+    console.error('Error in getUniqueLevels:', error);
+    return getUniqueLevelsFromCourses(row);
+  }
+};
+
+const getUniqueLevelsFromCourses = (row) => {
+  const courses = row.courses;
   if (!courses || !Array.isArray(courses)) {
     return [];
   }
+
+  // Filter unique levels from courses
   return courses.filter((course, index, self) =>
     course.school_level &&
     index === self.findIndex((c) => c.school_level && c.school_level.id === course.school_level.id)
   );
 };
 
-const getUniqueShifts = (courses) => {
+const getUniqueShifts = (row) => {
+  try {
+    const $page = usePage();
+    
+    // Check if constants are available
+    if (!$page.props.constants || 
+        !$page.props.constants.catalogs || 
+        !$page.props.constants.catalogs.schoolShifts) {
+      console.warn('School shifts constants not available, falling back to courses');
+      return getUniqueShiftsFromCourses(row);
+    }
+    
+    // Convert schoolShifts object to array for easier processing
+    const schoolShiftsArray = Object.values($page.props.constants.catalogs.schoolShifts);
+    
+    // Check if workerRelationships have school_shift_id and get the object from constants
+    if (row.workerRelationships && Array.isArray(row.workerRelationships)) {
+      const workerShifts = row.workerRelationships
+        .filter(rel => rel && rel.school_shift_id)
+        .map(rel => {
+          const schoolShift = schoolShiftsArray.find(shift => shift.id === rel.school_shift_id);
+          return schoolShift ? { school_shift: schoolShift } : null;
+        })
+        .filter(shift => shift !== null);
+      
+      if (workerShifts.length > 0) {
+        // Filter unique shifts from worker relationships
+        return workerShifts.filter((shift, index, self) =>
+          index === self.findIndex((s) => s.school_shift.id === shift.school_shift.id)
+        );
+      }
+    }
+    
+    // Fall back to courses if no worker relationship shifts are available
+    return getUniqueShiftsFromCourses(row);
+  } catch (error) {
+    console.error('Error in getUniqueShifts:', error);
+    return getUniqueShiftsFromCourses(row);
+  }
+};
+
+const getUniqueShiftsFromCourses = (row) => {
+  const courses = row.courses;
   if (!courses || !Array.isArray(courses)) {
     return [];
   }
+  
+  // Filter unique shifts from courses
   return courses.filter((course, index, self) =>
     course.school_shift &&
     index === self.findIndex((c) => c.school_shift && c.school_shift.id === course.school_shift.id)
@@ -481,7 +570,6 @@ function onRequest({ pagination: newPagination }) {
       replace: true,
       onFinish: () => {
         const users = usePage().props.users;
-
         // Update pagination state with the captured values
         pagination.value = {
           sortBy: sortBy,
@@ -547,14 +635,14 @@ const columns = [
     name: 'birthdate',
     label: 'Fecha nacimiento',
     field: 'birthdate',
-    align: 'left',
+    align: 'center',
     sortable: true
   },
   {
     name: 'roles',
     label: 'Roles',
     field: 'roles',
-    align: 'left',
+    align: 'center',
     sortable: false
   },
   {

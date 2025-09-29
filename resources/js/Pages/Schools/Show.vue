@@ -36,13 +36,22 @@
     <template #main-page-content>
       <!-- School Information Components -->
       <SchoolBasicData :school="school" :pageProps="$page.props" class="q-mb-md" />
-      
+
       <SchoolSocial :school="school" class="q-mb-md" />
+
+      <FilesTable :files="files" title="Archivos de la escuela"
+        :newFileUrl="route('school.file.create', { 'school': school.slug })"
+        :showFileBaseUrl="route('school.file.show', { 'school': school.slug, 'file': '##' })"
+        :editFileBaseUrl="route('school.file.edit', { 'school': school.slug, 'file': '##' })"
+        :replaceFileBaseUrl="route('school.file.replace', { 'school': school.slug, 'file': '##' })"
+        :canDownload="true" />
+
     </template>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
+import FilesTable from '@/Components/admin/FilesTable.vue';
 import SchoolBasicData from "@/Components/admin/SchoolBasicData.vue";
 import SchoolSocial from "@/Components/admin/SchoolSocial.vue";
 import AuthenticatedLayout from "@/Layout/AuthenticatedLayout.vue";
@@ -52,7 +61,7 @@ import { Head, Link, router } from "@inertiajs/vue3";
 
 const props = defineProps({
   school: Object,
-
+  files: Object
 });
 
 const destroy = () => {

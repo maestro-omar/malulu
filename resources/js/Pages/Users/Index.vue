@@ -93,7 +93,7 @@
         <!-- Custom cell for roles -->
         <template #body-cell-roles="props">
           <q-td :props="props">
-            <div class="row q-gutter-xs">
+            <div class="row q-gutter-xs items-center justify-center">
               <RoleBadge v-for="role in getUniqueRoles(props.row.roles)" :key="role.id" :role="role" />
             </div>
           </q-td>
@@ -304,7 +304,7 @@ const columns = [
     name: 'birthdate',
     label: 'Cumpleaños',
     field: 'birthdate',
-    align: 'left',
+    align: 'center',
     sortable: true
   },
   // {
@@ -318,7 +318,7 @@ const columns = [
     name: 'roles',
     label: 'Roles',
     field: 'roles',
-    align: 'left',
+    align: 'center',
     sortable: false
   },
   {

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Entities\File;
 use App\Models\Entities\User;
+use App\Models\Entities\School;
 use App\Models\Entities\Course;
 use App\Models\Catalogs\FileSubtype;
 use App\Models\Catalogs\FileType;
@@ -150,6 +151,13 @@ class FileService
         return $files ?: null;
     }
 
+    public function getSchoolFiles(School $school, User $loggedUser)
+    {
+        $files = $school->files;
+        $files = $this->checkAndFormatEach($files, $loggedUser);
+        return $files ?: null;
+    }
+
     private function checkFileVisibility(File $file, User $loggedUser, bool $throwException)
     {
         return true; //OMAR TODO 
@@ -157,6 +165,7 @@ class FileService
 
     private function checkAndFormatEach($files, User $loggedUser)
     {
+        if (empty($files)) return null;
         $files = $files->map(function ($file) use ($loggedUser) {
             if ($this->checkFileVisibility($file, $loggedUser, false)) {
                 return $this->formatFileForTable($file);
@@ -210,6 +219,11 @@ class FileService
         return FileSubtype::byFileTypeCode(FileType::USER)->get();
     }
 
+    public function getSubtypesForSchool(School $school)
+    {
+        return FileSubtype::byFileTypeCode(FileType::INSTITUTIONAL)->get();
+    }
+
     public function getCourseFiles(Course $course, User $loggedUser)
     {
         $files = File::where('fileable_type', 'course')->where('fileable_id', $course->id)->with(['subtype', 'subtype.fileType'])->get();
@@ -230,5 +244,112 @@ class FileService
         }, $history);
 
         return ['file' => $file, 'history' => $history];
+    }
+
+    public function getAllFilesForUser(User $loggedUser)
+    {
+        // UserContextService::load();
+        $schools = UserContextService::relatedSchools();
+        $schoolIds = array_keys($schools);
+
+        // Get files related to user's province (PROVINCIAL type)
+        $provincialFiles = File::whereHas('subtype.fileType', function ($query) {
+            $query->where('code', FileType::PROVINCIAL);
+        })
+            ->where('fileable_type', 'province')
+            ->where('fileable_id', $loggedUser->province_id)
+            ->with(['subtype', 'subtype.fileType', 'user'])
+            ->get();
+
+
+        // Get files related to user's schools (INSTITUTIONAL type)
+        $institutionalFiles = File::whereHas('subtype.fileType', function ($query) {
+            $query->where('code', FileType::INSTITUTIONAL);
+        })
+            ->where('fileable_type', 'school')
+            ->whereIn('fileable_id', $schoolIds)
+            ->with(['subtype', 'subtype.fileType', 'user'])
+            ->get();
+
+        // Get files related to the user directly (USER type)
+        $userFiles = File::whereHas('subtype.fileType', function ($query) {
+            $query->where('code', FileType::USER);
+        })
+            ->where('fileable_type', 'user')
+            ->where('fileable_id', $loggedUser->id)
+            ->with(['subtype', 'subtype.fileType', 'user'])
+            ->get();
+
+        // Combine all files
+        $allFiles = $provincialFiles->concat($institutionalFiles)->concat($userFiles);
+
+        // Format files for display
+        $formattedFiles = $allFiles->map(function ($file) {
+            $formatted = $this->formatFileForTable($file);
+            // Add file type context for display
+            $formatted['file_type_context'] = $this->getFileTypeContext($file);
+            $formatted['edit_url'] = $this->getEditUrl($file);
+            $formatted['replace_url'] = $this->getReplaceUrl($file);
+            $formatted['show_url'] = $this->getShowUrl($file);
+            return $formatted;
+        });
+
+        return $formattedFiles->toArray();
+    }
+
+    private function getFileTypeContext(File $file)
+    {
+        switch ($file->subtype->fileType->code) {
+            case FileType::PROVINCIAL:
+                return 'Provincial';
+            case FileType::INSTITUTIONAL:
+                return 'Institucional';
+            case FileType::USER:
+                return 'Usuario';
+            default:
+                return $file->subtype->fileType->name;
+        }
+    }
+
+    private function getEditUrl(File $file)
+    {
+        switch ($file->subtype->fileType->code) {
+            case FileType::PROVINCIAL:
+                return route('provinces.edit', $file->fileable_id);
+            case FileType::INSTITUTIONAL:
+                return route('school.file.edit', ['school' => $file->fileable_id, 'file' => $file->id]);
+            case FileType::USER:
+                return route('users.file.edit', ['user' => $file->fileable_id, 'file' => $file->id]);
+            default:
+                return null;
+        }
+    }
+
+    private function getReplaceUrl(File $file)
+    {
+        switch ($file->subtype->fileType->code) {
+            case FileType::PROVINCIAL:
+                return route('provinces.edit', $file->fileable_id);
+            case FileType::INSTITUTIONAL:
+                return route('school.file.replace', ['school' => $file->fileable_id, 'file' => $file->id]);
+            case FileType::USER:
+                return route('users.file.replace', ['user' => $file->fileable_id, 'file' => $file->id]);
+            default:
+                return null;
+        }
+    }
+
+    private function getShowUrl(File $file)
+    {
+        switch ($file->subtype->fileType->code) {
+            case FileType::PROVINCIAL:
+                return route('provinces.show', $file->fileable_id);
+            case FileType::INSTITUTIONAL:
+                return route('school.file.show', ['school' => $file->fileable_id, 'file' => $file->id]);
+            case FileType::USER:
+                return route('users.file.show', ['user' => $file->fileable_id, 'file' => $file->id]);
+            default:
+                return null;
+        }
     }
 }
