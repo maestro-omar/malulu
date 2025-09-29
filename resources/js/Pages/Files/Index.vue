@@ -14,58 +14,88 @@
 
     <template #main-page-content>
       <div class="files-index">
-        <q-card class="q-mb-md">
-          <q-card-section>
-            <div class="text-h6 q-mb-md">
-              <q-icon name="folder" class="q-mr-sm" />
-              Todos mis archivos
-            </div>
-
-            <q-table v-if="files && files.length > 0" class="mll-table mll-table--files striped-table" dense
-              :rows="files" :columns="columns" row-key="id" :pagination="{ rowsPerPage: 25 }">
-              <template v-slot:body-cell-file_type_context="props">
-                <q-td :props="props">
-                  <q-chip :color="getFileTypeColor(props.value)" text-color="white" size="sm">
-                    {{ props.value }}
-                  </q-chip>
-                </q-td>
+        <!-- Search and Filters -->
+        <div class="row q-mb-md q-gutter-x-md">
+          <div class="col-12 col-md-3">
+            <q-input v-model="searchInput" dense outlined placeholder="Buscar archivos..." @keyup.enter="performSearch"
+              clearable>
+              <template v-slot:prepend>
+                <q-icon name="search" />
               </template>
-
-              <template v-slot:body-cell-show="props">
-                <q-td :props="props">
-                  <q-btn flat round dense icon="visibility" color="green" :href="props.row.show_url"
-                    title="Ver archivo" />
-                </q-td>
+              <template v-slot:append>
+                <q-btn flat round dense icon="send" @click="performSearch" color="primary" />
               </template>
-
-              <template v-slot:body-cell-edit="props">
-                <q-td :props="props">
-                  <q-btn flat round dense icon="edit" color="warning" :href="props.row.edit_url"
-                    title="Editar archivo" />
-                </q-td>
+            </q-input>
+          </div>
+          <div class="col-12 col-md-2">
+            <q-select v-model="selectedType" dense outlined :options="typeOptions" option-label="label"
+              option-value="value" @update:model-value="triggerFilter" clearable placeholder="Filtrar por tipo">
+              <template v-slot:prepend>
+                <q-icon name="category" />
               </template>
-
-              <template v-slot:body-cell-download="props">
-                <q-td :props="props">
-                  <q-btn flat round dense icon="download" color="primary" @click="downloadFile(props.row)"
-                    title="Descargar archivo" />
-                </q-td>
+            </q-select>
+          </div>
+          <div class="col-12 col-md-2">
+            <q-select v-model="selectedSubtype" dense outlined :options="filteredSubtypeOptions" option-label="label"
+              option-value="value" @update:model-value="triggerFilter" clearable placeholder="Filtrar por subtipo"
+              :disable="!selectedType">
+              <template v-slot:prepend>
+                <q-icon name="folder" />
               </template>
+            </q-select>
+          </div>
+          <div class="col-12 col-md-2">
+            <q-btn color="grey" icon="clear" label="Limpiar" @click="clearFilters" class="q-ml-sm q-ml-md-md q-ml-lg-lg" />
+          </div>
+        </div>
 
-              <template v-slot:body-cell-replace="props">
-                <q-td :props="props">
-                  <q-btn flat round dense icon="published_with_changes" color="teal" :href="props.row.replace_url"
-                    title="Reemplazar archivo" />
-                </q-td>
-              </template>
-            </q-table>
+    
+        <q-table v-if="filteredFiles && filteredFiles.length > 0" class="mll-table mll-table--files striped-table"
+          dense :rows="filteredFiles" :columns="columns" row-key="id" :pagination="{ rowsPerPage: 25 }">
+          <template v-slot:body-cell-file_type_context="props">
+            <q-td :props="props">
+              <q-chip :color="getFileTypeColor(props.value)" text-color="white" size="sm">
+                {{ props.value }}
+              </q-chip>
+            </q-td>
+          </template>
 
-            <div v-else class="text-center q-pa-lg">
-              <q-icon name="folder_open" size="4rem" color="grey-5" />
-              <div class="text-grey-6 q-mt-md">No hay archivos disponibles</div>
-            </div>
-          </q-card-section>
-        </q-card>
+          <template v-slot:body-cell-show="props">
+            <q-td :props="props">
+              <q-btn flat round dense icon="visibility" color="green" :href="props.row.show_url"
+                title="Ver archivo" />
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-edit="props">
+            <q-td :props="props">
+              <q-btn flat round dense icon="edit" color="warning" :href="props.row.edit_url"
+                title="Editar archivo" />
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-download="props">
+            <q-td :props="props">
+              <q-btn flat round dense icon="download" color="primary" @click="downloadFile(props.row)"
+                title="Descargar archivo" />
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-replace="props">
+            <q-td :props="props">
+              <q-btn flat round dense icon="published_with_changes" color="teal" :href="props.row.replace_url"
+                title="Reemplazar archivo" />
+            </q-td>
+          </template>
+        </q-table>
+
+        <div v-else class="text-center q-pa-lg">
+          <q-icon name="folder_open" size="4rem" color="grey-5" />
+          <div class="text-grey-6 q-mt-md">
+            {{ filteredFiles.length === 0 && (selectedType || selectedSubtype || search) ? 'No se encontraron archivos con los filtros aplicados' : 'No hay archivos disponibles' }}
+          </div>
+        </div>
+        
       </div>
     </template>
   </AuthenticatedLayout>
@@ -75,12 +105,84 @@
 import { Head } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
+import { hasPermission, isAdmin, isCurrentUserAdmin } from '@/Utils/permissions';
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps({
   files: {
     type: Array,
     default: () => []
   }
+})
+
+// Filter state
+const selectedType = ref(null)
+const selectedSubtype = ref(null)
+const searchInput = ref('')
+const search = ref('')
+
+// Filter options
+const typeOptions = [
+  { label: 'Provincial', value: 'Provincial' },
+  { label: 'Institucional', value: 'Institucional' },
+  { label: 'Usuario', value: 'Usuario' }
+]
+
+// Get unique subtypes from files
+const allSubtypes = computed(() => {
+  const subtypes = new Set()
+  props.files.forEach(file => {
+    if (file.subtype) {
+      subtypes.add(file.subtype)
+    }
+  })
+  return Array.from(subtypes).map(subtype => ({
+    label: subtype,
+    value: subtype
+  }))
+})
+
+// Filter subtypes based on selected type
+const filteredSubtypeOptions = computed(() => {
+  if (!selectedType.value) return allSubtypes.value
+
+  return props.files
+    .filter(file => file.file_type_context === selectedType.value)
+    .map(file => file.subtype)
+    .filter((subtype, index, self) => self.indexOf(subtype) === index)
+    .map(subtype => ({
+      label: subtype,
+      value: subtype
+    }))
+})
+
+// Filtered files based on all criteria
+const filteredFiles = computed(() => {
+  let filtered = props.files
+
+  // Filter by type
+  if (selectedType.value) {
+    filtered = filtered.filter(file => file.file_type_context === selectedType.value)
+  }
+
+  // Filter by subtype
+  if (selectedSubtype.value) {
+    filtered = filtered.filter(file => file.subtype === selectedSubtype.value)
+  }
+
+  // Filter by search text
+  if (search.value) {
+    const searchLower = search.value.toLowerCase()
+    filtered = filtered.filter(file =>
+      file.nice_name?.toLowerCase().includes(searchLower) ||
+      file.description?.toLowerCase().includes(searchLower) ||
+      file.subtype?.toLowerCase().includes(searchLower) ||
+      file.type?.toLowerCase().includes(searchLower) ||
+      file.created_by?.toLowerCase().includes(searchLower)
+    )
+  }
+
+  return filtered
 })
 
 // Download file function
@@ -95,6 +197,38 @@ const downloadFile = (file) => {
     document.body.removeChild(link)
   }
 }
+
+// Perform search function
+const performSearch = () => {
+  search.value = searchInput.value
+}
+
+// Clear all filters
+const clearFilters = () => {
+  selectedType.value = null
+  selectedSubtype.value = null
+  searchInput.value = ''
+  search.value = ''
+}
+
+// Debounce function and filter trigger
+let filterTimeout = null
+
+const triggerFilter = () => {
+  if (filterTimeout) {
+    clearTimeout(filterTimeout)
+  }
+
+  filterTimeout = setTimeout(() => {
+    // Auto-update search when filters change
+    search.value = searchInput.value
+  }, 300)
+}
+
+// Watch for type changes to reset subtype
+watch(selectedType, () => {
+  selectedSubtype.value = null
+})
 
 // Get color for file type context
 const getFileTypeColor = (type) => {
@@ -120,14 +254,14 @@ const columns = [
     sortable: true,
     style: 'width: 120px'
   },
-  {
-    name: 'type',
-    label: 'Tipo',
-    field: 'type',
-    align: 'left',
-    sortable: true,
-    style: 'width: 120px'
-  },
+  // {
+  //   name: 'type',
+  //   label: 'Tipo',
+  //   field: 'type',
+  //   align: 'left',
+  //   sortable: true,
+  //   style: 'width: 120px'
+  // },
   {
     name: 'subtype',
     label: 'Subtipo',

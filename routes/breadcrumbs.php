@@ -200,7 +200,12 @@ Breadcrumbs::for('file-subtypes.edit', function (Trail $trail, $fileSubtype) {
 // 📁 Archivos
 Breadcrumbs::for('files.index', function (Trail $trail) {
     $trail->parent('dashboard');
-    $trail->push('Mis archivos', route('files.index'), ['icon' => 'folder']);
+    $trail->push('Documentación', route('files.index'), ['icon' => 'folder']);
+});
+
+Breadcrumbs::for('files.create', function (Trail $trail) {
+    $trail->parent('files.index');
+    $trail->push('Nuevo archivo');
 });
 
 

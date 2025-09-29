@@ -27,7 +27,11 @@ class FileAdminController extends SystemBaseController
 
     public function create(Request $request)
     {
+        $loggedUser = auth()->user();
+        
         return Inertia::render('Files/Create', [
+            'user' => $loggedUser,
+            'activeSchool' => $loggedUser->activeSchool,
             'breadcrumbs' => Breadcrumbs::generate('files.create'),
         ]);
     }
