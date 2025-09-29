@@ -304,6 +304,10 @@ class HandleInertiaRequests extends Middleware
             'route' => 'profile.edit',
             'icon' => 'account_circle',
         ], [
+            'name' => 'Documentación',
+            'route' => 'files.index',
+            'icon' => 'folder',
+        ], [
             'name' => 'Salir',
             'route' => 'logout.get',
             'icon' => 'logout',

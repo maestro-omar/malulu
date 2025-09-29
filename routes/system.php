@@ -16,6 +16,7 @@ Route::prefix(__('routes.system'))->group(function () {
         Route::get('/' . __('routes.profile'), [ProfileAdminController::class, 'edit'])->name('profile.edit');
         Route::patch('/' . __('routes.profile'), [ProfileAdminController::class, 'update'])->name('profile.update');
         Route::delete('/' . __('routes.profile'), [ProfileAdminController::class, 'destroy'])->name('profile.destroy');
+        Route::get(__('routes.files'), [FileAdminController::class, 'index'])->name('files.index');
 
         // // Test route to check permissions
         // Route::get('/test-permissions', function () {

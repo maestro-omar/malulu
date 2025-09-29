@@ -34,6 +34,12 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
 
         Route::get(__('routes.guardians'), [UserController::class, 'guardians'])->name('school.guardians')->middleware('school.permission:guardian.view');
 
+        // School Files Routes
+        Route::get(__('routes.files') . '/' . __('routes.create'), [FileController::class, 'createForSchoolDirect'])->name('school.file.create')->middleware('school.permission:school.edit');
+        Route::get(__('routes.file') . '/{file}', [FileController::class, 'showForSchoolDirect'])->name('school.file.show')->middleware('school.permission:school.view');
+        Route::get(__('routes.file') . '/{file}/' . __('routes.edit'), [FileController::class, 'editForSchoolDirect'])->name('school.file.edit')->middleware('school.permission:school.edit');
+        Route::get(__('routes.file') . '/{file}/' . __('routes.replace'), [FileController::class, 'replaceForSchoolDirect'])->name('school.file.replace')->middleware('school.permission:school.edit');
+
         // School Pages Routes
         Route::get(__('routes.pages'), [SchoolPageController::class, 'index'])->name('school-pages.index')->middleware('school.permission:school-page.manage');
         Route::get(__('routes.pages') . '/' . __('routes.create'), [SchoolPageController::class, 'create'])->name('school-pages.create')->middleware('school.permission:school-page.manage');

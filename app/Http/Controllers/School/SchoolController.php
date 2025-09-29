@@ -9,6 +9,7 @@ use App\Models\Catalogs\SchoolLevel;
 use App\Models\Catalogs\SchoolManagementType;
 use App\Models\Catalogs\SchoolShift;
 use App\Services\SchoolService;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
@@ -22,10 +23,12 @@ use Diglactic\Breadcrumbs\Breadcrumbs;
 class SchoolController extends SchoolBaseController
 {
     protected $schoolService;
+    protected $fileService;
 
-    public function __construct(SchoolService $schoolService)
+    public function __construct(SchoolService $schoolService, FileService $fileService)
     {
         $this->schoolService = $schoolService;
+        $this->fileService = $fileService;
     }
 
     public function index(Request $request)
@@ -113,16 +116,18 @@ class SchoolController extends SchoolBaseController
         }
     }
 
-    public function show(School $school)
+    public function show(Request $request, School $school)
     {
         $school->load(['locality', 'schoolLevels', 'managementType', 'shifts']);
 
         if (is_string($school->extra)) {
             $school->extra = json_decode($school->extra, true);
         }
+        $files = $this->fileService->getSchoolFiles($school, $request->user());
 
         return $this->render(null, 'Schools/Show', [
             'school' => $school,
+            'files' => $files,
             'breadcrumbs' => Breadcrumbs::generate('school.show', $school),
         ]);
     }

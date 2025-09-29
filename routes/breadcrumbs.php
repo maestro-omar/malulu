@@ -8,6 +8,7 @@ use App\Models\Catalogs\Province;
 use App\Models\Catalogs\District;
 use App\Models\Catalogs\Locality;
 use App\Models\Entities\Course;
+use App\Models\Entities\File;
 
 use App\Models\Entities\User;
 
@@ -196,6 +197,12 @@ Breadcrumbs::for('file-subtypes.edit', function (Trail $trail, $fileSubtype) {
     $trail->push('Subtipo de archivo', route('file-subtypes.edit', $fileSubtype));
 });
 
+// 📁 Archivos
+Breadcrumbs::for('files.index', function (Trail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Mis archivos', route('files.index'), ['icon' => 'folder']);
+});
+
 
 // 🏫 Niveles de escuela (desde una escuela)
 Breadcrumbs::for('school.courses', function (Trail $trail, School $school, SchoolLevel $schoolLevel, bool $hide = false) {
@@ -233,6 +240,27 @@ Breadcrumbs::for('school.course.attendanceDayEdit', function (Trail $trail, Scho
 Breadcrumbs::for('school.course.file.create', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
     $trail->parent('school.course.show', $school, $schoolLevel, $course);
     $trail->push("Nuevo archivo para {$course->nice_name}");
+});
+
+// School file breadcrumbs
+Breadcrumbs::for('school.file.create', function (Trail $trail, School $school) {
+    $trail->parent('school.show', $school);
+    $trail->push("Nuevo archivo");
+});
+
+Breadcrumbs::for('school.file.show', function (Trail $trail, School $school, File $file) {
+    $trail->parent('school.show', $school);
+    $trail->push("Archivo: {$file->nice_name}");
+});
+
+Breadcrumbs::for('school.file.edit', function (Trail $trail, School $school, File $file) {
+    $trail->parent('school.file.show', $school, $file);
+    $trail->push("Editar archivo");
+});
+
+Breadcrumbs::for('school.file.replace', function (Trail $trail, School $school, File $file) {
+    $trail->parent('school.file.show', $school, $file);
+    $trail->push("Reemplazar archivo");
 });
 
 

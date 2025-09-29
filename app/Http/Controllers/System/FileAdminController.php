@@ -25,6 +25,13 @@ class FileAdminController extends SystemBaseController
         $this->fileService = $fileService;
     }
 
+    public function create(Request $request)
+    {
+        return Inertia::render('Files/Create', [
+            'breadcrumbs' => Breadcrumbs::generate('files.create'),
+        ]);
+    }
+
     public function createForUser(Request $request, User $user)
     {
         $subTypes = $this->fileService->getSubtypesForUser($user);
@@ -70,6 +77,17 @@ class FileAdminController extends SystemBaseController
             'file' => $fileData['file'],
             'subTypes' => $subTypes,
             'breadcrumbs' => Breadcrumbs::generate('users.file.replace', $user, $file),
+        ]);
+    }
+
+    public function index(Request $request)
+    {
+        $loggedUser = auth()->user();
+        $files = $this->fileService->getAllFilesForUser($loggedUser);
+
+        return Inertia::render('Files/Index', [
+            'files' => $files,
+            'breadcrumbs' => Breadcrumbs::generate('files.index'),
         ]);
     }
 }

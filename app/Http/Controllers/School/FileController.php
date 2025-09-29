@@ -47,4 +47,38 @@ class FileController extends SchoolBaseController
     {
         dd($file,'edit');
     }
+
+    // School file management methods
+    public function createForSchoolDirect(Request $request, School $school)
+    {
+        $subTypes = $this->fileService->getSubtypesForSchool($school);
+        return Inertia::render('Files/bySchool/Create', [
+            'subTypes' => $subTypes,
+            'breadcrumbs' => Breadcrumbs::generate('school.file.create', $school),
+        ]);
+    }
+
+    public function showForSchoolDirect(Request $request, School $school, File $file)
+    {
+        return Inertia::render('Files/bySchool/Show', [
+            'file' => $file,
+            'breadcrumbs' => Breadcrumbs::generate('school.file.show', $school, $file),
+        ]);
+    }
+
+    public function editForSchoolDirect(Request $request, School $school, File $file)
+    {
+        return Inertia::render('Files/bySchool/Edit', [
+            'file' => $file,
+            'breadcrumbs' => Breadcrumbs::generate('school.file.edit', $school, $file),
+        ]);
+    }
+
+    public function replaceForSchoolDirect(Request $request, School $school, File $file)
+    {
+        return Inertia::render('Files/bySchool/Replace', [
+            'file' => $file,
+            'breadcrumbs' => Breadcrumbs::generate('school.file.replace', $school, $file),
+        ]);
+    }
 }
