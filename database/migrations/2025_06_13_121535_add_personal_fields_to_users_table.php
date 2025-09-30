@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('nationality')->nullable()->after('birth_place');
             $table->string('picture')->nullable()->after('nationality');
             $table->string('critical_info')->nullable()->after('picture');
+            $table->string('occupation')->nullable()->after('critical_info');
         });
 
         $sql = "ALTER TABLE users 
@@ -54,8 +55,11 @@ return new class extends Migration
                 'locality',
                 'province_id',
                 'country_id',
+                'birth_place',
                 'nationality',
-                'picture'
+                'picture',
+                'critical_info',
+                'occupation'
             ]);
         });
     }

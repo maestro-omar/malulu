@@ -13,6 +13,7 @@ use App\Models\Catalogs\SchoolLevel;
 use App\Models\Catalogs\ClassSubject;
 use App\Models\Catalogs\SchoolShift;
 use App\Models\Entities\Course;
+use App\Models\Entities\AcademicYear;
 use App\Models\Relations\TeacherCourse;
 use App\Models\Relations\StudentCourse;
 use App\Models\Relations\WorkerRelationship;
@@ -20,33 +21,69 @@ use App\Models\Relations\StudentRelationship;
 use App\Models\Relations\GuardianRelationship;
 use App\Models\Relations\RoleRelationship;
 use App\Services\UserService;
+use Database\Seeders\Faker\UserFaker;
 
 
 class InitialUsersSeeder extends Seeder
 {
+    private bool $deleteExisting = false;
+    private $faker;
+
     private $jsonFolder = 'database' . DIRECTORY_SEPARATOR . 'seeders' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
-    private $jsonFileName = 'ce-8_initial_staff.json';
+    private $jsonStaffFileName = 'ce-8_initial_staff.json';
+    private $jsonStudentsFileName = 'ce-8_initial_students_with_guardian.json';
 
     private $userService;
 
     private $allRoles;
 
+    private $creator;
     private $defaultSchool;
     private $primaryLevel;
     private $courses;
     private $province;
     private $country;
+    private $countries;
+    private $academicYears;
 
     public function __construct()
     {
+        $this->faker = \Faker\Factory::create('es_ES'); // Using Spanish locale for more realistic names
+        $this->faker->addProvider(new UserFaker($this->faker));
+    }
+
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $this->init();
+        if ($this->deleteExisting)
+            $this->deleteAllUsersExceptAdmin();
+        $this->createInitiaStaffUsers();
+        $this->createInitiaStudentsUsers();
+    }
+
+    private function init()
+    {
         $this->allRoles = Role::pluck('id', 'code')->toArray();
         $this->userService = app(UserService::class);
+        $this->creator = User::find(1); // Use admin user as creator
 
         // Set class properties to avoid repeated database queries
         $this->defaultSchool = School::where('code', School::CUE_LUCIO_LUCERO)->first();
         $this->province = Province::where('code', Province::DEFAULT)->first();
         $this->country = Country::where('iso', Country::DEFAULT)->first();
+        $this->countries = Country::all();
+        $this->academicYears = AcademicYear::all();
         $this->primaryLevel = SchoolLevel::where('code', SchoolLevel::PRIMARY)->first();
+        if (!$this->defaultSchool) {
+            throw new \Exception('School with code ' . School::CUE_LUCIO_LUCERO . ' not found. Please run SchoolSeeder first.');
+        }
+
+        if (!$this->province || !$this->country) {
+            throw new \Exception('Default province or country not found. Please run ProvinceSeeder and CountrySeeder first.');
+        }
 
         // Get all active courses for the default school and primary level
         $this->courses = Course::where('school_id', $this->defaultSchool->id)
@@ -55,65 +92,273 @@ class InitialUsersSeeder extends Seeder
             ->where('active', true)
             ->get();
     }
-
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    private function createInitiaStaffUsers()
     {
-        $this->deleteAllUsersExceptAdmin();
-        $this->createInitialUsers();
-    }
-
-    private function createInitialUsers()
-    {
-        // Create users for default school (School::CUE_LUCIO_LUCERO)
-        $defaultSchool = School::where('code', School::CUE_LUCIO_LUCERO)->first();
-        if (!$defaultSchool) {
-            throw new \Exception('School with code ' . School::CUE_LUCIO_LUCERO . ' not found. Please run SchoolSeeder first.');
-        }
-
-        // Get default province (San Luis) and country (Argentina)
-        $province = Province::where('code', Province::DEFAULT)->first();
-        $country = Country::where('iso', Country::DEFAULT)->first();
-
-        if (!$province || !$country) {
-            throw new \Exception('Default province or country not found. Please run ProvinceSeeder and CountrySeeder first.');
-        }
-
-        $jsonPath = $this->jsonFolder . $this->jsonFileName;
+        $jsonPath = $this->jsonFolder . $this->jsonStaffFileName;
         $jsonData = json_decode(file_get_contents($jsonPath), true);
 
         foreach ($jsonData as $jsonUserData) {
-            $parsedData = $this->parseUserData($jsonUserData);
+            $this->createOneStaffUser($jsonUserData, true);
+        }
+        echo "End with " . count($jsonData) . " staff users\n";
+    }
 
-            // Check if user with same email already exists
-            $existingUser = User::where('email', $parsedData['user_data']['email'])->first();
-            if ($existingUser) {
-                $this->command->info("Skipping user with existing email: " . $parsedData['user_data']['email']);
-                continue;
-            }
+    private function createInitiaStudentsUsers()
+    {
+        $jsonPath = $this->jsonFolder . $this->jsonStudentsFileName;
+        $jsonData = json_decode(file_get_contents($jsonPath), true);
 
-            // Create the user first
-            $user = $this->userService->createUser($parsedData['user_data']);
-
-            // Then assign the role with details
-            $creator = User::find(1); // Use admin user as creator
-            $this->userService->assignRoleWithDetails(
-                $user,
-                $parsedData['school_id'],
-                $parsedData['role_id'],
-                $parsedData['school_level_id'],
-                $parsedData['details'],
-                $creator
-            );
-            $this->relateToCourses($user, $parsedData['courses']);
-
-            $this->command->info("Created user: " . $user->name . " (" . $user->email . ")");
+        foreach ($jsonData as $jsonRowData) {
+            $this->createOneStudentWithGuardian($jsonRowData);
         }
     }
 
-    private function parseUserData($userData)
+    private function createOneStaffUser($jsonUserData)
+    {
+        $parsedData = $this->parseStaffUserData($jsonUserData);
+
+        // Check if user with same email already exists
+        $existingUser = User::where('email', $parsedData['user_data']['email'])->first();
+        if ($existingUser) {
+            $this->command->info("Skipping user with existing email: " . $parsedData['user_data']['email']);
+            return;
+        }
+
+        // Create the user first
+        try {
+            $user = $this->userService->createUser($parsedData['user_data']);
+        } catch (\Exception $e) {
+            echo "Error creating user: " . $e->getMessage() . " for user: " . print_r($parsedData['user_data'], true) . "\n";
+            return;
+        }
+
+        // Then assign the role with details
+        $this->userService->assignRoleWithDetails(
+            $user,
+            $parsedData['school_id'],
+            $parsedData['role_id'],
+            $parsedData['school_level_id'],
+            $parsedData['details'],
+            $this->creator
+        );
+        $this->relateToCourses($user, $parsedData['courses']);
+
+        $this->command->info("Created user: " . $user->name . " (" . $user->email . ")");
+    }
+
+    private function createOneStudentWithGuardian($jsonRowData)
+    {
+        $studentUser = $this->createOneStudentUser($jsonRowData);
+        if (!$studentUser) {
+            return;
+        }
+        $this->createGuardianAndRelateToStudent($jsonRowData, $studentUser);
+    }
+
+    private function parseStudentUserData($userData)
+    {
+        // Parse basic user data
+        $firstName = ucwords(strtolower(trim($userData['Nombres'] ?? '')));
+        $lastName = ucwords(strtolower(trim($userData['Apellidos'] ?? '')));
+        $email = $this->faker->sanLuisEmail($firstName, $lastName);
+        $dni = $userData['DNI'] ?? null;
+        $gender = $this->mapGender($userData['Género'] ?? '');
+        $birthdate = $this->parseDate($userData['Fecha de nacimiento'] ?? '');
+        $address = $userData['Direccion'] ?? null;
+        $locality = $userData['Localidad'] ?? null;
+        $birth_place = $userData['Lugar de nacimiento'] ?? 'San Luis';
+        $nationality = $this->nacionalityBasedOnBirthPlace($userData['Nacionalidad'] ?? '', $birth_place);
+        $shift = $this->mapShift($userData['Turno'] ?? 'mañana');
+        $critical_info = $userData['Datos críticos'] ?? null;
+
+        // Create user data array
+        $userDataArray = [
+            'name' => $firstName . ' ' . mb_substr($lastName, 0, 1),
+            'firstname' => $firstName,
+            'lastname' => $lastName,
+            'email' => $email,
+            'id_number' => (string)$dni,
+            'gender' => $gender,
+            'birthdate' => $birthdate,
+            'phone' =>  null, // Not provided for students
+            'address' => $address,
+            'locality' => $locality,
+            'province_id' => $this->province->id,
+            'country_id' => $this->country->id,
+            'birth_place' => $birth_place,
+            'nationality' => $nationality,
+            'critical_info' => $critical_info,
+            'password' => '123123123', // Default password
+            'password_confirmation' => '123123123', // Required for validation
+        ];
+
+        // Map role and create role details
+        $roleCode = Role::STUDENT;
+        $roleId = $this->allRoles[$roleCode] ?? null;
+
+        if (!$roleId) {
+            throw new \Exception("Role not found for student!");
+        }
+
+        $courses = $this->normalizeCourses($shift, $userData['Agrupamiento'], true);
+        $course = $courses[0];
+        $courseNumber = (int) $course['number'];
+
+        $details = [
+            'start_date' => $this->parseDate($userData['INGRESO AL AGRUP'] ?? '') ?: $this->getStudentStartDate($courseNumber),
+            'notes' => 'Imported from initial data',
+            'course_id' => $course['id'],
+        ];
+
+        return [
+            'user_data' => $userDataArray,
+            'school_id' => $this->defaultSchool->id,
+            'role_id' => $roleId,
+            'shift' => $shift,
+            'course' => $course,
+            'school_level_id' => $this->primaryLevel->id,
+            'details' => $details,
+        ];
+    }
+
+    private function createOneStudentUser($jsonRowData): ?User
+    {
+        $studentData = $this->parseStudentUserData($jsonRowData);
+
+        // Check if user with same dni already exists
+        $existingUser = User::where('id_number', $studentData['user_data']['id_number'])->first();
+        if ($existingUser) {
+            $this->command->info("Skipping student with existing dni: " . $studentData['user_data']['id_number']);
+            return $existingUser;
+        }
+
+        // Create the user first
+        try {
+            $user = $this->userService->createUser($studentData['user_data']);
+        } catch (\Exception $e) {
+            echo "Error creating student: " . $e->getMessage() . " for user: " . print_r($studentData['user_data'], true) . "\n";
+            return null;
+        }
+
+        // Then assign the role with details
+        $this->userService->assignRoleWithDetails(
+            $user,
+            $studentData['school_id'],
+            $studentData['role_id'],
+            $studentData['school_level_id'],
+            $studentData['details'],
+            $this->creator
+        );
+        $this->relateToCourses($user, [$studentData['course']]);
+
+        $this->command->info("Created student: " . $user->name . " (" . $user->email . ")");
+    }
+
+    private function parseGuardianUserData($jsonRowData, User $student)
+    {
+        $firstName = ucwords(strtolower(trim($jsonRowData['TUTOR_Nombres'] ?? '')));
+        $lastName = ucwords(strtolower(trim($jsonRowData['TUTOR_Apellidos'] ?? '')));
+        $email = strtolower(trim($jsonRowData['TUTOR_email'] ?? ''));
+        $dni = $jsonRowData['TUTOR_DNI'] ?? null;
+        $gender = in_array($jsonRowData['Vínculo'], ['Madre', 'Tía', 'Tia', 'Abuela']) ? User::GENDER_FEMALE : User::GENDER_MALE;
+        $birthdate = $this->parseDate($jsonRowData['TUTOR_Fecha de nacimiento'] ?? '');
+        $phone = $this->formatPhone($jsonRowData['TUTOR_Teléfono'] ?? '');
+        $birth_place = $student->birth_place;
+        $nationality = $student->nationality;
+        $address = $userData['Direccion'] ?? null;
+        $locality = $userData['Localidad'] ?? null;
+        $shift = $this->mapShift($jsonRowData['Turno'] ?? 'mañana');
+        $ocupation = $jsonRowData['TUTOR_Profesion'] ?? '';
+        if (empty($email)) {
+            $email = $this->faker->guardianEmail($firstName, $lastName);
+        }
+        $birthdate = $this->faker->birthdateFromDNI($dni);
+
+        // Create user data array
+        $userDataArray = [
+            'name' => $firstName . ' ' . mb_substr($lastName, 0, 1),
+            'firstname' => $firstName,
+            'lastname' => $lastName,
+            'email' => $email,
+            'id_number' => (string)$dni,
+            'gender' => $gender,
+            'birthdate' => $birthdate,
+            'phone' =>  null, // Not provided for students
+            'address' => $address,
+            'locality' => $locality,
+            'province_id' => $this->province->id,
+            'country_id' => $this->country->id,
+            'birth_place' => $birth_place,
+            'nationality' => $nationality,
+            'password' => '123123123', // Default password
+            'password_confirmation' => '123123123', // Required for validation
+        ];
+
+        // Map role and create role details
+        $roleCode = Role::GUARDIAN;
+        $roleId = $this->allRoles[$roleCode] ?? null;
+
+        if (!$roleId) {
+            throw new \Exception("Role not found for student!");
+        }
+        // Create role details
+        $details = [
+            'student_id' => $student->id,
+            'relationship_type' => $jsonRowData['Vínculo'],
+            'is_restricted' => false,
+            'emergency_contact_priority' => 1,
+            'is_emergency_contact' => true,
+            'notes' => 'Imported from initial data',
+        ];
+
+        return [
+            'user_data' => $userDataArray,
+            'school_id' => $this->defaultSchool->id,
+            'role_id' => $roleId,
+            'shift' => $shift,
+            'school_level_id' => $this->primaryLevel->id,
+            'details' => $details,
+        ];
+    }
+
+    private function createGuardianAndRelateToStudent(array $jsonRowData, User $student)
+    {
+        $guardianUser = $this->findOrCreateGuardianUser($jsonRowData, $student);
+        $this->relateGuardianToStudent($guardianUser, $student);
+    }
+
+    private function findOrCreateGuardianUser($jsonRowData, User $student): ?User
+    {
+        $guardianData = $this->parseGuardianUserData($jsonRowData, $student);
+
+        $guardianUser = User::where('id_number', $guardianData['user_data']['id_number'])->first();
+        if (!$guardianUser)
+            $guardianUser = User::where('email', $guardianData['user_data']['email'])->first();
+        if ($guardianUser) {
+            $this->updateGuardianUserMissingFields($guardianUser, $guardianData);
+            return $guardianUser;
+        }
+
+        $guardianUser = $this->createGuardianUser($guardianData['user_data']);
+        return $guardianUser;
+    }
+
+    private function updateGuardianUserMissingFields($guardianUser, $guardianData)
+    {
+        $oldData = $guardianUser->toArray();
+        $newData = array_merge($oldData, $guardianData);
+        $guardianUser->fill($newData);
+        $guardianUser->save();
+    }
+
+    private function relateGuardianToStudent($guardianUser, $student) {}
+    private function createGuardianUser($guardianData): ?User
+    {
+        return User::create($guardianData);
+    }
+
+
+    private function parseStaffUserData($userData)
     {
         // Parse basic user data
         $firstName = ucwords(strtolower(trim($userData['Nombres'] ?? '')));
@@ -125,8 +370,15 @@ class InitialUsersSeeder extends Seeder
         $phone = $this->formatPhone($userData['Teléfono móvil'] ?? '');
         $birth_place = $userData['Lugar de nacimiento'] ?? 'San Luis';
         $nationality = $userData['Nacionalidad'] ?? 'Argentina';
-        $shift = $this->mapShift($userData['Turno'] ?? '');
-
+        $shift = $this->mapShift($userData['Turno'] ?? 'mañana');
+        if (empty($email)) {
+            $email = $this->faker->sanLuisEmail($firstName, $lastName);
+        }
+        if (empty($dni) && !empty($birthdate)) {
+            $dni = $this->faker->dniFromBirthdate($birthdate, $nationality);
+        } elseif (!empty($dni) && empty($birthdate)) {
+            $birthdate = $this->faker->birthdateFromDNI($dni);
+        }
         // Create user data array
         $userDataArray = [
             'name' => $firstName . ' ' . mb_substr($lastName, 0, 1),
@@ -135,7 +387,7 @@ class InitialUsersSeeder extends Seeder
             'email' => $email,
             'id_number' => $dni ? (string)$dni : null,
             'gender' => $gender,
-            'birthdate' => $birthdate,
+            'birthdate' => $birthdate ?: null,
             'phone' => $phone,
             'address' => null, // Not provided in JSON
             'locality' => 'San Luis', // Default locality
@@ -155,10 +407,12 @@ class InitialUsersSeeder extends Seeder
             throw new \Exception("Role not found for cargo: " . ($userData['Cargo'] ?? 'Unknown'));
         }
 
+        $courses = $this->normalizeCourses($shift, $userData['Agrupamientos']);
+
         // Create role details
         $details = [
             'start_date' => $this->parseDate($userData['Fecha de ingreso a la escuela'] ?? '') ?: now()->subYears(2),
-            'notes' => 'Imported from initial staff data',
+            'notes' => 'Imported from initial data',
         ];
 
         // Add worker details if it's a worker role
@@ -172,9 +426,12 @@ class InitialUsersSeeder extends Seeder
                 'schedule' => $this->mapSchedule($shift, $roleCode),
                 'class_subject_id' => $this->mapSubject($roleCode, $userData['Materia curricular'] ?? ''),
             ];
+        } elseif ($roleCode == Role::FORMER_STUDENT) {
+            // $details['student_details'] = [
+            //     'course_id' => $this->mapCourse($userData['Agrupamientos'] ?? ''),
+            // ];
         }
 
-        $courses = $this->normalizeCourses($shift, $userData['Agrupamientos']);
 
         return [
             'user_data' => $userDataArray,
@@ -191,10 +448,20 @@ class InitialUsersSeeder extends Seeder
     {
         return match (strtolower(trim($gender))) {
             'masculino' => User::GENDER_MALE,
+            'm' => User::GENDER_MALE,
+            'masc' => User::GENDER_MALE,
             'femenino' => User::GENDER_FEMALE,
+            'femenina' => User::GENDER_FEMALE,
+            'f' => User::GENDER_FEMALE,
+            'fem' => User::GENDER_FEMALE,
             'no binario' => User::GENDER_NOBINARY,
+            'no-binario' => User::GENDER_NOBINARY,
+            'no-bin' => User::GENDER_NOBINARY,
             'fluido' => User::GENDER_FLUID,
             'fluído' => User::GENDER_FLUID,
+            'trans' => User::GENDER_TRANS,
+            'transgénero' => User::GENDER_TRANS,
+            'trans' => User::GENDER_TRANS,
             'trans' => User::GENDER_TRANS,
             'otro' => User::GENDER_OTHER,
             default => User::GENDER_FEMALE, // Default fallback
@@ -206,6 +473,9 @@ class InitialUsersSeeder extends Seeder
         $cargo = strtolower(trim($cargo));
 
         return match (true) {
+            str_contains($cargo, 'estudiante') => Role::STUDENT,
+            str_contains($cargo, 'ex-alumno') => Role::FORMER_STUDENT,
+            str_contains($cargo, 'tutor') => Role::GUARDIAN,
             str_contains($cargo, 'director') => Role::DIRECTOR,
             str_contains($cargo, 'regente') => Role::REGENT,
             str_contains($cargo, 'secretaria') || str_contains($cargo, 'secretario') => Role::SECRETARY,
@@ -343,7 +613,9 @@ class InitialUsersSeeder extends Seeder
         foreach ($formats as $format) {
             $date = \DateTime::createFromFormat($format, $dateString);
             if ($date !== false) {
-                return $date->format('Y-m-d');
+                $age = $this->faker->calculateAge($date);
+                if ($age < 90 && $age > 0)
+                    return $date->format('Y-m-d');
             }
         }
 
@@ -459,7 +731,7 @@ class InitialUsersSeeder extends Seeder
         ]);
     }
 
-    private function normalizeCourses($shift, $agrupamiento)
+    private function normalizeCourses($shift, $agrupamiento, bool $specialAddToNumber = false)
     {
         if (empty($agrupamiento)) {
             return [];
@@ -469,27 +741,27 @@ class InitialUsersSeeder extends Seeder
 
         // Handle special cases first
         if (str_contains(strtolower($agrupamiento), 'segundo ciclo')) {
-            return $this->getCoursesByNumbers($shift, [4, 5, 6]);
+            return $this->getCoursesByNumbers($shift, [4, 5, 6, 7, 8], false);
         }
 
         if (str_contains(strtolower($agrupamiento), 'primer y segundo ciclo')) {
-            return $this->getCoursesByNumbers($shift, [1, 2, 3, 4, 5, 6]);
+            return $this->getCoursesByNumbers($shift, [1, 2, 3, 4, 5, 6, 7, 8], false);
         }
 
         if (str_contains(strtolower($agrupamiento), 'primer ciclo')) {
-            return $this->getCoursesByNumbers($shift, [1, 2, 3]);
+            return $this->getCoursesByNumbers($shift, [1, 2, 3], false);
         }
 
         if (str_contains(strtolower($agrupamiento), '7/8') || str_contains(strtolower($agrupamiento), '7mos / 8vos')) {
-            return $this->getCoursesByNumbers($shift, [7, 8]);
+            return $this->getCoursesByNumbers($shift, [7, 8], false);
         }
 
         if (str_contains(strtolower($agrupamiento), '7mos') || str_contains(strtolower($agrupamiento), '7mo')) {
-            return $this->getCoursesByNumbers($shift, [7]);
+            return $this->getCoursesByNumbers($shift, [7], false);
         }
 
         if (str_contains(strtolower($agrupamiento), '8vos') || str_contains(strtolower($agrupamiento), '8vo')) {
-            return $this->getCoursesByNumbers($shift, [8]);
+            return $this->getCoursesByNumbers($shift, [8], false);
         }
 
         if (str_contains(strtolower($agrupamiento), 'administración')) {
@@ -498,7 +770,7 @@ class InitialUsersSeeder extends Seeder
 
         // Handle numeric values (like just "2")
         if (is_numeric($agrupamiento)) {
-            return $this->getCoursesByNumbers($shift, [(int)$agrupamiento]);
+            return $this->getCoursesByNumbers($shift, [(int)$agrupamiento], $specialAddToNumber);
         }
 
         // Handle specific course patterns like "1A", "3c", "6to F", etc.
@@ -511,7 +783,7 @@ class InitialUsersSeeder extends Seeder
             $part = trim($part);
             if (empty($part)) continue;
 
-            $parsed = $this->parseCourseString($shift, $part);
+            $parsed = $this->parseCourseString($shift, $part, $specialAddToNumber);
             if ($parsed) {
                 $courses[] = $parsed;
             }
@@ -520,7 +792,7 @@ class InitialUsersSeeder extends Seeder
         return $courses;
     }
 
-    private function parseCourseString($shift, $courseString)
+    private function parseCourseString($shift, $courseString, ?bool $specialAddToNumber = false)
     {
         $courseString = trim($courseString);
 
@@ -529,7 +801,7 @@ class InitialUsersSeeder extends Seeder
             $number = (int)$matches[1];
             $letter = strtoupper($matches[2]);
 
-            return ['number' => $number, 'letter' => $letter];
+            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber ? 1 : 0), $letter);
         }
 
         // Handle patterns like "1 agrupamiento b", "1er agrupamiento C"
@@ -537,7 +809,7 @@ class InitialUsersSeeder extends Seeder
             $number = (int)$matches[1];
             $letter = strtoupper($matches[2]);
 
-            return ['number' => $number, 'letter' => $letter];
+            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber ? 1 : 0), $letter);
         }
 
         // Handle patterns like "1 agrupamiento division C"
@@ -545,14 +817,14 @@ class InitialUsersSeeder extends Seeder
             $number = (int)$matches[1];
             $letter = strtoupper($matches[2]);
 
-            return ['number' => $number, 'letter' => $letter];
+            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber ? 1 : 0), $letter);
         }
 
         // Handle patterns like "3er agrupamiento"
         if (preg_match('/(\d+)(?:er|ro|mo|vo)?\s+agrupamiento/i', $courseString, $matches)) {
             $number = (int)$matches[1];
             // For this case, we need to get all letters for that number
-            return $this->getCoursesByNumbers($shift, [$number]);
+            return $this->getCoursesByNumbers($shift, [$number + ($specialAddToNumber ? 1 : 0)], false);
         }
 
 
@@ -561,7 +833,14 @@ class InitialUsersSeeder extends Seeder
         return null;
     }
 
-    private function getCoursesByNumbers(SchoolShift $shift, $numbers)
+    private function getCourseByNumberAndLetter($number, $letter)
+    {
+        $course = $this->courses->where('number', $number)->where('letter', $letter)->first();
+        return $course ? ['id' => $course->id, 'number' => $course->number, 'letter' => $course->letter] : null;
+    }
+
+
+    private function getCoursesByNumbers(SchoolShift $shift, $numbers, ?bool $specialAddToNumber = false)
     {
         $courses = [];
 
@@ -577,4 +856,28 @@ class InitialUsersSeeder extends Seeder
         }
         return $courses;
     }
+
+    private function nacionalityBasedOnBirthPlace($nacionality, $birth_place)
+    {
+        if (!empty($nacionality)) {
+            return $nacionality;
+        }
+        if ($this->countries->where('name', $birth_place)->first()) {
+            return $birth_place;
+        }
+        return 'Argentina';
+    }
+
+    private function getStudentStartDate($courseNumber)
+    {
+        $startDate = now()->subYears($courseNumber - 1);
+        $found = $this->academicYears->where('year', $startDate->format('Y'))->first();
+        if ($found) {
+            return $found->start_date;
+        }
+        // 1 of march of startDateYear
+        return $startDate->format('Y-03-01');
+    }
+
+    //Role::FORMER_STUDENT course to assign: SELECT max(id) FROM `courses` WHERE letter='A' and number='8' and `end_date` < '2025-01-01';
 }

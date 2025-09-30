@@ -8,7 +8,7 @@ use App\Models\Catalogs\JobStatus;
 use App\Models\Catalogs\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Faker\Factory as Faker;
+use Database\Seeders\Faker\UserFaker;
 use Spatie\Permission\PermissionRegistrar;
 use App\Models\Catalogs\Province;
 use App\Models\Catalogs\Country;
@@ -38,7 +38,8 @@ class FakeUsersSeeder extends Seeder
         $this->mathSubject = ClassSubject::where('short_name', 'MAT')->first();
         $this->schoolLevels = SchoolLevel::all(); // Get all school levels
         $this->allRoles = Role::pluck('id', 'code')->toArray();
-        $this->faker = Faker::create('es_ES'); // Using Spanish locale for more realistic names
+        $this->faker = \Faker\Factory::create('es_ES'); // Using Spanish locale for more realistic names
+        $this->faker->addProvider(new UserFaker($this->faker));
         $this->userService = app(UserService::class);
     }
 
@@ -263,63 +264,14 @@ class FakeUsersSeeder extends Seeder
      * Create users for a specific school with given role counts
      */
     private function createUsersForSchool(School $school, array $roleCounts, Province $province, Country $country): void
-    {        // Common localities in San Luis
-        $localities = [
-            'San Luis',
-            'Villa Mercedes',
-            'La Punta',
-            'Juana Koslay',
-            'Potrero de los Funes',
-            'El Trapiche',
-            'La Toma',
-            'Merlo',
-            'Concarán',
-            'Quines',
-            'Santa Rosa del Conlara',
-            'Buena Esperanza',
-            'San Francisco del Monte de Oro',
-            'Luján',
-            'Nueva Galia'
-        ];
-
-        // Common addresses in San Luis
-        $addresses = [
-            'Pringles',
-            'Av. Juan D. Perón',
-            'Av. Illia',
-            'Av. Lafinur',
-            'Av. España',
-            'La Rioja',
-            'Riobamba',
-            'Mitre',
-            'Av. Justo Daract',
-            'Av. Juan B. Justo',
-            '25 de Mayo',
-            '9 de Julio',
-            'San Martín',
-            'Rivadavia',
-            'Colón'
-        ];
+    {
 
         $schoolLevels = $school->schoolLevels;
 
         foreach ($roleCounts as $roleCode => $count) {
             for ($i = 1; $i <= $count; $i++) {
                 // Assign gender based on random choice, using User constants
-                $genderOptions = [
-                    \App\Models\Entities\User::GENDER_MALE,
-                    \App\Models\Entities\User::GENDER_FEMALE,
-                    \App\Models\Entities\User::GENDER_TRANS,
-                    \App\Models\Entities\User::GENDER_FLUID,
-                    \App\Models\Entities\User::GENDER_NOBINARY,
-                    \App\Models\Entities\User::GENDER_OTHER,
-                ];
-                // 80% masc/fem, 20% other
-                $gender = $this->faker->randomElement(
-                    $this->faker->boolean(80)
-                        ? [\App\Models\Entities\User::GENDER_MALE, \App\Models\Entities\User::GENDER_FEMALE]
-                        : array_slice($genderOptions, 2)
-                );
+                $gender = $this->faker->userGender();
 
                 // Pick firstname based on gender
                 if ($gender === \App\Models\Entities\User::GENDER_MALE) {
@@ -335,15 +287,15 @@ class FakeUsersSeeder extends Seeder
                 }
 
                 $lastName = $this->faker->lastName();
-                $locality = $this->faker->randomElement($localities);
-                $address = $this->faker->randomElement($addresses) . ' ' . $this->faker->numberBetween(100, 9999);
+                $locality = $this->faker->locality();
+                $address = $this->faker->addressStreetAndNumber();
 
                 // Generate realistic phone numbers for San Luis
                 $phone = '266' . $this->faker->numberBetween(4000000, 4999999);
 
 
                 // Adjust birthdate based on role
-                $birthdate = $this->getBirthdateForRole($roleCode, $schoolLevels);
+                $birthdate = $this->faker->birthdateForRole($roleCode, $schoolLevels);
 
 
                 // Set nationality (80% Argentine, 20% other)
@@ -358,7 +310,7 @@ class FakeUsersSeeder extends Seeder
                     'Venezuela'
                 ]);
 
-                $dni = $this->getDNI($birthdate, $nationality);
+                $dni = $this->faker->dniFromBirthdate($birthdate, $nationality);
 
 
                 $user = User::firstOrCreate(
@@ -413,35 +365,6 @@ class FakeUsersSeeder extends Seeder
         }
     }
 
-    /**
-     * Get appropriate birthdate range based on role
-     */
-    private function getBirthdateForRole(string $roleCode, $schoolLevels): \DateTime
-    {
-        if ($roleCode === Role::STUDENT) {
-            if ($schoolLevels->isEmpty()) {
-                return $this->faker->dateTimeBetween('-18 years', '-5 years');
-            }
-            $schoolLevel = $schoolLevels->random();
-            if ($schoolLevel->code === SchoolLevel::KINDER) {
-                return $this->faker->dateTimeBetween('-5 years', '-2 years');
-            } elseif ($schoolLevel->code === SchoolLevel::PRIMARY) {
-                return $this->faker->dateTimeBetween('-11 years', '-6 years');
-            } elseif ($schoolLevel->code === SchoolLevel::SECONDARY) {
-                return $this->faker->dateTimeBetween('-18 years', '-12 years');
-            }
-            dd('Unexpecte school level: ' . $schoolLevel->code);
-        }
-        return match ($roleCode) {
-            Role::FORMER_STUDENT => $this->faker->dateTimeBetween('-30 years', '-19 years'),
-            Role::GUARDIAN => $this->faker->dateTimeBetween('-60 years', '-25 years'),
-            Role::GRADE_TEACHER, Role::ASSISTANT_TEACHER, Role::CURRICULAR_TEACHER, Role::SPECIAL_TEACHER, Role::PROFESSOR => $this->faker->dateTimeBetween('-65 years', '-25 years'),
-            Role::CLASS_ASSISTANT => $this->faker->dateTimeBetween('-50 years', '-20 years'),
-            Role::LIBRARIAN => $this->faker->dateTimeBetween('-65 years', '-30 years'),
-            Role::COOPERATIVE => $this->faker->dateTimeBetween('-70 years', '-30 years'),
-            default => $this->faker->dateTimeBetween('-70 years', '-30 years'), // For director, regent, secretary
-        };
-    }
 
     private function relationshipTypes(): array
     {
@@ -473,7 +396,7 @@ class FakeUsersSeeder extends Seeder
         if ($roleCode === Role::STUDENT && $user) {
             // if ($schoolLevelId)
             //     $query->where('school_level_id', $schoolLevelId);
-            $age = $this->calculateAge($user->birthdate);
+            $age = $this->faker->calculateAge($user->birthdate);
             if ($this->schoolLevelCodeById($schoolLevelId) === SchoolLevel::KINDER)
                 $query->whereIn('number', [$age, $age + 1]);
             elseif ($this->schoolLevelCodeById($schoolLevelId) === SchoolLevel::PRIMARY)
@@ -557,54 +480,10 @@ class FakeUsersSeeder extends Seeder
         return $this->schoolLevels->firstWhere('id', $id)->code;
     }
 
-    private function calculateAge(\DateTime $birthdate): int
-    {
-        return $birthdate->diff(new \DateTime())->y;
-    }
-
-    private function getDNI($birthdate, $nationality)
-    {
-        if ($nationality !== 'Argentina')
-            return $this->faker->numberBetween(91000000, 99999999);
-
-        $age = $this->calculateAge($birthdate);
-        [$min, $max] = $this->getDNIRangeForAge($age);
-
-        return $this->faker->numberBetween($min, $max);
-    }
-
-    private function getDNIRangeForAge(int $age): array
-    {
-        // Based on reference points: age 70->11M, age 47->28M, age 42->30M, age 13->52M
-        if ($age >= 80) {
-            return [1000000, 10000000];
-        } elseif ($age >= 70) {
-            return [10000000, 15000000];
-        } elseif ($age >= 60) {
-            return [15000000, 20000000];
-        } elseif ($age >= 50) {
-            return [20000000, 26000000];
-        } elseif ($age >= 45) {
-            return [26000000, 29000000];
-        } elseif ($age >= 40) {
-            return [29000000, 32000000];
-        } elseif ($age >= 30) {
-            return [32000000, 40000000];
-        } elseif ($age >= 20) {
-            return [40000000, 46000000];
-        } elseif ($age >= 15) {
-            return [46000000, 51000000];
-        } elseif ($age >= 10) {
-            return [51000000, 55000000];
-        } else {
-            // Under 10
-            return [55000000, 70000000];
-        }
-    }
 
     private function getSchoolLevelIForStudentBasedOnAge(\DateTime $birthdate): int
     {
-        $age = $this->calculateAge($birthdate);
+        $age = $this->faker->calculateAge($birthdate);
         if ($age <= 5) return $this->schoolLevels->firstWhere('code', SchoolLevel::KINDER)->id;
         if ($age <= 11) return $this->schoolLevels->firstWhere('code', SchoolLevel::PRIMARY)->id;
         return $this->schoolLevels->firstWhere('code', SchoolLevel::SECONDARY)->id;

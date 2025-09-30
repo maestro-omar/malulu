@@ -14,7 +14,7 @@
         label: 'Eliminar'
       }">
         <template #additional-buttons>
-          <q-btn size="sm"
+          <q-btn v-if="course.active" size="sm"
             :href="route('school.course.attendance.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) })"
             color="lime-7">
             Asistencia

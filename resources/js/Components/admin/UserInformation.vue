@@ -73,6 +73,9 @@
             <div class="col-6 col-xs-6 col-sm-4 col-md-3">
               <DataFieldShow label="Nacionalidad" :value="user.nationality" type="text" />
             </div>
+            <div class="col-6 col-xs-6 col-sm-4 col-md-3">
+              <DataFieldShow label="Ocupación" :value="user.occupation" type="text" />
+            </div>
           </div>
         </div>
         <div v-if="guardians && Array.isArray(guardians) && guardians.length > 0" class="col-12 q-mt-md">

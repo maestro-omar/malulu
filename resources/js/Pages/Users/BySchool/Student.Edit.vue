@@ -28,6 +28,7 @@ const form = useForm({
     id_number: props.user.id_number || '',
     birthdate: props.user.birthdate ? new Date(props.user.birthdate).toISOString().split('T')[0] : '',
     birth_place: props.user.birth_place || '',
+    occupation: props.user.occupation || '',
     phone: props.user.phone || '',
     address: props.user.address || '',
     locality: props.user.locality || '',
@@ -119,6 +120,15 @@ const submit = () => {
                                         <TextInput id="birth_place" type="text" class="admin-form__input"
                                             v-model="form.birth_place" />
                                         <InputError class="admin-form__error" :message="form.errors.birth_place" />
+                                    </div>
+                                </div>
+
+                                <div class="admin-form__grid admin-form__grid--3">
+                                    <div class="admin-form__field">
+                                        <InputLabel for="occupation" value="Ocupación" />
+                                        <TextInput id="occupation" type="text" class="admin-form__input"
+                                            v-model="form.occupation" />
+                                        <InputError class="admin-form__error" :message="form.errors.occupation" />
                                     </div>
                                 </div>
 

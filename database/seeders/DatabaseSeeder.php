@@ -73,10 +73,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
-            FakeUsersSeeder::class,
+            FakeAcademicEventsSeeder::class,
+            // FakeUsersSeeder::class,
             FakeFilesSeeder::class,
             FakeAttendanceSeeder::class,
-            FakeAcademicEventsSeeder::class,
         ]);
     }
 }
