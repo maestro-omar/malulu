@@ -141,7 +141,6 @@ class InitialUsersSeeder extends Seeder
             $parsedData['details'],
             $this->creator
         );
-        $this->relateToCourses($user, $parsedData['courses']);
 
         $this->command->info("Created user: " . $user->name . " (" . $user->email . ")");
     }
@@ -152,7 +151,7 @@ class InitialUsersSeeder extends Seeder
         if (!$studentUser) {
             return;
         }
-        $this->createGuardianAndRelateToStudent($jsonRowData, $studentUser);
+        $guardianUser = $this->findOrCreateGuardianUser($index, $jsonRowData, $studentUser);
     }
 
     private function parseStudentUserData($userData)
@@ -210,7 +209,9 @@ class InitialUsersSeeder extends Seeder
         $details = [
             'start_date' => $this->parseDate($userData['INGRESO AL AGRUP'] ?? '') ?: $this->getStudentStartDate($courseNumber),
             'notes' => 'Imported from initial data',
-            'course_id' => $course['id'],
+        ];
+        $details['student_details'] = [
+            'current_course_id' => $course['id']
         ];
 
         return [
@@ -252,7 +253,6 @@ class InitialUsersSeeder extends Seeder
             $studentData['details'],
             $this->creator
         );
-        $this->relateToCourses($user, [$studentData['course']]);
 
         $this->command->info($index . " Created student with dni: " . $studentData['user_data']['id_number']);
         return $user;
@@ -287,7 +287,8 @@ class InitialUsersSeeder extends Seeder
             'id_number' => (string)$dni,
             'gender' => $gender,
             'birthdate' => $birthdate,
-            'phone' =>  null, // Not provided for students
+            'phone' =>  $phone,
+            'ocupation' => $ocupation,
             'address' => $address,
             'locality' => $locality,
             'province_id' => $this->province->id,
@@ -307,12 +308,15 @@ class InitialUsersSeeder extends Seeder
         }
         // Create role details
         $details = [
+            'start_date' => $this->parseDate($userData['Fecha de ingreso a la escuela'] ?? '') ?: now()->subYears(2),
+            'notes' => 'Imported from initial data',
+        ];
+        $details['guardian_details'] = [
             'student_id' => $student->id,
             'relationship_type' => $jsonRowData['Vínculo'],
+            'is_emergency_contact' => true,
             'is_restricted' => false,
             'emergency_contact_priority' => 1,
-            'is_emergency_contact' => true,
-            'notes' => 'Imported from initial data',
         ];
 
         return [
@@ -325,13 +329,9 @@ class InitialUsersSeeder extends Seeder
         ];
     }
 
-    private function createGuardianAndRelateToStudent(array $jsonRowData, User $student)
-    {
-        $guardianUser = $this->findOrCreateGuardianUser($jsonRowData, $student);
-        $this->relateGuardianToStudent($guardianUser, $student);
-    }
+    private function createGuardianAndRelateToStudent(array $jsonRowData, User $student) {}
 
-    private function findOrCreateGuardianUser($jsonRowData, User $student): ?User
+    private function findOrCreateGuardianUser($index, $jsonRowData, User $student): ?User
     {
         $guardianData = $this->parseGuardianUserData($jsonRowData, $student);
 
@@ -340,16 +340,25 @@ class InitialUsersSeeder extends Seeder
             $guardianUser = User::where('email', $guardianData['user_data']['email'])->first();
         if ($guardianUser) {
             $this->updateGuardianUserMissingFields($guardianUser, $guardianData);
-            return $guardianUser;
+        } else {
+            try {
+                $guardianUser = $this->userService->createUser($guardianData['user_data']);
+            } catch (\Exception $e) {
+                echo "Error creating guardian: " . $e->getMessage() . " for user: " . print_r($guardianData['user_data'], true) . "\n";
+                throw $e;
+                return null;
+            }
         }
 
-        try {
-            $guardianUser = $this->userService->createUser($guardianData['user_data']);
-        } catch (\Exception $e) {
-            echo "Error creating guardian: " . $e->getMessage() . " for user: " . print_r($guardianData['user_data'], true) . "\n";
-            throw $e;
-            return null;
-        }
+        // Then assign the role with details
+        $this->userService->assignRoleWithDetails(
+            $guardianUser,
+            $guardianData['school_id'],
+            $guardianData['role_id'],
+            $guardianData['school_level_id'],
+            $guardianData['details'],
+            $this->creator
+        );
 
         return $guardianUser;
     }
@@ -358,9 +367,6 @@ class InitialUsersSeeder extends Seeder
     {
         $this->userService->updateUser($guardianUser, $guardianData['user_data']);
     }
-
-    private function relateGuardianToStudent($guardianUser, $student) {}
-
 
     private function parseStaffUserData($userData)
     {
@@ -429,6 +435,9 @@ class InitialUsersSeeder extends Seeder
                 'school_shift_id' =>  $shift->id,
                 'schedule' => $this->mapSchedule($shift, $roleCode),
                 'class_subject_id' => $this->mapSubject($roleCode, $userData['Materia curricular'] ?? ''),
+                'courses' => array_map(function ($course) {
+                    return $course['id'];
+                }, $courses),
             ];
         } elseif ($roleCode == Role::FORMER_STUDENT) {
             // $details['student_details'] = [
@@ -687,52 +696,11 @@ class InitialUsersSeeder extends Seeder
         echo "Deleting users with IDs: ", implode(", ", $userIds->toArray()), "\n";
     }
 
-    private function relateToCourses(User $user, $courses)
-    {
-        foreach ($courses as $courseData) {
-            $course = $this->findCourse($courseData);
-            if ($course) {
-                $this->relateTeacherToCourse($user, $course);
-            }
-        }
-    }
-
     private function findCourse($one)
     {
         return $this->courses->where('letter', $one['letter'])
             ->where('number', $one['number'])
             ->first();
-    }
-
-    private function relateTeacherToCourse(User $user, Course $course)
-    {
-        // Find the user's role relationship for this school
-        $roleRelationship = $user->roleRelationships()
-            ->where('school_id', $this->defaultSchool->id)
-            ->first();
-
-        if (!$roleRelationship) {
-            return;
-        }
-
-        // Check if the teacher is already related to this course
-        $existingRelation = TeacherCourse::where('role_relationship_id', $roleRelationship->id)
-            ->where('course_id', $course->id)
-            ->first();
-
-        if ($existingRelation) {
-            return; // Already related
-        }
-
-        // Create the teacher-course relationship
-        TeacherCourse::create([
-            'role_relationship_id' => $roleRelationship->id,
-            'course_id' => $course->id,
-            'start_date' => now()->subYears(1), // Default start date
-            'in_charge' => false, // Default to not in charge
-            'notes' => 'Imported from initial staff data',
-            'created_by' => 1, // Admin user
-        ]);
     }
 
     private function normalizeCourses($shift, $agrupamiento, bool $specialAddToNumber = false)
