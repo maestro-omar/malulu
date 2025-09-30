@@ -70,6 +70,8 @@ class DatabaseSeeder extends Seeder
             InitialUsersSeeder::class,
 
             EventsSeeder::class,
+            
+            ProvincialExternalFilesSeeder::class,
         ]);
 
         $this->call([

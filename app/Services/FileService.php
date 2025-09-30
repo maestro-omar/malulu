@@ -41,6 +41,12 @@ class FileService
         return File::create($validatedData);
     }
 
+    public function createExternalUrlFile(array $data)
+    {
+        $validatedData = $this->validateFileData($data);
+        return File::create($validatedData);
+    }
+
     private function validateFileData(array $data)
     {
         $rules = [
@@ -57,18 +63,31 @@ class FileService
             ],
             'fileable_type' => ['nullable', 'string'],
             'fileable_id' => ['nullable', 'integer'],
-            'nice_name' => ['string'],
-            'original_name' => ['string'],
-            'filename' => ['string'],
-            'mime_type' => ['string'],
-            'size' => ['integer'],
-            'path' => ['string'],
+            'nice_name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'metadata' => ['nullable', 'array'],
-            'active' => [
-                'boolean'
-            ]
+            'external_url' => ['nullable', 'url'],
+            'active' => ['boolean']
         ];
+
+        // For file uploads, require file-specific fields
+        if (empty($data['external_url'])) {
+            $rules['original_name'] = ['required', 'string'];
+            $rules['filename'] = ['required', 'string'];
+            $rules['mime_type'] = ['required', 'string'];
+            $rules['size'] = ['required', 'integer'];
+            $rules['path'] = ['required', 'string'];
+        }
+
+        // For external URLs, make file-specific fields optional
+        if (!empty($data['external_url'])) {
+            $rules['original_name'] = ['nullable', 'string'];
+            $rules['filename'] = ['nullable', 'string'];
+            $rules['mime_type'] = ['nullable', 'string'];
+            $rules['size'] = ['nullable', 'integer'];
+            $rules['path'] = ['nullable', 'string'];
+        }
+
         $validator = Validator::make($data, $rules);
 
         if ($validator->fails()) {

@@ -30,7 +30,9 @@ class FileSubtypeSeeder extends Seeder
             ['hidden_for_familiy' => false, 'upload_by_familiy' => false, 'order' => 2, 'file_type' => 'provincial', 'code' => 'provincial_schedule', 'name' => 'Calendario', 'new_overwrites' => true],
             ['hidden_for_familiy' => true,  'upload_by_familiy' => false, 'order' => 3, 'file_type' => 'provincial', 'code' => 'provincial_decree', 'name' => 'Decreto/resolución', 'new_overwrites' => false],
             ['hidden_for_familiy' => true,  'upload_by_familiy' => false, 'order' => 4, 'file_type' => 'provincial', 'code' => 'provincial_notice', 'name' => 'Aviso ministerial', 'new_overwrites' => false],
-            ['hidden_for_familiy' => true,  'upload_by_familiy' => false, 'order' => 5, 'file_type' => 'provincial', 'code' => 'provincial_other', 'name' => 'Otro', 'new_overwrites' => false],
+            ['hidden_for_familiy' => true,  'upload_by_familiy' => false, 'order' => 5, 'file_type' => 'provincial', 'code' => 'provincial_prof_dev', 'name' => 'Capacitaciones', 'new_overwrites' => false],
+            ['hidden_for_familiy' => true,  'upload_by_familiy' => false, 'order' => 6, 'file_type' => 'provincial', 'code' => 'provincial_permanent_info', 'name' => 'Permanente', 'new_overwrites' => false],
+            ['hidden_for_familiy' => true,  'upload_by_familiy' => false, 'order' => 7, 'file_type' => 'provincial', 'code' => 'provincial_other', 'name' => 'Otro', 'new_overwrites' => false],
 
             // Institutional file types
             ['hidden_for_familiy' => true,  'upload_by_familiy' => false, 'order' => 1, 'file_type' => 'institutional', 'code' => 'institutional_sample', 'name' => 'Modelo', 'new_overwrites' => false],

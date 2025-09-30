@@ -28,6 +28,7 @@ class File extends Model
         'replaced_by_id',
         'fileable_type',
         'fileable_id',
+        'nice_name',
         'original_name',
         'filename',
         'mime_type',
@@ -35,6 +36,7 @@ class File extends Model
         'path',
         'description',
         'metadata',
+        'external_url',
         'active'
     ];
 
@@ -50,6 +52,15 @@ class File extends Model
         'size' => 'integer',
         'metadata' => 'array',
         'active' => 'boolean'
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'is_external'
     ];
 
     /**
@@ -128,7 +139,18 @@ class File extends Model
      */
     public function getUrlAttribute(): string
     {
+        if ($this->is_external) {
+            return $this->external_url;
+        }
         return asset('storage/' . $this->path . '/' . $this->filename);
+    }
+
+    /**
+     * Check if this file is an external URL.
+     */
+    public function getIsExternalAttribute(): bool
+    {
+        return !is_null($this->external_url);
     }
 
     /**

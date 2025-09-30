@@ -15,13 +15,19 @@ return new class extends Migration
             $table->foreignId('replaced_by_id')->nullable()->unsigned()->constrained('files')->onDelete('set null');
             $table->morphs('fileable'); // For polymorphic relationship with schools, courses, teachers, students, users
             $table->string('nice_name');
-            $table->string('original_name');
-            $table->string('filename');
-            $table->string('mime_type');
-            $table->integer('size');
-            $table->string('path');
             $table->text('description')->nullable();
+            
+            // Uploaded file fields
+            $table->string('original_name')->nullable();
+            $table->string('filename')->nullable();
+            $table->string('mime_type')->nullable();
+            $table->integer('size')->nullable();
+            $table->string('path')->nullable();
             $table->json('metadata')->nullable();
+            
+            // External file field (link)
+            $table->string('external_url')->nullable();
+
             $table->boolean('active')->default(true);
             $table->timestamps();
             $table->softDeletes();
@@ -32,4 +38,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('files');
     }
-}; 
+};
