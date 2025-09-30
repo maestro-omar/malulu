@@ -108,8 +108,8 @@ class InitialUsersSeeder extends Seeder
         $jsonPath = $this->jsonFolder . $this->jsonStudentsFileName;
         $jsonData = json_decode(file_get_contents($jsonPath), true);
 
-        foreach ($jsonData as $jsonRowData) {
-            $this->createOneStudentWithGuardian($jsonRowData);
+        foreach ($jsonData as $index => $jsonRowData) {
+            $this->createOneStudentWithGuardian($index, $jsonRowData);
         }
     }
 
@@ -146,9 +146,9 @@ class InitialUsersSeeder extends Seeder
         $this->command->info("Created user: " . $user->name . " (" . $user->email . ")");
     }
 
-    private function createOneStudentWithGuardian($jsonRowData)
+    private function createOneStudentWithGuardian($index, $jsonRowData)
     {
-        $studentUser = $this->createOneStudentUser($jsonRowData);
+        $studentUser = $this->createOneStudentUser($index, $jsonRowData);
         if (!$studentUser) {
             return;
         }
@@ -201,6 +201,9 @@ class InitialUsersSeeder extends Seeder
         }
 
         $courses = $this->normalizeCourses($shift, $userData['Agrupamiento'], true);
+        if (empty($courses)) {
+            throw new \Exception("No courses found for student: " . print_r($userData, true));
+        }
         $course = $courses[0];
         $courseNumber = (int) $course['number'];
 
@@ -221,14 +224,14 @@ class InitialUsersSeeder extends Seeder
         ];
     }
 
-    private function createOneStudentUser($jsonRowData): ?User
+    private function createOneStudentUser($index, $jsonRowData): ?User
     {
         $studentData = $this->parseStudentUserData($jsonRowData);
 
         // Check if user with same dni already exists
         $existingUser = User::where('id_number', $studentData['user_data']['id_number'])->first();
         if ($existingUser) {
-            $this->command->info("Skipping student with existing dni: " . $studentData['user_data']['id_number']);
+            $this->command->info($index . " Skipping student with existing dni: " . $studentData['user_data']['id_number']);
             return $existingUser;
         }
 
@@ -251,7 +254,8 @@ class InitialUsersSeeder extends Seeder
         );
         $this->relateToCourses($user, [$studentData['course']]);
 
-        $this->command->info("Created student: " . $user->name . " (" . $user->email . ")");
+        $this->command->info($index . " Created student with dni: " . $studentData['user_data']['id_number']);
+        return $user;
     }
 
     private function parseGuardianUserData($jsonRowData, User $student)
@@ -339,23 +343,23 @@ class InitialUsersSeeder extends Seeder
             return $guardianUser;
         }
 
-        $guardianUser = $this->createGuardianUser($guardianData['user_data']);
+        try {
+            $guardianUser = $this->userService->createUser($guardianData['user_data']);
+        } catch (\Exception $e) {
+            echo "Error creating guardian: " . $e->getMessage() . " for user: " . print_r($guardianData['user_data'], true) . "\n";
+            throw $e;
+            return null;
+        }
+
         return $guardianUser;
     }
 
     private function updateGuardianUserMissingFields($guardianUser, $guardianData)
     {
-        $oldData = $guardianUser->toArray();
-        $newData = array_merge($oldData, $guardianData);
-        $guardianUser->fill($newData);
-        $guardianUser->save();
+        $this->userService->updateUser($guardianUser, $guardianData['user_data']);
     }
 
     private function relateGuardianToStudent($guardianUser, $student) {}
-    private function createGuardianUser($guardianData): ?User
-    {
-        return User::create($guardianData);
-    }
 
 
     private function parseStaffUserData($userData)
@@ -801,7 +805,7 @@ class InitialUsersSeeder extends Seeder
             $number = (int)$matches[1];
             $letter = strtoupper($matches[2]);
 
-            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber ? 1 : 0), $letter);
+            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter);
         }
 
         // Handle patterns like "1 agrupamiento b", "1er agrupamiento C"
@@ -809,7 +813,7 @@ class InitialUsersSeeder extends Seeder
             $number = (int)$matches[1];
             $letter = strtoupper($matches[2]);
 
-            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber ? 1 : 0), $letter);
+            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter);
         }
 
         // Handle patterns like "1 agrupamiento division C"
@@ -817,14 +821,14 @@ class InitialUsersSeeder extends Seeder
             $number = (int)$matches[1];
             $letter = strtoupper($matches[2]);
 
-            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber ? 1 : 0), $letter);
+            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter);
         }
 
         // Handle patterns like "3er agrupamiento"
         if (preg_match('/(\d+)(?:er|ro|mo|vo)?\s+agrupamiento/i', $courseString, $matches)) {
             $number = (int)$matches[1];
             // For this case, we need to get all letters for that number
-            return $this->getCoursesByNumbers($shift, [$number + ($specialAddToNumber ? 1 : 0)], false);
+            return $this->getCoursesByNumbers($shift, [$number + ($specialAddToNumber && $number > 3 ? 1 : 0)], false);
         }
 
 

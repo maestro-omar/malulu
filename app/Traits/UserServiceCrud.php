@@ -174,7 +174,8 @@ trait UserServiceCrud
         return $user->forceDelete();
     }
 
-    public function updateUserImage(User $user, Request $request) {
+    public function updateUserImage(User $user, Request $request)
+    {
         $request->validate([
             'image' => 'required|image|max:2048', // Max 2MB
             'type' => 'required|in:picture'

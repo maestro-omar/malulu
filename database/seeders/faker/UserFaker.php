@@ -224,4 +224,9 @@ class UserFaker extends Base
     {
         return $birthdate->diff(new \DateTime())->y;
     }
+
+    public function guardianEmail($firstName, $lastName): string
+    {
+        return 'GUARDIAN_' . Str::slug($firstName . '.' . $lastName) . '@fake.sanluis.edu.ar';
+    }
 }
