@@ -1,0 +1,97 @@
+@use "../abstracts/variables";
+@use "../abstracts/mixins";
+@use "sass:color";
+
+.q-chip.gender-badge {
+  // Gender Badge Color Modifiers
+  &--masc {
+    background: variables.$color-gender-male-bg;
+    color: variables.$color-gender-male-text;
+    border: 1px solid variables.$color-gender-male-text;
+  }
+
+  &--fem {
+    background: variables.$color-gender-female-bg;
+    color: variables.$color-gender-female-text;
+    border: 1px solid variables.$color-gender-female-text;
+  }
+
+  &--trans {
+    background: variables.$color-gender-trans-bg;
+    color: variables.$color-gender-trans-text;
+    border: 1px solid variables.$color-gender-trans-text;
+  }
+
+  &--fluido {
+    background: variables.$color-gender-fluid-bg;
+    color: variables.$color-gender-fluid-text;
+    border: 1px solid variables.$color-gender-fluid-text;
+  }
+
+  &--no-bin {
+    background: variables.$color-gender-nonbinary-bg;
+    color: variables.$color-gender-nonbinary-text;
+    border: 1px solid variables.$color-gender-nonbinary-text;
+  }
+
+  &--otro {
+    background: variables.$color-gender-other-bg;
+    color: variables.$color-gender-other-text;
+    border: 1px solid variables.$color-gender-other-text;
+  }
+
+  &--default {
+    background: variables.$color-gender-default-bg;
+    color: variables.$color-gender-default-text;
+    border: 1px solid variables.$color-gender-default-text;
+  }
+
+  // Light variants for inactive state
+  &--masc-light {
+    background: color.scale(variables.$color-gender-male-bg, $lightness: 60%);
+    color: variables.$color-text;
+    border: 0 none;
+  }
+
+  &--fem-light {
+    background: color.scale(variables.$color-gender-female-bg, $lightness: 60%);
+    color: variables.$color-text;
+    border: 0 none;
+  }
+
+  &--trans-light {
+    background: color.scale(variables.$color-gender-trans-bg, $lightness: 60%);
+    color: variables.$color-text;
+    border: 0 none;
+  }
+
+  &--fluido-light {
+    background: color.scale(variables.$color-gender-fluid-bg, $lightness: 60%);
+    color: variables.$color-text;
+    border: 0 none;
+  }
+
+  &--no-bin-light {
+    background: color.scale(variables.$color-gender-nonbinary-bg, $lightness: 60%);
+    color: variables.$color-text;
+    border: 0 none;
+  }
+
+  &--otro-light {
+    background: color.scale(variables.$color-gender-other-bg, $lightness: 60%);
+    color: variables.$color-text;
+    border: 0 none;
+  }
+
+  &--default-light {
+    background: color.scale(variables.$color-gender-default-bg, $lightness: 60%);
+    color: variables.$color-text;
+    border: 0 none;
+  }
+
+  // Selected variants with shadow
+  &--selected {
+    border: 1px solid variables.$color-gender-male-text;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
+}

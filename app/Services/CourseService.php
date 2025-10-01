@@ -363,6 +363,7 @@ class CourseService
         $attendanceMinimalSummary = $withAttendanceSummary ? $this->attendanceService->getStudentsAttendanceMinimal($studentsIds, null, null) : null;
         // student_relationships OMAR PREGUNTA ¿esta relacion es redundante? ¿estuvo hecha para facilitar búsquedas?
         $parsedStudents = $students->map(function ($oneRel) use ($course, $withGuardians, $attendanceDate, $attendanceMinimalSummary) {
+            // dd($oneRel, $course, $oneRel, $withGuardians, $attendanceDate, $attendanceMinimalSummary);
             return $this->parseRelatedStudent($course, $oneRel, $withGuardians, $attendanceDate, $attendanceMinimalSummary);
         }, $students);
         $parsedStudents = $parsedStudents->sortBy([['rel_end_date'], ['lastname'], ['firstname']]);
@@ -381,6 +382,7 @@ class CourseService
 
     private function parseRelatedStudent(Course $course, object $studentRel, bool $withGuardians, ?string $attendanceDate, ?array $entireCourseAttendanceSummary)
     {
+        // dd($course);
         $user = $studentRel->roleRelationship->user->load(['province']);
         $student = [
             "rel_id" => $studentRel->id,
@@ -391,8 +393,8 @@ class CourseService
             "email" => $user->email,
             "id_number" => $user->id_number,
             "gender" => User::getGenderName($user->gender, true),
-            "birthdate" => $user->birthdate->format('Y-m-d'),
-            "age" => $user->birthdate->diffInYears(now()),
+            "birthdate" => $user->birthdate ? $user->birthdate->format('Y-m-d') : null,
+            "age" => $user->birthdate ? $user->birthdate->diffInYears(now()) : null,
             "phone" => $user->phone,
             "address" => $user->address,
             "locality" => $user->locality,
@@ -401,7 +403,7 @@ class CourseService
             "nationality" => $user->nationality,
             "picture" => $user->picture,
             "critical_info" => $user->critical_info,
-            "rel_start_date" => $studentRel->start_date->format('Y-m-d'),
+            "rel_start_date" => $studentRel->start_date ? $studentRel->start_date->format('Y-m-d') : null,
             "rel_end_date" => $studentRel->end_date ? $studentRel->end_date->format('Y-m-d') : null,
             "rel_end_reason" => $studentRel->end_reason_id ? $studentRel->endReason->name : null,
             "rel_notes" => $studentRel->notes,

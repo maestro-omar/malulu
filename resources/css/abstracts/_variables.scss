@@ -161,6 +161,36 @@ $color-level-secondary-text: #5b21b6; // violet-800
 $color-level-default-bg: #f3f4f6; // gray-100
 $color-level-default-text: $color-brand; // gray-800
 
+// Gender Colors (Background and Text)
+// --------------------------------
+// Masculino
+$color-gender-male-bg: #dbeafe; // blue-100
+$color-gender-male-text: #1e40af; // blue-800
+
+// Femenino
+$color-gender-female-bg: #fce7f3; // pink-100
+$color-gender-female-text: #9d174d; // pink-800
+
+// Trans
+$color-gender-trans-bg: #e9d5ff; // violet-100
+$color-gender-trans-text: #6b21a8; // violet-800
+
+// Fluido
+$color-gender-fluid-bg: #ccfbf1; // teal-100
+$color-gender-fluid-text: #134e4a; // teal-800
+
+// No-binario
+$color-gender-nonbinary-bg: #fed7aa; // orange-100
+$color-gender-nonbinary-text: #9a3412; // orange-800
+
+// Otro
+$color-gender-other-bg: #f3f4f6; // gray-100
+$color-gender-other-text: #374151; // gray-700
+
+// Default
+$color-gender-default-bg: #f3f4f6; // gray-100
+$color-gender-default-text: $color-text; // gray-800
+
 // Min and max breakpoints
 $screen-iphone6: 375px;
 $screen-iphone6p: 414px;

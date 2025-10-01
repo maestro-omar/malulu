@@ -18,7 +18,7 @@
 
     <template #main-page-content>
 
-      <UserInformation user="user" :guardians="guardians" :genders="genders" :currentCourse="currentCourse"
+      <UserInformation :user="user" :guardians="guardians" :genders="genders" :currentCourse="currentCourse"
         :editable-picture="hasPermission($page.props, 'student.edit')" />
 
       <FilesTable :files="files" title="Archivos del estudiante"

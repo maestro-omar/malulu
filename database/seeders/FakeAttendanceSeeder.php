@@ -35,8 +35,8 @@ class FakeAttendanceSeeder extends Seeder
 
         $students = User::whereHas('roleRelationships', function ($query) use ($studentRoleId) {
             $query->where('role_id', $studentRoleId)
-                  ->whereNull('end_date')
-                  ->whereNull('end_reason_id');
+                ->whereNull('end_date')
+                ->whereNull('end_reason_id');
         })->whereDoesntHave('attendances')->get();
 
         if ($students->isEmpty()) {
@@ -81,13 +81,13 @@ class FakeAttendanceSeeder extends Seeder
             }
 
             $course = $currentCourse->course;
-            $this->command->info("Processing student {$student->name} in course {$course->nice_name}");
+            // $this->command->info("Processing student {$student->name} in course {$course->nice_name}");
 
             // 5) Generate attendance for each weekday from academic year start to today
             $currentDate = Carbon::parse($academicYear->start_date);
-            $today = Carbon::now();
+            $yesterday = Carbon::now()->subDays(1);
 
-            while ($currentDate->lte($today)) {
+            while ($currentDate->lte($yesterday)) {
                 // Skip weekends (Saturday = 6, Sunday = 0)
                 if ($currentDate->dayOfWeek !== Carbon::SATURDAY && $currentDate->dayOfWeek !== Carbon::SUNDAY) {
                     // Skip winter break
@@ -100,7 +100,7 @@ class FakeAttendanceSeeder extends Seeder
                         if (!$existingAttendance) {
                             // Generate realistic attendance status
                             $status = $this->generateAttendanceStatus($attendanceStatuses, $currentDate);
-                            
+
                             $attendanceRecords[] = [
                                 'user_id' => $student->id,
                                 'date' => $currentDate->format('Y-m-d'),
@@ -124,13 +124,13 @@ class FakeAttendanceSeeder extends Seeder
         // Insert all attendance records in batches
         if (!empty($attendanceRecords)) {
             $this->command->info("Inserting {$processedCount} attendance records...");
-            
+
             // Insert in chunks to avoid memory issues
             $chunks = array_chunk($attendanceRecords, 1000);
             foreach ($chunks as $chunk) {
                 Attendance::insert($chunk);
             }
-            
+
             $this->command->info("Successfully created {$processedCount} attendance records!");
         } else {
             $this->command->info("No new attendance records to create.");

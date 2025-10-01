@@ -50,11 +50,11 @@ class SchoolShift extends Model
             ->toArray();
     }
 
-    public function getScheduleAttribute()
+    public function getTimeSlotsAttribute()
     {
         if ($this->code == self::MORNING) {
             return [
-                'schedule' => [
+                'timeSlots' => [
                     '1' => ['8:00', '8:45'],
                     '2' => ['8:45', '9:30'],
                     'break-1' => ['9:30', '9:45'],
@@ -67,7 +67,7 @@ class SchoolShift extends Model
             ];
         } elseif ($this->code == self::AFTERNOON) {
             return [
-                'schedule' => [
+                'timeSlots' => [
                     '1' => ['13:30', '14:15'],
                     '2' => ['14:15', '15:00'],
                     'break-1' => ['15:00', '15:15'],
@@ -80,8 +80,7 @@ class SchoolShift extends Model
             ];
         } elseif ($this->code == self::NIGHT) {
             return [
-                'schedule' => [
-
+                'timeSlots' => [
                     '1' => ['18:00', '18:45'],
                     '2' => ['18:45', '19:30'],
                     'break-1' => ['19:30', '19:45'],
@@ -94,7 +93,7 @@ class SchoolShift extends Model
             ];
         } elseif ($this->code == self::BOTH) {
             return [
-                'schedule' => [
+                'timeSlots' => [
                     '1' => ['8:00', '8:45'],
                     '2' => ['8:45', '9:30'],
                     'break-1' => ['9:30', '9:45'],

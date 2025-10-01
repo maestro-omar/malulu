@@ -150,7 +150,7 @@ class File extends Model
      */
     public function getIsExternalAttribute(): bool
     {
-        return !is_null($this->external_url);
+        return !is_null($this->external_url) && !empty($this->external_url);
     }
 
     /**

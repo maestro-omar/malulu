@@ -58,7 +58,7 @@ const props = defineProps({
     default: null
   },
   value: {
-    type: [String, Number, Boolean, Date],
+    type: [String, Number, Boolean, Date, Object],
     default: null
   },
   type: {

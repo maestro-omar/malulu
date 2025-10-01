@@ -1,0 +1,332 @@
+@use '../abstracts/mixins' as *;
+
+// Course Schedule Component Styles
+.course-schedule {
+  margin-top: 16px;
+
+  &__table {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    @include fz(0.9);
+    width: fit-content;
+    max-width: 100%;
+    min-width: 400px; // Ensure minimum width for break rows
+
+    // Hide the default table structure
+    .q-table__middle {
+      display: none;
+    }
+
+    // Custom grid header
+    &__header {
+      display: flex;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #e0e0e0;
+      font-weight: 600;
+      color: #424242;
+      @include fz(0.8);
+      width: fit-content;
+
+      &-cell {
+        padding: 3px 2px;
+        text-align: center;
+        border-right: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:last-child {
+          border-right: none;
+        }
+
+        &--period {
+          width: 40px;
+          min-width: 40px;
+        }
+
+        &--time {
+          width: 80px;
+          min-width: 80px;
+        }
+
+        &--day {
+          flex: 1;
+          min-width: 60px;
+        }
+      }
+    }
+
+    // Custom grid body
+    &__body {
+      display: flex;
+      flex-direction: column;
+      width: fit-content;
+
+      &-row {
+        display: flex;
+        border-bottom: 1px solid #e0e0e0;
+        min-height: 32px;
+        width: fit-content;
+
+        &:hover {
+          background-color: #fafafa;
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &--break {
+          min-height: 18px;
+        }
+      }
+    }
+
+    // Period cell styling
+    &__period-cell {
+      background-color: #f5f5f5;
+      font-weight: 500;
+      text-align: center;
+      width: 40px;
+      min-width: 40px;
+      @include fz(0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      border-right: 1px solid #e0e0e0;
+    }
+
+    // Time cell styling
+    &__time-cell {
+      background-color: #f5f5f5;
+      font-weight: 500;
+      width: 80px;
+      min-width: 80px;
+      @include fz(0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      border-right: 1px solid #e0e0e0;
+    }
+
+    // Day cells styling
+    &__day-cell {
+      width: 80px;
+      min-width: 80px;
+      text-align: center;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      border-right: 1px solid #e0e0e0;
+      @include fz(0.75);
+
+      &:last-child {
+        border-right: none;
+      }
+
+      &--has-schedule {
+        background-color: #e3f2fd;
+      }
+    }
+
+    // Break time rows - special styling
+    &__body-row--break {
+      min-height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    // Break merged cell styling
+    &__break-merged-cell {
+      background-color: #fff3e0 !important;
+      color: #e65100 !important;
+      font-style: italic;
+      padding: 6px 12px;
+      @include fz(0.8);
+      border-top: 1px solid #ff9800;
+      border-bottom: 1px solid #ff9800;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 100% !important;
+      text-align: center;
+      min-height: 24px;
+      border-radius: 3px;
+      margin: 1px 0;
+      flex: 1;
+      box-sizing: border-box;
+      
+      &-text {
+        font-weight: 500;
+        line-height: 1.2;
+        margin: 0;
+      }
+    }
+
+    // Additional break row styling
+    &__body-row--break-period {
+      width: auto;
+
+      .course-schedule__break-merged-cell {
+        background-color: #fff3e0 !important;
+        color: #e65100 !important;
+      }
+    }
+
+    &__body-row--lunch-period {
+      .course-schedule__break-merged-cell {
+        background-color: #e8f5e8 !important;
+        color: #2e7d32 !important;
+        border-color: #4caf50;
+      }
+    }
+
+    // Schedule items within cells
+    .schedule-item {
+      padding: 2px;
+      text-align: center;
+      border-radius: 2px;
+      background-color: #2196f3;
+      color: white;
+      margin: 0;
+      font-size: 0.65em;
+      line-height: 1.1;
+      width: 100%;
+
+      .text-caption {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.6em;
+      }
+    }
+
+    // Grid lines for better visibility
+    .q-table__container {
+      border: 1px solid #e0e0e0;
+    }
+
+    // Enhanced grid borders
+    .q-table {
+      border-collapse: separate;
+      border-spacing: 0;
+
+      th,
+      td {
+        border: 1px solid #e0e0e0;
+        position: relative;
+
+        // Corner borders for better grid visibility
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border: 1px solid #e0e0e0;
+          pointer-events: none;
+        }
+      }
+    }
+
+    // Special styling for break periods
+    .break-period {
+      .period-cell {
+        background-color: #fff3e0;
+        color: #e65100;
+        font-weight: 600;
+        font-style: italic;
+        padding: 2px 4px;
+        font-size: 0.75em;
+      }
+
+      .time-cell {
+        background-color: #fff3e0;
+        color: #e65100;
+        font-style: italic;
+        padding: 2px 4px;
+        font-size: 0.7em;
+      }
+
+      .day-cell {
+        background-color: #fff3e0;
+        border-top: 1px solid #ff9800;
+        border-bottom: 1px solid #ff9800;
+        height: 20px; // Much smaller for breaks
+        padding: 1px;
+      }
+    }
+
+    // Lunch period styling
+    .lunch-period {
+
+      .period-cell,
+      .time-cell {
+        background-color: #e8f5e8;
+        color: #2e7d32;
+        font-weight: 600;
+        padding: 2px 4px;
+        font-size: 0.75em;
+      }
+
+      .day-cell {
+        background-color: #e8f5e8;
+        border-top: 1px solid #4caf50;
+        border-bottom: 1px solid #4caf50;
+        height: 20px;
+        padding: 1px;
+      }
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .schedule-table {
+      font-size: 0.8em;
+
+      .day-cell {
+        min-width: 70px;
+        height: 40px;
+      }
+
+      .time-cell {
+        min-width: 80px;
+      }
+
+      .period-cell {
+        min-width: 40px;
+      }
+    }
+  }
+
+  // Print styles
+  @media print {
+    .schedule-table {
+      border: 2px solid #000;
+
+      th,
+      td {
+        border: 1px solid #000;
+        background-color: transparent !important;
+      }
+
+      .break-period,
+      .lunch-period {
+
+        .period-cell,
+        .time-cell,
+        .day-cell {
+          background-color: #f0f0f0 !important;
+        }
+      }
+    }
+  }
+}

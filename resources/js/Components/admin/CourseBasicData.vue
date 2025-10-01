@@ -13,13 +13,13 @@
     <div class="row q-col-gutter-sm">
       <div class="col-12">
         <div class="row q-col-gutter-sm">
-          <div class="col-lg-2 col-md-3 col-4">
+          <!-- <div class="col-lg-2 col-md-3 col-4">
             <DataFieldShow label="Nivel Escolar">
               <template #slotValue>
                 <SchoolLevelBadge :level="course.school_level" />
               </template>
             </DataFieldShow>
-          </div>
+          </div> -->
           <div class="col-lg-2 col-md-3 col-4">
             <DataFieldShow label="Turno">
               <template #slotValue>
@@ -33,9 +33,9 @@
           <div class="col-lg-2 col-md-3 col-4">
             <DataFieldShow label="Letra" :value="course.letter" type="text" />
           </div>
-          <div class="col-lg-2 col-md-3 col-4">
+          <!-- <div class="col-lg-2 col-md-3 col-4">
             <DataFieldShow label="Nombre" :value="course.name" type="text" />
-          </div>
+          </div> -->
         </div>
         <div class="row q-col-gutter-sm">
           <div class="col-md-3 col-4">

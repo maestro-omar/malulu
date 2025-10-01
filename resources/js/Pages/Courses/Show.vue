@@ -28,7 +28,7 @@
       <!-- Course Information Components -->
       <CourseBasicData :course="course" :school="school" :selectedLevel="selectedLevel" class="q-mb-md" />
       
-      <CourseSchedule :course="course" class="q-mb-md" />
+      <CourseSchedule :schedule="schedule" class="q-mb-md" />
 
       <!-- Teachers Card -->
       <TeachersTable :teachers="teachers" :courseId="getCourseSlug(course)" :schoolLevel="selectedLevel.code"
@@ -87,6 +87,9 @@ const props = defineProps({
   files: {
     type: Array
   },
+  schedule:{
+    type: Object,
+  }
 })
 
 const destroy = () => {

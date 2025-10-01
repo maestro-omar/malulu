@@ -11,7 +11,8 @@
     </template>
     <!-- Quasar Table -->
     <q-table class="mll-table mll-table--techers striped-table" dense :rows="teachers" :columns="columns" row-key="id"
-      binary-state- :loading-label="loading ? 'Cargando profesores...' : ''">
+      binary-state-sort :loading-label="loading ? 'Cargando profesores...' : ''" :pagination="pagination" :rows-per-page-options="[10, 20, 30, 50, 100]">
+
 
       <!-- Custom cell for picture -->
       <template #body-cell-picture="props">
@@ -106,6 +107,14 @@ const props = defineProps({
   loading: { type: Boolean, default: false }
 });
 
+// Pagination configuration
+const pagination = {
+  sortBy: 'in_charge',
+  descending: false,
+  page: 1,
+  rowsPerPage: 30
+};
+
 const columns = [
   {
     name: 'picture',
@@ -141,14 +150,14 @@ const columns = [
     name: 'birthdate',
     label: 'Fecha de Nacimiento',
     field: 'birthdate',
-    align: 'left',
+    align: 'center',
     sortable: true
   },
   {
     name: 'role',
     label: 'Rol',
     field: 'rel_role',
-    align: 'left',
+    align: 'center',
     sortable: true
   },
   {

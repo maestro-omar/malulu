@@ -97,7 +97,7 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
 
         $courseSchedule = $this->course->schedule;
 
-        if ($courseSchedule && isset($courseSchedule['schedule'])) {
+        if ($courseSchedule && isset($courseSchedule['timeSlots'])) {
             // Generate day headers based on the days array (1 = Monday)
             $dayNames = [1 => 'LU', 2 => 'MA', 3 => 'MI', 4 => 'JU', 5 => 'VI', 6 => 'SA', 7 => 'DO'];
             $dayHeaders = ['', '']; // Start with empty cells for period and time columns

@@ -592,17 +592,17 @@ class InitialUsersSeeder extends Seeder
         return SchoolShift::where('code', $code)->first();
     }
 
-    private function mapSubject($materia)
+    private function mapSubject($roleCode, $subjectName)
     {
-        if (empty($materia) || str_contains(strtolower($materia), 'no corresponde')) {
+        if (empty($subjectName) || str_contains(strtolower($subjectName), 'no corresponde')) {
             return null;
         }
 
-        $materia = strtolower(trim($materia));
+        $subjectName = ucwords(trim($subjectName));
 
         // Try to find subject by name or short name
-        $subject = ClassSubject::where('name', 'like', "%{$materia}%")
-            ->orWhere('short_name', 'like', "%{$materia}%")
+        $subject = ClassSubject::where('name', 'like', "%{$subjectName}%")
+            ->orWhere('short_name', 'like', "%{$subjectName}%")
             ->first();
 
         return $subject ? $subject->id : null;

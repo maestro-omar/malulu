@@ -299,19 +299,24 @@ class HandleInertiaRequests extends Middleware
     // private function sideMenuItemsForSchoolAdmin() {}
     private function sideMenuItemsForAll()
     {
-        return [[
-            'name' => 'Perfil',
-            'route' => 'profile.edit',
-            'icon' => 'account_circle',
-        ], [
-            'name' => 'Documentación',
-            'route' => 'files.index',
-            'icon' => 'folder',
-        ], [
-            'name' => 'Salir',
-            'route' => 'logout.get',
-            'icon' => 'logout',
-        ]];
+        return [
+            [
+                'name' => 'Documentación',
+                'route' => 'files.index',
+                'icon' => 'folder',
+            ],
+            ['type' => 'separator'],
+            [
+                'name' => 'Perfil',
+                'route' => 'profile.edit',
+                'icon' => 'account_circle',
+            ],
+            [
+                'name' => 'Salir',
+                'route' => 'logout.get',
+                'icon' => 'logout',
+            ]
+        ];
     }
 
     private function getFlash(Request $request)

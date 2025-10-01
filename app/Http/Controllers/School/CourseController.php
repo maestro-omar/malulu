@@ -198,12 +198,14 @@ class CourseController extends SchoolBaseController
         $students = $this->courseService->getStudents($course, true, null, true);
         $teachers = $this->courseService->getTeachers($course);
         $files = $this->courseService->getFiles($course, $user);
+        $schedule = $course->schedule;
         return Inertia::render($view, [
             'course' => $course,
             'school' => $school,
             'files' => $files,
             'students' => $students,
             'teachers' => $teachers,
+            'schedule' => $schedule,
             'selectedLevel' => $schoolLevel,
             'breadcrumbs' => Breadcrumbs::generate('school.course.show', $school, $schoolLevel, $course),
         ]);

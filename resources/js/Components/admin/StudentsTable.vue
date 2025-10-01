@@ -49,11 +49,11 @@
       </template>
 
       <!-- Custom cell for email -->
-      <template #body-cell-email="props">
+      <!-- <template #body-cell-email="props">
         <q-td :props="props">
           <EmailField :email="props.row.email" />
         </q-td>
-      </template>
+      </template> -->
 
       <!-- Custom cell for DNI -->
       <template #body-cell-id_number="props">
@@ -66,6 +66,13 @@
       <template #body-cell-birthdate="props">
         <q-td :props="props">
           <BirthdateAge :birthdate="props.row.birthdate" />
+        </q-td>
+      </template>
+
+      <!-- Custom cell for gender -->
+      <template #body-cell-gender="props">
+        <q-td :props="props">
+          <GenderBadge :gender="props.row.gender" />
         </q-td>
       </template>
 
@@ -132,7 +139,8 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
 import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
-import EmailField from '@/Components/admin/EmailField.vue';
+// import EmailField from '@/Components/admin/mField.vue';
+import GenderBadge from '@/Components/Badges/GenderBadge.vue';
 import noImage from "@images/no-image-person.png";
 import { route_school_student } from '@/Utils/routes';
 import { formatNumber } from '@/Utils/strings';
@@ -143,19 +151,20 @@ const getAttendancePercentage = (student) => {
   if (!student.attendanceSummary || student.attendanceSummary.total_records === 0) {
     return 0;
   }
-  
+
   const percentage = (student.attendanceSummary.total_presents / student.attendanceSummary.total_records) * 100;
   return Math.round(percentage);
 };
 
 const getAttendancePercentageClass = (student) => {
   const percentage = getAttendancePercentage(student);
-  
+
   if (percentage >= 90) return 'text-green-6';
   if (percentage >= 80) return 'text-orange-6';
   if (percentage >= 70) return 'text-yellow-6';
   return 'text-red-6';
 };
+
 
 
 
@@ -169,7 +178,7 @@ const props = defineProps({
 
 // Pagination configuration
 const pagination = {
-  sortBy: 'firstname',
+  sortBy: 'lastname',
   descending: false,
   page: 1,
   rowsPerPage: 30
@@ -209,14 +218,14 @@ const columns = [
     field: 'lastname',
     sortable: true
   },
-  {
-    name: 'email',
-    required: true,
-    label: 'Email',
-    align: 'left',
-    field: 'email',
-    sortable: true
-  },
+  // {
+  //   name: 'email',
+  //   required: true,
+  //   label: 'Email',
+  //   align: 'left',
+  //   field: 'email',
+  //   sortable: true
+  // },
   {
     name: 'id_number',
     label: 'DNI',
@@ -228,15 +237,23 @@ const columns = [
     name: 'birthdate',
     label: 'Fecha de Nacimiento',
     field: 'birthdate',
-    align: 'left',
+    align: 'center',
     sortable: true
+  },
+  {
+    name: 'gender',
+    label: 'Género',
+    field: 'gender',
+    align: 'center',
+    sortable: true,
+    style: 'width: 100px'
   },
   {
     name: 'attendance_summary',
     label: 'Presente',
     field: 'attendanceSummary.total_presents',
     align: 'center',
-    sortable: true,
+    sortable: false,
     style: 'width: 100px'
   },
   {
@@ -244,7 +261,7 @@ const columns = [
     label: 'Ausente',
     field: 'attendanceSummary.total_absences',
     align: 'center',
-    sortable: true,
+    sortable: false,
     style: 'width: 100px'
   },
   {
@@ -252,7 +269,7 @@ const columns = [
     label: 'Asistencia %',
     field: 'attendancePercentage',
     align: 'center',
-    sortable: true,
+    sortable: false,
     style: 'width: 120px'
   },
   {

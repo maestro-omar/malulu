@@ -157,7 +157,46 @@ class Course extends Model
 
     public function getScheduleAttribute()
     {
-        //TODO maybe in the future, schedule will be defined in school configuration
-        return $this->schoolShift->schedule;
+        /*
+        array:2 [▼ // app\Models\Entities\Course.php:160
+  "schedule" => array:7 [▼
+    1 => array:2 [▼
+      0 => "8:00"
+      1 => "8:45"
+    ]
+    2 => array:2 [▶]
+    "break-1" => array:2 [▶]
+    3 => array:2 [▶]
+    4 => array:2 [▶]
+    "break-2" => array:2 [▶]
+    5 => array:2 [▶]
+  ]
+  "days" => array:5 [▼
+    0 => 1
+    1 => 2
+    2 => 3
+    3 => 4
+    4 => 5
+  ]
+        */
+        $timeSlots = $this->schoolShift->timeSlots;
+        $days = $timeSlots['days'];
+        $timeSlots = $timeSlots['timeSlots'];
+        $breaks = array_filter($timeSlots, function ($key) {
+            return !is_numeric($key);
+        }, ARRAY_FILTER_USE_KEY);
+        $courseSchedule = [];
+        $allSubjects = [];
+        $totalCount = count($days) * (count($timeSlots) - count($breaks));
+        foreach ($days as $dayNumber) {
+            foreach ($timeSlots as $key => $value) {
+                if (is_numeric($key)) {
+                    $courseSchedule[$dayNumber][$key] = $subject;
+                } else {
+                    //it's break time! no class info here
+                }
+            }
+        }
+        return ['timeSlots' => $timeSlots, 'schedule' => $courseSchedule];
     }
 }
