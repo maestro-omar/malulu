@@ -2,7 +2,10 @@
 
 
   <div class="course-schedule">
-    <div class="course-schedule__table">
+    <q-btn :icon="isVisible ? 'visibility_off' : 'visibility'" :label="isVisible ? 'Ocultar horario' : 'Mostrar horario'"
+      color="primary" size="sm" unelevated class="course-schedule__toggle-btn" @click="isVisible = !isVisible" />
+    <transition name="course-schedule-slide">
+      <div v-show="isVisible" class="course-schedule__table">
       <!-- Header -->
       <div class="course-schedule__header">
         <div class="course-schedule__header-cell course-schedule__header-cell--period">#</div>
@@ -45,17 +48,20 @@
         </div>
       </div>
     </div>
+    </transition>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import SubjectBadge from '../Badges/SubjectBadge.vue'
 
 const props = defineProps({
   schedule: { type: Object, required: true },
   days: { type: Array, default: () => [1, 2, 3, 4, 5] },
 })
+
+const isVisible = ref(true)
 
 const dayNames = {
   1: 'Lunes',

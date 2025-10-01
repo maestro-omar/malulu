@@ -212,7 +212,9 @@ Breadcrumbs::for('files.create', function (Trail $trail) {
 // 🏫 Niveles de escuela (desde una escuela)
 Breadcrumbs::for('school.courses', function (Trail $trail, School $school, SchoolLevel $schoolLevel, bool $hide = false) {
     $trail->parent('school.show', $school); // usa breadcrumb ya definido para la escuela
-    if (!$hide)
+    if ($hide)
+        $trail->push('Cursos', route('school.courses', [$school, $schoolLevel]));
+    else
         $trail->push('Cursos de ' . $schoolLevel->name, route('school.courses', [$school, $schoolLevel]));
 });
 

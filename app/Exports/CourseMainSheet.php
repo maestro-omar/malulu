@@ -96,37 +96,78 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
     $exportData[] = ['HORARIOS'];
 
     $courseSchedule = $this->courseService->getSchedule($this->course);
-    dd($courseSchedule);
 
-    if ($courseSchedule && isset($courseSchedule['timeSlots'])) {
-      // Generate day headers based on the days array (1 = Monday)
-      $dayNames = [0 => 'DO', 1 => 'LU', 2 => 'MA', 3 => 'MI', 4 => 'JU', 5 => 'VI', 6 => 'SA', 7 => 'DO'];
-      $dayHeaders = ['', '']; // Start with empty cells for period and time columns
+    if ($courseSchedule && isset($courseSchedule['timeSlots']) && isset($courseSchedule['schedule'])) {
+      // Generate day headers
+      $dayNames = [1 => 'LU', 2 => 'MA', 3 => 'MI', 4 => 'JU', 5 => 'VI', 6 => 'SA', 7 => 'DO'];
+      $dayHeaders = ['#', 'Horario']; // Start with period and time columns
 
-      if (isset($courseSchedule['days'])) {
-        foreach ($courseSchedule['days'] as $dayNumber) {
-          $dayHeaders[] = $dayNames[$dayNumber] ?? '';
-        }
-      } else {
-        // Fallback to default weekdays if days array is not provided
-        $dayHeaders = ['', '', 'LU', 'MA', 'MI', 'JU', 'VI'];
+      // Get available days from the schedule
+      $availableDays = array_keys($courseSchedule['schedule']);
+
+      foreach ($availableDays as $day) {
+        $dayHeaders[] = $dayNames[$day] ?? '';
       }
 
       // Add header row with day names
       $exportData[] = $dayHeaders;
 
-      // Generate schedule rows based on the schedule data
-      foreach ($courseSchedule['schedule'] as $periodKey => $timeRange) {
-        $periodLabel = $this->formatPeriodLabel($periodKey);
-        $timeString = $timeRange[0] . ' - ' . $timeRange[1];
+      // Get all time slots and sort them by start time
+      $timeSlots = [];
+      foreach ($courseSchedule['timeSlots'] as $key => $times) {
+        if (is_array($times) && count($times) >= 2) {
+          $timeSlots[] = [
+            'id' => $key,
+            'start' => $times[0],
+            'end' => $times[1]
+          ];
+        }
+      }
 
-        // Create schedule row with empty cells for each day
+      // Sort by start time
+      usort($timeSlots, function ($a, $b) {
+        $timeA = explode(':', $a['start']);
+        $timeB = explode(':', $b['start']);
+        return ($timeA[0] * 60 + $timeA[1]) - ($timeB[0] * 60 + $timeB[1]);
+      });
+
+      // Generate schedule rows for each time slot
+      foreach ($timeSlots as $slot) {
+        $periodLabel = $this->formatPeriodLabel($slot['id']);
+        $timeString = $slot['start'] . ' - ' . $slot['end'];
+
+        // Create schedule row
         $scheduleRow = [$periodLabel, $timeString];
 
-        // Add empty cells for each day in the schedule
-        $dayCount = isset($courseSchedule['days']) ? count($courseSchedule['days']) : 5;
-        for ($i = 0; $i < $dayCount; $i++) {
-          $scheduleRow[] = '';
+        // Add class data for each day
+        foreach ($availableDays as $day) {
+          if (isset($courseSchedule['schedule'][$day][$slot['id']])) {
+            $classData = $courseSchedule['schedule'][$day][$slot['id']];
+
+            if ($classData !== null && isset($classData['subject'])) {
+              $subjectName = $classData['subject']['name'] ?? '';
+              $teacherName = '';
+
+              if (isset($classData['teacher'])) {
+                $teacher = $classData['teacher'];
+                if (is_array($teacher)) {
+                  $teacherName = ($teacher['firstname'] ?? '') . ' ' . ($teacher['lastname'] ?? '');
+                  $teacherName = trim($teacherName) ?: ($teacher['name'] ?? '');
+                }
+              }
+
+              $cellContent = $subjectName;
+              if ($teacherName) {
+                $cellContent .= " (" . $teacherName . ")";
+              }
+
+              $scheduleRow[] = $cellContent;
+            } else {
+              $scheduleRow[] = '';
+            }
+          } else {
+            $scheduleRow[] = '';
+          }
         }
 
         $exportData[] = $scheduleRow;
@@ -149,7 +190,7 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
     $exportData[] = ['DOCENTES', ''];
 
     // Teachers header
-    $this->teachersHeaderRow = ['#', 'Nombre', 'Apellido', 'Género', 'Email', 'Fecha Nacimiento', 'DNI', 'Rol', 'Materia', 'A Cargo'];
+    $this->teachersHeaderRow = ['#', 'Nombre', 'Apellido', 'Género', 'DNI', 'Fecha Nacimiento', 'Email', 'Rol', 'Materia', 'A Cargo'];
     $exportData[] = $this->teachersHeaderRow;
 
     // Teachers data rows
@@ -160,11 +201,11 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
         $teacher['firstname'],
         $teacher['lastname'],
         $teacher['gender'],
-        $teacher['email'],
-        $this->formatBirthdate($teacher['birthdate']),
         $teacher['id_number'],
+        $this->formatBirthdate($teacher['birthdate']),
+        $teacher['email'],
         $teacher['rel_role']->name,
-        $teacher['rel_subject'] ?? '',
+        is_array($teacher['rel_subject']) ? ($teacher['rel_subject']['name'] ?? '') : ($teacher['rel_subject'] ?? ''),
         $teacher['rel_in_charge'] ? 'Sí' : 'No',
       ];
       $teacherNumber++;
@@ -185,7 +226,7 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
     $exportData[] = ['ALUMNOS/AS', ''];
 
     // Students header (all columns from attendance sheet)
-    $this->studentsHeaderRow = ['#', 'Nombre', 'Apellido', 'Género', 'Fecha de nacimiento', 'Lugar de nacimiento', 'Nacionalidad', 'DNI', 'Domicilio', 'Teléfono', 'Información Crítica'];
+    $this->studentsHeaderRow = ['#', 'Nombre', 'Apellido', 'Género', 'DNI', 'Fecha de nacimiento', 'Lugar de nacimiento', 'Nacionalidad', 'Domicilio', 'Teléfono', 'Información Crítica'];
     $exportData[] = $this->studentsHeaderRow;
 
     // Students data rows
@@ -203,10 +244,10 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
         $student['firstname'],
         $student['lastname'],
         $student['gender'],
+        $student['id_number'],
         $this->formatBirthdate($student['birthdate']),
         $student['birth_place'],
         $student['nationality'],
-        $student['id_number'],
         $address,
         $student['phone'] ?? '',
         $student['critical_info'] ?? '',
@@ -355,7 +396,6 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
             // This is the schedule header row with day names
             // Calculate the last column dynamically based on the number of days
             $courseSchedule = $this->courseService->getSchedule($this->course);
-            dd($courseSchedule);
             $dayCount = isset($courseSchedule['days']) ? count($courseSchedule['days']) : 5;
             $lastColumn = Coordinate::stringFromColumnIndex(3 + $dayCount - 1); // 3 = 'C'
 
