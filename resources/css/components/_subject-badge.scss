@@ -1,0 +1,139 @@
+@use '../abstracts/mixins';
+@use '../abstracts/variables'as *;
+@use 'sass:color';
+
+// Subject Badge Component Styles
+.subject-badge {
+  display: inline-block;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+  overflow: hidden;
+  max-width: 100%;
+  transition: all 0.2s ease;
+
+  // Size modifiers
+  &--sm {
+    @include mixins.fz(0.85);
+    padding: 2px 5px;
+  }
+
+  &--md {
+    @include mixins.fz(1.0);
+    padding: 3px 6px;
+  }
+
+  &--lg {
+    @include mixins.fz(1.1);
+    padding: 4px 8px;
+  }
+
+  // Subject modifiers by code (badge colors)
+  &--lengua {
+    background: $color-role-student-bg;
+    color: $color-role-student-text;
+  }
+
+  &--matematica {
+    background: $color-role-admin-bg;
+    color: $color-role-admin-text;
+  }
+
+  &--ciencias_sociales {
+    background: $color-level-primary-bg;
+    color: $color-level-primary-text;
+  }
+
+  &--ciencias_naturales {
+    background: $color-role-regent-bg;
+    color: $color-role-regent-text;
+  }
+
+  &--musica {
+    background: $color-role-assistant-teacher-bg;
+    color: $color-role-assistant-teacher-text;
+  }
+
+  &--plastica {
+    background: color.adjust($color-orange, $lightness: 38%);
+    color: color.adjust($color-orange, $lightness: -18%);
+  }
+
+  &--ingles {
+    background: $color-role-guardian-bg;
+    color: $color-role-guardian-text;
+  }
+
+  &--ed_fisica {
+    background: $color-role-curricular-teacher-bg;
+    color: $color-role-curricular-teacher-text;
+  }
+
+  &--etica {
+    background: $color-role-director-bg;
+    color: $color-role-director-text;
+  }
+
+  &--esi {
+    background: $color-role-grade-teacher-bg;
+    color: $color-role-grade-teacher-text;
+  }
+
+  &--tecnologia {
+    background: $color-gender-male-bg;
+    color: $color-gender-male-text;
+  }
+
+  &--sala {
+    background: $color-role-librarian-bg;
+    color: $color-role-librarian-text;
+  }
+
+  &--literatura {
+    background: $color-role-assistant-teacher-bg;
+    color: $color-role-assistant-teacher-text;
+  }
+
+  &--historia {
+    background: $color-role-special-teacher-bg;
+    color: $color-role-special-teacher-text;
+  }
+
+  &--fisica {
+    background: $color-role-cooperative-bg;
+    color: $color-role-cooperative-text;
+  }
+
+  &--quimica {
+    background: color.adjust($color-green, $lightness: 40%);
+    color: color.adjust($color-green, $lightness: -15%);
+  }
+
+  &--contabilidad {
+    background: $color-role-former-student-bg;
+    color: $color-role-former-student-text;
+  }
+
+  &--biologia {
+    background: $color-role-class-assistant-bg;
+    color: $color-role-class-assistant-text;
+  }
+
+  &--filosofia {
+    background: color.adjust($color-purple, $lightness: 35%);
+    color: color.adjust($color-purple, $lightness: -15%);
+  }
+
+  &--geografia {
+    background: color.adjust($color-emerald, $lightness: 40%);
+    color: color.adjust($color-emerald, $lightness: -20%);
+  }
+
+  // Default fallback
+  &--default {
+    background: $color-role-default-bg;
+    color: $color-role-default-text;
+  }
+}

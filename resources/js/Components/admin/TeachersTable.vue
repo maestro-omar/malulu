@@ -64,7 +64,7 @@
       <!-- Custom cell for subject -->
       <template #body-cell-subject="props">
         <q-td :props="props">
-          <span v-if="props.row.rel_subject" class="text-weight-medium">{{ props.row.rel_subject }}</span>
+          <SubjectBadge v-if="props.row.rel_subject" :subject="props.row.rel_subject" size="md" />
           <span v-else class="text-grey-5">-</span>
         </q-td>
       </template>
@@ -95,6 +95,7 @@ import { Link } from '@inertiajs/vue3'
 import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
 import EmailField from '@/Components/admin/EmailField.vue';
 import RoleBadge from '@/Components/Badges/RoleBadge.vue';
+import SubjectBadge from '@/Components/Badges/SubjectBadge.vue';
 import noImage from "@images/no-image-person.png";
 import { route_school_staff } from '@/Utils/routes';
 

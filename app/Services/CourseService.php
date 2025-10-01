@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Entities\Course;
 use App\Models\Entities\User;
 use App\Models\Relations\TeacherCourse;
+use App\Models\Catalogs\ClassSubject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -468,7 +469,7 @@ class CourseService
             "rel_end_date" => $teacherRel->end_date ? $teacherRel->end_date->format('Y-m-d') : null,
             "rel_in_charge" => $teacherRel->in_charge,
             "rel_notes" => $teacherRel->notes,
-            "rel_subject" => $subject ? $subject->name : null,
+            "rel_subject" => $subject ? ['name' => $subject->name, 'code' => $subject->code] : null,
             'rel_role' => $role,
         ];
         return $teacher;
@@ -583,5 +584,96 @@ class CourseService
         //     'exported_at' => now()->toISOString(),
         //     'file' => $return
         // ]);
+    }
+
+    public function getSchedule(Course $course)
+    {
+        $classSubjects = ClassSubject::where('school_level_id', $course->school_level_id)->get();
+        $curricularClasses = $classSubjects->where('is_curricular', true)->pluck('name', 'code')->toArray();
+        $regularClasses  = $classSubjects->where('is_curricular', false)->whereIn('code', ['lengua', 'matematica', 'ciencias_sociales', 'ciencias_naturales'])->pluck('name', 'code')->toArray();
+        $timeSlots = $course->schoolShift->timeSlots;
+        $days = $timeSlots['days'];
+        $timeSlots = $timeSlots['timeSlots'];
+
+        // Get only numeric time slots (actual class periods)
+        $classPeriods = array_filter($timeSlots, function ($key) {
+            return is_numeric($key);
+        }, ARRAY_FILTER_USE_KEY);
+
+        $courseSchedule = [];
+        $totalPeriodsPerWeek = count($days) * count($classPeriods);
+
+        // Calculate how many times each regular class should appear
+        // Each curricular class appears once
+        $totalCurricularSlots = count($curricularClasses);
+        $remainingSlots = $totalPeriodsPerWeek - $totalCurricularSlots;
+        $regularClassCount = floor($remainingSlots / count($regularClasses));
+        $extraSlots = $remainingSlots % count($regularClasses);
+
+        // Create a balanced distribution
+        $allSubjects = [];
+
+        // Add curricular classes (each appears once)
+        foreach ($curricularClasses as $code => $name) {
+            $allSubjects[] = ['code' => $code, 'name' => $name];
+        }
+
+        // Add regular classes with equal distribution
+        foreach ($regularClasses as $code => $name) {
+            for ($i = 0; $i < $regularClassCount; $i++) {
+                $allSubjects[] = ['code' => $code, 'name' => $name];
+            }
+        }
+
+        // Add extra slots to first few regular classes
+        $regularClassCodes = array_keys($regularClasses);
+        for ($i = 0; $i < $extraSlots; $i++) {
+            $code = $regularClassCodes[$i % count($regularClassCodes)];
+            $allSubjects[] = ['code' => $code, 'name' => $regularClasses[$code]];
+        }
+
+        // Shuffle to randomize distribution
+        shuffle($allSubjects);
+
+        // Distribute subjects across days and periods
+        $subjectIndex = 0;
+        foreach ($days as $dayNumber) {
+            $courseSchedule[$dayNumber] = [];
+            foreach ($timeSlots as $key => $value) {
+                if (is_numeric($key)) {
+                    // It's a class period
+                    if ($subjectIndex < count($allSubjects)) {
+                        $courseSchedule[$dayNumber][$key] = [
+                            'subject' => [
+                                'name' => $allSubjects[$subjectIndex]['name'],
+                                'code' => $allSubjects[$subjectIndex]['code']
+                            ],
+                            'teacher' => $this->getRandomTeacher($course, $allSubjects[$subjectIndex]['code'])
+                        ];
+                        $subjectIndex++;
+                    } else {
+                        $courseSchedule[$dayNumber][$key] = null;
+                    }
+                } else {
+                    // It's break time - no class info
+                    $courseSchedule[$dayNumber][$key] = null;
+                }
+            }
+        }
+
+        $result = ['timeSlots' => $timeSlots, 'schedule' => $courseSchedule];
+        return $result;
+    }
+
+    private function getRandomTeacher($course, $subject)
+    {
+        static $teachers = null;
+        if (empty($teachers))
+            $teachers = $course->courseTeachers()->get();
+        if (empty($teachers)) return null;
+        $teacher = $teachers->random();
+        $teacher = $this->parseRelatedTeacher($teacher);
+        // return ['name' => $teacher['name'], 'subject' => $teacher['subject']];
+        return $teacher;
     }
 }

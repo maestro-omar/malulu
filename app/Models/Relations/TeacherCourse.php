@@ -5,8 +5,7 @@ namespace App\Models\Relations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Base\BaseModel as Model;
 use App\Models\Entities\Course;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\Entities\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TeacherCourse extends Model
@@ -43,5 +42,8 @@ class TeacherCourse extends Model
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+    public function teacher(){
+        return $this->belongsTo(User::class, 'role_relationship_id');
     }
 }

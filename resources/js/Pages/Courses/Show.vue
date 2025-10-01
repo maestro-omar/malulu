@@ -26,10 +26,8 @@
 
     <template #main-page-content>
       <!-- Course Information Components -->
-      <CourseBasicData :course="course" :school="school" :selectedLevel="selectedLevel" class="q-mb-md" />
+      <CourseBasicData :schedule="schedule" :course="course" :school="school" :selectedLevel="selectedLevel" class="q-mb-md" />
       
-      <CourseSchedule :schedule="schedule" class="q-mb-md" />
-
       <!-- Teachers Card -->
       <TeachersTable :teachers="teachers" :courseId="getCourseSlug(course)" :schoolLevel="selectedLevel.code"
         :school="school" />
@@ -56,7 +54,6 @@ import SystemTimestamp from '@/Components/admin/SystemTimestamp.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import CourseBasicData from '@/Components/admin/CourseBasicData.vue'
-import CourseSchedule from '@/Components/admin/CourseSchedule.vue'
 import { hasPermission } from '@/Utils/permissions';
 import { getCourseSlug } from '@/Utils/strings';
 import StudentsTable from '@/Components/admin/StudentsTable.vue';

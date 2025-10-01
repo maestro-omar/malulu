@@ -16,6 +16,7 @@ class ClassSubject extends Model
         'short_name',
         'school_level_id',
         'is_curricular',
+        'code',
     ];
 
     protected $table = 'class_subjects';

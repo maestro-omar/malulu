@@ -1,47 +1,60 @@
 <template>
-  <q-expansion-item expand-separator default-opened class="mll-table-expansion">
-    <template v-slot:header>
-      <q-item-section avatar>
-        <q-icon name="schedule" size="sm" color="secondary" />
-      </q-item-section>
 
-      <q-item-section align="left">
-        {{ title }}
-      </q-item-section>
-    </template>
 
-    <div class="course-schedule">
-      <q-table :rows="scheduleRows" :columns="scheduleColumns" flat bordered hide-bottom :rows-per-page-options="[0]"
-        class="schedule-table">
-        <template v-slot:body="props">
-          <q-tr :props="props" :class="getRowClass(props.row)">
-            <q-td key="period" :props="props" class="period-cell">
-              <div class="text-weight-medium">{{ props.row.period }}</div>
-            </q-td>
-            <q-td key="time" :props="props" class="time-cell">
-              <div class="text-weight-medium">{{ props.row.time }}</div>
-            </q-td>
-            <q-td v-for="day in availableDays" :key="day" :props="props" class="day-cell"
-              :class="{ 'has-schedule': props.row[`day${day}`] }">
-              <div v-if="props.row[`day${day}`]" class="schedule-item">
-                <div class="text-weight-medium">{{ props.row[`day${day}`].subject || 'Clase' }}</div>
-                <div class="text-caption text-grey-6">{{ props.row[`day${day}`].teacher || '' }}</div>
+  <div class="course-schedule">
+    <div class="course-schedule__table">
+      <!-- Header -->
+      <div class="course-schedule__header">
+        <div class="course-schedule__header-cell course-schedule__header-cell--period">#</div>
+        <div class="course-schedule__header-cell course-schedule__header-cell--time">Horario</div>
+        <div v-for="day in availableDays" :key="`header${day}`"
+          class="course-schedule__header-cell course-schedule__header-cell--day">
+          {{ dayNames[day] || '' }}
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="course-schedule__body">
+        <div v-for="row in scheduleRows" :key="row.id" class="course-schedule__body-row" :class="getRowClass(row)">
+          <!-- Break rows - single merged cell -->
+          <div v-if="isBreakRow(row)" class="course-schedule__break-merged-cell">
+            <div class="course-schedule__break-merged-cell-text">{{ row.period }}: {{ row.time }}</div>
+          </div>
+
+          <!-- Regular rows - normal cells -->
+          <template v-else>
+            <!-- Period Cell -->
+            <div class="course-schedule__period-cell">
+              <div class="text-weight-medium">{{ row.period }}</div>
+            </div>
+
+            <!-- Time Cell -->
+            <div class="course-schedule__time-cell">
+              <div class="text-weight-medium">{{ row.time }}</div>
+            </div>
+
+            <!-- Day Cells -->
+            <div v-for="day in availableDays" :key="`day${day}`" class="course-schedule__day-cell">
+              <div v-if="row[`day${day}`]" class="course-schedule__day-cell-item">
+                <SubjectBadge v-if="row[`day${day}`].subject" :subject="row[`day${day}`].subject" size="md" />
+                <div class="course-schedule__teacher">{{ row[`day${day}`].teacher || '' }}</div>
               </div>
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
+              <div v-else class="text-caption text-grey-4">-</div>
+            </div>
+          </template>
+        </div>
+      </div>
     </div>
-  </q-expansion-item>
+  </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import SubjectBadge from '../Badges/SubjectBadge.vue'
 
 const props = defineProps({
-  title: { type: String, default: 'Horarios' },
   schedule: { type: Object, required: true },
-  days: { type: Array, default: () => [1, 2, 3, 4, 5] }
+  days: { type: Array, default: () => [1, 2, 3, 4, 5] },
 })
 
 const dayNames = {
@@ -49,21 +62,35 @@ const dayNames = {
   2: 'Martes',
   3: 'Miércoles',
   4: 'Jueves',
-  5: 'Viernes'
+  5: 'Viernes',
+  6: 'Sábado',
+  7: 'Domingo'
 }
 
 const availableDays = computed(() => {
-  return props.schedule.days || props.days
+  // Try different ways to get the days
+  let days = props.days || [1, 2, 3, 4, 5] // Default fallback
+
+  if (props.schedule) {
+    if (props.schedule.days) {
+      days = props.schedule.days
+    } else if (props.schedule.schedule) {
+      // Extract days from the schedule keys
+      days = Object.keys(props.schedule.schedule).filter(key => !isNaN(key)).map(Number)
+    }
+  }
+
+  return days
 })
 
 const scheduleColumns = computed(() => {
   const columns = [
-    { name: 'period', label: 'Período', field: 'period', align: 'center', style: 'width: 60px' },
-    { name: 'time', label: 'Hora', field: 'time', align: 'left', style: 'width: 120px' }
+    { name: 'period', label: '', field: 'period', align: 'center', style: 'width: 50px' },
+    { name: 'time', label: 'Horario', field: 'time', align: 'left', style: 'width: 100px' }
   ]
 
   const dayNames = { 1: 'LU', 2: 'MA', 3: 'MI', 4: 'JU', 5: 'VI', 6: 'SA', 7: 'DO' }
-  
+
   availableDays.value.forEach(day => {
     columns.push({
       name: `day${day}`,
@@ -77,17 +104,18 @@ const scheduleColumns = computed(() => {
 })
 
 const scheduleRows = computed(() => {
-  if (!props.schedule || !props.schedule.schedule) {
+  if (!props.schedule || !props.schedule.timeSlots || !props.schedule.schedule) {
     return []
   }
-  
-  const scheduleData = props.schedule.schedule
+
+  const timeSlotsData = props.schedule.timeSlots
+  const courseSchedule = props.schedule.schedule
   const rows = []
-  
+
   // Get all time periods and sort them (including breaks)
   const timeSlots = []
-  Object.keys(scheduleData).forEach(key => {
-    const times = scheduleData[key]
+  Object.keys(timeSlotsData).forEach(key => {
+    const times = timeSlotsData[key]
     if (Array.isArray(times) && times.length >= 2) {
       timeSlots.push({
         id: key,
@@ -96,14 +124,14 @@ const scheduleRows = computed(() => {
       })
     }
   })
-  
+
   // Sort by start time
   timeSlots.sort((a, b) => {
     const timeA = a.start.split(':').map(Number)
     const timeB = b.start.split(':').map(Number)
     return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1])
   })
-  
+
   // Create rows for each time slot
   timeSlots.forEach(slot => {
     const periodLabel = formatPeriodLabel(slot.id)
@@ -112,38 +140,60 @@ const scheduleRows = computed(() => {
       time: `${slot.start} - ${slot.end}`,
       id: slot.id
     }
-    
-    // Add empty day columns - cells will be filled with actual class data later
+
+    // Add class data for each day
     availableDays.value.forEach(day => {
-      row[`day${day}`] = null // Empty by default, like in the export
+      // Check if there's class data for this day and period
+      if (courseSchedule[day] && courseSchedule[day][slot.id]) {
+        const classData = courseSchedule[day][slot.id]
+        let teacherName = ''
+
+        if (classData.teacher) {
+          // Handle both object and array teacher data
+          if (typeof classData.teacher === 'object') {
+            teacherName = classData.teacher.name ||
+              classData.teacher.firstname + ' ' + classData.teacher.lastname ||
+              'Profesor'
+          } else {
+            teacherName = classData.teacher
+          }
+        }
+
+        row[`day${day}`] = {
+          subject: classData.subject || 'Clase',
+          teacher: teacherName,
+          day: day
+        }
+      } else {
+        row[`day${day}`] = null
+      }
     })
-    
+
     rows.push(row)
   })
-  
+
   return rows
 })
 
 const formatPeriodLabel = (periodKey) => {
   if (periodKey.includes('break')) {
-    return '(recreo)'
+    return 'recreo'
   } else if (periodKey.includes('lunch')) {
-    return '(almuerzo)'
+    return 'almuerzo'
   }
   return periodKey
 }
 
 const getRowClass = (row) => {
   if (row.id.includes('break')) {
-    return 'break-period'
+    return 'course-schedule__body-row--break-period'
   } else if (row.id.includes('lunch')) {
-    return 'lunch-period'
+    return 'course-schedule__body-row--lunch-period'
   }
   return ''
 }
 
+const isBreakRow = (row) => {
+  return row.id.includes('break') || row.id.includes('lunch')
+}
 </script>
-
-<style lang="scss" scoped>
-@import '../../css/components/course-schedule';
-</style>

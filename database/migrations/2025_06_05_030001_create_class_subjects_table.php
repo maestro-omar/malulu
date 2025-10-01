@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('class_subjects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('code');
             $table->string('short_name');
             $table->foreignId('school_level_id')->constrained('school_levels')->onDelete('cascade');
             $table->boolean('is_curricular')->default(true);
             $table->timestamps();
+
+            $table->unique(['code', 'school_level_id']);
         });
     }
 
@@ -28,4 +31,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('class_subjects');
     }
-}; 
+};

@@ -9,9 +9,9 @@
         {{ title }}
       </q-item-section>
     </template>
-    
+
     <div class="row q-col-gutter-sm">
-      <div class="col-12">
+      <div class="col-12 col-md-6">
         <div class="row q-col-gutter-sm">
           <!-- <div class="col-lg-2 col-md-3 col-4">
             <DataFieldShow label="Nivel Escolar">
@@ -38,13 +38,15 @@
           </div> -->
         </div>
         <div class="row q-col-gutter-sm">
-          <div class="col-md-3 col-4">
+          <div class="col-md-4 col-6">
             <DataFieldShow label="Fecha de Inicio" :value="course.start_date" type="date" />
           </div>
-          <div class="col-md-3 col-4">
+          <div class="col-md-4 col-6">
             <DataFieldShow label="Fecha de Fin" :value="course.end_date" type="date" />
           </div>
-          <div class="col-md-3 col-4">
+        </div>
+        <div class="row q-col-gutter-sm">
+          <div class="col-md-4 col-6">
             <DataFieldShow label="Curso Anterior">
               <template #slotValue>
                 <span v-if="!course.previous_course">-</span>
@@ -56,7 +58,7 @@
               </template>
             </DataFieldShow>
           </div>
-          <div class="col-md-3 col-4">
+          <div class="col-md-4 col-6">
             <DataFieldShow label="Curso/s siguiente/s">
               <template #slotValue>
                 <span v-if="course.next_courses.length === 0">-</span>
@@ -68,26 +70,35 @@
               </template>
             </DataFieldShow>
           </div>
+        </div>
+        <div class="row q-col-gutter-sm">
           <div class="col-lg-2 col-md-3 col-4">
             <DataFieldShow label="Estado" :value="course.active" type="status" />
           </div>
         </div>
       </div>
+      <div class="col-12 col-md-6">
+        <CourseSchedule :schedule="schedule" :container="false" class="q-mb-md" />
+      </div>
+
     </div>
   </q-expansion-item>
+
 </template>
 
 <script setup>
 import { Link } from '@inertiajs/vue3'
 import DataFieldShow from '@/Components/DataFieldShow.vue'
-import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue'
+import CourseSchedule from '@/Components/admin/CourseSchedule.vue'
+// import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue'
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue'
 import { getCourseSlug } from '@/Utils/strings'
 
 const props = defineProps({
   title: { type: String, default: 'Datos básicos' },
   course: { type: Object, required: true },
+  schedule: { type: Object, required: false },
   school: { type: Object, required: true },
-  selectedLevel: { type: Object, required: true },
+  selectedLevel: { ty0e: Object, required: true },
 })
 </script>

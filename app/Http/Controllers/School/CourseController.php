@@ -198,7 +198,8 @@ class CourseController extends SchoolBaseController
         $students = $this->courseService->getStudents($course, true, null, true);
         $teachers = $this->courseService->getTeachers($course);
         $files = $this->courseService->getFiles($course, $user);
-        $schedule = $course->schedule;
+        $schedule = $this->courseService->getSchedule($course);
+        // dd($schedule);
         return Inertia::render($view, [
             'course' => $course,
             'school' => $school,
@@ -252,5 +253,4 @@ class CourseController extends SchoolBaseController
 
         return redirect()->route('school.courses', ['school' => $school->slug, 'schoolLevel' => $schoolLevel->code])->with('success', $message);
     }
-
 }

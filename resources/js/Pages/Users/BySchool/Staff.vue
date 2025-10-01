@@ -146,10 +146,8 @@
                 </div>
                 <!-- Subjects -->
                 <div v-if="getUniqueSubjects(props.row.workerRelationships).length > 0" class="row q-gutter-xs items-center justify-center">
-                  <q-chip v-for="subject in getUniqueSubjects(props.row.workerRelationships)" :key="subject.id"
-                    size="sm" color="blue-grey" text-color="white" outline>
-                    {{ subject.name }}
-                  </q-chip>
+                  <SubjectBadge v-for="subject in getUniqueSubjects(props.row.workerRelationships)" :key="subject.id"
+                    :subject="subject" size="md" />
                 </div>
               </div>
             </q-td>
@@ -209,6 +207,7 @@
 import EmailField from '@/Components/admin/EmailField.vue';
 import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
 import RoleBadge from '@/Components/Badges/RoleBadge.vue';
+import SubjectBadge from '@/Components/Badges/SubjectBadge.vue';
 import SchoolLevelBadge from '@/Components/Badges/SchoolLevelBadge.vue';
 import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
