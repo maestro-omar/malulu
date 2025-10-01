@@ -35,7 +35,7 @@
 
     <template #main-page-content>
       <!-- School Information Components -->
-      <SchoolBasicData :school="school" :pageProps="$page.props" class="q-mb-md" />
+      <SchoolBasicData :school="school" :pageProps="$page.props" :showAnnouncements="true" class="q-mb-md" />
 
       <SchoolSocial :school="school" class="q-mb-md" />
 

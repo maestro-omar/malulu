@@ -1,6 +1,27 @@
 <template>
   <div class="admin-form__wrapper">
+    
     <form @submit.prevent="form.patch(route('profile.update'))" class="admin-form__container">
+      <!-- Profile Picture Card -->
+      <q-card class="admin-form__card">
+        <q-card-section>
+          <h3 class="admin-form__card-title">Foto de Perfil</h3>
+          <div class="admin-form__card-content">
+            <div class="profile-picture">
+              <q-avatar size="150px" class="profile-picture__avatar">
+                <editable-image
+                  :model-value="user.picture"
+                  type="picture"
+                  :can-edit="true"
+                  upload-route="profile.upload-image"
+                  delete-route="profile.delete-image"
+                />
+              </q-avatar>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+
       <!-- Basic Information Card -->
       <q-card class="admin-form__card">
         <q-card-section>
@@ -180,6 +201,7 @@ import ActionButtons from '@/Components/admin/ActionButtons.vue';
 import InputError from '@/Components/admin/InputError.vue';
 import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
+import EditableImage from '@/Components/admin/EditableImage.vue';
 
 defineProps({
   mustVerifyEmail: {

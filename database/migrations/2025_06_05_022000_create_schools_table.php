@@ -29,6 +29,8 @@ return new class extends Migration
             $table->foreignId('management_type_id')->nullable()->constrained('school_management_types');
             $table->json('social')->nullable();
             $table->json('extra')->nullable();
+            $table->text('announcements')->nullable();
+            $table->text('relevant_information')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -140,6 +140,25 @@
                   </div>
 
                   <div class="admin-form__section">
+                    <h3 class="admin-form__card-title">Información Adicional</h3>
+                    <div class="admin-form__card-content">
+                      <div class="admin-form__field">
+                        <InputLabel for="announcements" value="Anuncios" />
+                        <q-editor v-model="form.announcements" :toolbar="editorToolbar" min-height="5rem"
+                          placeholder="Anuncios o avisos importantes para mostrar en la escuela" />
+                        <InputError :message="form.errors.announcements" class="admin-form__error" />
+                      </div>
+
+                      <div class="admin-form__field">
+                        <InputLabel for="relevant_information" value="Información Relevante" />
+                        <q-editor v-model="form.relevant_information" :toolbar="editorToolbar" min-height="5rem"
+                          placeholder="Información relevante sobre la escuela" />
+                        <InputError :message="form.errors.relevant_information" class="admin-form__error" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="admin-form__section">
                     <h3 class="admin-form__card-title">Redes sociales</h3>
                     <div class="admin-form__card-content">
                       <div v-for="(social, index) in form.social" :key="index" class="admin-form__social-grid">
@@ -258,6 +277,8 @@ const form = useForm({
   email: props.school.email || '',
   coordinates: props.school.coordinates || '',
   social: props.school.social || [],
+  announcements: props.school.announcements || '',
+  relevant_information: props.school.relevant_information || '',
   logo: null,
   picture: null
 });
@@ -325,4 +346,13 @@ const addSocial = () => {
 const removeSocial = (index) => {
   form.social.splice(index, 1);
 };
+
+// Editor toolbar configuration
+const editorToolbar = [
+  ['bold', 'italic', 'underline'],
+  ['unordered', 'ordered'],
+  ['link'],
+  ['undo', 'redo'],
+  ['removeFormat']
+];
 </script>

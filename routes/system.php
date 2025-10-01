@@ -16,6 +16,8 @@ Route::prefix(__('routes.system'))->group(function () {
         Route::get('/' . __('routes.profile'), [ProfileAdminController::class, 'edit'])->name('profile.edit');
         Route::patch('/' . __('routes.profile'), [ProfileAdminController::class, 'update'])->name('profile.update');
         Route::delete('/' . __('routes.profile'), [ProfileAdminController::class, 'destroy'])->name('profile.destroy');
+        Route::post('/' . __('routes.profile') . '/' . __('routes.upload-image'), [ProfileAdminController::class, 'uploadImage'])->name('profile.upload-image');
+        Route::delete('/' . __('routes.profile') . '/' . __('routes.delete-image'), [ProfileAdminController::class, 'deleteImage'])->name('profile.delete-image');
         Route::get(__('routes.files'), [FileAdminController::class, 'index'])->name('files.index');
         Route::get(__('routes.files') . '/' . __('routes.create'), [FileAdminController::class, 'create'])->name('files.create');
 

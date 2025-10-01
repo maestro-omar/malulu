@@ -26,7 +26,7 @@ class UserContextService
         });
 
         $schoolIds = empty($activeRoleRelationships) ? [] : $activeRoleRelationships->pluck('school_id')->unique()->toArray();
-        $userSchools = empty($schoolIds) ? [] : School::select('cue', 'id', 'name', 'short', 'slug', 'logo', 'extra')->find($schoolIds)->keyBy('id')->toArray();
+        $userSchools = empty($schoolIds) ? [] : School::select('cue', 'id', 'name', 'short', 'slug', 'logo', 'extra','announcements','relevant_information')->find($schoolIds)->keyBy('id')->toArray();
         $first = empty($schoolIds) ? null : $activeRoleRelationships->first();
 
         //omar importante

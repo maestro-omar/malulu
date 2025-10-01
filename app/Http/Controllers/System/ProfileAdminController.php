@@ -8,12 +8,20 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Diglactic\Breadcrumbs\Breadcrumbs;
+use App\Services\UserService;
 
 class ProfileAdminController extends SystemBaseController
 {
+    protected $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
     /**
      * Display the user's profile form.
      */
@@ -43,5 +51,47 @@ class ProfileAdminController extends SystemBaseController
         $request->user()->save();
 
         return Redirect::route('profile.edit');
+    }
+
+    /**
+     * Upload profile picture for the authenticated user.
+     */
+    public function uploadImage(Request $request)
+    {
+        try {
+            $user = $request->user();
+            if ($this->userService->updateUserImage($user, $request))
+                return back()->with('success', 'Imagen subida exitosamente');
+            else
+                return back()->with('error', 'Hubo un problema inesperado al subir la imagen');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Delete profile picture for the authenticated user.
+     */
+    public function deleteImage(Request $request)
+    {
+        try {
+            $request->validate([
+                'type' => 'required|in:picture'
+            ]);
+
+            $user = $request->user();
+            $type = $request->input('type');
+
+            // Delete the image file if it exists
+            if ($type === 'picture' && $user->picture) {
+                $oldPath = str_replace('/storage/', '', $user->picture);
+                Storage::disk('public')->delete($oldPath);
+                $user->update(['picture' => null]);
+            }
+
+            return back()->with('success', 'Imagen eliminada exitosamente');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 }

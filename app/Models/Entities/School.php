@@ -47,7 +47,9 @@ class School extends Model
         'social',
         'extra',
         'logo',
-        'picture'
+        'picture',
+        'announcements',
+        'relevant_information'
     ];
 
     protected $casts = [

@@ -114,6 +114,8 @@ class SchoolService
             'email' => 'nullable|email|max:255',
             'coordinates' => 'nullable|string|max:100',
             'social' => 'nullable|array',
+            'announcements' => 'nullable|string|max:1000',
+            'relevant_information' => 'nullable|string|max:1000',
             // if I leave this, logo is cleared, set to null 'logo' => 'nullable|image|max:1024', // max 1MB
             // if I leave this, logo is cleared, set to null 'picture' => 'nullable|image|max:2048' // max 2MB
         ];

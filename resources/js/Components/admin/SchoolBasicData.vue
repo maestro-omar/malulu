@@ -9,8 +9,16 @@
         {{ title }}
       </q-item-section>
     </template>
-    
+
     <div class="row q-col-gutter-lg">
+      <div v-if="showAnnouncements && school.announcements" class="col-12">
+        <q-banner class="bg-orange q-pa-md q-mb-md" rounded>
+          <template v-slot:avatar>
+            <q-icon name="warning" color="white" size="sm" />
+          </template>
+          <div class="text-weight-bold text-h4" v-html="school.announcements"></div>
+        </q-banner>
+      </div>
       <!-- Left Column -->
       <div class="col-12 col-md-4">
         <div class="school-detail__section">
@@ -19,9 +27,7 @@
             <div class="col-3 col-lg-4">
               <DataFieldShow label="Logo">
                 <template #slotValue>
-                  <EditableImage v-model="school.logo" 
-                  type="logo" :model-id="school.slug" 
-                  :can-edit="canEdit"
+                  <EditableImage v-model="school.logo" type="logo" :model-id="school.slug" :can-edit="canEdit"
                     upload-route="school.upload-image" delete-route="school.delete-image"
                     delete-confirm-message="¿Está seguro que desea eliminar el logo?" />
                 </template>
@@ -113,7 +119,7 @@
                   </template>
                 </DataFieldShow>
               </div>
-            
+
               <div class="col-12 col-sm-6">
                 <DataFieldShow label="Teléfono">
                   <template #slotValue>
@@ -130,6 +136,12 @@
               </div>
             </div>
           </div>
+        </div>
+        <div v-if="school.relevant_information" class="row q-mt-md">
+          <q-card class="col-12 q-pa-md q-mb-lg">
+            <div class="text-h4 q-mb-md">Información importante</div>
+            <DataFieldShow label="" :value="school.relevant_information" type="text" />
+          </q-card>
         </div>
       </div>
     </div>
@@ -151,6 +163,7 @@ import { hasPermission } from '@/Utils/permissions';
 const props = defineProps({
   title: { type: String, default: 'Datos básicos' },
   school: { type: Object, required: true },
+  showAnnouncements: { type: Boolean, required: false },
   pageProps: { type: Object, required: true },
 })
 

@@ -88,9 +88,138 @@
   &__info-card,
   &__schedule-card,
   &__courses-card,
+  &__school-card,
   &__no-courses-card {
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &__school-logo {
+    max-width: 100%;
+    height: auto;
+    max-height: 150px;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  &__announcement {
+    margin-top: 1rem;
+  }
+
+  &__announcement-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: variables.$color-terciary;
+    color: white;
+    border-radius: 8px;
+  }
+
+  &__announcement-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__announcement-content {
+    flex: 1;
+    font-weight: variables.$font-bold-weight;
+    @include mixins.fz(1.6);
+    @include mixins.lh(1.8);
+
+    // Style content elements
+    p {
+      margin: 0 0 0.5rem 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    ul,
+    ol {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+    }
+
+    a {
+      color: white;
+      text-decoration: underline;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+  }
+
+  &__relevant-info {
+    margin-top: 1rem;
+    color: variables.$color-role-director-text;
+  }
+
+  &__relevant-card {
+    padding: 1rem 1.5rem;
+    background: variables.$color-role-director-bg;
+    border: 1px solid variables.$color-role-director-text;
+    border-radius: 8px;
+  }
+
+  &__relevant-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  &__relevant-icon {
+  }
+
+  &__relevant-title {
+    font-weight: variables.$font-bold-weight;
+    @include mixins.fz(1.6);
+    @include mixins.lh(1.6);
+  }
+
+  &__relevant-content {
+    @include mixins.fz(1.6);
+    @include mixins.lh(1.8);
+    color: variables.$color-text;
+
+    // Style content elements
+    p {
+      margin: 0 0 0.5rem 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    ul,
+    ol {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+    }
+
+    a {
+      color: variables.$color-primary;
+      text-decoration: underline;
+
+      &:hover {
+        color: variables.$color-secondary;
+      }
+    }
+
+    strong,
+    b {
+      font-weight: variables.$font-bold-weight;
+    }
+
+    em,
+    i {
+      font-style: italic;
+    }
   }
 
   &__section-title {
