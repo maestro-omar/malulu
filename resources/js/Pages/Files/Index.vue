@@ -29,7 +29,8 @@
           </div>
           <div class="col-12 col-md-2">
             <q-select v-model="selectedType" dense outlined :options="typeOptions" option-label="label"
-              option-value="value" @update:model-value="triggerFilter" clearable placeholder="Filtrar por tipo">
+              option-value="value" @update:model-value="triggerFilter" clearable placeholder="Filtrar por tipo"
+              emit-value map-options>
               <template v-slot:prepend>
                 <q-icon name="category" />
               </template>
@@ -37,21 +38,30 @@
           </div>
           <div class="col-12 col-md-2">
             <q-select v-model="selectedSubtype" dense outlined :options="filteredSubtypeOptions" option-label="label"
-              option-value="value" @update:model-value="triggerFilter" clearable placeholder="Filtrar por subtipo"
-              :disable="!selectedType">
+              option-value="value" @update:model-value="triggerFilter" clearable 
+              :placeholder="filteredSubtypeOptions.length === 0 && selectedType ? 'No hay subtipos disponibles' : 'Filtrar por subtipo'"
+              :disable="!selectedType || (filteredSubtypeOptions.length === 0 && selectedType)" emit-value map-options>
               <template v-slot:prepend>
                 <q-icon name="folder" />
               </template>
             </q-select>
           </div>
           <div class="col-12 col-md-2">
-            <q-btn color="grey" icon="clear" label="Limpiar" @click="clearFilters" class="q-ml-sm q-ml-md-md q-ml-lg-lg" />
+            <q-btn color="grey" icon="clear" label="Limpiar" @click="clearFilters"
+              class="q-ml-sm q-ml-md-md q-ml-lg-lg" />
           </div>
         </div>
 
-    
-        <q-table v-if="filteredFiles && filteredFiles.length > 0" class="mll-table mll-table--files striped-table"
-          dense :rows="filteredFiles" :columns="columns" row-key="id" :pagination="{ rowsPerPage: 25 }">
+
+        <!-- Results summary -->
+        <div v-if="filteredFiles && filteredFiles.length > 0" class="q-mb-md text-grey-7">
+          Mostrando {{ filteredFiles.length }} archivo{{ filteredFiles.length !== 1 ? 's' : '' }}
+          {{ (selectedType || selectedSubtype || search) ? 'filtrado' + (filteredFiles.length !== 1 ? 's' : '') : '' }}
+          de {{ props.files.length }} total
+        </div>
+
+        <q-table v-if="filteredFiles && filteredFiles.length > 0" class="mll-table mll-table--files striped-table" dense
+          :rows="filteredFiles" :columns="columns" row-key="id" :pagination="{ rowsPerPage: 25 }">
           <template v-slot:body-cell-file_type_context="props">
             <q-td :props="props">
               <q-chip :color="getFileTypeColor(props.value)" text-color="white" size="sm">
@@ -63,18 +73,10 @@
           <template v-slot:body-cell-nice_name="props">
             <q-td :props="props">
               <div class="row items-center">
-                <q-icon 
-                  :name="props.row.is_external ? 'link' : 'description'" 
-                  :color="props.row.is_external ? 'orange' : 'grey-6'" 
-                  size="sm" 
-                  class="q-mr-sm" />
+                <q-icon :name="props.row.is_external ? 'link' : 'description'"
+                  :color="props.row.is_external ? 'orange' : 'grey-6'" size="sm" class="q-mr-sm" />
                 <span>{{ props.row.nice_name }}</span>
-                <q-chip 
-                  v-if="props.row.is_external" 
-                  size="xs" 
-                  color="orange" 
-                  text-color="white" 
-                  class="q-ml-sm">
+                <q-chip v-if="props.row.is_external" size="xs" color="orange" text-color="white" class="q-ml-sm">
                   Externo
                 </q-chip>
               </div>
@@ -83,26 +85,19 @@
 
           <template v-slot:body-cell-show="props">
             <q-td :props="props">
-              <q-btn flat round dense icon="visibility" color="green" :href="props.row.show_url"
-                title="Ver archivo" />
+              <q-btn flat round dense icon="visibility" color="green" :href="props.row.show_url" title="Ver archivo" />
             </q-td>
           </template>
 
           <template v-slot:body-cell-edit="props">
             <q-td :props="props">
-              <q-btn flat round dense icon="edit" color="warning" :href="props.row.edit_url"
-                title="Editar archivo" />
+              <q-btn flat round dense icon="edit" color="warning" :href="props.row.edit_url" title="Editar archivo" />
             </q-td>
           </template>
 
           <template v-slot:body-cell-download="props">
             <q-td :props="props">
-              <q-btn 
-                flat 
-                round 
-                dense 
-                :icon="props.row.is_external ? 'open_in_new' : 'download'" 
-                color="primary" 
+              <q-btn flat round dense :icon="props.row.is_external ? 'open_in_new' : 'download'" color="primary"
                 @click="props.row.is_external ? openExternalFile(props.row) : downloadFile(props.row)"
                 :title="props.row.is_external ? 'Abrir enlace externo' : 'Descargar archivo'" />
             </q-td>
@@ -122,7 +117,7 @@
             {{ filteredFiles.length === 0 && (selectedType || selectedSubtype || search) ? 'No se encontraron archivos con los filtros aplicados' : 'No hay archivos disponibles' }}
           </div>
         </div>
-        
+
       </div>
     </template>
   </AuthenticatedLayout>
@@ -139,6 +134,14 @@ const props = defineProps({
   files: {
     type: Array,
     default: () => []
+  },
+  types: {
+    type: Array,
+    default: () => []
+  },
+  subtypes: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -148,24 +151,20 @@ const selectedSubtype = ref(null)
 const searchInput = ref('')
 const search = ref('')
 
-// Filter options
-const typeOptions = [
-  { label: 'Provincial', value: 'Provincial' },
-  { label: 'Institucional', value: 'Institucional' },
-  { label: 'Usuario', value: 'Usuario' }
-]
+// Filter options - use dynamic data from backend
+const typeOptions = computed(() => {
+  return props.types.map(type => ({
+    label: type.name,
+    value: type.code
+  }))
+})
 
-// Get unique subtypes from files
+// Get all subtypes from backend data
 const allSubtypes = computed(() => {
-  const subtypes = new Set()
-  props.files.forEach(file => {
-    if (file.subtype) {
-      subtypes.add(file.subtype)
-    }
-  })
-  return Array.from(subtypes).map(subtype => ({
-    label: subtype,
-    value: subtype
+  return props.subtypes.map(subtype => ({
+    label: subtype.name,
+    value: subtype.code,
+    file_type_id: subtype.file_type_id
   }))
 })
 
@@ -173,28 +172,37 @@ const allSubtypes = computed(() => {
 const filteredSubtypeOptions = computed(() => {
   if (!selectedType.value) return allSubtypes.value
 
-  return props.files
-    .filter(file => file.file_type_context === selectedType.value)
-    .map(file => file.subtype)
-    .filter((subtype, index, self) => self.indexOf(subtype) === index)
-    .map(subtype => ({
-      label: subtype,
-      value: subtype
-    }))
+  // Find the selected type to get its ID
+  const selectedTypeObj = props.types.find(type => type.code === selectedType.value)
+  if (!selectedTypeObj) return []
+
+  // Filter subtypes that belong to the selected type
+  const filtered = allSubtypes.value.filter(subtype => subtype.file_type_id === selectedTypeObj.id)
+  
+  // If no subtypes found for the selected type, return empty array
+  return filtered.length > 0 ? filtered : []
 })
 
 // Filtered files based on all criteria
 const filteredFiles = computed(() => {
   let filtered = props.files
 
-  // Filter by type
+  // Filter by type - compare with file_type_context
   if (selectedType.value) {
-    filtered = filtered.filter(file => file.file_type_context === selectedType.value)
+    // Get the display name for the selected type code
+    const selectedTypeObj = props.types.find(type => type.code === selectedType.value)
+    if (selectedTypeObj) {
+      const typeDisplayName = getTypeDisplayName(selectedTypeObj.code)
+      filtered = filtered.filter(file => file.file_type_context === typeDisplayName)
+    }
   }
 
-  // Filter by subtype
+  // Filter by subtype - compare with subtype name
   if (selectedSubtype.value) {
-    filtered = filtered.filter(file => file.subtype === selectedSubtype.value)
+    const selectedSubtypeObj = props.subtypes.find(subtype => subtype.code === selectedSubtype.value)
+    if (selectedSubtypeObj) {
+      filtered = filtered.filter(file => file.subtype === selectedSubtypeObj.name)
+    }
   }
 
   // Filter by search text
@@ -263,6 +271,20 @@ const triggerFilter = () => {
 watch(selectedType, () => {
   selectedSubtype.value = null
 })
+
+// Helper function to get display name for type code
+const getTypeDisplayName = (typeCode) => {
+  switch (typeCode) {
+    case 'provincial':
+      return 'Provincial'
+    case 'institutional':
+      return 'Institucional'
+    case 'user':
+      return 'Usuario'
+    default:
+      return typeCode
+  }
+}
 
 // Get color for file type context
 const getFileTypeColor = (type) => {

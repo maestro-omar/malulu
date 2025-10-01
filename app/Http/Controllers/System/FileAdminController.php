@@ -8,6 +8,8 @@ use App\Services\CourseService;
 use App\Services\UserService;
 use App\Models\Entities\User;
 use App\Models\Entities\File;
+use App\Models\Catalogs\FileType;
+use App\Models\Catalogs\FileSubtype;
 use Inertia\Inertia;
 
 use Diglactic\Breadcrumbs\Breadcrumbs;
@@ -28,7 +30,7 @@ class FileAdminController extends SystemBaseController
     public function create(Request $request)
     {
         $loggedUser = auth()->user();
-        
+
         return Inertia::render('Files/Create', [
             'user' => $loggedUser,
             'activeSchool' => $loggedUser->activeSchool,
@@ -91,6 +93,8 @@ class FileAdminController extends SystemBaseController
 
         return Inertia::render('Files/Index', [
             'files' => $files,
+            'types' => FileType::all(),
+            'subtypes' => FileSubtype::all(),
             'breadcrumbs' => Breadcrumbs::generate('files.index'),
         ]);
     }

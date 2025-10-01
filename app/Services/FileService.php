@@ -208,7 +208,8 @@ class FileService
             'created_at' => $file->created_at->format('d/m/Y H:i'),
             'created_by' => $file->user->firstname . ' ' . $file->user->lastname,
             'replaces' =>  $replaces->pluck('nice_name')->join(', '),
-            'url' =>  $file->url
+            'url' =>  $file->url,
+            'is_external' => $file->is_external
         ];
         return $data;
     }
@@ -223,7 +224,8 @@ class FileService
             'created_at' => $file->created_at->format('d/m/Y'),
             'deleted_at' => $file->deleted_at ? $file->deleted_at->format('d/m/Y') : '',
             'created_by' => $file->user->firstname . ' ' . $file->user->lastname,
-            'url' =>  $file->url
+            'url' =>  $file->url,
+            'is_external' => $file->is_external
         ];
         return $data;
     }
@@ -287,7 +289,7 @@ class FileService
         })
             ->where('fileable_type', 'school')
             ->whereIn('fileable_id', $schoolIds)
-            ->with(['subtype', 'subtype.fileType', 'user'])
+            ->with(['subtype', 'subtype.fileType', 'user', 'fileable'])
             ->get();
 
         // Get files related to the user directly (USER type)
@@ -336,7 +338,9 @@ class FileService
             case FileType::PROVINCIAL:
                 return route('provinces.edit', $file->fileable_id);
             case FileType::INSTITUTIONAL:
-                return route('school.file.edit', ['school' => $file->fileable_id, 'file' => $file->id]);
+                // Use the loaded school relationship
+                $school = $file->fileable;
+                return $school ? route('school.file.edit', ['school' => $school->slug, 'file' => $file->id]) : null;
             case FileType::USER:
                 return route('users.file.edit', ['user' => $file->fileable_id, 'file' => $file->id]);
             default:
@@ -350,7 +354,9 @@ class FileService
             case FileType::PROVINCIAL:
                 return route('provinces.edit', $file->fileable_id);
             case FileType::INSTITUTIONAL:
-                return route('school.file.replace', ['school' => $file->fileable_id, 'file' => $file->id]);
+                // Use the loaded school relationship
+                $school = $file->fileable;
+                return $school ? route('school.file.replace', ['school' => $school->slug, 'file' => $file->id]) : null;
             case FileType::USER:
                 return route('users.file.replace', ['user' => $file->fileable_id, 'file' => $file->id]);
             default:
@@ -364,7 +370,9 @@ class FileService
             case FileType::PROVINCIAL:
                 return route('provinces.show', $file->fileable_id);
             case FileType::INSTITUTIONAL:
-                return route('school.file.show', ['school' => $file->fileable_id, 'file' => $file->id]);
+                // Use the loaded school relationship
+                $school = $file->fileable;
+                return $school ? route('school.file.show', ['school' => $school->slug, 'file' => $file->id]) : null;
             case FileType::USER:
                 return route('users.file.show', ['user' => $file->fileable_id, 'file' => $file->id]);
             default:
