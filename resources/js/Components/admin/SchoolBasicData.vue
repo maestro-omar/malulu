@@ -140,7 +140,7 @@
         <div v-if="school.relevant_information" class="row q-mt-md">
           <q-card class="col-12 q-pa-md q-mb-lg">
             <div class="text-h4 q-mb-md">Información importante</div>
-            <DataFieldShow label="" :value="school.relevant_information" type="text" />
+            <div class="text-h5" v-html="school.relevant_information"></div>
           </q-card>
         </div>
       </div>

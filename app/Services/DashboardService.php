@@ -151,7 +151,10 @@ Carbon @1646179200
         $dataToPanel['degree_title'] = $roleRel->workerRelationship->degree_title;
         $dataToPanel['subject_name'] = $roleRel->workerRelationship->classSubject ? $roleRel->workerRelationship->classSubject->name : null;
         $dataToPanel['school_level'] = SchoolLevel::getNameById($roleRel->workerRelationship->classSubject ? $roleRel->workerRelationship->classSubject->school_level_id : $roleRel->school_level_id);
-        $dataToPanel['courses'] = $this->courseService->parseTeacherCourses($roleRel->teacherCourses);
+        $activeCoursesRels = $roleRel->teacherCourses->filter(function ($teacherCourseRel) {
+            return $teacherCourseRel->course->active;
+        });
+        $dataToPanel['courses'] = $this->courseService->parseTeacherCourses($activeCoursesRels);
         /* dd($dataToPanel);
 
 "job_status" => "Permanente"

@@ -670,8 +670,8 @@ class CourseService
         static $teachers = null;
         if (empty($teachers))
             $teachers = $course->courseTeachers()->get();
-        if (empty($teachers)) return null;
-        $teacher = $teachers->random();
+        if (empty($teachers) || $teachers->count() === 0) return null;
+        $teacher = $teachers->count() > 1 ? $teachers->random() : $teachers->first();
         $teacher = $this->parseRelatedTeacher($teacher);
         // return ['name' => $teacher['name'], 'subject' => $teacher['subject']];
         return $teacher;
