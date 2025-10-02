@@ -5,8 +5,10 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
+import { usePage } from '@inertiajs/vue3';
 
 const $q = useQuasar();
+const $page = usePage();
 
 const props = defineProps({
   flash: {
@@ -54,6 +56,13 @@ watch(() => props.flash, (newFlash) => {
 
   if (newFlash?.error && showError.value) {
     showNotification(newFlash.error, 'negative');
+  }
+}, { immediate: true, deep: true });
+
+// Watch for page errors (validation errors from controller exceptions)
+watch(() => $page.props.errors, (newErrors) => {
+  if (newErrors?.error && showError.value) {
+    showNotification(newErrors.error, 'negative');
   }
 }, { immediate: true, deep: true });
 
