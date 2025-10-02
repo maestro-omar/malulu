@@ -8,6 +8,7 @@ use App\Http\Controllers\System\AcademicYearAdminController;
 use App\Http\Controllers\System\FileTypeAdminController;
 use App\Http\Controllers\System\FileSubtypeAdminController;
 use App\Http\Controllers\System\ProvinceAdminController;
+use App\Http\Controllers\System\DiagnosisAdminController;
 use Illuminate\Support\Facades\Route;
 // use Inertia\Inertia;
 
@@ -78,6 +79,20 @@ Route::prefix(__('routes.system'))->group(function () {
             Route::get(__('routes.academic-year') . '/{academicYear}/' . __('routes.edit'), [AcademicYearAdminController::class, 'edit'])->name('academic-years.edit');
             Route::put(__('routes.academic-year') . '/{academicYear}', [AcademicYearAdminController::class, 'update'])->name('academic-years.update');
             Route::delete(__('routes.academic-year') . '/{academicYear}', [AcademicYearAdminController::class, 'destroy'])->name('academic-years.destroy');
+        });
+
+        // Diagnoses Routes
+        Route::middleware('permission:superadmin')->group(function () {
+            Route::get(__('routes.diagnoses') . '/' . __('routes.trashed'), [DiagnosisAdminController::class, 'trashed'])->name('diagnoses.trashed');
+            Route::post(__('routes.diagnoses') . '/{diagnosis}/' . __('routes.restore'), [DiagnosisAdminController::class, 'restore'])->name('diagnoses.restore');
+            Route::delete(__('routes.diagnoses') . '/{diagnosis}/' . __('routes.force-delete'), [DiagnosisAdminController::class, 'forceDelete'])->name('diagnoses.force-delete');
+            Route::get(__('routes.diagnoses'), [DiagnosisAdminController::class, 'index'])->name('diagnoses.index');
+            Route::get(__('routes.diagnoses') . '/' . __('routes.create'), [DiagnosisAdminController::class, 'create'])->name('diagnoses.create');
+            Route::post(__('routes.diagnoses'), [DiagnosisAdminController::class, 'store'])->name('diagnoses.store');
+            Route::get(__('routes.diagnoses') . '/{diagnosis}', [DiagnosisAdminController::class, 'show'])->name('diagnoses.show');
+            Route::get(__('routes.diagnoses') . '/{diagnosis}/' . __('routes.edit'), [DiagnosisAdminController::class, 'edit'])->name('diagnoses.edit');
+            Route::put(__('routes.diagnoses') . '/{diagnosis}', [DiagnosisAdminController::class, 'update'])->name('diagnoses.update');
+            Route::delete(__('routes.diagnoses') . '/{diagnosis}', [DiagnosisAdminController::class, 'destroy'])->name('diagnoses.destroy');
         });
 
         // File Types Routes

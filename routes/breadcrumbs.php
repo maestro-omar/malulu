@@ -173,6 +173,27 @@ Breadcrumbs::for('provinces.edit', function (Trail $trail, $province) {
 });
 
 
+// 🏥 Diagnósticos
+Breadcrumbs::for('diagnoses.index', function (Trail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Diagnósticos', route('diagnoses.index'), ['icon' => 'medical_services']);
+});
+
+Breadcrumbs::for('diagnoses.create', function (Trail $trail) {
+    $trail->parent('diagnoses.index');
+    $trail->push('Crear diagnóstico');
+});
+
+Breadcrumbs::for('diagnoses.show', function (Trail $trail, $diagnosis) {
+    $trail->parent('diagnoses.index');
+    $trail->push($diagnosis->name, route('diagnoses.show', $diagnosis->id));
+});
+
+Breadcrumbs::for('diagnoses.edit', function (Trail $trail, $diagnosis) {
+    $trail->parent('diagnoses.show', $diagnosis);
+    $trail->push('Editar');
+});
+
 // 📁 Tipos de archivo
 Breadcrumbs::for('file-types.index', function (Trail $trail) {
     $trail->parent('dashboard');

@@ -236,6 +236,12 @@ class HandleInertiaRequests extends Middleware
             'route' => 'file-subtypes.index',
             'icon' => 'document-text',
         ];
+
+        $items[] = [
+            'name' => 'Diagnósticos',
+            'route' => 'diagnoses.index',
+            'icon' => 'medical_services',
+        ];
         // $items[] = [
         //     'name' => 'Materias',
         //     'route' => 'class-subject.index',

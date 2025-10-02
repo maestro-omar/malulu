@@ -16,7 +16,9 @@ return new class extends Migration
             $table->morphs('fileable'); // For polymorphic relationship with schools, courses, teachers, students, users
             $table->string('nice_name');
             $table->text('description')->nullable();
-            
+            $table->date('valid_from')->nullable(); // fecha de inicio de validez
+            $table->date('valid_until')->nullable(); // fecha de expiración
+
             // Uploaded file fields
             $table->string('original_name')->nullable();
             $table->string('filename')->nullable();
@@ -27,7 +29,8 @@ return new class extends Migration
             
             // External file field (link)
             $table->string('external_url')->nullable();
-
+            
+            
             $table->boolean('active')->default(true);
             $table->timestamps();
             $table->softDeletes();

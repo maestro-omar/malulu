@@ -22,6 +22,7 @@ class FileSubtype extends Model
         'new_overwrites',
         'hidden_for_familiy',
         'upload_by_familiy',
+        'requires_expiration',
         'order',
         'active'
     ];
@@ -36,6 +37,7 @@ class FileSubtype extends Model
         'new_overwrites' => 'boolean',
         'hidden_for_familiy' => 'boolean',
         'upload_by_familiy' => 'boolean',
+        'requires_expiration' => 'boolean',
         'order' => 'integer'
     ];
 

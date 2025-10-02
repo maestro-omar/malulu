@@ -40,6 +40,7 @@ return [
     'file-types' => 'tipos-archivo',
     'file-subtypes' => 'subtipos-archivo',
     'provinces' => 'provincias',
+    'diagnoses' => 'diagnosticos',
     'replace' => 'reemplazar',
 
     'search' => 'buscar',

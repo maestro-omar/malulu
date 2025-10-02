@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
 
             FileTypeSeeder::class,
             FileSubtypeSeeder::class,
+            DiagnosesSeeder::class,
 
             // Locations
             CountrySeeder::class,
@@ -70,7 +71,7 @@ class DatabaseSeeder extends Seeder
             InitialUsersSeeder::class,
 
             EventsSeeder::class,
-            
+
             ProvincialExternalFilesSeeder::class,
         ]);
 

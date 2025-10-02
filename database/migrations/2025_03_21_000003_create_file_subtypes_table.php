@@ -17,6 +17,7 @@ return new class extends Migration
             $table->boolean('new_overwrites')->default(false);
             $table->boolean('hidden_for_familiy')->default(false);
             $table->boolean('upload_by_familiy')->default(false);
+            $table->boolean('requires_expiration')->default(false);
             $table->unsignedInteger('order')->default(0);
             $table->timestamps();
         });

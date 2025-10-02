@@ -54,13 +54,20 @@ class File extends Model
         'active' => 'boolean'
     ];
 
+    protected $dates = [
+        'valid_from',
+        'valid_until',
+    ];
+
+
     /**
      * The accessors to append to the model's array form.
      *
      * @var array
      */
     protected $appends = [
-        'is_external'
+        'is_external',
+        'is_currently_valid'
     ];
 
     /**
@@ -177,6 +184,16 @@ class File extends Model
     {
         return !is_null($this->replaced_by_id);
     }
+
+    
+    public function getIsCurrentlyValidAttribute(): bool
+    {
+        if (!$this->subtype->requires_expiration) return true;
+        $today = now()->toDateString();
+        return (!$this->valid_from || $this->valid_from <= $today)
+            && (!$this->valid_until || $this->valid_until >= $today);
+    }
+    
 
     /**
      * Check if this file has replaced another file.

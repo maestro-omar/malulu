@@ -1084,7 +1084,7 @@
   }
 
   &__birthdate-name {
-    @include mixins.fz(0.8);
+    @include mixins.fz(1);
     font-weight: 500;
     flex: 1;
     overflow: hidden;

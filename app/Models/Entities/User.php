@@ -18,9 +18,11 @@ use App\Traits\FilterConstants;
 use App\Models\Catalogs\FileType;
 use App\Models\Catalogs\Province;
 use App\Models\Catalogs\Country;
+use App\Models\Catalogs\Diagnosis;
 use App\Models\Relations\RoleRelationship;
 use App\Models\Relations\GuardianRelationship;
 use App\Models\Relations\StudentRelationship;
+use App\Models\Relations\UserDiagnosis;
 use App\Models\Relations\Attendance;
 use App\Notifications\CustomResetPassword;
 use App\Models\Entities\Builders\User as Builder;
@@ -179,6 +181,14 @@ class User extends Authenticatable
     public function roleRelationshipsForSchool($schoolId)
     {
         return $this->roleRelationships()->forSchool($schoolId);
+    }
+
+    public function diagnoses()
+    {
+        return $this->belongsToMany(Diagnosis::class, 'user_diagnosis')
+            ->using(UserDiagnosis::class)
+            ->withPivot(['diagnosed_at', 'notes', 'deleted_at'])
+            ->withTimestamps();
     }
 
     /**
