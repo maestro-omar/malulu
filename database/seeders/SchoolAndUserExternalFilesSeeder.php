@@ -90,8 +90,7 @@ class SchoolAndUserExternalFilesSeeder extends Seeder
         foreach ($schoolExternalFiles as $fileData) {
             // Check if file already exists
             $existingFile = File::where('external_url', $fileData['external_url'])
-                ->where('fileable_type', 'school')
-                ->where('fileable_id', $school->id)
+                ->where('school_id', $school->id)
                 ->first();
 
             if ($existingFile) {
@@ -104,8 +103,7 @@ class SchoolAndUserExternalFilesSeeder extends Seeder
                 'subtype_id' => $fileData['subtype_id'],
                 'user_id' => $adminUser->id,
                 'replaced_by_id' => null,
-                'fileable_type' => 'school',
-                'fileable_id' => $school->id,
+                'school_id' => $school->id,
                 'nice_name' => $fileData['nice_name'],
                 'description' => $fileData['description'],
                 'original_name' => null,
@@ -242,8 +240,7 @@ class SchoolAndUserExternalFilesSeeder extends Seeder
 
                 // Check if file already exists
                 $existingFile = File::where('external_url', $externalUrl)
-                    ->where('fileable_type', 'user')
-                    ->where('fileable_id', $user->id)
+                    ->where('target_user_id', $user->id)
                     ->first();
 
                 if ($existingFile) {
@@ -255,8 +252,7 @@ class SchoolAndUserExternalFilesSeeder extends Seeder
                     'subtype_id' => $subtype->id,
                     'user_id' => $adminUser->id,
                     'replaced_by_id' => null,
-                    'fileable_type' => 'user',
-                    'fileable_id' => $user->id,
+                    'target_user_id' => $user->id,
                     'nice_name' => $niceName,
                     'description' => $description,
                     'original_name' => null,

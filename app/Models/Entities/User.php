@@ -307,8 +307,7 @@ class User extends Authenticatable
 
     public function files()
     {
-        return $this->hasMany(File::class, 'fileable_id')
-            ->whereIn('fileable_type', FileType::relateWithUser())->with(['subtype', 'subtype.fileType']);
+        return $this->hasMany(File::class, 'target_user_id')->with(['subtype', 'subtype.fileType']);
     }
 
     public function assignRoleForSchool(int|Collection|Role $role, ?int $schoolId)
