@@ -81,6 +81,12 @@
                             </div>
 
                             <div class="mb-4">
+                                <CheckboxWithLabel v-model="form.requires_expiration">
+                                    Tiene fecha de expiración (valido hasta...)
+                                </CheckboxWithLabel>
+                            </div>
+
+                            <div class="mb-4">
                                 <InputLabel for="order" value="Orden" />
                                 <TextInput
                                     id="order"
@@ -127,6 +133,7 @@ const form = useForm({
     name: "",
     description: "",
     new_overwrites: false,
+    requires_expiration: false,
     hidden_for_familiy: false,
     upload_by_familiy: false,
     order: 0

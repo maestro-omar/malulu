@@ -19,6 +19,7 @@ class FileSubtypeService
                 'new_overwrites' => $fileSubtype->new_overwrites,
                 'hidden_for_familiy' => $fileSubtype->hidden_for_familiy,
                 'upload_by_familiy' => $fileSubtype->upload_by_familiy,
+                'requires_expiration' => $fileSubtype->requires_expiration,
                 'order' => $fileSubtype->order,
                 'can_delete' => !$fileSubtype->files()->exists()
             ];

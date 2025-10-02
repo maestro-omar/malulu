@@ -48,6 +48,7 @@ class FileSubtypeAdminController extends SystemBaseController
                 'new_overwrites' => 'boolean',
                 'hidden_for_familiy' => 'boolean',
                 'upload_by_familiy' => 'boolean',
+                'requires_expiration' => 'boolean',
                 'order' => 'integer'
             ]);
 
@@ -81,6 +82,7 @@ class FileSubtypeAdminController extends SystemBaseController
                 'new_overwrites' => 'boolean',
                 'hidden_for_familiy' => 'boolean',
                 'upload_by_familiy' => 'boolean',
+                'requires_expiration' => 'boolean',
                 'order' => 'integer'
             ]);
 

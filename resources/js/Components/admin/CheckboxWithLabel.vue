@@ -4,7 +4,7 @@
       :id="id"
       :value="value"
       :name="name"
-      :checked="modelValue"
+      :checked="modelValue ?? false"
       @update:checked="$emit('update:modelValue', $event)"
       v-bind="$attrs"
     />
@@ -32,7 +32,7 @@ defineProps({
   },
   modelValue: {
     type: [Boolean, Array],
-    required: true
+    default: false
   }
 });
 

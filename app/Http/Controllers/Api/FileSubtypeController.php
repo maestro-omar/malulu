@@ -35,6 +35,7 @@ class FileSubtypeController extends Controller
                 'new_overwrites' => 'boolean',
                 'hidden_for_familiy' => 'boolean',
                 'upload_by_familiy' => 'boolean',
+                'requires_expiration' => 'boolean',
                 'order' => 'integer'
             ]);
 
@@ -67,13 +68,14 @@ class FileSubtypeController extends Controller
                 'new_overwrites' => 'boolean',
                 'hidden_for_familiy' => 'boolean',
                 'upload_by_familiy' => 'boolean',
+                'requires_expiration' => 'boolean',
                 'order' => 'integer'
             ]);
 
             $fileSubtype = $this->fileSubtypeService->updateFileSubtype($fileSubtype, $validated);
 
             return response()->json([
-                'message' => 'File subtype updated successfully',
+                'message' => 'Se acutalizó el subtipo de archivo',
                 'data' => $fileSubtype
             ]);
         } catch (ValidationException $e) {
