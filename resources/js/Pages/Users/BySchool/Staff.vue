@@ -84,6 +84,17 @@
             </q-td>
           </template>
 
+          <!-- Custom cell for critical info -->
+          <template #body-cell-critical_info="props">
+            <q-td :props="props">
+              <q-icon v-if="getCombinedCriticalInfo(props.row)" name="warning" color="orange" size="sm" class="cursor-pointer">
+                <q-tooltip class="bg-orange text-white" anchor="top middle" self="bottom middle">
+                  <div v-html="getCombinedCriticalInfo(props.row).replace(/\n/g, '<br>')"></div>
+                </q-tooltip>
+              </q-icon>
+            </q-td>
+          </template>
+
           <!-- Custom cell for firstname with link -->
           <template #body-cell-firstname="props">
             <q-td :props="props">
@@ -214,7 +225,7 @@ import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
 import { route_school_staff } from '@/Utils/routes';
-import { formatNumber } from '@/Utils/strings';
+import { formatNumber, getCombinedCriticalInfo } from '@/Utils/strings';
 import noImage from '@images/no-image-person.png';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { watch, ref, onMounted, computed } from 'vue';
@@ -524,6 +535,7 @@ const toggleCourseExpansion = (rowIndex) => {
   }
 };
 
+
 // Filter methods
 const handleShiftSelect = (shiftId) => {
   selectedShift.value = shiftId;
@@ -598,6 +610,14 @@ const columns = [
     align: 'center',
     sortable: false,
     style: 'width: 80px'
+  },
+  {
+    name: 'critical_info',
+    label: '',
+    field: 'critical_info',
+    align: 'center',
+    sortable: false,
+    style: 'width: 50px'
   },
   {
     name: 'firstname',

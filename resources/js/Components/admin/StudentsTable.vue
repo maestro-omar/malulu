@@ -31,9 +31,9 @@
       <!-- Custom cell for critical info -->
       <template #body-cell-critical_info="props">
         <q-td :props="props">
-          <q-icon v-if="props.row.critical_info" name="warning" color="orange" size="sm" class="cursor-pointer">
+          <q-icon v-if="getCombinedCriticalInfo(props.row)" name="warning" color="orange" size="sm" class="cursor-pointer">
             <q-tooltip v-model="toggle" class="bg-orange text-white" anchor="top middle" self="bottom middle">
-              <div v-html="props.row.critical_info.replace(/\n/g, '<br>')"></div>
+              <div v-html="getCombinedCriticalInfo(props.row).replace(/\n/g, '<br>')"></div>
             </q-tooltip>
           </q-icon>
         </q-td>
@@ -143,7 +143,7 @@ import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
 import GenderBadge from '@/Components/Badges/GenderBadge.vue';
 import noImage from "@images/no-image-person.png";
 import { route_school_student } from '@/Utils/routes';
-import { formatNumber } from '@/Utils/strings';
+import { formatNumber, getCombinedCriticalInfo } from '@/Utils/strings';
 import { hasPermission, isAdmin, isCurrentUserAdmin } from '@/Utils/permissions';
 
 // Methods for attendance calculations
@@ -164,6 +164,7 @@ const getAttendancePercentageClass = (student) => {
   if (percentage >= 70) return 'text-yellow-6';
   return 'text-red-6';
 };
+
 
 
 

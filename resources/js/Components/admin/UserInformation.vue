@@ -42,12 +42,12 @@
       <!-- Basic Information -->
       <div class="col-12 col-md-8">
         <!-- Critical Information -->
-        <div v-if="user.critical_info" class="col-12">
+        <div v-if="getCombinedCriticalInfo(user)" class="col-12">
           <q-banner class="bg-orange q-pa-md q-mb-md" rounded>
             <template v-slot:avatar>
               <q-icon name="warning" color="white" size="sm" />
             </template>
-            <div class="text-weight-bold text-h4" v-html="user.critical_info.replace(/\n/g, '<br>')"></div>
+            <div class="text-weight-bold text-h4" v-html="getCombinedCriticalInfo(user).replace(/\n/g, '<br>')"></div>
           </q-banner>
         </div>
         <div class="col-12">
@@ -113,6 +113,7 @@ import EmailField from "@/Components/admin/EmailField.vue";
 import PhoneField from "@/Components/admin/PhoneField.vue";
 import StudentGuardian from '@/Components/admin/StudentGuardian.vue';
 import { formatDateShort, calculateAge } from "@/Utils/date";
+import { getCombinedCriticalInfo } from '@/Utils/strings';
 
 const props = defineProps({
   title: { type: String, default: 'Datos personales' },

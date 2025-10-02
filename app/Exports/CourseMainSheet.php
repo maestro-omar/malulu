@@ -236,6 +236,10 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
       if ($student['locality']) {
         $address .= ($address ?  ', ' : '') . $student['locality'];
       }
+      $criticalInfo = $student['critical_info'] ?? '';
+      if ($student['diagnoses_data'] ?? ''){
+        $criticalInfo .= ($criticalInfo ? ' - Diagnósticos: ' : '') . $student['diagnoses_data'];
+      }
       // if ($student['province']) {
       //   $address .= ', ' . $student['province'];
       // }
@@ -250,7 +254,7 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
         $student['nationality'],
         $address,
         $student['phone'] ?? '',
-        $student['critical_info'] ?? '',
+        $criticalInfo,
       ];
       $studentNumber++;
     }

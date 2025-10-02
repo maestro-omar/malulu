@@ -109,6 +109,7 @@ class UserService
             'picture',
             'province',
             'critical_info',
+            'diagnoses_data',
             'created_at',
             'updated_at'
         ];

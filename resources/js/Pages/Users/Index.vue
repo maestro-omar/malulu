@@ -47,9 +47,9 @@
         <!-- Custom cell for critical info -->
         <template #body-cell-critical_info="props">
           <q-td :props="props">
-            <q-icon v-if="props.row.critical_info" name="warning" color="orange" size="sm" class="cursor-pointer">
+            <q-icon v-if="getCombinedCriticalInfo(props.row)" name="warning" color="orange" size="sm" class="cursor-pointer">
               <q-tooltip class="bg-orange text-white" anchor="top middle" self="bottom middle">
-                <div v-html="props.row.critical_info.replace(/\n/g, '<br>')"></div>
+                <div v-html="getCombinedCriticalInfo(props.row).replace(/\n/g, '<br>')"></div>
               </q-tooltip>
             </q-icon>
           </q-td>
@@ -133,6 +133,7 @@ import RoleBadge from '@/Components/Badges/RoleBadge.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
+import { getCombinedCriticalInfo } from '@/Utils/strings';
 import noImage from '@images/no-image-person.png';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { useQuasar } from 'quasar';
@@ -371,6 +372,7 @@ const getUniqueRoles = (roles) => {
     index === self.findIndex((r) => r.id === role.id)
   );
 };
+
 
 // Handle pagination and sorting requests
 function onRequest({ pagination: newPagination }) {

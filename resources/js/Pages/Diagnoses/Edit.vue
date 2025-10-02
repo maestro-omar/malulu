@@ -13,13 +13,6 @@
               <q-card-section>
                 <div class="admin-form__card-content">
                   <div class="admin-form__field">
-                    <InputLabel for="code" value="Código" />
-                    <TextInput type="text" id="code" v-model="form.code"
-                      class="admin-form__input" />
-                    <InputError class="admin-form__error" :message="form.errors.code" />
-                  </div>
-
-                  <div class="admin-form__field">
                     <InputLabel for="name" value="Nombre" />
                     <TextInput type="text" id="name" v-model="form.name"
                       class="admin-form__input" required />
@@ -42,6 +35,13 @@
                       required
                     />
                     <InputError class="admin-form__error" :message="form.errors.category" />
+                  </div>
+
+                  <div class="admin-form__field">
+                    <InputLabel for="code" value="Código" />
+                    <TextInput type="text" id="code" v-model="form.code"
+                      class="admin-form__input" />
+                    <InputError class="admin-form__error" :message="form.errors.code" />
                   </div>
 
                   <div class="admin-form__field">

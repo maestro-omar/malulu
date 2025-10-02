@@ -404,6 +404,7 @@ class CourseService
             "nationality" => $user->nationality,
             "picture" => $user->picture,
             "critical_info" => $user->critical_info,
+            "diagnoses_data" => $user->diagnoses_data,
             "rel_start_date" => $studentRel->start_date ? $studentRel->start_date->format('Y-m-d') : null,
             "rel_end_date" => $studentRel->end_date ? $studentRel->end_date->format('Y-m-d') : null,
             "rel_end_reason" => $studentRel->end_reason_id ? $studentRel->endReason->name : null,

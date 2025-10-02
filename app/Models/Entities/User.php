@@ -77,7 +77,7 @@ class User extends Authenticatable
         'deleted_at' => 'datetime',
         'birthdate' => 'date',
     ];
-    protected $appends = ['short_name'];
+    protected $appends = ['short_name', 'diagnoses_data'];
 
     // Gender type constants
     const GENDER_MALE = 'masc';
@@ -508,6 +508,11 @@ class User extends Authenticatable
     public function attendances()
     {
         return $this->hasMany(Attendance::class, 'user_id');
+    }
+
+    public function getDiagnosesDataAttribute(){
+        $diagnoses = $this->diagnoses()->pluck('name')->join(', ');
+        return $diagnoses;
     }
 
     public function getShortNameAttribute()

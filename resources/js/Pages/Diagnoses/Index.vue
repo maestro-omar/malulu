@@ -33,7 +33,7 @@
         <!-- Custom cell for users count -->
         <template #body-cell-users_count="props">
           <q-td :props="props">
-            <q-badge color="info" :label="props.row.users_count || 0" />
+            <q-badge color="purple" :label="props.row.users_count || 0" />
           </q-td>
         </template>
 
@@ -116,7 +116,7 @@ const columns = [
   },
   {
     name: 'users_count',
-    label: 'Usuarios',
+    label: 'Cantidad',
     field: 'users_count',
     align: 'center',
     sortable: true,

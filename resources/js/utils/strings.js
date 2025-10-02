@@ -70,3 +70,23 @@ export function toTitleCase(str) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
   });
 }
+
+/**
+ * Combine critical_info and diagnoses_data into a single string
+ * @param {Object} user - User object with critical_info and diagnoses_data properties
+ * @returns {string|null} Combined string or null if neither field has content
+ */
+export function getCombinedCriticalInfo(user) {
+  const criticalInfo = user.critical_info || '';
+  const diagnosesData = user.diagnoses_data || '';
+  
+  const parts = [];
+  if (criticalInfo.trim()) {
+    parts.push(criticalInfo.trim());
+  }
+  if (diagnosesData.trim()) {
+    parts.push(diagnosesData.trim());
+  }
+  
+  return parts.length > 0 ? parts.join('\n\n') : null;
+}

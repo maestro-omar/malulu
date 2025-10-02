@@ -61,7 +61,7 @@ class Diagnosis extends Model
             self::CATEGORY_DISABILITY_DEVELOPMENT => 'Discapacidad en el desarrollo',
             self::CATEGORY_CHRONIC => 'Condiciones crónicas',
             self::CATEGORY_ALERGY => 'Alergias',
-            self::CATEGORY_SYNDROME => 'Síndromes frecuentes en contexto escolar',
+            self::CATEGORY_SYNDROME => 'Síndromes',
             self::CATEGORY_OTHER => 'Otro',
         ];
     }
