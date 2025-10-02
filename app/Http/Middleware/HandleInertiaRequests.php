@@ -219,11 +219,6 @@ class HandleInertiaRequests extends Middleware
             'route' => 'provinces.index',
             'icon' => 'location',
         ];
-        $items[] = [
-            'name' => 'Provincias',
-            'route' => 'provinces.index',
-            'icon' => 'location',
-        ];
 
         $items[] = [
             'name' => 'Tipos de Archivo',

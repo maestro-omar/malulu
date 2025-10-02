@@ -20,12 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register morph map for polymorphic relationships
-        Relation::enforceMorphMap([
-            'province' => 'App\Models\Catalogs\Province',
-            'school' => 'App\Models\Entities\School',
-            'course' => 'App\Models\Entities\Course',
-            'user' => 'App\Models\Entities\User',
-        ]);
+        // No morph map needed - using direct foreign key relationships. If a morph map is added here, may break the permissions handling by Spatie.
     }
 }

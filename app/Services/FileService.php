@@ -61,8 +61,10 @@ class FileService
                 'nullable',
                 Rule::exists('file', 'id')
             ],
-            'fileable_type' => ['nullable', 'string'],
-            'fileable_id' => ['nullable', 'integer'],
+            'province_id' => ['nullable', 'integer'],
+            'school_id' => ['nullable', 'integer'],
+            'course_id' => ['nullable', 'integer'],
+            'target_user_id' => ['nullable', 'integer'],
             'nice_name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'metadata' => ['nullable', 'array'],
@@ -138,8 +140,22 @@ class FileService
         $fileData['subtype_id'] = $fileSubTypeId;
         $fileData['user_id'] = $createdByUserId;
         $fileData['replaced_by_id'] = null;
-        $fileData['fileable_type'] = $relatedWith;
-        $fileData['fileable_id'] = $relatedWithId;
+        
+        // Set the appropriate foreign key based on the related type
+        switch ($relatedWith) {
+            case 'province':
+                $fileData['province_id'] = $relatedWithId;
+                break;
+            case 'school':
+                $fileData['school_id'] = $relatedWithId;
+                break;
+            case 'course':
+                $fileData['course_id'] = $relatedWithId;
+                break;
+            case 'user':
+                $fileData['target_user_id'] = $relatedWithId;
+                break;
+        }
         $fileData['nice_name'] = $niceName;
         $fileData['original_name'] = $localUploadedFile->getClientOriginalName();
         $fileData['filename'] = $finalFileName;
@@ -247,7 +263,7 @@ class FileService
 
     public function getCourseFiles(Course $course, User $loggedUser)
     {
-        $files = File::where('fileable_type', 'course')->where('fileable_id', $course->id)->with(['subtype', 'subtype.fileType'])->get();
+        $files = File::where('course_id', $course->id)->with(['subtype', 'subtype.fileType'])->get();
         $files = $this->checkAndFormatEach($files, $loggedUser);
         return $files ?: null;
     }
@@ -255,7 +271,7 @@ class FileService
     public function getFileDataForUser(File $file, User $loggedUser, User $user)
     {
         $this->checkFileVisibility($file, $loggedUser, true);
-        if ($file->fileable_id != $user->id || !in_array($file->fileable_type, FileType::userRelatedCodes())) {
+        if ($file->target_user_id != $user->id) {
             throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException('Este archivo no pertenece al usuario indicado');
         }
         $file->load('subtype', 'subtype.fileType', 'user');
@@ -277,9 +293,8 @@ class FileService
         $provincialFiles = File::whereHas('subtype.fileType', function ($query) {
             $query->where('code', FileType::PROVINCIAL);
         })
-            ->where('fileable_type', 'province')
-            ->where('fileable_id', $loggedUser->province_id)
-            ->with(['subtype', 'subtype.fileType', 'user'])
+            ->where('province_id', $loggedUser->province_id)
+            ->with(['subtype', 'subtype.fileType', 'user', 'province'])
             ->get();
 
 
@@ -287,18 +302,16 @@ class FileService
         $institutionalFiles = File::whereHas('subtype.fileType', function ($query) {
             $query->where('code', FileType::INSTITUTIONAL);
         })
-            ->where('fileable_type', 'school')
-            ->whereIn('fileable_id', $schoolIds)
-            ->with(['subtype', 'subtype.fileType', 'user', 'fileable'])
+            ->whereIn('school_id', $schoolIds)
+            ->with(['subtype', 'subtype.fileType', 'user', 'school'])
             ->get();
 
         // Get files related to the user directly (USER type)
         $userFiles = File::whereHas('subtype.fileType', function ($query) {
             $query->where('code', FileType::USER);
         })
-            ->where('fileable_type', 'user')
-            ->where('fileable_id', $loggedUser->id)
-            ->with(['subtype', 'subtype.fileType', 'user'])
+            ->where('target_user_id', $loggedUser->id)
+            ->with(['subtype', 'subtype.fileType', 'user', 'targetUser'])
             ->get();
 
         // Combine all files
@@ -336,13 +349,13 @@ class FileService
     {
         switch ($file->subtype->fileType->code) {
             case FileType::PROVINCIAL:
-                return route('provinces.edit', $file->fileable_id);
+                return route('provinces.edit', $file->province_id);
             case FileType::INSTITUTIONAL:
                 // Use the loaded school relationship
-                $school = $file->fileable;
+                $school = $file->school;
                 return $school ? route('school.file.edit', ['school' => $school->slug, 'file' => $file->id]) : null;
             case FileType::USER:
-                return route('users.file.edit', ['user' => $file->fileable_id, 'file' => $file->id]);
+                return route('users.file.edit', ['user' => $file->target_user_id, 'file' => $file->id]);
             default:
                 return null;
         }
@@ -352,13 +365,13 @@ class FileService
     {
         switch ($file->subtype->fileType->code) {
             case FileType::PROVINCIAL:
-                return route('provinces.edit', $file->fileable_id);
+                return route('provinces.edit', $file->province_id);
             case FileType::INSTITUTIONAL:
                 // Use the loaded school relationship
-                $school = $file->fileable;
+                $school = $file->school;
                 return $school ? route('school.file.replace', ['school' => $school->slug, 'file' => $file->id]) : null;
             case FileType::USER:
-                return route('users.file.replace', ['user' => $file->fileable_id, 'file' => $file->id]);
+                return route('users.file.replace', ['user' => $file->target_user_id, 'file' => $file->id]);
             default:
                 return null;
         }
@@ -368,13 +381,13 @@ class FileService
     {
         switch ($file->subtype->fileType->code) {
             case FileType::PROVINCIAL:
-                return route('provinces.show', $file->fileable_id);
+                return route('provinces.show', $file->province_id);
             case FileType::INSTITUTIONAL:
                 // Use the loaded school relationship
-                $school = $file->fileable;
+                $school = $file->school;
                 return $school ? route('school.file.show', ['school' => $school->slug, 'file' => $file->id]) : null;
             case FileType::USER:
-                return route('users.file.show', ['user' => $file->fileable_id, 'file' => $file->id]);
+                return route('users.file.show', ['user' => $file->target_user_id, 'file' => $file->id]);
             default:
                 return null;
         }

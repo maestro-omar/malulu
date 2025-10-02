@@ -26,8 +26,10 @@ class File extends Model
         'subtype_id',
         'user_id',
         'replaced_by_id',
-        'fileable_type',
-        'fileable_id',
+        'province_id',
+        'school_id',
+        'course_id',
+        'target_user_id',
         'nice_name',
         'original_name',
         'filename',
@@ -49,6 +51,10 @@ class File extends Model
         'subtype_id' => 'integer',
         'user_id' => 'integer',
         'replaced_by_id' => 'integer',
+        'province_id' => 'integer',
+        'school_id' => 'integer',
+        'course_id' => 'integer',
+        'target_user_id' => 'integer',
         'size' => 'integer',
         'metadata' => 'array',
         'active' => 'boolean'
@@ -126,11 +132,35 @@ class File extends Model
     // }
 
     /**
-     * Get the parent fileable model (school, course, teacher, student, user).
+     * Get the province that owns the file.
      */
-    public function fileable(): MorphTo
+    public function province(): BelongsTo
     {
-        return $this->morphTo();
+        return $this->belongsTo(\App\Models\Catalogs\Province::class);
+    }
+
+    /**
+     * Get the school that owns the file.
+     */
+    public function school(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Entities\School::class);
+    }
+
+    /**
+     * Get the course that owns the file.
+     */
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Entities\Course::class);
+    }
+
+    /**
+     * Get the target user that owns the file.
+     */
+    public function targetUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'target_user_id');
     }
 
     /**
