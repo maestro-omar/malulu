@@ -82,8 +82,7 @@ class ProvincialExternalFilesSeeder extends Seeder
         foreach ($externalFiles as $fileData) {
             // Check if file already exists
             $existingFile = File::where('external_url', $fileData['external_url'])
-                ->where('fileable_type', 'province')
-                ->where('fileable_id', $province->id)
+                ->where('province_id', $province->id)
                 ->first();
 
             if ($existingFile) {
@@ -97,8 +96,13 @@ class ProvincialExternalFilesSeeder extends Seeder
                 'user_id' => $adminUser->id,
                 'replaced_by_id' => null,
                 'province_id' => $province->id,
+                'school_id' => null,
+                'course_id' => null,
+                'target_user_id' => null,
                 'nice_name' => $fileData['nice_name'],
                 'description' => $fileData['description'],
+                'valid_from' => null,
+                'valid_until' => null,
                 'original_name' => null,
                 'filename' => null,
                 'mime_type' => null,

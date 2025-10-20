@@ -100,7 +100,7 @@ class FakeFilesSeeder extends Seeder
                 break;
             case 'school':
                 // parts[1] is the school id
-                $school  = School::where('code', $parts[1])->first();
+                $school  = School::find($parts[1]);
                 if (!$school) throw new \Exception("School with id {$parts[1]} not found for file $file");
                 $oneData['fileableType'] = 'school';
                 $oneData['fileableId'] = $school->id;

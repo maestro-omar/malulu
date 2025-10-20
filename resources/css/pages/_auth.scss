@@ -82,7 +82,7 @@
     gap: 1rem;
   }
 
-  &__link {
+  .auth__form &__link, &__link {
     @include mixins.fz(1.5);
     @include mixins.lh(1.5);
     color: variables.$color-primary;
