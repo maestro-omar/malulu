@@ -233,6 +233,7 @@ import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
+import { parseWysiwygContent } from '@/Utils/strings';
 
 const props = defineProps({
   school: Object,
@@ -260,7 +261,6 @@ const currentLocality = computed(() => {
   return props.localities.find(l => l.id === props.school.locality_id) || null;
 });
 
-
 // Initialize form with proper values
 const form = useForm({
   name: props.school.name,
@@ -277,7 +277,7 @@ const form = useForm({
   email: props.school.email || '',
   coordinates: props.school.coordinates || '',
   social: props.school.social || [],
-  announcements: props.school.announcements || '',
+  announcements: parseWysiwygContent(props.school.announcements) || '',
   relevant_information: props.school.relevant_information || '',
   logo: null,
   picture: null
@@ -316,6 +316,10 @@ const submit = () => {
   if (!Array.isArray(form.social)) {
     form.social = [];
   }
+
+  // Parse WYSIWYG content to null if effectively empty
+  form.announcements = parseWysiwygContent(form.announcements);
+  form.relevant_information = parseWysiwygContent(form.relevant_information);
 
   // If slug changed, show warning
   if (form.slug !== initialSlug.value) {

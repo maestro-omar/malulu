@@ -90,3 +90,28 @@ export function getCombinedCriticalInfo(user) {
   
   return parts.length > 0 ? parts.join('\n\n') : null;
 }
+
+/**
+ * Parse WYSIWYG content and return null if effectively empty
+ * @param {string} content - HTML content from WYSIWYG editor
+ * @returns {string|null} Original content if not empty, null if effectively empty
+ */
+export function parseWysiwygContent(content) {
+  if (!content || typeof content !== 'string') {
+    return null;
+  }
+  
+  // Remove HTML tags and decode HTML entities
+  const textContent = content
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/&nbsp;/g, ' ') // Replace non-breaking spaces
+    .replace(/&amp;/g, '&') // Replace HTML entities
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .trim(); // Remove leading/trailing whitespace
+  
+  // Return null if content is empty or only contains whitespace
+  return textContent.length > 0 ? content : null;
+}
