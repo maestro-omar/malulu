@@ -10,13 +10,15 @@ use App\Models\Entities\User;
 use App\Models\Entities\File;
 use App\Models\Catalogs\FileType;
 use App\Models\Catalogs\FileSubtype;
+use App\Traits\FileControllerTrait;
 use Inertia\Inertia;
 
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
 class FileAdminController extends SystemBaseController
 {
-    protected $fileService;
+    use FileControllerTrait;
+    
     protected $courseService;
     protected $userService;
 
@@ -40,12 +42,23 @@ class FileAdminController extends SystemBaseController
 
     public function createForUser(Request $request, User $user)
     {
-        $subTypes = $this->fileService->getSubtypesForUser($user);
+        $subTypes = $this->getSubtypesForContext('user', $user);
+        $storeUrl = $this->getStoreUrlForContext('user', $user);
+        $cancelUrl = $this->getCancelUrlForContext('user', $user);
 
         return Inertia::render('Files/byUser/Create', [
             'subTypes' => $subTypes,
+            'context' => 'user',
+            'contextId' => $user->id,
+            'storeUrl' => $storeUrl,
+            'cancelUrl' => $cancelUrl,
             'breadcrumbs' => Breadcrumbs::generate('users.file.create', $user),
         ]);
+    }
+
+    public function storeForUser(Request $request, User $user)
+    {
+        return $this->storeFile($request, 'user', $user);
     }
 
     public function showForUser(Request $request, User $user, File $file)

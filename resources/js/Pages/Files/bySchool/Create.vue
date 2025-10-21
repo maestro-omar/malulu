@@ -1,9 +1,9 @@
 <template>
-  <Head :title="`Nuevo archivo para curso`" />
+  <Head :title="`Nuevo archivo para escuela`" />
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader :title="`Nuevo archivo para curso`">
+      <AdminHeader :title="`Nuevo archivo para escuela`">
       </AdminHeader>
     </template>
 
@@ -21,7 +21,7 @@
                     </h3>
                     <div class="admin-form__card-content">
                       <div class="text-subtitle2 q-mb-lg text-grey-6">
-                        Agregue un archivo o enlace externo para este curso
+                        Agregue un archivo o enlace externo para esta escuela
                       </div>
                       
                       <FileForm

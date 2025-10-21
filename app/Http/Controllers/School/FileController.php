@@ -9,13 +9,15 @@ use App\Services\CourseService;
 use App\Models\Entities\School;
 use App\Models\Entities\File;
 use App\Models\Catalogs\SchoolLevel;
+use App\Traits\FileControllerTrait;
 use Inertia\Inertia;
 
 use Diglactic\Breadcrumbs\Breadcrumbs;
 
 class FileController extends SchoolBaseController
 {
-    protected $fileService;
+    use FileControllerTrait;
+    
     protected $courseService;
 
     public function __construct(CourseService $courseService, FileService $fileService)
@@ -28,12 +30,24 @@ class FileController extends SchoolBaseController
     public function createForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
-        $subTypes = $this->fileService->getSubtypesForCourse($course);
-        dd($subTypes);
+        $subTypes = $this->getSubtypesForContext('course', $course);
+        $storeUrl = $this->getStoreUrlForContext('course', $course);
+        $cancelUrl = $this->getCancelUrlForContext('course', $course);
+
         return Inertia::render('Files/byCourse/Create', [
             'subTypes' => $subTypes,
+            'context' => 'course',
+            'contextId' => $course->id,
+            'storeUrl' => $storeUrl,
+            'cancelUrl' => $cancelUrl,
             'breadcrumbs' => Breadcrumbs::generate('school.course.file.create', $school, $schoolLevel, $course),
         ]);
+    }
+
+    public function storeForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
+    {
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        return $this->storeFile($request, 'course', $course);
     }
     public function showForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
     {
@@ -51,11 +65,23 @@ class FileController extends SchoolBaseController
     // School file management methods
     public function createForSchoolDirect(Request $request, School $school)
     {
-        $subTypes = $this->fileService->getSubtypesForSchool($school);
+        $subTypes = $this->getSubtypesForContext('school', $school);
+        $storeUrl = $this->getStoreUrlForContext('school', $school);
+        $cancelUrl = $this->getCancelUrlForContext('school', $school);
+
         return Inertia::render('Files/bySchool/Create', [
             'subTypes' => $subTypes,
+            'context' => 'school',
+            'contextId' => $school->id,
+            'storeUrl' => $storeUrl,
+            'cancelUrl' => $cancelUrl,
             'breadcrumbs' => Breadcrumbs::generate('school.file.create', $school),
         ]);
+    }
+
+    public function storeForSchoolDirect(Request $request, School $school)
+    {
+        return $this->storeFile($request, 'school', $school);
     }
 
     public function showForSchoolDirect(Request $request, School $school, File $file)

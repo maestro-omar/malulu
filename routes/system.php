@@ -51,6 +51,7 @@ Route::prefix(__('routes.system'))->group(function () {
             Route::resource('usuarios', UserAdminController::class)->except(['index', 'show', 'create', 'edit', 'destroy']);
 
             Route::get(__('routes.users') . '/{user}/' . __('routes.files') . '/' . __('routes.create'), [FileAdminController::class, 'createForUser'])->name('users.file.create');
+            Route::post(__('routes.users') . '/{user}/' . __('routes.files'), [FileAdminController::class, 'storeForUser'])->name('users.file.store');
             Route::get(__('routes.users') . '/{user}/' . __('routes.file') . '/{file}', [FileAdminController::class, 'showForUser'])->name('users.file.show');
             Route::get(__('routes.users') . '/{user}/' . __('routes.file') . '/{file}/' . __('routes.edit'), [FileAdminController::class, 'editForUser'])->name('users.file.edit');
             Route::get(__('routes.users') . '/{user}/' . __('routes.file') . '/{file}/' . __('routes.replace'), [FileAdminController::class, 'replaceForUser'])->name('users.file.replace');

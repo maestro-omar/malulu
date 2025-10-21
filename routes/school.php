@@ -36,6 +36,7 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
 
         // School Files Routes
         Route::get(__('routes.files') . '/' . __('routes.create'), [FileController::class, 'createForSchoolDirect'])->name('school.file.create')->middleware('school.permission:school.edit');
+        Route::post(__('routes.files'), [FileController::class, 'storeForSchoolDirect'])->name('school.file.store')->middleware('school.permission:school.edit');
         Route::get(__('routes.file') . '/{file}', [FileController::class, 'showForSchoolDirect'])->name('school.file.show')->middleware('school.permission:school.view');
         Route::get(__('routes.file') . '/{file}/' . __('routes.edit'), [FileController::class, 'editForSchoolDirect'])->name('school.file.edit')->middleware('school.permission:school.edit');
         Route::get(__('routes.file') . '/{file}/' . __('routes.replace'), [FileController::class, 'replaceForSchoolDirect'])->name('school.file.replace')->middleware('school.permission:school.edit');
@@ -69,6 +70,7 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.student') . '/{userIdAndName}', [CourseController::class, 'viewStudent'])->name('school.course.student.view'); //OMAR PENDIENTE ver permiso para esto
 
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.files') . '/' . __('routes.create'), [FileController::class, 'createForSchool'])->name('school.course.file.create')->middleware('school.permission:course.files.manage');
+        Route::post('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.files'), [FileController::class, 'storeForSchool'])->name('school.course.file.store')->middleware('school.permission:course.files.manage');
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}', [FileController::class, 'showForSchool'])->name('school.course.file.show')->middleware('school.permission:course.files.manage');
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}/' . __('routes.edit'), [FileController::class, 'editForSchool'])->name('school.course.file.edit')->middleware('school.permission:course.files.manage');
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}/' . __('routes.replace'), [FileController::class, 'replaceForSchool'])->name('school.course.file.replace')->middleware('school.permission:course.files.manage');
