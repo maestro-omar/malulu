@@ -1,4 +1,5 @@
 <template>
+
   <Head :title="`Nuevo archivo para curso`" />
 
   <AuthenticatedLayout>
@@ -10,35 +11,15 @@
     <template #main-page-content>
       <div class="container">
         <div class="admin-form__wrapper admin-form__wrapper--full-width">
-          <div class="admin-form__container">
-            <q-card class="admin-form__card">
-              <q-card-section>
-                <div class="admin-form__card-content">
-                  <div class="admin-form__section">
-                    <h3 class="admin-form__card-title">
-                      <q-icon name="add" class="q-mr-sm" />
-                      Crear nuevo archivo
-                    </h3>
-                    <div class="admin-form__card-content">
-                      <div class="text-subtitle2 q-mb-lg text-grey-6">
-                        Agregue un archivo o enlace externo para este curso
-                      </div>
-                      
-                      <FileForm
-                        :sub-types="subTypes"
-                        :context="context"
-                        :context-id="contextId"
-                        :store-url="storeUrl"
-                        :cancel-url="cancelUrl"
-                        @success="onSuccess"
-                        @error="onError"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </q-card-section>
-            </q-card>
-          </div>
+          <FileForm 
+            :sub-types="subTypes" 
+            :context="context" 
+            :context-id="contextId" 
+            :store-url="storeUrl"
+            :cancel-url="cancelUrl" 
+            @success="onSuccess" 
+            @error="onError" 
+          />
         </div>
       </div>
     </template>

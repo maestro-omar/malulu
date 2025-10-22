@@ -178,9 +178,16 @@ const selectedSubtype = computed(() => {
 
 const isFormValid = computed(() => {
   const hasSubtype = !!form.subtype_id
-  const hasFileOrUrl = form.inputType === 'file' ? !!form.file : !!form.external_url
   const hasNiceName = !!form.nice_name
-
+  
+  // Check for file or URL based on input type
+  let hasFileOrUrl = false
+  if (form.inputType === 'file') {
+    hasFileOrUrl = !!form.file
+  } else if (form.inputType === 'url') {
+    hasFileOrUrl = !!form.external_url && isValidUrl(form.external_url)
+  }
+  
   return hasSubtype && hasFileOrUrl && hasNiceName
 })
 
@@ -247,39 +254,63 @@ const formatFileSize = (bytes) => {
 const onSubmit = () => {
   if (!isFormValid.value) return
 
-  // Prepare form data
-  const formData = new FormData()
-
-  // Add basic fields
-  formData.append('subtype_id', form.subtype_id)
-  formData.append('nice_name', form.nice_name)
-  formData.append('description', form.description || '')
-  formData.append('context', form.context)
-  formData.append('context_id', form.contextId)
-
-  // Add file or URL
+  // Prepare form data based on input type
   if (form.inputType === 'file' && form.file) {
+    // For file uploads, use FormData
+    const formData = new FormData()
+    
+    // Add basic fields
+    formData.append('subtype_id', form.subtype_id)
+    formData.append('nice_name', form.nice_name)
+    formData.append('description', form.description || '')
+    formData.append('context', form.context)
+    formData.append('context_id', form.contextId)
     formData.append('file', form.file)
-  } else if (form.inputType === 'url' && form.external_url) {
-    formData.append('external_url', form.external_url)
-  }
-
-  // Add expiration dates if required
-  if (selectedSubtype.value?.requires_expiration) {
-    if (form.valid_from) formData.append('valid_from', form.valid_from)
-    if (form.valid_until) formData.append('valid_until', form.valid_until)
-  }
-
-  // Submit form
-  form.post(props.storeUrl, {
-    forceFormData: true,
-    onSuccess: (page) => {
-      emit('success', page)
-    },
-    onError: (errors) => {
-      emit('error', errors)
+    
+    // Add expiration dates if required
+    if (selectedSubtype.value?.requires_expiration) {
+      if (form.valid_from) formData.append('valid_from', form.valid_from)
+      if (form.valid_until) formData.append('valid_until', form.valid_until)
     }
-  })
+
+    // Submit form with FormData
+    form.post(props.storeUrl, {
+      forceFormData: true,
+      onSuccess: (page) => {
+        emit('success', page)
+      },
+      onError: (errors) => {
+        emit('error', errors)
+      }
+    })
+  } else if (form.inputType === 'url' && form.external_url) {
+    // For external URLs, use regular form data
+    const formData = {
+      subtype_id: form.subtype_id,
+      nice_name: form.nice_name,
+      description: form.description || '',
+      context: form.context,
+      context_id: form.contextId,
+      external_url: form.external_url
+    }
+    
+    // Add expiration dates if required
+    if (selectedSubtype.value?.requires_expiration) {
+      if (form.valid_from) formData.valid_from = form.valid_from
+      if (form.valid_until) formData.valid_until = form.valid_until
+    }
+
+    // Submit form without FormData
+    form.post(props.storeUrl, {
+      data: formData,
+      onSuccess: (page) => {
+        emit('success', page)
+      },
+      onError: (errors) => {
+        emit('error', errors)
+      }
+    })
+  }
 }
 
 

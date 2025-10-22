@@ -36,10 +36,10 @@
         :school="school" />
 
       <FilesTable :files="files" title="Archivos del curso"
-        :newFileUrl="route('school.course.file.create', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course) })"
+        :newFileUrl="hasPermission($page.props, 'course.manage') ? route('school.course.file.create', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course) }) : null"
         :showFileBaseUrl="route('school.course.file.show', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course), file: '##' })"
-        :editFileBaseUrl="route('school.course.file.edit', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course), file: '##' })"
-        :replaceFileBaseUrl="route('school.course.file.replace', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course), file: '##' })"
+        :editFileBaseUrl="hasPermission($page.props, 'course.manage') ? route('school.course.file.edit', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course), file: '##' }) : null"
+        :replaceFileBaseUrl="hasPermission($page.props, 'course.manage') ? route('school.course.file.replace', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course), file: '##' }) : null"
         :canDownload="true" />
 
       <SystemTimestamp :row="course" />

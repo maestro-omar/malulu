@@ -30,6 +30,7 @@ class FileController extends SchoolBaseController
     public function createForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        $course->load(['school', 'schoolLevel']);
         $subTypes = $this->getSubtypesForContext('course', $course);
         $storeUrl = $this->getStoreUrlForContext('course', $course);
         $cancelUrl = $this->getCancelUrlForContext('course', $course);
@@ -51,15 +52,37 @@ class FileController extends SchoolBaseController
     }
     public function showForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
     {
-       dd($file,'show');
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        $course->load(['school', 'schoolLevel']);
+        return Inertia::render('Files/byCourse/Show', [
+            'file' => $file,
+            'course' => $course,
+            'breadcrumbs' => Breadcrumbs::generate('school.course.file.show', $school, $schoolLevel, $course, $file),
+        ]);
     }
+    
     public function replaceForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
     {
-       dd($file,'replace');
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        $course->load(['school', 'schoolLevel']);
+        $subTypes = $this->getSubtypesForContext('course', $course);
+        return Inertia::render('Files/byCourse/Replace', [
+            'file' => $file,
+            'subTypes' => $subTypes,
+            'breadcrumbs' => Breadcrumbs::generate('school.course.file.replace', $school, $schoolLevel, $course, $file),
+        ]);
     }
+    
     public function editForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
     {
-        dd($file,'edit');
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        $course->load(['school', 'schoolLevel']);
+        $subTypes = $this->getSubtypesForContext('course', $course);
+        return Inertia::render('Files/byCourse/Edit', [
+            'file' => $file,
+            'subTypes' => $subTypes,
+            'breadcrumbs' => Breadcrumbs::generate('school.course.file.edit', $school, $schoolLevel, $course, $file),
+        ]);
     }
 
     // School file management methods

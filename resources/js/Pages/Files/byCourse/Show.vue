@@ -5,7 +5,12 @@
     <template #admin-header>
       <AdminHeader :title="`Detalles del Archivo ${file.nice_name}`" :edit="{
         show: hasPermission($page.props, 'file.manage'),
-        href: route('users.file.edit', { 'user': file.fileable_id, 'file': file.id }),
+        href: route('school.course.file.edit', { 
+          'school': course.school.slug, 
+          'schoolLevel': course.schoolLevel.code, 
+          'idAndLabel': course.idAndLabel, 
+          'file': file.id 
+        }),
         label: 'Editar'
       }" :del="{
         show: hasPermission($page.props, 'file.manage'),
@@ -33,6 +38,10 @@ const props = defineProps({
     type: Object,
     required: true
   },
+  course: {
+    type: Object,
+    required: true
+  },
   history: {
     type: Array,
     required: false,
@@ -44,7 +53,12 @@ const $page = usePage()
 
 const destroy = () => {
   if (confirm("¿Está seguro que desea eliminar este archivo?")) {
-    router.delete(route("users.file.destroy", { 'user': props.file.fileable_id, 'file': props.file.id }))
+    router.delete(route("school.course.file.destroy", { 
+      'school': props.course.school.slug, 
+      'schoolLevel': props.course.schoolLevel.code, 
+      'idAndLabel': props.course.idAndLabel, 
+      'file': props.file.id 
+    }))
   }
 }
 </script>

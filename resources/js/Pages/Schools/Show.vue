@@ -37,13 +37,13 @@
       <!-- School Information Components -->
       <SchoolBasicData :school="school" :pageProps="$page.props" :showAnnouncements="true" class="q-mb-md" />
 
-      <SchoolSocial :school="school" class="q-mb-md" />
+      <SchoolSocial :school="school" class="q-mb-md q-mb-md" />
 
       <FilesTable :files="files" title="Archivos de la escuela"
-        :newFileUrl="route('school.file.create', { 'school': school.slug })"
+        :newFileUrl="hasPermission($page.props, 'school.edit', school.id) ? route('school.file.create', { school: school.slug }) : null"
         :showFileBaseUrl="route('school.file.show', { 'school': school.slug, 'file': '##' })"
-        :editFileBaseUrl="route('school.file.edit', { 'school': school.slug, 'file': '##' })"
-        :replaceFileBaseUrl="route('school.file.replace', { 'school': school.slug, 'file': '##' })"
+        :editFileBaseUrl="hasPermission($page.props, 'school.edit', school.id) ? route('school.file.edit', { school: school.slug, file: '##' }) : null"
+        :replaceFileBaseUrl="hasPermission($page.props, 'school.edit', school.id) ? route('school.file.replace', { 'school': school.slug, 'file': '##' }) : null"
         :canDownload="true" />
 
     </template>

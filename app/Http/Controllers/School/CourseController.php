@@ -123,8 +123,7 @@ class CourseController extends SchoolBaseController
     public function edit(School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
-        // $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse']);
-        $course->load(['previousCourse']);
+        $course->load(['school', 'schoolLevel', 'schoolShift', 'previousCourse']);
 
         // $schools = $this->schoolService->getSchools(new Request(), true);
         $schoolLevels = $school->schoolLevels;
@@ -147,6 +146,7 @@ class CourseController extends SchoolBaseController
     public function update(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        $course->load(['school', 'schoolLevel']);
         $this->courseService->updateCourse($course, $request->all());
         $school = $course->school;
         $schoolLevel = $course->schoolLevel;

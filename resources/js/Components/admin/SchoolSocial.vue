@@ -10,7 +10,7 @@
       </q-item-section>
     </template>
     
-    <div class="row q-col-gutter-sm">
+    <div class="row q-col-gutter-sm q-pb-md">
       <div class="col-12">
         <div class="row q-gutter-md">
           <div v-for="(social, index) in school.social" :key="index" class="col-auto">

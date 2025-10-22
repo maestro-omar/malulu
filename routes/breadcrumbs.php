@@ -270,6 +270,11 @@ Breadcrumbs::for('school.course.file.create', function (Trail $trail, School $sc
     $trail->push("Nuevo archivo para {$course->nice_name}");
 });
 
+Breadcrumbs::for('school.course.file.show', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course, File $file) {
+    $trail->parent('school.course.show', $school, $schoolLevel, $course);
+    $trail->push("Archivo {$file->nice_name}");
+});
+
 // School file breadcrumbs
 Breadcrumbs::for('school.file.create', function (Trail $trail, School $school) {
     $trail->parent('school.show', $school);

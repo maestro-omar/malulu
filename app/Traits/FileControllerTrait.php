@@ -42,11 +42,19 @@ trait FileControllerTrait
             'description' => 'nullable|string',
             'context' => 'required|string|in:user,school,course,province',
             'context_id' => 'required',
-            'file' => 'required_without:external_url|file|max:10240', // 10MB max
-            'external_url' => 'required_without:file|url|max:500',
+            'file' => 'nullable|file|max:10240', // 10MB max, nullable for external URLs
+            'external_url' => 'nullable|url|max:500', // nullable for file uploads
             'valid_from' => 'nullable|date',
             'valid_until' => 'nullable|date|after_or_equal:valid_from'
         ]);
+
+        // Custom validation: ensure either file or external_url is provided
+        if (empty($validated['file']) && empty($validated['external_url'])) {
+            throw new \Illuminate\Validation\ValidationException(
+                validator([], []),
+                ['file' => ['Debe proporcionar un archivo o una URL externa.']]
+            );
+        }
 
         try {
             $userId = Auth::id();
@@ -66,10 +74,10 @@ trait FileControllerTrait
             $this->setContextForeignKey($fileData, $context, $contextModel);
 
             // Handle file upload or external URL
-            if ($request->hasFile('file')) {
+            if (!empty($validated['file']) && $request->hasFile('file')) {
                 $uploadedFile = $request->file('file');
                 $this->handleFileUpload($fileData, $uploadedFile, $context, $contextModel);
-            } else {
+            } elseif (!empty($validated['external_url'])) {
                 $this->handleExternalUrl($fileData, $validated['external_url']);
             }
 
@@ -85,7 +93,6 @@ trait FileControllerTrait
             $file = $fileService->createFile($fileData);
 
             return $this->getSuccessResponse($file, $context, $contextModel);
-
         } catch (\Exception $e) {
             return $this->getErrorResponse($e, $context, $contextModel);
         }
@@ -119,7 +126,7 @@ trait FileControllerTrait
     {
         $originalExtension = $uploadedFile->getClientOriginalExtension();
         $originalNameWithoutExt = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
-        
+
         $slugify = function ($text) {
             $slug = Str::slug($text);
             return $slug !== '' ? $slug : 'file';
@@ -134,7 +141,7 @@ trait FileControllerTrait
         $publicPath = str_replace(DIRECTORY_SEPARATOR, '/', $basePath);
 
         $storedFullPathAndName = $uploadedFile->storeAs($storagePath, $finalFileName);
-        
+
         if (!$storedFullPathAndName) {
             throw new \Exception('Error storing file');
         }
@@ -165,32 +172,32 @@ trait FileControllerTrait
     protected function getSuccessResponse(File $file, string $context, $contextModel)
     {
         $message = 'Archivo creado exitosamente.';
-        
+
         switch ($context) {
             case 'user':
                 return redirect()->route('users.file.show', [
                     'user' => $contextModel instanceof User ? $contextModel->id : $contextModel,
                     'file' => $file->id
                 ])->with('success', $message);
-                
+
             case 'school':
                 $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
                 return redirect()->route('school.file.show', [
                     'school' => $school->slug,
                     'file' => $file->id
                 ])->with('success', $message);
-                
+
             case 'course':
                 // Assuming course files are managed through school context
                 $course = $contextModel instanceof Course ? $contextModel : Course::find($contextModel);
                 $school = $course->school;
                 return redirect()->route('school.course.file.show', [
                     'school' => $school->slug,
-                    'schoolLevel' => $course->schoolLevel->slug,
-                    'course' => $course->id . '-' . Str::slug($course->name),
+                    'schoolLevel' => $course->schoolLevel->code,
+                    'idAndLabel' => $course->idAndLabel,
                     'file' => $file->id
                 ])->with('success', $message);
-                
+
             case 'province':
                 return redirect()->route('provinces.show', $contextModel instanceof Province ? $contextModel->id : $contextModel)
                     ->with('success', $message);
@@ -203,28 +210,28 @@ trait FileControllerTrait
     protected function getErrorResponse(\Exception $e, string $context, $contextModel)
     {
         $message = 'Error al crear el archivo: ' . $e->getMessage();
-        
+
         switch ($context) {
             case 'user':
                 return redirect()->route('users.file.create', [
                     'user' => $contextModel instanceof User ? $contextModel->id : $contextModel
                 ])->withErrors(['error' => $message])->withInput();
-                
+
             case 'school':
                 $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
                 return redirect()->route('school.file.create', [
                     'school' => $school->slug
                 ])->withErrors(['error' => $message])->withInput();
-                
+
             case 'course':
                 $course = $contextModel instanceof Course ? $contextModel : Course::find($contextModel);
                 $school = $course->school;
                 return redirect()->route('school.course.file.create', [
                     'school' => $school->slug,
-                    'schoolLevel' => $course->schoolLevel->slug,
-                    'course' => $course->id . '-' . Str::slug($course->name)
+                    'schoolLevel' => $course->schoolLevel->code,
+                    'idAndLabel' => $course->idAndLabel
                 ])->withErrors(['error' => $message])->withInput();
-                
+
             case 'province':
                 return redirect()->route('provinces.edit', $contextModel instanceof Province ? $contextModel->id : $contextModel)
                     ->withErrors(['error' => $message])->withInput();
@@ -237,24 +244,24 @@ trait FileControllerTrait
     protected function getSubtypesForContext(string $context, $contextModel)
     {
         $fileService = $this->getFileService();
-        
+
         switch ($context) {
             case 'user':
                 $user = $contextModel instanceof User ? $contextModel : User::find($contextModel);
                 return $fileService->getSubtypesForUser($user);
-                
+
             case 'school':
                 $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
                 return $fileService->getSubtypesForSchool($school);
-                
+
             case 'course':
                 $course = $contextModel instanceof Course ? $contextModel : Course::find($contextModel);
                 return $fileService->getSubtypesForCourse($course);
-                
+
             case 'province':
                 // For provinces, we might want to get all provincial file types
                 return \App\Models\Catalogs\FileSubtype::byFileTypeCode(FileType::PROVINCIAL)->get();
-                
+
             default:
                 return collect();
         }
@@ -270,25 +277,24 @@ trait FileControllerTrait
                 return route('users.file.store', [
                     'user' => $contextModel instanceof User ? $contextModel->id : $contextModel
                 ]);
-                
+
             case 'school':
                 $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
                 return route('school.file.store', [
                     'school' => $school->slug
                 ]);
-                
+
             case 'course':
                 $course = $contextModel instanceof Course ? $contextModel : Course::find($contextModel);
                 $school = $course->school;
                 return route('school.course.file.store', [
                     'school' => $school->slug,
-                    'schoolLevel' => $course->schoolLevel->slug,
-                    'course' => $course->id . '-' . Str::slug($course->name)
+                    'schoolLevel' => $course->schoolLevel->code,
+                    'idAndLabel' => $course->idAndLabel
                 ]);
-                
             case 'province':
                 return route('provinces.files.store', $contextModel instanceof Province ? $contextModel->id : $contextModel);
-                
+
             default:
                 throw new \InvalidArgumentException("Unknown context: {$context}");
         }
@@ -302,23 +308,23 @@ trait FileControllerTrait
         switch ($context) {
             case 'user':
                 return route('users.show', $contextModel instanceof User ? $contextModel->id : $contextModel);
-                
+
             case 'school':
                 $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
                 return route('school.show', ['school' => $school->slug]);
-                
+
             case 'course':
                 $course = $contextModel instanceof Course ? $contextModel : Course::find($contextModel);
                 $school = $course->school;
                 return route('school.course.show', [
                     'school' => $school->slug,
-                    'schoolLevel' => $course->schoolLevel->slug,
-                    'course' => $course->id . '-' . Str::slug($course->name)
+                    'schoolLevel' => $course->schoolLevel->code,
+                    'idAndLabel' => $course->idAndLabel
                 ]);
-                
+
             case 'province':
                 return route('provinces.show', $contextModel instanceof Province ? $contextModel->id : $contextModel);
-                
+
             default:
                 throw new \InvalidArgumentException("Unknown context: {$context}");
         }
