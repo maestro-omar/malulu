@@ -37,6 +37,10 @@
           {{ formatDate(value.start_date) }})
         </template>
 
+        <template v-else-if="type === 'url'">
+          <a :href="value" target="_blank">{{ value }}</a>
+        </template>
+
         <!-- Default text display -->
         <template v-else>
           {{ value || '-' }}

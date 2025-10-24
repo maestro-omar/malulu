@@ -54,6 +54,7 @@ class FileController extends SchoolBaseController
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         $course->load(['school', 'schoolLevel']);
+        $file->load(['user']);
         return Inertia::render('Files/byCourse/Show', [
             'file' => $file,
             'course' => $course,
@@ -109,6 +110,7 @@ class FileController extends SchoolBaseController
 
     public function showForSchoolDirect(Request $request, School $school, File $file)
     {
+        $file->load(['user']);
         return Inertia::render('Files/bySchool/Show', [
             'file' => $file,
             'breadcrumbs' => Breadcrumbs::generate('school.file.show', $school, $file),

@@ -10,8 +10,14 @@
                 :title="`Esta es la versión ${currentVersion} del archivo`">
                 V{{ currentVersion }}
               </q-chip>
-              <q-btn flat round dense icon="download" color="primary" @click="downloadFile(file)"
-                title="Descargar archivo" />
+              <q-btn 
+                flat 
+                round 
+                dense 
+                :icon="file.is_external ? 'open_in_new' : 'download'" 
+                color="primary" 
+                @click="file.is_external ? openExternalFile(file) : downloadFile(file)"
+                :title="file.is_external ? 'Abrir enlace externo' : 'Descargar archivo'" />
             </div>
             <div class="row q-col-gutter-sm">
               <div class="col-12 col-sm-6">
@@ -23,14 +29,17 @@
               <div class="col-12">
                 <DataFieldShow label="Descripción" :value="file.description" type="text" />
               </div>
-              <div class="col-12 col-sm-4">
+              <div class="col-12 col-sm-4" v-if="!file.is_external">
                 <DataFieldShow label="Tamaño" :value="file.formatted_size" type="text" />
               </div>
-              <div class="col-12 col-sm-4">
+              <div class="col-12 col-sm-4" v-if="!file.is_external">
                 <DataFieldShow label="Tipo MIME" :value="file.mime_type" type="text" />
               </div>
+              <div class="col-12 col-sm-4" v-if="file.is_external">
+                <DataFieldShow label="URL Externa" :value="file.external_url" type="url" />
+              </div>
             </div>
-            <div class="row q-col-gutter-sm">
+            <div class="row q-col-gutter-sm" v-if="!file.is_external">
               <div class="col-12 col-sm-6">
                 <DataFieldShow label="Nombre Original" :value="file.original_name" type="text" />
               </div>
@@ -68,8 +77,14 @@
               </template>
               <template v-slot:body-cell-download="props">
                 <q-td :props="props">
-                  <q-btn flat round dense icon="download" color="primary" @click="downloadFile(props.row)"
-                    title="Descargar archivo" />
+                  <q-btn 
+                    flat 
+                    round 
+                    dense 
+                    :icon="props.row.is_external ? 'open_in_new' : 'download'" 
+                    color="primary" 
+                    @click="props.row.is_external ? openExternalFile(props.row) : downloadFile(props.row)"
+                    :title="props.row.is_external ? 'Abrir enlace externo' : 'Descargar archivo'" />
                 </q-td>
               </template>
             </q-table>
@@ -132,12 +147,19 @@ const downloadFile = (file) => {
   }
 }
 
+// Open external file function
+const openExternalFile = (file) => {
+  if (file.url) {
+    window.open(file.url, '_blank')
+  }
+}
+
 // Get color for history level
 const getLevelColor = (level) => {
   const colors = ['green', 'primary', 'accent', 'warning', 'grey']
   return colors[level % colors.length]
 }
-
+console.log(props.file);
 // History table columns
 const historyColumns = [
   {

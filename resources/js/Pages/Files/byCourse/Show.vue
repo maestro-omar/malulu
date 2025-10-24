@@ -7,8 +7,8 @@
         show: hasPermission($page.props, 'file.manage'),
         href: route('school.course.file.edit', { 
           'school': course.school.slug, 
-          'schoolLevel': course.schoolLevel.code, 
-          'idAndLabel': course.idAndLabel, 
+          'schoolLevel': course.school_level.code, 
+          'idAndLabel': course.id_and_label, 
           'file': file.id 
         }),
         label: 'Editar'
@@ -55,8 +55,8 @@ const destroy = () => {
   if (confirm("¿Está seguro que desea eliminar este archivo?")) {
     router.delete(route("school.course.file.destroy", { 
       'school': props.course.school.slug, 
-      'schoolLevel': props.course.schoolLevel.code, 
-      'idAndLabel': props.course.idAndLabel, 
+      'schoolLevel': props.course.school_level.code, 
+      'idAndLabel': props.course.id_and_label, 
       'file': props.file.id 
     }))
   }
