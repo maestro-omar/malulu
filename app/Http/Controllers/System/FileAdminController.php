@@ -81,6 +81,7 @@ class FileAdminController extends SystemBaseController
 
         return Inertia::render('Files/byUser/Edit', [
             'file' => $fileData,
+            'user' => $user,
             'subTypes' => $subTypes,
             'breadcrumbs' => Breadcrumbs::generate('users.file.edit', $user, $file),
         ]);
@@ -88,15 +89,25 @@ class FileAdminController extends SystemBaseController
 
     public function replaceForUser(Request $request, User $user, File $file)
     {
-        $loggedUser = auth()->user();
-        $fileData = $this->fileService->getFileDataForUser($file, $loggedUser, $user);
-        $subTypes = $this->fileService->getSubtypesForUser($user);
+        if ($request->isMethod('get')) {
+            $loggedUser = auth()->user();
+            $fileData = $this->fileService->getFileDataForUser($file, $loggedUser, $user);
+            $subTypes = $this->fileService->getSubtypesForUser($user);
 
-        return Inertia::render('Files/byUser/Replace', [
-            'file' => $fileData['file'],
-            'subTypes' => $subTypes,
-            'breadcrumbs' => Breadcrumbs::generate('users.file.replace', $user, $file),
-        ]);
+            return Inertia::render('Files/byUser/Replace', [
+                'file' => $fileData['file'],
+                'user' => $user,
+                'subTypes' => $subTypes,
+                'breadcrumbs' => Breadcrumbs::generate('users.file.replace', $user, $file),
+            ]);
+        }
+
+        return $this->replaceFile($request, $file, 'user', $user);
+    }
+
+    public function updateForUser(Request $request, User $user, File $file)
+    {
+        return $this->updateFile($request, $file, 'user', $user);
     }
 
     public function index(Request $request)

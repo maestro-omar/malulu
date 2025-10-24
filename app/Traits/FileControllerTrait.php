@@ -329,4 +329,199 @@ trait FileControllerTrait
                 throw new \InvalidArgumentException("Unknown context: {$context}");
         }
     }
+
+    /**
+     * Update file information
+     */
+    public function updateFile(Request $request, File $file, string $context, $contextModel)
+    {
+        $validated = $request->validate([
+            'subtype_id' => 'required|exists:file_subtypes,id',
+            'nice_name' => 'required|string|max:255',
+            'description' => 'nullable|string'
+        ]);
+
+        try {
+            $file->update($validated);
+            
+            return $this->getUpdateSuccessResponse($file, $context, $contextModel);
+        } catch (\Exception $e) {
+            return $this->getUpdateErrorResponse($e, $context, $contextModel);
+        }
+    }
+
+    /**
+     * Replace file (upload new file or set external URL)
+     */
+    public function replaceFile(Request $request, File $file, string $context, $contextModel)
+    {
+        $validated = $request->validate([
+            'subtype_id' => 'required|exists:file_subtypes,id',
+            'nice_name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'file' => 'nullable|file|max:10240', // 10MB max, nullable for external URLs
+            'external_url' => 'nullable|url|max:500', // nullable for file uploads
+            'valid_from' => 'nullable|date',
+            'valid_until' => 'nullable|date|after_or_equal:valid_from'
+        ]);
+
+        // Custom validation: ensure either file or external_url is provided
+        if (empty($validated['file']) && empty($validated['external_url'])) {
+            throw new \Illuminate\Validation\ValidationException(
+                validator([], []),
+                ['file' => ['Debe proporcionar un archivo o una URL externa.']]
+            );
+        }
+
+        try {
+            // Update basic file information
+            $file->update([
+                'subtype_id' => $validated['subtype_id'],
+                'nice_name' => $validated['nice_name'],
+                'description' => $validated['description'] ?? ''
+            ]);
+
+            // Handle file upload or external URL
+            if (!empty($validated['file']) && $request->hasFile('file')) {
+                $uploadedFile = $request->file('file');
+                $fileData = [];
+                $this->handleFileUpload($fileData, $uploadedFile, $context, $contextModel);
+                $file->update($fileData);
+            } elseif (!empty($validated['external_url'])) {
+                $fileData = [];
+                $this->handleExternalUrl($fileData, $validated['external_url']);
+                $file->update($fileData);
+            }
+
+            // Handle expiration dates if provided
+            if (isset($validated['valid_from']) || isset($validated['valid_until'])) {
+                $file->update([
+                    'valid_from' => $validated['valid_from'] ?? null,
+                    'valid_until' => $validated['valid_until'] ?? null
+                ]);
+            }
+
+            return $this->getReplaceSuccessResponse($file, $context, $contextModel);
+        } catch (\Exception $e) {
+            return $this->getReplaceErrorResponse($e, $context, $contextModel);
+        }
+    }
+
+    /**
+     * Get update success response based on context
+     */
+    protected function getUpdateSuccessResponse(File $file, string $context, $contextModel)
+    {
+        $message = 'Archivo actualizado exitosamente.';
+
+        switch ($context) {
+            case 'user':
+                return redirect()->route('users.file.show', [
+                    'user' => $contextModel instanceof User ? $contextModel->id : $contextModel,
+                    'file' => $file->id
+                ])->with('success', $message);
+
+            case 'school':
+                $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
+                return redirect()->route('school.file.show', [
+                    'school' => $school->slug,
+                    'file' => $file->id
+                ])->with('success', $message);
+
+            case 'course':
+                $course = $contextModel instanceof Course ? $contextModel : Course::find($contextModel);
+                $school = $course->school;
+                return redirect()->route('school.course.file.show', [
+                    'school' => $school->slug,
+                    'schoolLevel' => $course->schoolLevel->code,
+                    'idAndLabel' => $course->idAndLabel,
+                    'file' => $file->id
+                ])->with('success', $message);
+
+            case 'province':
+                return redirect()->route('provinces.show', $contextModel instanceof Province ? $contextModel->id : $contextModel)
+                    ->with('success', $message);
+        }
+    }
+
+    /**
+     * Get replace success response based on context
+     */
+    protected function getReplaceSuccessResponse(File $file, string $context, $contextModel)
+    {
+        $message = 'Archivo reemplazado exitosamente.';
+
+        switch ($context) {
+            case 'user':
+                return redirect()->route('users.file.show', [
+                    'user' => $contextModel instanceof User ? $contextModel->id : $contextModel,
+                    'file' => $file->id
+                ])->with('success', $message);
+
+            case 'school':
+                $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
+                return redirect()->route('school.file.show', [
+                    'school' => $school->slug,
+                    'file' => $file->id
+                ])->with('success', $message);
+
+            case 'course':
+                $course = $contextModel instanceof Course ? $contextModel : Course::find($contextModel);
+                $school = $course->school;
+                return redirect()->route('school.course.file.show', [
+                    'school' => $school->slug,
+                    'schoolLevel' => $course->schoolLevel->code,
+                    'idAndLabel' => $course->idAndLabel,
+                    'file' => $file->id
+                ])->with('success', $message);
+
+            case 'province':
+                return redirect()->route('provinces.show', $contextModel instanceof Province ? $contextModel->id : $contextModel)
+                    ->with('success', $message);
+        }
+    }
+
+    /**
+     * Get update error response based on context
+     */
+    protected function getUpdateErrorResponse(\Exception $exception, string $context, $contextModel)
+    {
+        $message = 'Error al actualizar el archivo: ' . $exception->getMessage();
+
+        switch ($context) {
+            case 'user':
+                return redirect()->back()->with('error', $message);
+
+            case 'school':
+                return redirect()->back()->with('error', $message);
+
+            case 'course':
+                return redirect()->back()->with('error', $message);
+
+            case 'province':
+                return redirect()->back()->with('error', $message);
+        }
+    }
+
+    /**
+     * Get replace error response based on context
+     */
+    protected function getReplaceErrorResponse(\Exception $exception, string $context, $contextModel)
+    {
+        $message = 'Error al reemplazar el archivo: ' . $exception->getMessage();
+
+        switch ($context) {
+            case 'user':
+                return redirect()->back()->with('error', $message);
+
+            case 'school':
+                return redirect()->back()->with('error', $message);
+
+            case 'course':
+                return redirect()->back()->with('error', $message);
+
+            case 'province':
+                return redirect()->back()->with('error', $message);
+        }
+    }
 }

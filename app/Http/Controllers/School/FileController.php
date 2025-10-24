@@ -62,17 +62,6 @@ class FileController extends SchoolBaseController
         ]);
     }
     
-    public function replaceForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
-    {
-        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
-        $course->load(['school', 'schoolLevel']);
-        $subTypes = $this->getSubtypesForContext('course', $course);
-        return Inertia::render('Files/byCourse/Replace', [
-            'file' => $file,
-            'subTypes' => $subTypes,
-            'breadcrumbs' => Breadcrumbs::generate('school.course.file.replace', $school, $schoolLevel, $course, $file),
-        ]);
-    }
     
     public function editForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
     {
@@ -81,6 +70,7 @@ class FileController extends SchoolBaseController
         $subTypes = $this->getSubtypesForContext('course', $course);
         return Inertia::render('Files/byCourse/Edit', [
             'file' => $file,
+            'course' => $course,
             'subTypes' => $subTypes,
             'breadcrumbs' => Breadcrumbs::generate('school.course.file.edit', $school, $schoolLevel, $course, $file),
         ]);
@@ -119,17 +109,56 @@ class FileController extends SchoolBaseController
 
     public function editForSchoolDirect(Request $request, School $school, File $file)
     {
+        $subTypes = $this->getSubtypesForContext('school', $school);
         return Inertia::render('Files/bySchool/Edit', [
             'file' => $file,
+            'school' => $school,
+            'subTypes' => $subTypes,
             'breadcrumbs' => Breadcrumbs::generate('school.file.edit', $school, $file),
         ]);
     }
 
     public function replaceForSchoolDirect(Request $request, School $school, File $file)
     {
-        return Inertia::render('Files/bySchool/Replace', [
-            'file' => $file,
-            'breadcrumbs' => Breadcrumbs::generate('school.file.replace', $school, $file),
-        ]);
+        if ($request->isMethod('get')) {
+            $subTypes = $this->getSubtypesForContext('school', $school);
+            return Inertia::render('Files/bySchool/Replace', [
+                'file' => $file,
+                'school' => $school,
+                'subTypes' => $subTypes,
+                'breadcrumbs' => Breadcrumbs::generate('school.file.replace', $school, $file),
+            ]);
+        }
+
+        return $this->replaceFile($request, $file, 'school', $school);
+    }
+
+    public function updateForSchoolDirect(Request $request, School $school, File $file)
+    {
+        return $this->updateFile($request, $file, 'school', $school);
+    }
+
+    public function updateForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
+    {
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        return $this->updateFile($request, $file, 'course', $course);
+    }
+
+    public function replaceForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
+    {
+        if ($request->isMethod('get')) {
+            $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+            $course->load(['school', 'schoolLevel']);
+            $subTypes = $this->getSubtypesForContext('course', $course);
+            return Inertia::render('Files/byCourse/Replace', [
+                'file' => $file,
+                'course' => $course,
+                'subTypes' => $subTypes,
+                'breadcrumbs' => Breadcrumbs::generate('school.course.file.replace', $school, $schoolLevel, $course, $file),
+            ]);
+        }
+
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        return $this->replaceFile($request, $file, 'course', $course);
     }
 }

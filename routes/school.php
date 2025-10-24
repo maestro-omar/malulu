@@ -39,7 +39,9 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::post(__('routes.files'), [FileController::class, 'storeForSchoolDirect'])->name('school.file.store')->middleware('school.permission:school.edit');
         Route::get(__('routes.file') . '/{file}', [FileController::class, 'showForSchoolDirect'])->name('school.file.show')->middleware('school.permission:school.view');
         Route::get(__('routes.file') . '/{file}/' . __('routes.edit'), [FileController::class, 'editForSchoolDirect'])->name('school.file.edit')->middleware('school.permission:school.edit');
+        Route::put(__('routes.file') . '/{file}', [FileController::class, 'updateForSchoolDirect'])->name('school.file.update')->middleware('school.permission:school.edit');
         Route::get(__('routes.file') . '/{file}/' . __('routes.replace'), [FileController::class, 'replaceForSchoolDirect'])->name('school.file.replace')->middleware('school.permission:school.edit');
+        Route::post(__('routes.file') . '/{file}/' . __('routes.replace'), [FileController::class, 'replaceForSchoolDirect'])->name('school.file.replace')->middleware('school.permission:school.edit');
 
         // School Pages Routes
         Route::get(__('routes.pages'), [SchoolPageController::class, 'index'])->name('school-pages.index')->middleware('school.permission:school-page.manage');
@@ -73,7 +75,9 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::post('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.files'), [FileController::class, 'storeForSchool'])->name('school.course.file.store')->middleware('school.permission:course.files.manage');
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}', [FileController::class, 'showForSchool'])->name('school.course.file.show')->middleware('school.permission:course.files.manage');
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}/' . __('routes.edit'), [FileController::class, 'editForSchool'])->name('school.course.file.edit')->middleware('school.permission:course.files.manage');
+        Route::put('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}', [FileController::class, 'updateForSchool'])->name('school.course.file.update')->middleware('school.permission:course.files.manage');
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}/' . __('routes.replace'), [FileController::class, 'replaceForSchool'])->name('school.course.file.replace')->middleware('school.permission:course.files.manage');
+        Route::post('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.file') . '/{file}/' . __('routes.replace'), [FileController::class, 'replaceForSchool'])->name('school.course.file.replace')->middleware('school.permission:course.files.manage');
 
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.attendance') .'/' . __('routes.edit'), [CourseController::class, 'attendanceDayEdit'])->name('school.course.attendance.edit')->middleware('school.permission:course.manage');
         Route::post('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.attendance') .'/' . __('routes.update'), [CourseController::class, 'attendanceDayUpdate'])->name('school.course.attendance.update')->middleware('school.permission:course.manage');

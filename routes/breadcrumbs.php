@@ -51,8 +51,8 @@ Breadcrumbs::for('users.file.create', function (Trail $trail, $user) {
 
 Breadcrumbs::for('users.file.show', function (Trail $trail, $user, $file) {
     $trail->parent('users.show', $user);
-    $trail->push("Archivos", null, ['icon' => 'folder']);
-    $trail->push($file->nice_name);
+    // $trail->push("Archivos", null, ['icon' => 'folder']);
+    $trail->push("Archivo: {$file->nice_name}", route('users.file.show', [$user, $file]));
 });
 
 Breadcrumbs::for('users.file.edit', function (Trail $trail, $user, $file) {
@@ -272,9 +272,18 @@ Breadcrumbs::for('school.course.file.create', function (Trail $trail, School $sc
 
 Breadcrumbs::for('school.course.file.show', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course, File $file) {
     $trail->parent('school.course.show', $school, $schoolLevel, $course);
-    $trail->push("Archivo {$file->nice_name}");
+    $trail->push("Archivo: {$file->nice_name}", route('school.course.file.show', [$school->slug, $schoolLevel->code, $course->idAndLabel, $file->id]));
 });
 
+Breadcrumbs::for('school.course.file.replace', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course, File $file) {
+    $trail->parent('school.course.file.show', $school, $schoolLevel, $course, $file);
+    $trail->push("Reemplazar");
+});
+
+Breadcrumbs::for('school.course.file.edit', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course, File $file) {
+    $trail->parent('school.course.file.show', $school, $schoolLevel, $course, $file);
+    $trail->push("Editar");
+});
 // School file breadcrumbs
 Breadcrumbs::for('school.file.create', function (Trail $trail, School $school) {
     $trail->parent('school.show', $school);
@@ -283,17 +292,17 @@ Breadcrumbs::for('school.file.create', function (Trail $trail, School $school) {
 
 Breadcrumbs::for('school.file.show', function (Trail $trail, School $school, File $file) {
     $trail->parent('school.show', $school);
-    $trail->push("Archivo: {$file->nice_name}");
+    $trail->push("Archivo: {$file->nice_name}", route('school.file.show', [$school->slug, $file->id]));
 });
 
 Breadcrumbs::for('school.file.edit', function (Trail $trail, School $school, File $file) {
     $trail->parent('school.file.show', $school, $file);
-    $trail->push("Editar archivo");
+    $trail->push("Editar");
 });
 
 Breadcrumbs::for('school.file.replace', function (Trail $trail, School $school, File $file) {
     $trail->parent('school.file.show', $school, $file);
-    $trail->push("Reemplazar archivo");
+    $trail->push("Reemplazar");
 });
 
 
