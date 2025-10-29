@@ -20,10 +20,10 @@
       <WorkerInformation :user="user" />
 
       <FilesTable :files="files" :title="`Archivos de ${user.firstname}`"
-        :newFileUrl="route('users.file.create', { 'user': user.id })"
-        :showFileBaseUrl="route('users.file.show', { 'user': user.id, 'file': '##' })"
-        :editFileBaseUrl="route('users.file.edit', { 'user': user.id, 'file': '##' })"
-        :replaceFileBaseUrl="route('users.file.replace', { 'user': user.id, 'file': '##' })"
+        :newFileUrl="route('users.file.create', { 'user': getUserSlug(user) })"
+        :showFileBaseUrl="route('users.file.show', { 'user': getUserSlug(user), 'file': '##' })"
+        :editFileBaseUrl="route('users.file.edit', { 'user': getUserSlug(user), 'file': '##' })"
+        :replaceFileBaseUrl="route('users.file.replace', { 'user': getUserSlug(user), 'file': '##' })"
         :canDownload="true" />
 
       <SystemTimestamp :row="user" />
@@ -40,6 +40,7 @@ import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
 import { route_school_staff } from '@/Utils/routes';
+import { getUserSlug } from '@/Utils/strings';
 import { Head, router, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({

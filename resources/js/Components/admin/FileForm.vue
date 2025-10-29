@@ -57,7 +57,7 @@
               <div class="admin-form__field col-4">
                 <InputLabel for="nice_name" value="Nombre descriptivo" />
                 <TextInput id="nice_name" v-model="form.nice_name" type="text" class="admin-form__input"
-                  placeholder="Nombre que aparecerá en la lista de archivos" />
+                  placeholder="Nombre que aparecerá en la lista de archivos" required/>
                 <InputError :message="form.errors.nice_name" class="admin-form__error" />
               </div>
 
@@ -202,37 +202,6 @@ const onInputTypeChange = (value) => {
   }
 }
 
-const onSubtypeChange = (value) => {
-  form.subtype_id = value
-  // Auto-generate nice name if not provided
-  if (!form.nice_name && selectedSubtype.value) {
-    form.nice_name = selectedSubtype.value.name
-  }
-}
-
-const onFileChange = (file) => {
-  form.file = file
-  // Auto-generate nice name from filename if not provided
-  if (!form.nice_name && file) {
-    const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '')
-    form.nice_name = nameWithoutExt
-  }
-}
-
-const onUrlChange = (url) => {
-  form.external_url = url
-  // Auto-generate nice name from URL if not provided
-  if (!form.nice_name && url) {
-    try {
-      const urlObj = new URL(url)
-      const pathname = urlObj.pathname
-      const filename = pathname.split('/').pop() || 'Archivo externo'
-      form.nice_name = filename.replace(/\.[^/.]+$/, '') || 'Archivo externo'
-    } catch (e) {
-      form.nice_name = 'Archivo externo'
-    }
-  }
-}
 
 const isValidUrl = (string) => {
   try {

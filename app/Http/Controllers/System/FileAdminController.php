@@ -68,6 +68,7 @@ class FileAdminController extends SystemBaseController
         $history = $fileData['history'];
         return Inertia::render('Files/byUser/Show', [
             'file' => $fileData['file'],
+            'user' => $user,
             'history' => $history,
             'breadcrumbs' => Breadcrumbs::generate('users.file.show', $user, $file),
         ]);

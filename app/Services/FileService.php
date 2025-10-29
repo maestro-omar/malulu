@@ -256,7 +256,17 @@ class FileService
         return FileSubtype::byFileTypeCode(FileType::USER)->get();
     }
 
-    public function getSubtypesForSchool(School $school)
+    public function getSubtypesForStudent(User $dummyByNow)
+    {
+        return FileSubtype::byFileTypeCode(FileType::STUDENT)->get();
+    }
+
+    public function getSubtypesForTeacher(User $dummyByNow)
+    {
+        return FileSubtype::byFileTypeCode(FileType::TEACHER)->get();
+    }
+
+    public function getSubtypesForSchool(School $dummyByNow)
     {
         return FileSubtype::byFileTypeCode(FileType::INSTITUTIONAL)->get();
     }

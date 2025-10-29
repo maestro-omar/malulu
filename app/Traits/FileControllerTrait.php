@@ -241,14 +241,29 @@ trait FileControllerTrait
     /**
      * Get subtypes for a specific context
      */
-    protected function getSubtypesForContext(string $context, $contextModel)
+    protected function getSubtypesForContext(array|string $context, $contextModel)
     {
         $fileService = $this->getFileService();
+        if (is_array($context)) {
+            $r = collect();
+            foreach ($context as $c) {
+                $r = $r->merge($this->getSubtypesForContext($c, $contextModel));
+            }
+            return $r;
+        }
 
         switch ($context) {
             case 'user':
                 $user = $contextModel instanceof User ? $contextModel : User::find($contextModel);
                 return $fileService->getSubtypesForUser($user);
+
+            case 'student':
+                $student = $contextModel instanceof User ? $contextModel : User::find($contextModel);
+                return $fileService->getSubtypesForStudent($student);
+
+            case 'teacher':
+                $teacher = $contextModel instanceof User ? $contextModel : User::find($contextModel);
+                return $fileService->getSubtypesForTeacher($teacher);
 
             case 'school':
                 $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
@@ -343,7 +358,7 @@ trait FileControllerTrait
 
         try {
             $file->update($validated);
-            
+
             return $this->getUpdateSuccessResponse($file, $context, $contextModel);
         } catch (\Exception $e) {
             return $this->getUpdateErrorResponse($e, $context, $contextModel);

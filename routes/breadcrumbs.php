@@ -9,8 +9,9 @@ use App\Models\Catalogs\District;
 use App\Models\Catalogs\Locality;
 use App\Models\Entities\Course;
 use App\Models\Entities\File;
-
 use App\Models\Entities\User;
+use Illuminate\Support\Str;
+
 
 function breadcrumbsGetUser(): User
 {
@@ -127,7 +128,10 @@ Breadcrumbs::for('schools.students', function (Trail $trail, $school) {
 
 Breadcrumbs::for('schools.student', function (Trail $trail, $school, $student) {
     $trail->parent('schools.students', $school);
-    $trail->push($student['firstname'] . ' ' . $student['lastname'], route('school.student.show', [$school, $student['id'] . '-' . $student['name'] . ' ' . $student['lastname']]));
+    $trail->push(
+        $student['firstname'] . ' ' . $student['lastname'],
+        route('school.student.show', [$school, $student['id'] . '-' . Str::slug($student['name'] . ' ' . $student['lastname'])])
+    );
 });
 Breadcrumbs::for('schools.student.edit', function (Trail $trail, $school, $student) {
     $trail->parent('schools.student', $school, $student);
@@ -303,6 +307,27 @@ Breadcrumbs::for('school.file.edit', function (Trail $trail, School $school, Fil
 Breadcrumbs::for('school.file.replace', function (Trail $trail, School $school, File $file) {
     $trail->parent('school.file.show', $school, $file);
     $trail->push("Reemplazar");
+});
+
+// School User Files Breadcrumbs
+Breadcrumbs::for('school.student.file.create', function (Trail $trail, School $school, User $user) {
+    $trail->parent('schools.student', $school, $user);
+    $trail->push("Crear archivo");
+});
+
+Breadcrumbs::for('school.student.file.show', function (Trail $trail, School $school, User $user, File $file) {
+    $trail->parent('schools.student', $school, $user);
+    $trail->push("Archivo: {$file->nice_name}", route('school.student.file.show', [$school->slug, $user->id, $file->id]));
+});
+
+Breadcrumbs::for('school.student.file.edit', function (Trail $trail, School $school, User $user, File $file) {
+    $trail->parent('school.student.file.show', $school, $user, $file);
+    $trail->push("Editar archivo");
+});
+
+Breadcrumbs::for('school.student.file.replace', function (Trail $trail, School $school, User $user, File $file) {
+    $trail->parent('school.student.file.show', $school, $user, $file);
+    $trail->push("Reemplazar archivo");
 });
 
 

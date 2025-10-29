@@ -92,6 +92,10 @@ const props = defineProps({
     type: Object,
     required: true
   },
+  school: {
+    type: Object,
+    required: true
+  },
   user: {
     type: Object,
     required: true
@@ -111,6 +115,6 @@ const form = useForm({
 const subtypeOptions = computed(() => props.subTypes)
 
 const onSubmit = () => {
-  form.put(route('users.file.update', { 'user': props.user.id, 'file': props.file.id }))
+  form.put(route('school.student.file.update', {'school': props.school.slug, 'user': props.user.id, 'file': props.file.id }))
 }
 </script>

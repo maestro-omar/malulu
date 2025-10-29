@@ -6,7 +6,7 @@
     <template #admin-header>
       <AdminHeader :title="`Detalles del usuario ${user.firstname} ${user.lastname}`" :edit="{
         show: hasPermission($page.props, 'user.manage'),
-        href: route('users.edit', { 'user': user.id }),
+        href: route('users.edit', { 'user': getUserSlug(user) }),
         label: 'Editar'
       }" :del="{
         show: hasPermission($page.props, 'user.manage'),
@@ -26,10 +26,10 @@
         :can-add-roles="hasPermission($page.props, 'superadmin')" :user-id="user.id" />
 
       <FilesTable :files="files" title="Archivos del usuario"
-        :newFileUrl="route('users.file.create', { 'user': user.id })"
-        :showFileBaseUrl="route('users.file.show', { 'user': user.id, 'file': '##' })"
-        :editFileBaseUrl="route('users.file.edit', { 'user': user.id, 'file': '##' })"
-        :replaceFileBaseUrl="route('users.file.replace', { 'user': user.id, 'file': '##' })" 
+        :newFileUrl="route('users.file.create', { 'user': getUserSlug(user) })"
+        :showFileBaseUrl="route('users.file.show', { 'user': getUserSlug(user), 'file': '##' })"
+        :editFileBaseUrl="route('users.file.edit', { 'user': getUserSlug(user), 'file': '##' })"
+        :replaceFileBaseUrl="route('users.file.replace', { 'user': getUserSlug(user), 'file': '##' })" 
         :canDownload="true" />
 
       <SystemTimestamp :row="user" />
@@ -46,6 +46,7 @@ import UserInformation from '@/Components/admin/UserInformation.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
+import { getUserSlug } from '@/Utils/strings';
 import { Head, router, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({

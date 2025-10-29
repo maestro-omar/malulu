@@ -22,10 +22,10 @@
         :editable-picture="hasPermission($page.props, 'student.edit')" />
 
       <FilesTable :files="files" title="Archivos del estudiante"
-        :newFileUrl="route('users.file.create', { 'user': user.id })"
-        :showFileBaseUrl="route('users.file.show', { 'user': user.id, 'file': '##' })"
-        :editFileBaseUrl="route('users.file.edit', { 'user': user.id, 'file': '##' })"
-        :replaceFileBaseUrl="route('users.file.replace', { 'user': user.id, 'file': '##' })" :canDownload="true" />
+        :newFileUrl="route('school.student.file.create', { 'school': school.slug, 'user': getUserSlug(user) })"
+        :showFileBaseUrl="route('school.student.file.show', { 'school': school.slug, 'user': getUserSlug(user), 'file': '##' })"
+        :editFileBaseUrl="route('school.student.file.edit', { 'school': school.slug, 'user': getUserSlug(user), 'file': '##' })"
+        :replaceFileBaseUrl="route('school.student.file.replace', { 'school': school.slug, 'user': getUserSlug(user), 'file': '##' })" :canDownload="true" />
 
       <SystemTimestamp :row="user" />
     </template>
@@ -40,6 +40,7 @@ import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
 import { route_school_student } from '@/Utils/routes';
+import { getUserSlug } from '@/Utils/strings';
 import { Head, router, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({

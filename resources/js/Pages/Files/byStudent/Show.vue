@@ -5,11 +5,11 @@
   <AuthenticatedLayout pageClass="q-pa-md row justify-center">
     <template #admin-header>
       <AdminHeader :title="`Detalles del Archivo ${file.nice_name}`" :edit="{
-        show: hasPermission($page.props, 'file.manage'),
-        href: route('users.file.edit', { 'user': getUserSlug(user), 'file': file.id }),
+        show: hasPermission($page.props, 'student.edit'),
+        href: route('school.student.file.edit', { 'school': school.slug, 'user': getUserSlug(user), 'file': file.id }),
         label: 'Editar'
       }" :del="{
-        show: hasPermission($page.props, 'file.manage'),
+        show: hasPermission($page.props, 'student.edit'),
         onClick: destroy,
         label: 'Eliminar'
       }">
@@ -36,6 +36,10 @@ const props = defineProps({
     required: true
   },
   user: {
+    type: Object,
+    required: true
+  },
+  school: {
     type: Object,
     required: true
   },
