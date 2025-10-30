@@ -47,6 +47,175 @@ class FileService
         return File::create($validatedData);
     }
 
+    /**
+     * Update file metadata (does not change file content or URL)
+     */
+    public function updateFileMetadata(File $file, array $data): File
+    {
+        $rules = [
+            'subtype_id' => [
+                'required',
+                Rule::exists('file_subtypes', 'id')
+            ],
+            'nice_name' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'valid_from' => ['nullable', 'date'],
+            'valid_until' => ['nullable', 'date']
+        ];
+
+        $validator = Validator::make($data, $rules);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $validated = $validator->validated();
+        $file->update($validated);
+        return $file;
+    }
+
+    /**
+     * Create an External URL file entry, optionally marking another file as replaced.
+     */
+    public function setExternalUrlFile(
+        int $createdByUserId,
+        int $fileSubTypeId,
+        string $niceName,
+        ?string $relatedWith,
+        ?int $relatedWithId,
+        string $description = '',
+        string $externalUrl = '',
+        bool $active = true,
+        array $metadata = [],
+        $replacingFileId = null
+    ): File {
+        $fileData = [];
+        $fileData['subtype_id'] = $fileSubTypeId;
+        $fileData['user_id'] = $createdByUserId;
+        $fileData['replaced_by_id'] = null;
+
+        switch ($relatedWith) {
+            case 'province':
+                $fileData['province_id'] = $relatedWithId;
+                break;
+            case 'school':
+                $fileData['school_id'] = $relatedWithId;
+                break;
+            case 'course':
+                $fileData['course_id'] = $relatedWithId;
+                break;
+            case 'user':
+                $fileData['target_user_id'] = $relatedWithId;
+                break;
+        }
+
+        $fileData['nice_name'] = $niceName;
+        $fileData['description'] = $description;
+        $fileData['active'] = $active;
+        $fileData['metadata'] = $metadata;
+        $fileData['external_url'] = $externalUrl;
+
+        $file = $this->createExternalUrlFile($fileData);
+
+        if ($replacingFileId) {
+            File::where('id', $replacingFileId)->update(['replaced_by_id' => $file->id, 'active' => false]);
+        }
+
+        return $file;
+    }
+
+    /**
+     * Replace a user's file either with a new upload or with an external URL.
+     * It creates a new File entry and deactivates the previous one, linking it via replaced_by_id.
+     */
+    public function replaceUserFile(
+        User $targetUser,
+        File $fileToReplace,
+        array $data,
+        ?UploadedFile $uploadedFile,
+        ?string $externalUrl,
+        int $createdByUserId
+    ): File {
+        // Validate minimal metadata
+        $validator = Validator::make($data + ['external_url' => $externalUrl], [
+            'subtype_id' => [
+                'required',
+                Rule::exists('file_subtypes', 'id')
+            ],
+            'nice_name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'external_url' => ['nullable', 'url']
+        ]);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+        $validated = $validator->validated();
+
+        // Ensure either upload or external URL is present
+        if (!$uploadedFile && empty($externalUrl)) {
+            throw ValidationException::withMessages([
+                'file' => ['Debe proporcionar un archivo o una URL externa.']
+            ]);
+        }
+
+        // Create replacement file
+        if ($uploadedFile) {
+            // Store under user context
+            $this->setNewFile(
+                $uploadedFile,
+                'user',
+                $createdByUserId,
+                (int)$validated['subtype_id'],
+                $validated['nice_name'],
+                '',
+                'user',
+                $targetUser->id,
+                $validated['description'] ?? '',
+                true,
+                [],
+                [],
+                $fileToReplace->id
+            );
+        } else {
+            $this->setExternalUrlFile(
+                $createdByUserId,
+                (int)$validated['subtype_id'],
+                $validated['nice_name'],
+                'user',
+                $targetUser->id,
+                $validated['description'] ?? '',
+                (string)$externalUrl,
+                true,
+                [],
+                $fileToReplace->id
+            );
+        }
+
+        // Load and return the newly created file
+        $newFile = File::where('replaced_by_id', null)
+            ->where(function ($q) use ($fileToReplace) {
+                $q->where('id', '>', $fileToReplace->id);
+            })
+            ->latest('id')
+            ->first();
+
+        // Safer: fetch by link
+        $newFile = File::where('id', $fileToReplace->fresh()->replaced_by_id)->first() ?: $newFile;
+
+        if (!$newFile) {
+            // As a fallback, return refreshed original relation if set
+            $fileToReplace->refresh();
+            if ($fileToReplace->replaced_by_id) {
+                $newFile = File::find($fileToReplace->replaced_by_id);
+            }
+        }
+
+        if (!$newFile) {
+            throw new \RuntimeException('No se pudo encontrar el archivo reemplazado.');
+        }
+
+        return $newFile;
+    }
+
     private function validateFileData(array $data)
     {
         $rules = [
@@ -140,7 +309,7 @@ class FileService
         $fileData['subtype_id'] = $fileSubTypeId;
         $fileData['user_id'] = $createdByUserId;
         $fileData['replaced_by_id'] = null;
-        
+
         // Set the appropriate foreign key based on the related type
         switch ($relatedWith) {
             case 'province':
@@ -179,9 +348,12 @@ class FileService
         throw new \Exception('TODO OMAR - Implementar permisos de visibilidad por archivo');
     }
 
-    public function getUserFiles(User $user, User $loggedUser)
+    public function getUserFiles(User $user, User $loggedUser, bool $onlyActive = true)
     {
         $files = $user->files;
+        if ($onlyActive) {
+            $files = $files->where('active', true);
+        }
         $files = $this->checkAndFormatEach($files, $loggedUser);
         return $files ?: null;
     }
@@ -208,7 +380,7 @@ class FileService
                 return null;
             }
         });
-        return $files->filter()->toArray();
+        return array_values($files->filter()->toArray()); //need to reset indexes
     }
 
     private function formatFileForTable(File $file)
@@ -271,11 +443,15 @@ class FileService
         return FileSubtype::byFileTypeCode(FileType::INSTITUTIONAL)->get();
     }
 
-    public function getCourseFiles(Course $course, User $loggedUser)
+    public function getCourseFiles(Course $course, User $loggedUser, bool $onlyActive = true)
     {
-        $files = File::where('course_id', $course->id)->with(['subtype', 'subtype.fileType'])->get();
+        $query = File::where('course_id', $course->id)->with(['subtype', 'subtype.fileType']);
+        if ($onlyActive) {
+            $query->where('active', true);
+        }
+        $files = $query->get();
         $files = $this->checkAndFormatEach($files, $loggedUser);
-        return $files ?: null;
+        return $files;
     }
 
     public function getFileDataForUser(File $file, User $loggedUser, User $user)

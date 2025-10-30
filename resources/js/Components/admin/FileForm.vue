@@ -22,7 +22,8 @@
               <InputError :message="form.errors.subtype_id" class="admin-form__error" />
             </div>
 
-            <div class="row q-col-gutter-sm q-mb-lg">
+            <!-- File/URL inputs - only show in create mode -->
+            <div v-if="!isEditMode" class="row q-col-gutter-sm q-mb-lg">
               <div class="admin-form__field col-2">
                 <q-option-group v-model="form.inputType" :options="inputTypeOptions" color="primary" inline
                   @update:model-value="onInputTypeChange" />
@@ -31,7 +32,7 @@
               <div v-if="form.inputType === 'file'" class="admin-form__field col-9">
                 <InputLabel for="file" value="Archivo" />
                 <q-file id="file" v-model="form.file" outlined dense label="Seleccionar archivo"
-                  :rules="[val => !!val || 'Debe seleccionar un archivo']" @update:model-value="onFileChange">
+                  :rules="[val => !!val || 'Debe seleccionar un archivo']">
                   <template v-slot:prepend>
                     <q-icon name="attach_file" />
                   </template>
@@ -48,7 +49,7 @@
               <div v-else class="admin-form__field col-9">
                 <InputLabel for="external_url" value="URL del archivo" />
                 <TextInput id="external_url" v-model="form.external_url" type="url" class="admin-form__input"
-                  placeholder="https://..." @update:model-value="onUrlChange" />
+                  placeholder="https://..." />
                 <InputError :message="form.errors.external_url" class="admin-form__error" />
               </div>
             </div>
@@ -90,7 +91,7 @@
       </q-card>
 
       <!-- Action Buttons -->
-      <ActionButtons button-label="Guardar archivo" :cancel-href="cancelUrl" :disabled="form.processing || !isFormValid"
+      <ActionButtons :button-label="isEditMode ? 'Actualizar archivo' : 'Guardar archivo'" :cancel-href="cancelUrl" :disabled="form.processing || !isFormValid"
         type="submit" />
     </form>
   </div>
@@ -134,10 +135,17 @@ const props = defineProps({
   existingFile: {
     type: Object,
     default: null
+  },
+  updateUrl: {
+    type: String,
+    default: null
   }
 })
 
 const emit = defineEmits(['success', 'error'])
+
+// Determine if we're in edit mode
+const isEditMode = computed(() => !!props.updateUrl && !!props.existingFile)
 
 // Form setup
 const form = useForm({
@@ -180,7 +188,12 @@ const isFormValid = computed(() => {
   const hasSubtype = !!form.subtype_id
   const hasNiceName = !!form.nice_name
   
-  // Check for file or URL based on input type
+  // In edit mode, we don't need file/URL (only metadata changes)
+  if (isEditMode.value) {
+    return hasSubtype && hasNiceName
+  }
+  
+  // Check for file or URL based on input type (for create mode)
   let hasFileOrUrl = false
   if (form.inputType === 'file') {
     hasFileOrUrl = !!form.file
@@ -223,7 +236,27 @@ const formatFileSize = (bytes) => {
 const onSubmit = () => {
   if (!isFormValid.value) return
 
-  // Prepare form data based on input type
+  // Edit mode: only update metadata (no file/URL changes)
+  if (isEditMode.value) {
+    const formData = {
+      subtype_id: form.subtype_id,
+      nice_name: form.nice_name,
+      description: form.description || ''
+    }
+
+    form.put(props.updateUrl, {
+      data: formData,
+      onSuccess: (page) => {
+        emit('success', page)
+      },
+      onError: (errors) => {
+        emit('error', errors)
+      }
+    })
+    return
+  }
+
+  // Create mode: handle file upload or external URL
   if (form.inputType === 'file' && form.file) {
     // For file uploads, use FormData
     const formData = new FormData()

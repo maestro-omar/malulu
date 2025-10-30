@@ -2,7 +2,7 @@
 
   <Head :title="`Nuevo archivo para usuario`" />
 
-  <AuthenticatedLayout>
+  <AuthenticatedLayout >
     <template #admin-header>
       <AdminHeader :title="`Nuevo archivo para usuario`">
       </AdminHeader>

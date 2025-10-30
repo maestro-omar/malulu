@@ -5,7 +5,7 @@
         <!-- File Information Card -->
         <q-card class="q-mb-md">
           <q-card-section>
-            <div class="text-h3 q-mb-md">Información del Archivo
+            <div class="text-h3 q-mb-md">Detalles del Archivo
               <q-chip :color="getLevelColor(0)" text-color="white" size="md"
                 :title="`Esta es la versión ${currentVersion} del archivo`">
                 V{{ currentVersion }}
@@ -20,13 +20,13 @@
                 :title="file.is_external ? 'Abrir enlace externo' : 'Descargar archivo'" />
             </div>
             <div class="row q-col-gutter-sm">
-              <div class="col-12 col-sm-6">
-                <DataFieldShow label="Nombre del Archivo" :value="file.nice_name" type="text" />
-              </div>
-              <div class="col-12 col-sm-6">
+              <div class="col-12">
                 <DataFieldShow label="Tipo de contenido" :value="file.subtype?.name" type="text" />
               </div>
-              <div class="col-12">
+              <div class="col-12 col-sm-4">
+                <DataFieldShow label="Nombre" :value="file.nice_name" type="text" />
+              </div>
+              <div class="col-12 col-sm-8">
                 <DataFieldShow label="Descripción" :value="file.description" type="text" />
               </div>
               <div class="col-12 col-sm-4" v-if="!file.is_external">
@@ -35,16 +35,14 @@
               <div class="col-12 col-sm-4" v-if="!file.is_external">
                 <DataFieldShow label="Tipo MIME" :value="file.mime_type" type="text" />
               </div>
-              <div class="col-12 col-sm-4" v-if="file.is_external">
+              <div class="col-12 col-sm-4" v-if="!file.is_external">
+                <DataFieldShow label="Nombre del Archivo Original" :value="file.original_name" type="text" />
+              </div>
+              <div class="col-12" v-if="file.is_external">
                 <DataFieldShow label="URL Externa" :value="file.external_url" type="url" />
               </div>
             </div>
-            <div class="row q-col-gutter-sm" v-if="!file.is_external">
-              <div class="col-12 col-sm-6">
-                <DataFieldShow label="Nombre Original" :value="file.original_name" type="text" />
-              </div>
-            </div>
-            <div class="row q-col-gutter-sm">
+            <div class="row q-mt-md q-col-gutter-sm">
               <div class="col-12 col-sm-4">
                 <DataFieldShow label="Creado por" :value="file.user?.firstname + ' ' + file.user?.lastname"
                   type="text" />
@@ -64,7 +62,7 @@
           <q-card-section>
             <div class="text-h3 q-mb-md">Historial de Versiones</div>
             <div class="q-mb-md text-grey-7">
-              Versiones anteriores que han sido reemplazadas por este archivo
+              Versiones anteriores que han sido reemplazadas
             </div>
             <q-table class="mll-table mll-table--files striped-table" dense :rows="history"
               :columns="historyColumns" row-key="id">

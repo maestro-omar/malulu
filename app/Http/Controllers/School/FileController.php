@@ -89,6 +89,7 @@ class FileController extends SchoolBaseController
 
         return Inertia::render('Files/bySchool/Create', [
             'subTypes' => $subTypes,
+            'school' => $school,
             'context' => 'school',
             'contextId' => $school->id,
             'storeUrl' => $storeUrl,
@@ -285,13 +286,8 @@ class FileController extends SchoolBaseController
     public function updateForStudent(Request $request, School $school, User $user, File $file)
     {
         try {
-            $validated = $request->validate([
-                'subtype_id' => 'required|exists:file_subtypes,id',
-                'nice_name' => 'required|string|max:255',
-                'description' => 'nullable|string'
-            ]);
-
-            $file->update($validated);
+            $data = $request->only(['subtype_id', 'nice_name', 'description', 'valid_from', 'valid_until']);
+            $this->fileService->updateFileMetadata($file, $data);
 
             return redirect()->route('school.student.file.show', [
                 'school' => $school->slug,
@@ -314,61 +310,30 @@ class FileController extends SchoolBaseController
             return Inertia::render('Files/byStudent/Replace', [
                 'file' => $file,
                 'user' => $user,
+                'school' => $school,
                 'subTypes' => $subTypes,
                 'breadcrumbs' => Breadcrumbs::generate('school.student.file.replace', $school, $user, $file),
             ]);
         }
 
         try {
-            $validated = $request->validate([
-                'subtype_id' => 'required|exists:file_subtypes,id',
-                'nice_name' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'file' => 'nullable|file|max:10240', // 10MB max, nullable for external URLs
-                'external_url' => 'nullable|url|max:500', // nullable for file uploads
-                'valid_from' => 'nullable|date',
-                'valid_until' => 'nullable|date|after_or_equal:valid_from'
-            ]);
+            $data = $request->only(['subtype_id', 'nice_name', 'description']);
+            $uploadedFile = $request->hasFile('file') ? $request->file('file') : null;
+            $externalUrl = $request->input('external_url');
 
-            // Custom validation: ensure either file or external_url is provided
-            if (empty($validated['file']) && empty($validated['external_url'])) {
-                throw new \Illuminate\Validation\ValidationException(
-                    validator([], []),
-                    ['file' => ['Debe proporcionar un archivo o una URL externa.']]
-                );
-            }
-
-            // Update basic file information
-            $file->update([
-                'subtype_id' => $validated['subtype_id'],
-                'nice_name' => $validated['nice_name'],
-                'description' => $validated['description'] ?? ''
-            ]);
-
-            // Handle file upload or external URL
-            if (!empty($validated['file']) && $request->hasFile('file')) {
-                $uploadedFile = $request->file('file');
-                $fileData = [];
-                $this->handleFileUpload($fileData, $uploadedFile, 'user', $user);
-                $file->update($fileData);
-            } elseif (!empty($validated['external_url'])) {
-                $fileData = [];
-                $this->handleExternalUrl($fileData, $validated['external_url']);
-                $file->update($fileData);
-            }
-
-            // Handle expiration dates if provided
-            if (isset($validated['valid_from']) || isset($validated['valid_until'])) {
-                $file->update([
-                    'valid_from' => $validated['valid_from'] ?? null,
-                    'valid_until' => $validated['valid_until'] ?? null
-                ]);
-            }
+            $newFile = $this->fileService->replaceUserFile(
+                $user,
+                $file,
+                $data,
+                $uploadedFile,
+                $externalUrl,
+                Auth::id()
+            );
 
             return redirect()->route('school.student.file.show', [
                 'school' => $school->slug,
                 'user' => $user->id,
-                'file' => $file->id
+                'file' => $newFile->id
             ])->with('success', 'Archivo reemplazado exitosamente.');
         } catch (\Exception $e) {
             return redirect()->route('school.student.file.replace', [
