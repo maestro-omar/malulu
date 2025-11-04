@@ -31,7 +31,7 @@ class FileController extends SchoolBaseController
         parent::__construct();
     }
 
-    public function createForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
+    public function createForCourse(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         $course->load(['school', 'schoolLevel']);
@@ -49,12 +49,12 @@ class FileController extends SchoolBaseController
         ]);
     }
 
-    public function storeForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
+    public function storeForCourse(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         return $this->storeFile($request, 'course', $course);
     }
-    public function showForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
+    public function showForCourse(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         $course->load(['school', 'schoolLevel']);
@@ -67,7 +67,7 @@ class FileController extends SchoolBaseController
     }
 
 
-    public function editForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
+    public function editForCourse(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         $course->load(['school', 'schoolLevel']);
@@ -143,13 +143,13 @@ class FileController extends SchoolBaseController
         return $this->updateFile($request, $file, 'school', $school);
     }
 
-    public function updateForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
+    public function updateForCourse(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         return $this->updateFile($request, $file, 'course', $course);
     }
 
-    public function replaceForSchool(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
+    public function replaceForCourse(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, File $file)
     {
         if ($request->isMethod('get')) {
             $course = $this->getCourseFromUrlParameter($courseIdAndLabel);

@@ -6,6 +6,7 @@ use App\Models\Entities\File;
 use App\Models\Entities\User;
 use App\Models\Entities\School;
 use App\Models\Entities\Course;
+use App\Models\Catalogs\Province;
 use App\Models\Catalogs\FileSubtype;
 use App\Models\Catalogs\FileType;
 use Illuminate\Support\Facades\Validator;
@@ -14,6 +15,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class FileService
 {
@@ -45,6 +47,102 @@ class FileService
     {
         $validatedData = $this->validateFileData($data);
         return File::create($validatedData);
+    }
+
+    /**
+     * Create a file for any context (user, school, course, province)
+     * Handles validation, file uploads, and external URLs
+     */
+    public function createFileForContext(
+        array $data,
+        ?UploadedFile $uploadedFile,
+        ?string $externalUrl,
+        string $context,
+        $contextModel,
+        int $createdByUserId
+    ): File {
+        // Validate input data
+        $validator = Validator::make($data + ['external_url' => $externalUrl], [
+            'subtype_id' => [
+                'required',
+                Rule::exists('file_subtypes', 'id')
+            ],
+            'nice_name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'external_url' => ['nullable', 'url'],
+            'valid_from' => ['nullable', 'date'],
+            'valid_until' => ['nullable', 'date']
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $validated = $validator->validated();
+
+        // Custom validation: ensure either file or external_url is provided
+        if (!$uploadedFile && empty($externalUrl)) {
+            throw ValidationException::withMessages([
+                'file' => ['Debe proporcionar un archivo o una URL externa.']
+            ]);
+        }
+
+        // Validate valid_until is after valid_from if both are provided
+        if (isset($validated['valid_from']) && isset($validated['valid_until'])) {
+            $validator = Validator::make($validated, [
+                'valid_until' => ['after_or_equal:valid_from']
+            ]);
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+        }
+
+        // Get context ID
+        $contextId = $this->getContextId($context, $contextModel);
+
+        // Create file based on type
+        if ($uploadedFile) {
+            // Handle file upload
+            $file = $this->setNewFile(
+                $uploadedFile,
+                $context,
+                $createdByUserId,
+                (int)$validated['subtype_id'],
+                $validated['nice_name'],
+                '',
+                $context,
+                $contextId,
+                $validated['description'] ?? '',
+                true,
+                [],
+                [],
+                null // Not replacing a file
+            );
+        } else {
+            // Handle external URL
+            $file = $this->setExternalUrlFile(
+                $createdByUserId,
+                (int)$validated['subtype_id'],
+                $validated['nice_name'],
+                $context,
+                $contextId,
+                $validated['description'] ?? '',
+                (string)$externalUrl,
+                true,
+                [],
+                null // Not replacing a file
+            );
+        }
+
+        // Handle expiration dates if provided
+        if (isset($validated['valid_from']) || isset($validated['valid_until'])) {
+            $file->update([
+                'valid_from' => $validated['valid_from'] ?? null,
+                'valid_until' => $validated['valid_until'] ?? null
+            ]);
+        }
+
+        return $file;
     }
 
     /**
@@ -124,15 +222,16 @@ class FileService
     }
 
     /**
-     * Replace a user's file either with a new upload or with an external URL.
+     * Replace a file for any context (user, school, course, province).
      * It creates a new File entry and deactivates the previous one, linking it via replaced_by_id.
      */
-    public function replaceUserFile(
-        User $targetUser,
+    public function replaceFile(
         File $fileToReplace,
         array $data,
         ?UploadedFile $uploadedFile,
         ?string $externalUrl,
+        string $context,
+        $contextModel,
         int $createdByUserId
     ): File {
         // Validate minimal metadata
@@ -143,7 +242,9 @@ class FileService
             ],
             'nice_name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'external_url' => ['nullable', 'url']
+            'external_url' => ['nullable', 'url'],
+            'valid_from' => ['nullable', 'date'],
+            'valid_until' => ['nullable', 'date']
         ]);
         if ($validator->fails()) {
             throw new ValidationException($validator);
@@ -157,57 +258,149 @@ class FileService
             ]);
         }
 
+        // Get context ID
+        $contextId = $this->getContextId($context, $contextModel);
+
+        // Store the old file ID to ensure we're creating a new one
+        $oldFileId = $fileToReplace->id;
+        
+        // Debug: Log the replacement attempt
+        Log::info('FileService::replaceFile - Starting replacement', [
+            'old_file_id' => $oldFileId,
+            'context' => $context,
+            'context_id' => $contextId,
+            'has_upload' => !is_null($uploadedFile),
+            'has_url' => !empty($externalUrl)
+        ]);
+
         // Create replacement file
         if ($uploadedFile) {
-            // Store under user context
-            $this->setNewFile(
+            $newFile = $this->setNewFile(
                 $uploadedFile,
-                'user',
+                $context,
                 $createdByUserId,
                 (int)$validated['subtype_id'],
                 $validated['nice_name'],
                 '',
-                'user',
-                $targetUser->id,
+                $context,
+                $contextId,
                 $validated['description'] ?? '',
                 true,
                 [],
                 [],
-                $fileToReplace->id
+                $oldFileId
             );
         } else {
-            $this->setExternalUrlFile(
+            $newFile = $this->setExternalUrlFile(
                 $createdByUserId,
                 (int)$validated['subtype_id'],
                 $validated['nice_name'],
-                'user',
-                $targetUser->id,
+                $context,
+                $contextId,
                 $validated['description'] ?? '',
                 (string)$externalUrl,
                 true,
                 [],
-                $fileToReplace->id
+                $oldFileId
             );
         }
+        
+        // Debug: Log the result
+        Log::info('FileService::replaceFile - After creation', [
+            'old_file_id' => $oldFileId,
+            'new_file_id' => $newFile->id,
+            'are_same' => $newFile->id === $oldFileId
+        ]);
 
-        // Load and return the newly created file
-        $newFile = File::where('replaced_by_id', null)
-            ->where(function ($q) use ($fileToReplace) {
-                $q->where('id', '>', $fileToReplace->id);
-            })
-            ->latest('id')
-            ->first();
+        // Verify we created a new file (not updating the old one)
+        if ($newFile->id === $oldFileId) {
+            Log::error('FileService::replaceFile - ERROR: New file has same ID as old file!', [
+                'file_id' => $newFile->id,
+                'old_file_id' => $oldFileId
+            ]);
+            throw new \RuntimeException('Error: A new file was not created. The existing file would have been updated.');
+        }
 
-        // Safer: fetch by link
-        $newFile = File::where('id', $fileToReplace->fresh()->replaced_by_id)->first() ?: $newFile;
+        // Get a fresh instance to ensure we're not working with a cached or shared instance
+        $freshFile = File::find($newFile->id);
+        if (!$freshFile || $freshFile->id === $oldFileId) {
+            throw new \RuntimeException('Error: Could not retrieve the newly created file or it has the same ID as the file being replaced.');
+        }
 
-        if (!$newFile) {
-            // As a fallback, return refreshed original relation if set
-            $fileToReplace->refresh();
-            if ($fileToReplace->replaced_by_id) {
-                $newFile = File::find($fileToReplace->replaced_by_id);
+        // Handle expiration dates if provided
+        if (isset($validated['valid_from']) || isset($validated['valid_until'])) {
+            $freshFile->update([
+                'valid_from' => $validated['valid_from'] ?? null,
+                'valid_until' => $validated['valid_until'] ?? null
+            ]);
+            // Reload after update to ensure we have latest data
+            $freshFile->refresh();
+        }
+
+        return $freshFile;
+    }
+
+    /**
+     * Replace a user's file (convenience method that calls replaceFile).
+     */
+    public function replaceUserFile(
+        User $targetUser,
+        File $fileToReplace,
+        array $data,
+        ?UploadedFile $uploadedFile,
+        ?string $externalUrl,
+        int $createdByUserId
+    ): File {
+        return $this->replaceFile(
+            $fileToReplace,
+            $data,
+            $uploadedFile,
+            $externalUrl,
+            'user',
+            $targetUser,
+            $createdByUserId
+        );
+    }
+
+    /**
+     * Get the context ID from a context model
+     */
+    private function getContextId(string $context, $contextModel): int
+    {
+        switch ($context) {
+            case 'user':
+                return $contextModel instanceof User ? $contextModel->id : $contextModel;
+            case 'school':
+                return $contextModel instanceof School ? $contextModel->id : $contextModel;
+            case 'course':
+                return $contextModel instanceof Course ? $contextModel->id : $contextModel;
+            case 'province':
+                return $contextModel instanceof Province ? $contextModel->id : $contextModel;
+            default:
+                throw new \InvalidArgumentException("Unknown context: {$context}");
+        }
+    }
+
+    /**
+     * Get the newly created file that replaced the given file
+     */
+    private function getReplacedFile(File $fileToReplace): File
+    {
+        // Refresh to get updated replaced_by_id
+        $fileToReplace->refresh();
+
+        if ($fileToReplace->replaced_by_id) {
+            $newFile = File::find($fileToReplace->replaced_by_id);
+            if ($newFile) {
+                return $newFile;
             }
         }
+
+        // Fallback: find by query (in case refresh didn't work)
+        $newFile = File::where('replaced_by_id', null)
+            ->where('id', '>', $fileToReplace->id)
+            ->latest('id')
+            ->first();
 
         if (!$newFile) {
             throw new \RuntimeException('No se pudo encontrar el archivo reemplazado.');
@@ -334,12 +527,48 @@ class FileService
         $fileData['description'] = $description;
         $fileData['active'] = $active;
         $fileData['metadata'] = $metadata;
-        $file = $this->createFile($fileData);
+        
+        // Debug: Log before creation
+        Log::info('FileService::setNewFile - Before createFile', [
+            'replacing_file_id' => $replacingFileId,
+            'context' => $relatedWith,
+            'context_id' => $relatedWithId,
+            'file_data_keys' => array_keys($fileData)
+        ]);
+        
+        $newFile = $this->createFile($fileData);
 
-        if ($replacingFileId)
-            File::where('id', $replacingFileId)->update(['replaced_by_id' => $file->id, 'active' => false]);
+        // Ensure we have a fresh instance with the new ID
+        $newFileId = $newFile->id;
+        
+        // Debug: Log after creation
+        Log::info('FileService::setNewFile - After createFile', [
+            'new_file_id' => $newFileId,
+            'replacing_file_id' => $replacingFileId,
+            'are_different' => $newFileId != $replacingFileId
+        ]);
+        
+        if ($replacingFileId) {
+            // Only update the old file if we have a different ID
+            if ($newFileId != $replacingFileId) {
+                Log::info('FileService::setNewFile - Updating old file', [
+                    'old_file_id' => $replacingFileId,
+                    'new_file_id' => $newFileId
+                ]);
+                File::where('id', $replacingFileId)->update(['replaced_by_id' => $newFileId, 'active' => false]);
+            } else {
+                Log::error('FileService::setNewFile - ERROR: Cannot replace - same ID!', [
+                    'file_id' => $newFileId,
+                    'replacing_file_id' => $replacingFileId
+                ]);
+                throw new \RuntimeException('Error: Cannot replace file - new file has same ID as file to replace.');
+            }
+        }
 
-        $this->setVisibility($file, $createdByUserId, $visibilityOptions);
+        $this->setVisibility($newFile, $createdByUserId, $visibilityOptions);
+
+        // Return a fresh instance to avoid any potential caching issues
+        return File::find($newFileId);
     }
 
     public function setVisibility($file, $userId, $visibilityOptions)

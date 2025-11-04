@@ -1,14 +1,19 @@
 <template>
+
   <Head :title="`Archivo ${file.nice_name}`" />
 
   <AuthenticatedLayout pageClass="q-pa-md row justify-center">
     <template #admin-header>
       <AdminHeader :title="`Detalles del Archivo ${file.nice_name}`" :edit="{
-        show: hasPermission($page.props, 'file.manage'),
-        href: route('school.file.edit', { 'school': school.slug, 'file': file.id }),
+        show: hasPermission($page.props, 'school.files.manage'),
+        href: route('school.file.edit', { school: school.slug, file: file.id }),
         label: 'Editar'
+      }" :replace="{
+        show: hasPermission($page.props, 'school.files.manage'),
+        href: route('school.file.replace', { school: school.slug, file: file.id }),
+        label: 'Reemplazar'
       }" :del="{
-        show: hasPermission($page.props, 'file.manage'),
+        show: hasPermission($page.props, 'school.files.manage'),
         onClick: destroy,
         label: 'Eliminar'
       }">

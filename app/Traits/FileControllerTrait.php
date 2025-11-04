@@ -36,61 +36,28 @@ trait FileControllerTrait
      */
     public function storeFile(Request $request, string $context, $contextModel)
     {
-        $validated = $request->validate([
-            'subtype_id' => 'required|exists:file_subtypes,id',
-            'nice_name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'context' => 'required|string|in:user,school,course,province',
-            'context_id' => 'required',
-            'file' => 'nullable|file|max:10240', // 10MB max, nullable for external URLs
-            'external_url' => 'nullable|url|max:500', // nullable for file uploads
-            'valid_from' => 'nullable|date',
-            'valid_until' => 'nullable|date|after_or_equal:valid_from'
-        ]);
-
-        // Custom validation: ensure either file or external_url is provided
-        if (empty($validated['file']) && empty($validated['external_url'])) {
-            throw new \Illuminate\Validation\ValidationException(
-                validator([], []),
-                ['file' => ['Debe proporcionar un archivo o una URL externa.']]
-            );
-        }
-
         try {
-            $userId = Auth::id();
+            $data = $request->only(['subtype_id', 'nice_name', 'description']);
+            $uploadedFile = $request->hasFile('file') ? $request->file('file') : null;
+            $externalUrl = $request->input('external_url');
+
+            // Add expiration dates to data if provided
+            if ($request->has('valid_from')) {
+                $data['valid_from'] = $request->input('valid_from');
+            }
+            if ($request->has('valid_until')) {
+                $data['valid_until'] = $request->input('valid_until');
+            }
+
             $fileService = $this->getFileService();
-
-            // Prepare file data
-            $fileData = [
-                'subtype_id' => $validated['subtype_id'],
-                'user_id' => $userId,
-                'nice_name' => $validated['nice_name'],
-                'description' => $validated['description'] ?? '',
-                'active' => true,
-                'metadata' => []
-            ];
-
-            // Set context-specific foreign key
-            $this->setContextForeignKey($fileData, $context, $contextModel);
-
-            // Handle file upload or external URL
-            if (!empty($validated['file']) && $request->hasFile('file')) {
-                $uploadedFile = $request->file('file');
-                $this->handleFileUpload($fileData, $uploadedFile, $context, $contextModel);
-            } elseif (!empty($validated['external_url'])) {
-                $this->handleExternalUrl($fileData, $validated['external_url']);
-            }
-
-            // Add expiration dates if provided
-            if (isset($validated['valid_from'])) {
-                $fileData['valid_from'] = $validated['valid_from'];
-            }
-            if (isset($validated['valid_until'])) {
-                $fileData['valid_until'] = $validated['valid_until'];
-            }
-
-            // Create the file record
-            $file = $fileService->createFile($fileData);
+            $file = $fileService->createFileForContext(
+                $data,
+                $uploadedFile,
+                $externalUrl,
+                $context,
+                $contextModel,
+                Auth::id()
+            );
 
             return $this->getSuccessResponse($file, $context, $contextModel);
         } catch (\Exception $e) {
@@ -350,14 +317,10 @@ trait FileControllerTrait
      */
     public function updateFile(Request $request, File $file, string $context, $contextModel)
     {
-        $validated = $request->validate([
-            'subtype_id' => 'required|exists:file_subtypes,id',
-            'nice_name' => 'required|string|max:255',
-            'description' => 'nullable|string'
-        ]);
-
         try {
-            $file->update($validated);
+            $data = $request->only(['subtype_id', 'nice_name', 'description', 'valid_from', 'valid_until']);
+            $fileService = $this->getFileService();
+            $fileService->updateFileMetadata($file, $data);
 
             return $this->getUpdateSuccessResponse($file, $context, $contextModel);
         } catch (\Exception $e) {
@@ -370,53 +333,31 @@ trait FileControllerTrait
      */
     public function replaceFile(Request $request, File $file, string $context, $contextModel)
     {
-        $validated = $request->validate([
-            'subtype_id' => 'required|exists:file_subtypes,id',
-            'nice_name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'file' => 'nullable|file|max:10240', // 10MB max, nullable for external URLs
-            'external_url' => 'nullable|url|max:500', // nullable for file uploads
-            'valid_from' => 'nullable|date',
-            'valid_until' => 'nullable|date|after_or_equal:valid_from'
-        ]);
-
-        // Custom validation: ensure either file or external_url is provided
-        if (empty($validated['file']) && empty($validated['external_url'])) {
-            throw new \Illuminate\Validation\ValidationException(
-                validator([], []),
-                ['file' => ['Debe proporcionar un archivo o una URL externa.']]
-            );
-        }
-
         try {
-            // Update basic file information
-            $file->update([
-                'subtype_id' => $validated['subtype_id'],
-                'nice_name' => $validated['nice_name'],
-                'description' => $validated['description'] ?? ''
-            ]);
+            $data = $request->only(['subtype_id', 'nice_name', 'description']);
+            $uploadedFile = $request->hasFile('file') ? $request->file('file') : null;
+            $externalUrl = $request->input('external_url');
 
-            // Handle file upload or external URL
-            if (!empty($validated['file']) && $request->hasFile('file')) {
-                $uploadedFile = $request->file('file');
-                $fileData = [];
-                $this->handleFileUpload($fileData, $uploadedFile, $context, $contextModel);
-                $file->update($fileData);
-            } elseif (!empty($validated['external_url'])) {
-                $fileData = [];
-                $this->handleExternalUrl($fileData, $validated['external_url']);
-                $file->update($fileData);
+            // Add expiration dates to data if provided
+            if ($request->has('valid_from')) {
+                $data['valid_from'] = $request->input('valid_from');
+            }
+            if ($request->has('valid_until')) {
+                $data['valid_until'] = $request->input('valid_until');
             }
 
-            // Handle expiration dates if provided
-            if (isset($validated['valid_from']) || isset($validated['valid_until'])) {
-                $file->update([
-                    'valid_from' => $validated['valid_from'] ?? null,
-                    'valid_until' => $validated['valid_until'] ?? null
-                ]);
-            }
+            $fileService = $this->getFileService();
+            $newFile = $fileService->replaceFile(
+                $file,
+                $data,
+                $uploadedFile,
+                $externalUrl,
+                $context,
+                $contextModel,
+                Auth::id()
+            );
 
-            return $this->getReplaceSuccessResponse($file, $context, $contextModel);
+            return $this->getReplaceSuccessResponse($newFile, $context, $contextModel);
         } catch (\Exception $e) {
             return $this->getReplaceErrorResponse($e, $context, $contextModel);
         }

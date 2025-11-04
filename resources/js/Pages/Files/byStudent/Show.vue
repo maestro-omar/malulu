@@ -8,6 +8,10 @@
         show: hasPermission($page.props, 'student.edit'),
         href: route('school.student.file.edit', { 'school': school.slug, 'user': getUserSlug(user), 'file': file.id }),
         label: 'Editar'
+      }" :replace="{
+        show: hasPermission($page.props, 'student.edit'),
+        href: route('school.student.file.replace', { 'school': school.slug, 'user': getUserSlug(user), 'file': file.id }),
+        label: 'Reemplazar'
       }" :del="{
         show: hasPermission($page.props, 'student.edit'),
         onClick: destroy,

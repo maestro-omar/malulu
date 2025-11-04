@@ -1,19 +1,29 @@
 <template>
+
   <Head :title="`Archivo ${file.nice_name}`" />
 
   <AuthenticatedLayout pageClass="q-pa-md row justify-center">
     <template #admin-header>
       <AdminHeader :title="`Detalles del Archivo ${file.nice_name}`" :edit="{
-        show: hasPermission($page.props, 'file.manage'),
-        href: route('school.course.file.edit', { 
-          'school': course.school.slug, 
-          'schoolLevel': course.school_level.code, 
-          'idAndLabel': course.id_and_label, 
-          'file': file.id 
+        show: hasPermission($page.props, 'course.manage'),
+        href: route('school.course.file.edit', {
+          'school': course.school.slug,
+          'schoolLevel': course.school_level.code,
+          'idAndLabel': course.id_and_label,
+          'file': file.id
         }),
         label: 'Editar'
+      }" :replace="{
+        show: hasPermission($page.props, 'course.manage'),
+        href: route('school.course.file.replace', {
+          'school': course.school.slug,
+          'schoolLevel': course.school_level.code,
+          'idAndLabel': course.id_and_label,
+          'file': file.id
+        }),
+        label: 'Reemplazar'
       }" :del="{
-        show: hasPermission($page.props, 'file.manage'),
+        show: hasPermission($page.props, 'course.manage'),
         onClick: destroy,
         label: 'Eliminar'
       }">
@@ -53,11 +63,11 @@ const $page = usePage()
 
 const destroy = () => {
   if (confirm("¿Está seguro que desea eliminar este archivo?")) {
-    router.delete(route("school.course.file.destroy", { 
-      'school': props.course.school.slug, 
-      'schoolLevel': props.course.school_level.code, 
-      'idAndLabel': props.course.id_and_label, 
-      'file': props.file.id 
+    router.delete(route("school.course.file.destroy", {
+      'school': props.course.school.slug,
+      'schoolLevel': props.course.school_level.code,
+      'idAndLabel': props.course.id_and_label,
+      'file': props.file.id
     }))
   }
 }

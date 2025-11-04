@@ -7,13 +7,12 @@
         <q-toolbar-title class="mll-sub-header__title">
           {{ title }}
         </q-toolbar-title>
-        <div
-          v-if="(add && add.show) || (trashed && trashed.show) || (edit && edit.show) || (del && del.show)"
-          class="mll-sub-header__actions"
-        >
+        <div v-if="(add && add.show) || (trashed && trashed.show) || (edit && edit.show) || (del && del.show)"
+          class="mll-sub-header__actions">
           <q-btn v-if="add && add.show" :href="add.href" color="green" size="md" :label="add.label || 'Nuevo'" />
           <q-btn v-if="trashed && trashed.show" :href="trashed.href" color="grey-6" size="md"
             :label="trashed.label || 'Eliminados'" />
+          <q-btn v-if="replace && replace.show" :href="replace.href" color="lime-6" size="md" :label="replace.label || 'Reemplazar'" />
           <q-btn v-if="edit && edit.show" :href="edit.href" color="primary" size="md" :label="edit.label || 'Editar'" />
           <q-btn v-if="del && del.show" @click="del.onClick" color="red" size="md" :label="del.label || 'Eliminar'" />
         </div>
@@ -33,6 +32,10 @@ import Breadcrumb from "@/Components/admin/Breadcrumbs.vue";
 defineProps({
   title: String,
   edit: {
+    type: Object,
+    default: null,
+  },
+  replace: {
     type: Object,
     default: null,
   },
