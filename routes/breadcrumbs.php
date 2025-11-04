@@ -176,6 +176,27 @@ Breadcrumbs::for('provinces.edit', function (Trail $trail, $province) {
     $trail->push('Editar', route('provinces.edit', $province->code));
 });
 
+// Province File Breadcrumbs
+Breadcrumbs::for('provinces.file.create', function (Trail $trail, Province $province) {
+    $trail->parent('provinces.show', $province);
+    $trail->push("Nuevo archivo para {$province->name}");
+});
+
+Breadcrumbs::for('provinces.file.show', function (Trail $trail, Province $province, File $file) {
+    $trail->parent('provinces.show', $province);
+    $trail->push("Archivo: {$file->nice_name}", route('provinces.file.show', [$province->code, $file->id]));
+});
+
+Breadcrumbs::for('provinces.file.edit', function (Trail $trail, Province $province, File $file) {
+    $trail->parent('provinces.file.show', $province, $file);
+    $trail->push("Editar");
+});
+
+Breadcrumbs::for('provinces.file.replace', function (Trail $trail, Province $province, File $file) {
+    $trail->parent('provinces.file.show', $province, $file);
+    $trail->push("Reemplazar");
+});
+
 
 // 🏥 Diagnósticos
 Breadcrumbs::for('diagnoses.index', function (Trail $trail) {

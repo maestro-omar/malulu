@@ -58,10 +58,13 @@ class FileController extends SchoolBaseController
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         $course->load(['school', 'schoolLevel']);
-        $file->load(['user']);
+        $loggedUser = auth()->user();
+        $fileData = $this->fileService->getFileDataForCourse($file, $loggedUser, $course);
+        $history = $fileData['history'];
         return Inertia::render('Files/byCourse/Show', [
-            'file' => $file,
             'course' => $course,
+            'file' => $fileData['file'],
+            'history' => $history,
             'breadcrumbs' => Breadcrumbs::generate('school.course.file.show', $school, $schoolLevel, $course, $file),
         ]);
     }
@@ -105,9 +108,13 @@ class FileController extends SchoolBaseController
 
     public function showForSchoolDirect(Request $request, School $school, File $file)
     {
-        $file->load(['user']);
+        $loggedUser = auth()->user();
+        $fileData = $this->fileService->getFileDataForSchool($file, $loggedUser, $school);
+        $history = $fileData['history'];
         return Inertia::render('Files/bySchool/Show', [
-            'file' => $file,
+            'school' => $school,
+            'file' => $fileData['file'],
+            'history' => $history,
             'breadcrumbs' => Breadcrumbs::generate('school.file.show', $school, $file),
         ]);
     }

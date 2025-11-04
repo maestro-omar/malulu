@@ -9,6 +9,19 @@ export function formatDate(date) {
     });
 }
 
+export function formatDateTime(date) {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'UTC'
+    });
+}
+
 export function formatDateForInput(date) {
     if (!date) return '';
     const d = new Date(date);

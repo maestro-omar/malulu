@@ -76,6 +76,13 @@
           </div>
         </q-card-section>
       </q-card>
+
+      <FilesTable :files="files" title="Archivos de la provincia"
+        :newFileUrl="hasPermission($page.props, 'province.manage') ? route('provinces.file.create', province.code) : null"
+        :showFileBaseUrl="route('provinces.file.show', { province: province.code, file: '##' })"
+        :editFileBaseUrl="hasPermission($page.props, 'province.manage') ? route('provinces.file.edit', { province: province.code, file: '##' }) : null"
+        :replaceFileBaseUrl="hasPermission($page.props, 'province.manage') ? route('provinces.file.replace', { province: province.code, file: '##' }) : null"
+        :canDownload="true" />
     </template>
   </AuthenticatedLayout>
 </template>
@@ -83,6 +90,7 @@
 <script setup>
 import EditableImage from '@/Components/admin/EditableImage.vue';
 import DataFieldShow from '@/Components/DataFieldShow.vue';
+import FilesTable from '@/Components/admin/FilesTable.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
@@ -90,6 +98,10 @@ import { Head, router } from '@inertiajs/vue3';
 
 const props = defineProps({
   province: Object,
+  files: {
+    type: Array,
+    default: () => []
+  }
 });
 
 const destroy = () => {

@@ -21,6 +21,10 @@
           {{ value ? formatDate(value) : '-' }}
         </template>
 
+        <template v-else-if="type === 'datetime'">
+          {{ value ? formatDateTime(value) : '-' }}
+        </template>
+
         <!-- Handle birthdate fields with birthday status -->
         <template v-else-if="type === 'birthdate'">
           <div v-if="value" class="data-field-show__birthdate-display" :class="birthdayStatus.statusClass">
@@ -52,7 +56,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { calculateAge, formatDate } from '@/Utils/date'
+import { calculateAge, formatDate, formatDateTime } from '@/Utils/date'
 import { getBirthdayStatus } from '@/Utils/birthday'
 
 const props = defineProps({

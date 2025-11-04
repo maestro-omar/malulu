@@ -6,7 +6,7 @@
         <q-card class="q-mb-md">
           <q-card-section>
             <div class="text-h3 q-mb-md">Detalles del Archivo
-              <q-chip :color="getLevelColor(0)" text-color="white" size="md"
+              <q-chip v-if="history" :color="getLevelColor(0)" text-color="white" size="md"
                 :title="`Esta es la versión ${currentVersion} del archivo`">
                 V{{ currentVersion }}
               </q-chip>
@@ -51,7 +51,7 @@
                 <DataFieldShow label="Fecha de Creación" :value="file.created_at" type="date" />
               </div>
               <div class="col-12 col-sm-4">
-                <DataFieldShow label="Última Actualización" :value="file.updated_at" type="date" />
+                <DataFieldShow label="Última Actualización" :value="file.updated_at" type="datetime" />
               </div>
             </div>
           </q-card-section>
@@ -90,7 +90,7 @@
         </q-card>
 
         <!-- No History Message -->
-        <q-card v-else class="q-mt-md">
+        <q-card v-else-if="history && history.length === 0" class="q-mt-md">
           <q-card-section>
             <div class="text-center text-grey-6 q-pa-md">
               <q-icon name="info" size="2rem" />
@@ -116,7 +116,6 @@ const props = defineProps({
   history: {
     type: Array,
     required: false,
-    default: () => []
   }
 })
 
@@ -188,15 +187,6 @@ const historyColumns = [
     name: 'created_at',
     label: 'Creado el',
     field: 'created_at',
-    align: 'center',
-    sortable: true,
-    classes: 'hidden-xs hidden-sm',
-    headerClasses: 'hidden-xs hidden-sm'
-  },
-  {
-    name: 'deleted_at',
-    label: 'Eliminado el',
-    field: 'deleted_at',
     align: 'center',
     sortable: true,
     classes: 'hidden-xs hidden-sm',

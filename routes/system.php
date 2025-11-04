@@ -125,6 +125,15 @@ Route::prefix(__('routes.system'))->group(function () {
             Route::get(__('routes.provinces') . '/{province}', [ProvinceAdminController::class, 'show'])->name('provinces.show');
             Route::post(__('routes.provinces') . '/{province}/' . __('routes.upload-image'), [ProvinceAdminController::class, 'uploadImage'])->name('provinces.upload-image');
             Route::delete(__('routes.provinces') . '/{province}/' . __('routes.delete-image'), [ProvinceAdminController::class, 'deleteImage'])->name('provinces.delete-image');
+
+            // Province File Routes
+            Route::get(__('routes.provinces') . '/{province}/' . __('routes.files') . '/' . __('routes.create'), [ProvinceAdminController::class, 'createForProvince'])->name('provinces.file.create');
+            Route::post(__('routes.provinces') . '/{province}/' . __('routes.files'), [ProvinceAdminController::class, 'storeForProvince'])->name('provinces.file.store');
+            Route::get(__('routes.provinces') . '/{province}/' . __('routes.file') . '/{file}', [ProvinceAdminController::class, 'showForProvince'])->name('provinces.file.show');
+            Route::get(__('routes.provinces') . '/{province}/' . __('routes.file') . '/{file}/' . __('routes.edit'), [ProvinceAdminController::class, 'editForProvince'])->name('provinces.file.edit');
+            Route::put(__('routes.provinces') . '/{province}/' . __('routes.file') . '/{file}', [ProvinceAdminController::class, 'updateForProvince'])->name('provinces.file.update');
+            Route::get(__('routes.provinces') . '/{province}/' . __('routes.file') . '/{file}/' . __('routes.replace'), [ProvinceAdminController::class, 'replaceForProvince'])->name('provinces.file.replace');
+            Route::post(__('routes.provinces') . '/{province}/' . __('routes.file') . '/{file}/' . __('routes.replace'), [ProvinceAdminController::class, 'replaceForProvince'])->name('provinces.file.replace');
         });
     });
 });

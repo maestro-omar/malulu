@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\System;
 
 use App\Models\Catalogs\Province;
+use App\Models\Entities\File;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Services\ProvinceService;
+use App\Services\FileService;
 use App\Http\Controllers\System\SystemBaseController;
+use App\Traits\FileControllerTrait;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -14,13 +17,16 @@ use Illuminate\Validation\ValidationException;
 
 class ProvinceAdminController extends SystemBaseController
 {
+    use FileControllerTrait;
+
     protected $provinceService;
 
     const PICTURE_PATH = 'provincia-imagenes';
 
-    public function __construct(ProvinceService $provinceService)
+    public function __construct(ProvinceService $provinceService, FileService $fileService)
     {
         $this->provinceService = $provinceService;
+        $this->fileService = $fileService;
         $this->middleware('auth');
         $this->middleware('can:superadmin');
     }
@@ -71,8 +77,12 @@ class ProvinceAdminController extends SystemBaseController
 
     public function show(Province $province)
     {
+        $loggedUser = auth()->user();
+        $files = $this->fileService->getProvinceFiles($province, $loggedUser);
+        
         return Inertia::render('Provinces/Show', [
             'province' => $province,
+            'files' => $files,
             'breadcrumbs' => \Diglactic\Breadcrumbs\Breadcrumbs::generate('provinces.show', $province),
         ]);
     }
@@ -138,5 +148,90 @@ class ProvinceAdminController extends SystemBaseController
         } catch (\Exception $e) {
             return back()->withErrors(['error' => $e->getMessage()]);
         }
+    }
+
+    // File Management Methods
+    public function createForProvince(Request $request, Province $province)
+    {
+        $subTypes = $this->getSubtypesForContext('province', $province);
+        $storeUrl = $this->getStoreUrlForContext('province', $province);
+        $cancelUrl = $this->getCancelUrlForContext('province', $province);
+
+        return Inertia::render('Files/byProvince/Create', [
+            'subTypes' => $subTypes,
+            'context' => 'province',
+            'contextId' => $province->id,
+            'province' => $province,
+            'storeUrl' => $storeUrl,
+            'cancelUrl' => $cancelUrl,
+            'breadcrumbs' => Breadcrumbs::generate('provinces.file.create', $province),
+        ]);
+    }
+
+    public function storeForProvince(Request $request, Province $province)
+    {
+        return $this->storeFile($request, 'province', $province);
+    }
+
+    public function showForProvince(Request $request, Province $province, File $file)
+    {
+        $loggedUser = auth()->user();
+        $fileData = $this->fileService->getFileDataForProvince($file, $loggedUser, $province);
+        $history = $fileData['history'];
+        return Inertia::render('Files/byProvince/Show', [
+            'file' => $fileData['file'],
+            'province' => $province,
+            'history' => $history,
+            'breadcrumbs' => Breadcrumbs::generate('provinces.file.show', $province, $file),
+        ]);
+    }
+
+    public function editForProvince(Request $request, Province $province, File $file)
+    {
+        $loggedUser = auth()->user();
+        $fileData = $this->fileService->getFileDataForProvince($file, $loggedUser, $province);
+        $subTypes = $this->getSubtypesForContext('province', $province);
+        $updateUrl = route('provinces.file.update', ['province' => $province->code, 'file' => $file->id]);
+        $cancelUrl = route('provinces.file.show', ['province' => $province->code, 'file' => $file->id]);
+
+        return Inertia::render('Files/byProvince/Edit', [
+            'file' => $fileData['file'],
+            'existingFile' => $fileData['file'],
+            'province' => $province,
+            'subTypes' => $subTypes,
+            'updateUrl' => $updateUrl,
+            'cancelUrl' => $cancelUrl,
+            'breadcrumbs' => Breadcrumbs::generate('provinces.file.edit', $province, $file),
+        ]);
+    }
+
+    public function updateForProvince(Request $request, Province $province, File $file)
+    {
+        return $this->updateFile($request, $file, 'province', $province);
+    }
+
+    public function replaceForProvince(Request $request, Province $province, File $file)
+    {
+        if ($request->isMethod('get')) {
+            $loggedUser = auth()->user();
+            $fileData = $this->fileService->getFileDataForProvince($file, $loggedUser, $province);
+            $subTypes = $this->getSubtypesForContext('province', $province);
+            $storeUrl = route('provinces.file.replace', ['province' => $province->code, 'file' => $file->id]);
+            $cancelUrl = route('provinces.file.show', ['province' => $province->code, 'file' => $file->id]);
+
+            return Inertia::render('Files/byProvince/Replace', [
+                'file' => $fileData['file'],
+                'existingFile' => $fileData['file'],
+                'province' => $province,
+                'subTypes' => $subTypes,
+                'context' => 'province',
+                'contextId' => $province->id,
+                'storeUrl' => $storeUrl,
+                'cancelUrl' => $cancelUrl,
+                'breadcrumbs' => Breadcrumbs::generate('provinces.file.replace', $province, $file),
+            ]);
+        }
+
+        return $this->replaceFile($request, $file, 'province', $province);
     }
 }

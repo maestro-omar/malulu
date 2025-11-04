@@ -15,7 +15,6 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class FileService
 {
@@ -214,11 +213,20 @@ class FileService
 
         $file = $this->createExternalUrlFile($fileData);
 
+        // Ensure we have a fresh instance with the new ID
+        $newFileId = $file->id;
+
         if ($replacingFileId) {
-            File::where('id', $replacingFileId)->update(['replaced_by_id' => $file->id, 'active' => false]);
+            // Only update the old file if we have a different ID
+            if ($newFileId != $replacingFileId) {
+                File::where('id', $replacingFileId)->update(['replaced_by_id' => $newFileId, 'active' => false]);
+            } else {
+                throw new \RuntimeException('Error: Cannot replace file - new file has same ID as file to replace.');
+            }
         }
 
-        return $file;
+        // Return a fresh instance to avoid any potential caching issues
+        return File::find($newFileId);
     }
 
     /**
@@ -263,15 +271,6 @@ class FileService
 
         // Store the old file ID to ensure we're creating a new one
         $oldFileId = $fileToReplace->id;
-        
-        // Debug: Log the replacement attempt
-        Log::info('FileService::replaceFile - Starting replacement', [
-            'old_file_id' => $oldFileId,
-            'context' => $context,
-            'context_id' => $contextId,
-            'has_upload' => !is_null($uploadedFile),
-            'has_url' => !empty($externalUrl)
-        ]);
 
         // Create replacement file
         if ($uploadedFile) {
@@ -304,20 +303,9 @@ class FileService
                 $oldFileId
             );
         }
-        
-        // Debug: Log the result
-        Log::info('FileService::replaceFile - After creation', [
-            'old_file_id' => $oldFileId,
-            'new_file_id' => $newFile->id,
-            'are_same' => $newFile->id === $oldFileId
-        ]);
 
         // Verify we created a new file (not updating the old one)
         if ($newFile->id === $oldFileId) {
-            Log::error('FileService::replaceFile - ERROR: New file has same ID as old file!', [
-                'file_id' => $newFile->id,
-                'old_file_id' => $oldFileId
-            ]);
             throw new \RuntimeException('Error: A new file was not created. The existing file would have been updated.');
         }
 
@@ -527,40 +515,17 @@ class FileService
         $fileData['description'] = $description;
         $fileData['active'] = $active;
         $fileData['metadata'] = $metadata;
-        
-        // Debug: Log before creation
-        Log::info('FileService::setNewFile - Before createFile', [
-            'replacing_file_id' => $replacingFileId,
-            'context' => $relatedWith,
-            'context_id' => $relatedWithId,
-            'file_data_keys' => array_keys($fileData)
-        ]);
-        
+
         $newFile = $this->createFile($fileData);
 
         // Ensure we have a fresh instance with the new ID
         $newFileId = $newFile->id;
-        
-        // Debug: Log after creation
-        Log::info('FileService::setNewFile - After createFile', [
-            'new_file_id' => $newFileId,
-            'replacing_file_id' => $replacingFileId,
-            'are_different' => $newFileId != $replacingFileId
-        ]);
-        
+
         if ($replacingFileId) {
             // Only update the old file if we have a different ID
             if ($newFileId != $replacingFileId) {
-                Log::info('FileService::setNewFile - Updating old file', [
-                    'old_file_id' => $replacingFileId,
-                    'new_file_id' => $newFileId
-                ]);
                 File::where('id', $replacingFileId)->update(['replaced_by_id' => $newFileId, 'active' => false]);
             } else {
-                Log::error('FileService::setNewFile - ERROR: Cannot replace - same ID!', [
-                    'file_id' => $newFileId,
-                    'replacing_file_id' => $replacingFileId
-                ]);
                 throw new \RuntimeException('Error: Cannot replace file - new file has same ID as file to replace.');
             }
         }
@@ -592,6 +557,17 @@ class FileService
         $files = $school->files;
         $files = $this->checkAndFormatEach($files, $loggedUser);
         return $files ?: null;
+    }
+
+    public function getProvinceFiles(Province $province, User $loggedUser, bool $onlyActive = true)
+    {
+        $query = File::where('province_id', $province->id)->with(['subtype', 'subtype.fileType']);
+        if ($onlyActive) {
+            $query->where('active', true);
+        }
+        $files = $query->get();
+        $files = $this->checkAndFormatEach($files, $loggedUser);
+        return $files;
     }
 
     private function checkFileVisibility(File $file, User $loggedUser, bool $throwException)
@@ -638,8 +614,7 @@ class FileService
             'id' => $file->id,
             'nice_name' => $file->nice_name,
             'subtype' => $file->subtype->name,
-            'created_at' => $file->created_at->format('d/m/Y'),
-            'deleted_at' => $file->deleted_at ? $file->deleted_at->format('d/m/Y') : '',
+            'created_at' => $file->created_at->format('d/m/Y H:i'),
             'created_by' => $file->user->firstname . ' ' . $file->user->lastname,
             'url' =>  $file->url,
             'is_external' => $file->is_external
@@ -672,6 +647,11 @@ class FileService
         return FileSubtype::byFileTypeCode(FileType::INSTITUTIONAL)->get();
     }
 
+    public function getSubtypesForProvince(Province $dummyByNow)
+    {
+        return FileSubtype::byFileTypeCode(FileType::PROVINCIAL)->get();
+    }
+
     public function getCourseFiles(Course $course, User $loggedUser, bool $onlyActive = true)
     {
         $query = File::where('course_id', $course->id)->with(['subtype', 'subtype.fileType']);
@@ -691,6 +671,53 @@ class FileService
         }
         $file->load('subtype', 'subtype.fileType', 'user');
         $history = $file->historyFlattened();
+        $history = array_map(function ($item) use ($loggedUser) {
+            return $this->formatFileForHistoryTable($item['level'], $item['file']);
+        }, $history);
+
+        return ['file' => $file, 'history' => $history];
+    }
+
+    public function getFileDataForCourse(File $file, User $loggedUser, Course $course)
+    {
+        $this->checkFileVisibility($file, $loggedUser, true);
+        if ($file->course_id != $course->id) {
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException('Este archivo no pertenece al curso indicado');
+        }
+        $file->load('subtype', 'subtype.fileType', 'course', 'user');
+        $history = $file->historyFlattened();
+        $history = array_map(function ($item) use ($loggedUser) {
+            return $this->formatFileForHistoryTable($item['level'], $item['file']);
+        }, $history);
+
+        return ['file' => $file, 'history' => $history];
+    }
+
+    public function getFileDataForSchool(File $file, User $loggedUser, School $school)
+    {
+        $this->checkFileVisibility($file, $loggedUser, true);
+        if ($file->school_id != $school->id) {
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException('Este archivo no pertenece a la institución indicada');
+        }
+        $file->load('subtype', 'subtype.fileType', 'school', 'user');
+        $history = $file->historyFlattened();
+
+        $history = array_map(function ($item) use ($loggedUser) {
+            return $this->formatFileForHistoryTable($item['level'], $item['file']);
+        }, $history);
+
+        return ['file' => $file, 'history' => $history];
+    }
+
+    public function getFileDataForProvince(File $file, User $loggedUser, Province $province)
+    {
+        $this->checkFileVisibility($file, $loggedUser, true);
+        if ($file->province_id != $province->id) {
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException('Este archivo no pertenece a la provincia indicada');
+        }
+        $file->load('subtype', 'subtype.fileType', 'province', 'user');
+        $history = $file->historyFlattened();
+
         $history = array_map(function ($item) use ($loggedUser) {
             return $this->formatFileForHistoryTable($item['level'], $item['file']);
         }, $history);

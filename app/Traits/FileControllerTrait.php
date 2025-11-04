@@ -166,8 +166,11 @@ trait FileControllerTrait
                 ])->with('success', $message);
 
             case 'province':
-                return redirect()->route('provinces.show', $contextModel instanceof Province ? $contextModel->id : $contextModel)
-                    ->with('success', $message);
+                $province = $contextModel instanceof Province ? $contextModel : Province::find($contextModel);
+                return redirect()->route('provinces.file.show', [
+                    'province' => $province->code,
+                    'file' => $file->id
+                ])->with('success', $message);
         }
     }
 
@@ -200,8 +203,10 @@ trait FileControllerTrait
                 ])->withErrors(['error' => $message])->withInput();
 
             case 'province':
-                return redirect()->route('provinces.edit', $contextModel instanceof Province ? $contextModel->id : $contextModel)
-                    ->withErrors(['error' => $message])->withInput();
+                $province = $contextModel instanceof Province ? $contextModel : Province::find($contextModel);
+                return redirect()->route('provinces.file.create', [
+                    'province' => $province->code
+                ])->withErrors(['error' => $message])->withInput();
         }
     }
 
@@ -241,8 +246,8 @@ trait FileControllerTrait
                 return $fileService->getSubtypesForCourse($course);
 
             case 'province':
-                // For provinces, we might want to get all provincial file types
-                return \App\Models\Catalogs\FileSubtype::byFileTypeCode(FileType::PROVINCIAL)->get();
+                $province = $contextModel instanceof Province ? $contextModel : Province::find($contextModel);
+                return $fileService->getSubtypesForProvince($province);
 
             default:
                 return collect();
@@ -275,7 +280,8 @@ trait FileControllerTrait
                     'idAndLabel' => $course->idAndLabel
                 ]);
             case 'province':
-                return route('provinces.files.store', $contextModel instanceof Province ? $contextModel->id : $contextModel);
+                $province = $contextModel instanceof Province ? $contextModel : Province::find($contextModel);
+                return route('provinces.file.store', $province->code);
 
             default:
                 throw new \InvalidArgumentException("Unknown context: {$context}");
@@ -305,7 +311,8 @@ trait FileControllerTrait
                 ]);
 
             case 'province':
-                return route('provinces.show', $contextModel instanceof Province ? $contextModel->id : $contextModel);
+                $province = $contextModel instanceof Province ? $contextModel : Province::find($contextModel);
+                return route('provinces.show', $province->code);
 
             default:
                 throw new \InvalidArgumentException("Unknown context: {$context}");
@@ -395,8 +402,11 @@ trait FileControllerTrait
                 ])->with('success', $message);
 
             case 'province':
-                return redirect()->route('provinces.show', $contextModel instanceof Province ? $contextModel->id : $contextModel)
-                    ->with('success', $message);
+                $province = $contextModel instanceof Province ? $contextModel : Province::find($contextModel);
+                return redirect()->route('provinces.file.show', [
+                    'province' => $province->code,
+                    'file' => $file->id
+                ])->with('success', $message);
         }
     }
 
@@ -432,8 +442,11 @@ trait FileControllerTrait
                 ])->with('success', $message);
 
             case 'province':
-                return redirect()->route('provinces.show', $contextModel instanceof Province ? $contextModel->id : $contextModel)
-                    ->with('success', $message);
+                $province = $contextModel instanceof Province ? $contextModel : Province::find($contextModel);
+                return redirect()->route('provinces.file.show', [
+                    'province' => $province->code,
+                    'file' => $file->id
+                ])->with('success', $message);
         }
     }
 
