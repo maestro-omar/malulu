@@ -28,7 +28,7 @@ class ProvinceAdminController extends SystemBaseController
         $this->provinceService = $provinceService;
         $this->fileService = $fileService;
         $this->middleware('auth');
-        $this->middleware('can:superadmin');
+        $this->middleware('can:superadmin')->except('showForProvince');
     }
 
     public function index()
@@ -83,7 +83,7 @@ class ProvinceAdminController extends SystemBaseController
         return Inertia::render('Provinces/Show', [
             'province' => $province,
             'files' => $files,
-            'breadcrumbs' => \Diglactic\Breadcrumbs\Breadcrumbs::generate('provinces.show', $province),
+            'breadcrumbs' => Breadcrumbs::generate('provinces.show', $province),
         ]);
     }
 

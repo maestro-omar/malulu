@@ -28,12 +28,4 @@ class Locality extends Model
     {
         return $this->belongsTo(District::class);
     }
-
-    /**
-     * Get the province through the district relationship.
-     */
-    public function province()
-    {
-        return $this->hasOneThrough(Province::class, District::class);
-    }
 }

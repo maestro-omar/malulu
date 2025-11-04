@@ -106,6 +106,11 @@ Breadcrumbs::for('school.show', function (Trail $trail, $school) {
     $trail->push($school->short, route('school.show', $school));
 });
 
+Breadcrumbs::for('school.province.show', function (Trail $trail, $school, $province) {
+    $trail->parent('school.show', $school);
+    $trail->push('Provincia', route('provinces.show', $province));
+});
+
 Breadcrumbs::for('schools.staff', function (Trail $trail, $school) {
     $trail->parent('school.show', $school);
     $trail->push('Staff', route('school.staff', $school));

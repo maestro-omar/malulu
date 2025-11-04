@@ -486,6 +486,7 @@ class InitialUsersSeeder extends Seeder
         $cargo = strtolower(trim($cargo));
 
         return match (true) {
+            str_contains($cargo, 'school admin') => Role::SCHOOL_ADMIN,
             str_contains($cargo, 'estudiante') => Role::STUDENT,
             str_contains($cargo, 'ex-alumno') => Role::FORMER_STUDENT,
             str_contains($cargo, 'tutor') => Role::GUARDIAN,

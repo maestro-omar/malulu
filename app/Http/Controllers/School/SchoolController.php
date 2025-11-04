@@ -236,4 +236,17 @@ class SchoolController extends SchoolBaseController
             return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
+
+    public function provinceShow(School $school)
+    {
+        $province = $school->locality->district->province;
+        $loggedUser = auth()->user();
+        $files = $this->fileService->getProvinceFiles($province, $loggedUser);
+
+        return Inertia::render('Provinces/Show', [
+            'province' => $province,
+            'files' => $files,
+            'breadcrumbs' => Breadcrumbs::generate('school.province.show', $school, $province),
+        ]);
+    }
 }

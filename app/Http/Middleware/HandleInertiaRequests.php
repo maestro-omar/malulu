@@ -260,6 +260,12 @@ class HandleInertiaRequests extends Middleware
             'icon' => 'home',
         ];
 
+
+        $items[] = [
+            'name' => $school->locality->district->province->name,
+            'href' => route('school.province.show', $school),
+            'icon' => 'landscape',
+        ];
         // If school and school_levels are available in the request or context
         $schoolLevels = $school ? $school->schoolLevels : [];
 

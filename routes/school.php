@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\System\ProvinceAdminController;
 use App\Http\Controllers\School\CourseController;
 use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\School\SchoolPageController;
@@ -17,6 +18,8 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get(__('routes.edit'), [SchoolController::class, 'edit'])->name('school.edit')->middleware('school.permission:school.edit');
         Route::post(__('routes.upload-image'), [SchoolController::class, 'uploadImage'])->name('school.upload-image')->middleware('school.permission:school.edit');
         Route::delete(__('routes.delete-image'), [SchoolController::class, 'deleteImage'])->name('school.delete-image')->middleware('school.permission:school.edit');
+
+        Route::get(__('routes.province'), [SchoolController::class, 'provinceShow'])->name('school.province.show');
 
         Route::get(__('routes.staff'), [UserController::class, 'staff'])->name('school.staff')->middleware('school.permission:staff.view');
         Route::get(__('routes.staff') . '/' . __('routes.create'), [UserController::class, 'staffCreate'])->name('school.staff.create')->middleware('school.permission:teacher.manage');

@@ -129,11 +129,13 @@ Route::prefix(__('routes.system'))->group(function () {
             // Province File Routes
             Route::get(__('routes.provinces') . '/{province}/' . __('routes.files') . '/' . __('routes.create'), [ProvinceAdminController::class, 'createForProvince'])->name('provinces.file.create');
             Route::post(__('routes.provinces') . '/{province}/' . __('routes.files'), [ProvinceAdminController::class, 'storeForProvince'])->name('provinces.file.store');
-            Route::get(__('routes.provinces') . '/{province}/' . __('routes.file') . '/{file}', [ProvinceAdminController::class, 'showForProvince'])->name('provinces.file.show');
             Route::get(__('routes.provinces') . '/{province}/' . __('routes.file') . '/{file}/' . __('routes.edit'), [ProvinceAdminController::class, 'editForProvince'])->name('provinces.file.edit');
             Route::put(__('routes.provinces') . '/{province}/' . __('routes.file') . '/{file}', [ProvinceAdminController::class, 'updateForProvince'])->name('provinces.file.update');
             Route::get(__('routes.provinces') . '/{province}/' . __('routes.file') . '/{file}/' . __('routes.replace'), [ProvinceAdminController::class, 'replaceForProvince'])->name('provinces.file.replace');
             Route::post(__('routes.provinces') . '/{province}/' . __('routes.file') . '/{file}/' . __('routes.replace'), [ProvinceAdminController::class, 'replaceForProvince'])->name('provinces.file.replace');
         });
+
+        //no permission needed to see province files
+        Route::get(__('routes.provinces') . '/{province}/' . __('routes.file') . '/{file}', [ProvinceAdminController::class, 'showForProvince'])->name('provinces.file.show');
     });
 });

@@ -39,6 +39,7 @@ return [
     'files' => 'archivos',
     'file-types' => 'tipos-archivo',
     'file-subtypes' => 'subtipos-archivo',
+    'province' => 'provincia',
     'provinces' => 'provincias',
     'diagnoses' => 'diagnosticos',
     'replace' => 'reemplazar',
