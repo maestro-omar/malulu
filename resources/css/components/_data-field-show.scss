@@ -81,6 +81,9 @@
   &--today {
     background-color: #4caf50;
     color: white;
+    & .birthdate-age__age{
+      color: #2e7d32;
+    }
   }
 
   &--tomorrow {
