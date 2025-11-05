@@ -112,33 +112,87 @@ class DiagnosisService
         return $diagnosis->forceDelete();
     }
 
-    // Each row of $diagnosesData has: id, diagnosed_at, notes
-    public function updateUserDiagnosis(User $user, array $diagnosesData)
+    /**
+     * Validate user diagnoses data
+     */
+    public function validateUserDiagnosesData(array $data)
     {
-        //1) get current
-        $currentDiagnoses = $user->diagnoses->pluck('id')->toArray();
-        //2) get new diagnoses
+        $rules = [
+            'diagnoses' => 'required|array',
+            'diagnoses.*.id' => 'required|exists:diagnoses,id',
+            'diagnoses.*.diagnosed_at' => 'nullable|date',
+            'diagnoses.*.notes' => 'nullable|string|max:1000',
+        ];
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        return $validator->validated();
+    }
+
+    /**
+     * Update user diagnoses
+     * Each row of $diagnosesData has: id, diagnosed_at, notes
+     */
+    public function updateUserDiagnoses(User $user, array $diagnosesData)
+    {
+        // Validate the data
+        $validatedData = $this->validateUserDiagnosesData(['diagnoses' => $diagnosesData]);
+        $diagnosesData = $validatedData['diagnoses'];
+
+        //1) get current diagnoses (only active ones, not soft-deleted)
+        $currentDiagnoses = UserDiagnosis::where('user_id', $user->id)
+            ->whereNull('deleted_at')
+            ->pluck('diagnosis_id')
+            ->toArray();
+        
+        //2) get new diagnoses IDs
         $newDiagnoses = array_map(function ($diagnosis) {
             return $diagnosis['id'];
         }, $diagnosesData);
+        
         //3) get diagnoses to add
         $diagnosesToAdd = array_diff($newDiagnoses, $currentDiagnoses);
+        
         //4) get diagnoses to remove
         $diagnosesToRemove = array_diff($currentDiagnoses, $newDiagnoses);
-        //5) add diagnoses to user
+        
+        //5) get diagnoses to update (exist in both lists)
+        $diagnosesToUpdate = array_intersect($currentDiagnoses, $newDiagnoses);
+        
+        //6) add new diagnoses
         foreach ($diagnosesData as $diagnosis) {
             if (in_array($diagnosis['id'], $diagnosesToAdd)) {
                 $user->diagnoses()->attach($diagnosis['id'], [
-                    'diagnosed_at' => $diagnosis['diagnosed_at'],
-                    'notes' => $diagnosis['notes']
+                    'diagnosed_at' => $diagnosis['diagnosed_at'] ?: null,
+                    'notes' => $diagnosis['notes'] ?: null
                 ]);
             }
         }
         
-        //5) delete removed
-        foreach ($diagnosesToRemove as $diagnosis) {
-            UserDiagnosis::where('user_id', $user->id)->where('diagnosis_id', $diagnosis)->update(['deleted_at' => now()]);
+        //7) update existing diagnoses
+        foreach ($diagnosesData as $diagnosis) {
+            if (in_array($diagnosis['id'], $diagnosesToUpdate)) {
+                UserDiagnosis::where('user_id', $user->id)
+                    ->where('diagnosis_id', $diagnosis['id'])
+                    ->whereNull('deleted_at')
+                    ->update([
+                        'diagnosed_at' => $diagnosis['diagnosed_at'] ?: null,
+                        'notes' => $diagnosis['notes'] ?: null
+                    ]);
+            }
         }
+        
+        //8) soft delete removed diagnoses
+        foreach ($diagnosesToRemove as $diagnosisId) {
+            UserDiagnosis::where('user_id', $user->id)
+                ->where('diagnosis_id', $diagnosisId)
+                ->update(['deleted_at' => now()]);
+        }
+        
         return $user;
     }
 }

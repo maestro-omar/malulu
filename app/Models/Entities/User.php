@@ -188,6 +188,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Diagnosis::class, 'user_diagnosis')
             ->using(UserDiagnosis::class)
             ->withPivot(['diagnosed_at', 'notes', 'deleted_at'])
+            ->whereNull('user_diagnosis.deleted_at')
             ->withTimestamps();
     }
 

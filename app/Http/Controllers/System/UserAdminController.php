@@ -141,7 +141,7 @@ class UserAdminController extends SystemBaseController
     {
         try {
             $diagnosisService = new DiagnosisService();
-            $diagnosisService->updateUserDiagnoses($user, $request->all());
+            $diagnosisService->updateUserDiagnoses($user, $request->input('diagnoses', []));
             return redirect()->route('users.show', $user)->with('success', 'Diagnósticos actualizados exitosamente.');
         } catch (ValidationException $e) {
             return redirect()->back()
