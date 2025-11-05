@@ -161,6 +161,56 @@ $color-level-secondary-text: #5b21b6; // violet-800
 $color-level-default-bg: #f3f4f6; // gray-100
 $color-level-default-text: $color-brand; // gray-800
 
+// Diagnosis Category Colors (Background and Text)
+// --------------------------------
+// Trastornos del aprendizaje
+$color-diagnosis-aprendizaje-bg: #e0f2fe; // sky-100
+$color-diagnosis-aprendizaje-text: #0c4a6e; // sky-800
+
+// Discapacidad motriz
+$color-diagnosis-discapacidad_motriz-bg: #fef3c7; // amber-100
+$color-diagnosis-discapacidad_motriz-text: #92400e; // amber-800
+
+// Discapacidad auditiva
+$color-diagnosis-discapacidad_auditiva-bg: #dbeafe; // blue-100
+$color-diagnosis-discapacidad_auditiva-text: #1e40af; // blue-800
+
+// Discapacidad visual
+$color-diagnosis-discapacidad_visual-bg: #faf5ff; // purple-100
+$color-diagnosis-discapacidad_visual-text: #5b21b6; // purple-800
+
+// Discapacidad intelectual
+$color-diagnosis-discapacidad_intelectual-bg: #dcfce7; // green-100
+$color-diagnosis-discapacidad_intelectual-text: #166534; // green-800
+
+// Discapacidad psicosocial
+$color-diagnosis-discapacidad_psicosocial-bg: #fdf2f8; // pink-100
+$color-diagnosis-discapacidad_psicosocial-text: #9d174d; // pink-800
+
+// Discapacidad en el desarrollo
+$color-diagnosis-discapacidad_desarrollo-bg: #eef2ff; // indigo-100
+$color-diagnosis-discapacidad_desarrollo-text: $color-indigo; // indigo-800
+
+// Condiciones crónicas
+$color-diagnosis-salud_cronica-bg: #ffe4e6; // rose-100
+$color-diagnosis-salud_cronica-text: #be123c; // rose-800
+
+// Alergias
+$color-diagnosis-salud_alergia-bg: #ccfbf1; // teal-100
+$color-diagnosis-salud_alergia-text: #134e4a; // teal-800
+
+// Síndromes
+$color-diagnosis-sindrome-bg: #fff7ed; // orange-100
+$color-diagnosis-sindrome-text: #9a3412; // orange-800
+
+// Otro
+$color-diagnosis-otro-bg: #f3f4f6; // gray-100
+$color-diagnosis-otro-text: $color-brand; // gray-800
+
+// Default
+$color-diagnosis-default-bg: #f3f4f6; // gray-100
+$color-diagnosis-default-text: $color-brand; // gray-800
+
 // Gender Colors (Background and Text)
 // --------------------------------
 // Masculino

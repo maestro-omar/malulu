@@ -50,7 +50,8 @@ class Diagnosis extends Model
             ->withTimestamps();
     }
 
-    public static function categories(): array{
+    public static function categories(): array
+    {
         return [
             self::CATEGORY_LEARN => 'Trastornos del aprendizaje',
             self::CATEGORY_DISABILITY_MOTOR => 'Discapacidad motriz',
@@ -66,7 +67,15 @@ class Diagnosis extends Model
         ];
     }
 
-    public static function getCategoryName($category): string{
+    public static function getCategoryName($category): string
+    {
         return self::categories()[$category] ?? $category;
+    }
+    public static function getAllWithCategory()
+    {
+        return self::orderBy('category', 'asc')->orderBy('name', 'asc')->get()->map(function ($diagnosis) {
+            $diagnosis->category_name = self::getCategoryName($diagnosis->category);
+            return $diagnosis;
+        });
     }
 }

@@ -45,6 +45,11 @@ Breadcrumbs::for('users.edit', function (Trail $trail, $user) {
     $trail->push("Editar");
 });
 
+Breadcrumbs::for('users.edit-diagnoses', function (Trail $trail, $user) {
+    $trail->parent('users.show', $user);
+    $trail->push("Editar diagnósticos");
+});
+
 Breadcrumbs::for('users.file.create', function (Trail $trail, $user) {
     $trail->parent('users.show', $user);
     $trail->push("Nuevo archivo para {$user->first_name} {$user->lastname}");

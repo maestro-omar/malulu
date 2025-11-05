@@ -42,6 +42,8 @@ Route::prefix(__('routes.system'))->group(function () {
             Route::get(__('routes.users') . '/' . __('routes.create'), [UserAdminController::class, 'create'])->name('users.create');
             Route::get(__('routes.users') . '/{user}', [UserAdminController::class, 'show'])->name('users.show');
             Route::get(__('routes.users') . '/{user}/' . __('routes.edit'), [UserAdminController::class, 'edit'])->name('users.edit');
+            Route::get(__('routes.users') . '/{user}/' . __('routes.edit-diagnoses'), [UserAdminController::class, 'editDiagnoses'])->name('users.edit-diagnoses');
+            Route::put(__('routes.users') . '/{user}/' . __('routes.edit-diagnoses'), [UserAdminController::class, 'updateDiagnoses'])->name('users.update-diagnoses');
             Route::put(__('routes.users') . '/{user}', [UserAdminController::class, 'update'])->name('users.update');
             Route::delete(__('routes.users') . '/{user}', [UserAdminController::class, 'destroy'])->name('users.destroy');
             Route::get(__('routes.users') . '/{user}/' . __('routes.new-role'), [UserAdminController::class, 'addRole'])->name('users.add-role');

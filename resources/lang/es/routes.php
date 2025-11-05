@@ -29,6 +29,7 @@ return [
     'create' => 'crear',
     'create-next' => 'crear-siguientes',
     'edit' => 'editar',
+    'edit-diagnoses' => 'diagnosticos',
     'new-role' => 'nuevo-rol',
     'store-role' => 'guardar-rol', // For the store-role endpoint
     'upload-image' => 'subir-imagen',

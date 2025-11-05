@@ -10,9 +10,11 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\UserService;
+use App\Services\DiagnosisService;
 use App\Http\Requests\UserRequest;
 use App\Models\Catalogs\Province;
 use App\Models\Catalogs\Country;
+use App\Models\Catalogs\Diagnosis;
 use App\Models\Entities\School;
 use App\Models\Relations\RoleRelationship;
 use App\Models\Relations\WorkerRelationship;
@@ -112,6 +114,35 @@ class UserAdminController extends SystemBaseController
         try {
             $this->userService->updateUser($user, $request->all());
             return redirect()->route('users.show', $user)->with('success', 'Usuario actualizado exitosamente.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()])
+                ->withInput();
+        }
+    }
+
+    public function editDiagnoses(User $user): Response
+    {
+        $diagnoses = Diagnosis::getAllWithCategory();
+        return Inertia::render('Users/EditDiagnoses', [
+            'user' => $user,
+            'genders' => User::genders(),
+            'userDiagnoses' => $user->diagnoses,
+            'diagnoses' => $diagnoses,
+            'breadcrumbs' => Breadcrumbs::generate('users.edit-diagnoses', $user),
+        ]);
+    }
+
+    public function updateDiagnoses(Request $request, User $user)
+    {
+        try {
+            $diagnosisService = new DiagnosisService();
+            $diagnosisService->updateUserDiagnoses($user, $request->all());
+            return redirect()->route('users.show', $user)->with('success', 'Diagnósticos actualizados exitosamente.');
         } catch (ValidationException $e) {
             return redirect()->back()
                 ->withErrors($e->errors())

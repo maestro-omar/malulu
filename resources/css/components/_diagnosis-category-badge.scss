@@ -1,0 +1,128 @@
+@use "../abstracts/variables";
+@use "sass:color";
+
+// Mixin for diagnosis category styles (with border)
+@mixin diagnosis-category-styles-with-border($bg-color, $text-color) {
+    background: $bg-color;
+    color: $text-color;
+    border: 1px solid $text-color;
+
+    &.diagnosis-category--darker {
+        background: color.scale($bg-color, $lightness: -30%);
+        // color: color.scale($text-color, $lightness: -40%);
+    }
+}
+
+// Mixin for diagnosis category styles (without border)
+@mixin diagnosis-category-styles-no-border($bg-color, $text-color) {
+    background: $bg-color;
+    color: $text-color;
+
+    &.diagnosis-category--darker {
+        background: color.scale($bg-color, $lightness: -30%);
+        // color: color.scale($text-color, $lightness: -40%);
+    }
+}
+
+// Diagnosis Category Badge Color Modifiers for q-chip
+.q-chip.diagnosis-category {
+    &--aprendizaje {
+        @include diagnosis-category-styles-with-border(variables.$color-diagnosis-aprendizaje-bg, variables.$color-diagnosis-aprendizaje-text);
+    }
+
+    &--discapacidad_motriz {
+        @include diagnosis-category-styles-with-border(variables.$color-diagnosis-discapacidad_motriz-bg, variables.$color-diagnosis-discapacidad_motriz-text);
+    }
+
+    &--discapacidad_auditiva {
+        @include diagnosis-category-styles-with-border(variables.$color-diagnosis-discapacidad_auditiva-bg, variables.$color-diagnosis-discapacidad_auditiva-text);
+    }
+
+    &--discapacidad_visual {
+        @include diagnosis-category-styles-with-border(variables.$color-diagnosis-discapacidad_visual-bg, variables.$color-diagnosis-discapacidad_visual-text);
+    }
+
+    &--discapacidad_intelectual {
+        @include diagnosis-category-styles-with-border(variables.$color-diagnosis-discapacidad_intelectual-bg, variables.$color-diagnosis-discapacidad_intelectual-text);
+    }
+
+    &--discapacidad_psicosocial {
+        @include diagnosis-category-styles-with-border(variables.$color-diagnosis-discapacidad_psicosocial-bg, variables.$color-diagnosis-discapacidad_psicosocial-text);
+    }
+
+    &--discapacidad_desarrollo {
+        @include diagnosis-category-styles-with-border(variables.$color-diagnosis-discapacidad_desarrollo-bg, variables.$color-diagnosis-discapacidad_desarrollo-text);
+    }
+
+    &--salud_cronica {
+        @include diagnosis-category-styles-with-border(variables.$color-diagnosis-salud_cronica-bg, variables.$color-diagnosis-salud_cronica-text);
+    }
+
+    &--salud_alergia {
+        @include diagnosis-category-styles-with-border(variables.$color-diagnosis-salud_alergia-bg, variables.$color-diagnosis-salud_alergia-text);
+    }
+
+    &--sindrome {
+        @include diagnosis-category-styles-with-border(variables.$color-diagnosis-sindrome-bg, variables.$color-diagnosis-sindrome-text);
+    }
+
+    &--otro {
+        @include diagnosis-category-styles-with-border(variables.$color-diagnosis-otro-bg, variables.$color-diagnosis-otro-text);
+    }
+
+    &--default {
+        @include diagnosis-category-styles-with-border(variables.$color-diagnosis-default-bg, variables.$color-diagnosis-default-text);
+    }
+}
+
+// Diagnosis Category Button Color Modifiers for q-btn
+.q-btn.diagnosis-category {
+    &--aprendizaje {
+        @include diagnosis-category-styles-no-border(variables.$color-diagnosis-aprendizaje-bg, variables.$color-diagnosis-aprendizaje-text);
+    }
+
+    &--discapacidad_motriz {
+        @include diagnosis-category-styles-no-border(variables.$color-diagnosis-discapacidad_motriz-bg, variables.$color-diagnosis-discapacidad_motriz-text);
+    }
+
+    &--discapacidad_auditiva {
+        @include diagnosis-category-styles-no-border(variables.$color-diagnosis-discapacidad_auditiva-bg, variables.$color-diagnosis-discapacidad_auditiva-text);
+    }
+
+    &--discapacidad_visual {
+        @include diagnosis-category-styles-no-border(variables.$color-diagnosis-discapacidad_visual-bg, variables.$color-diagnosis-discapacidad_visual-text);
+    }
+
+    &--discapacidad_intelectual {
+        @include diagnosis-category-styles-no-border(variables.$color-diagnosis-discapacidad_intelectual-bg, variables.$color-diagnosis-discapacidad_intelectual-text);
+    }
+
+    &--discapacidad_psicosocial {
+        @include diagnosis-category-styles-no-border(variables.$color-diagnosis-discapacidad_psicosocial-bg, variables.$color-diagnosis-discapacidad_psicosocial-text);
+    }
+
+    &--discapacidad_desarrollo {
+        @include diagnosis-category-styles-no-border(variables.$color-diagnosis-discapacidad_desarrollo-bg, variables.$color-diagnosis-discapacidad_desarrollo-text);
+    }
+
+    &--salud_cronica {
+        @include diagnosis-category-styles-no-border(variables.$color-diagnosis-salud_cronica-bg, variables.$color-diagnosis-salud_cronica-text);
+    }
+
+    &--salud_alergia {
+        @include diagnosis-category-styles-no-border(variables.$color-diagnosis-salud_alergia-bg, variables.$color-diagnosis-salud_alergia-text);
+    }
+
+    &--sindrome {
+        @include diagnosis-category-styles-no-border(variables.$color-diagnosis-sindrome-bg, variables.$color-diagnosis-sindrome-text);
+    }
+
+    &--otro {
+        @include diagnosis-category-styles-no-border(variables.$color-diagnosis-otro-bg, variables.$color-diagnosis-otro-text);
+    }
+
+    &--default {
+        @include diagnosis-category-styles-no-border(variables.$color-diagnosis-default-bg, variables.$color-diagnosis-default-text);
+    }
+}
+

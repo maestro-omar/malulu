@@ -80,6 +80,7 @@ class DatabaseSeeder extends Seeder
             // FakeUsersSeeder::class,
             FakeFilesSeeder::class,
             FakeAttendanceSeeder::class,
+            FakeUserDiagnosisSeeder::class,
         ]);
     }
 }
