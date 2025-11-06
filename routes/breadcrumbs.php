@@ -148,6 +148,11 @@ Breadcrumbs::for('schools.student.edit', function (Trail $trail, $school, $stude
     $trail->push('Editar');
 });
 
+Breadcrumbs::for('schools.student.edit-diagnoses', function (Trail $trail, $school, $student) {
+    $trail->parent('schools.student', $school, $student);
+    $trail->push("Editar diagnósticos");
+});
+
 // 📅 Ciclos lectivos
 Breadcrumbs::for('academic-years.index', function (Trail $trail) {
     $trail->parent('dashboard');

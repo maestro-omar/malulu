@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\UserService;
 use App\Services\FileService;
+use App\Services\DiagnosisService;
+use App\Models\Catalogs\Diagnosis;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Illuminate\Validation\ValidationException;
 
@@ -145,6 +147,47 @@ class UserController extends SchoolBaseController
         try {
             $this->userService->updateUser($student, $request->all());
             return redirect()->route('school.student.show', ['school' => $schoolSlug, 'idAndName' => $studentIdAndName])->with('success', 'Estudiante actualizado exitosamente.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()])
+                ->withInput();
+        }
+    }
+
+    public function studentEditDiagnoses(Request $request, $schoolSlug, $studentIdAndName): Response
+    {
+        $this->setSchool($schoolSlug);
+        $data = $this->getUserData($studentIdAndName);
+        $student = $data ? $data['user'] : null;
+        
+        if (!$student) {
+            abort(404);
+        }
+
+        $diagnoses = Diagnosis::getAllWithCategory();
+        return $this->render($request, 'Users/BySchool/Student.EditDiagnoses', [
+            'user' => $student,
+            'school' => $this->school,
+            'genders' => User::genders(),
+            'userDiagnoses' => $student->diagnoses,
+            'diagnoses' => $diagnoses,
+            'breadcrumbs' => Breadcrumbs::generate('schools.student.edit-diagnoses', $this->school, $student),
+        ]);
+    }
+
+    public function studentUpdateDiagnoses(Request $request, $schoolSlug, $studentIdAndName)
+    {
+        $this->setSchool($schoolSlug);
+        $student = $this->getUserFromUrlParameter($studentIdAndName);
+        
+        try {
+            $diagnosisService = new DiagnosisService();
+            $diagnosisService->updateUserDiagnoses($student, $request->input('diagnoses', []));
+            return redirect()->route('school.student.show', ['school' => $schoolSlug, 'idAndName' => $studentIdAndName])->with('success', 'Diagnósticos actualizados exitosamente.');
         } catch (ValidationException $e) {
             return redirect()->back()
                 ->withErrors($e->errors())

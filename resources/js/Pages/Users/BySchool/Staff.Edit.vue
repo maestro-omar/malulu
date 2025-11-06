@@ -147,7 +147,7 @@
 
             <ActionButtons 
               button-label="Guardar Cambios" 
-              :cancel-href="route('school.staff.show', { school: props.school.slug, idAndName: getUserIdAndName() })"
+              :cancel-href="route('school.staff.show', { school: props.school.slug, idAndName: getUserSlug(props.user) })"
               :disabled="form.processing" 
             />
           </form>
@@ -164,6 +164,7 @@ import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
+import { getUserSlug } from '@/Utils/strings';
 import { Head, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -196,14 +197,10 @@ const form = useForm({
   critical_info: props.user.critical_info || '',
 });
 
-const getUserIdAndName = () => {
-  return `${props.user.id}-${props.user.name.toLowerCase().replace(/\s+/g, '-')}`;
-};
-
 const submit = () => {
   form.put(route('school.staff.update', { 
     school: props.school.slug, 
-    idAndName: getUserIdAndName() 
+    idAndName: getUserSlug(props.user) 
   }));
 };
 </script>

@@ -13,6 +13,12 @@
         onClick: destroy,
         label: 'Eliminar'
       }">
+        <template #additional-buttons>
+          <q-btn v-if="hasPermission($page.props, 'student.edit')" size="sm"
+            :href="route('school.student.edit-diagnoses', { school: school.slug, idAndName: getUserSlug(user) })" color="lime-7">
+            Diagnósticos
+          </q-btn>
+        </template>
       </AdminHeader>
     </template>
 

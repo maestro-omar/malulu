@@ -6,7 +6,7 @@
     <template #admin-header>
       <AdminHeader :title="`${user.firstname} ${user.lastname}`" :edit="{
         show: hasPermission($page.props, 'school.edit'),
-        href: route('school.staff.edit', { school: school.slug, idAndName: getUserIdAndName() }),
+        href: route('school.staff.edit', { school: school.slug, idAndName: getUserSlug(user) }),
         label: 'Editar'
       }">
       </AdminHeader>
@@ -52,10 +52,6 @@ const props = defineProps({
 });
 
 const $page = usePage();
-
-const getUserIdAndName = () => {
-  return `${props.user.id}-${props.user.name.toLowerCase().replace(/\s+/g, '-')}`;
-};
 
 const destroy = () => {
   if (confirm("¿Está seguro que desea eliminar este miembro del personal?")) {

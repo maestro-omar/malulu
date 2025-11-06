@@ -39,6 +39,24 @@ export function getUserSlug(user) {
   return slugify(slug);
 }
 
+/**
+ * Get user ID and name slug for school routes (idAndName parameter)
+ * Format: id-name-lastname (slugified)
+ * Matches the format used in route_school_student and route_school_staff helpers exactly
+ * @param {Object} user - User object with id, name, and lastname properties
+ * @returns {string} Formatted slug
+ */
+export function getUserSlug(user) {
+  if (!user) return '';
+  if (user.id_and_name) return user.id_and_name;
+  
+  const  slug = user.id + '-' + user.lastname + '-' + user.firstname;
+
+  return slugify(slug);
+}
+
+
+
 export function getCourseSlug(course) {
   if (!course) return '';
   if (course.id_and_label) return course.id_and_label;
@@ -50,7 +68,7 @@ export function getCourseSlug(course) {
   if (course.name && course.name.trim()) {
     slug += '-' + course.name;
   }
-  slug += '-' + 'tttttesting';
+  // slug += '-' + 'tttttesting';
   // slug += '-' +  course.start_date.format('Y');
 
   return slugify(slug);

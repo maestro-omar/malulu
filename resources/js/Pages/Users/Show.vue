@@ -13,6 +13,12 @@
         onClick: destroy,
         label: 'Eliminar'
       }">
+        <template #additional-buttons>
+          <q-btn v-if="hasPermission($page.props, 'user.manage')" size="sm"
+            :href="route('users.edit-diagnoses', { 'user': user.id })" color="lime-7">
+            Diagnósticos
+          </q-btn>
+        </template>
       </AdminHeader>
     </template>
 
@@ -29,7 +35,7 @@
         :newFileUrl="route('users.file.create', { 'user': getUserSlug(user) })"
         :showFileBaseUrl="route('users.file.show', { 'user': getUserSlug(user), 'file': '##' })"
         :editFileBaseUrl="route('users.file.edit', { 'user': getUserSlug(user), 'file': '##' })"
-        :replaceFileBaseUrl="route('users.file.replace', { 'user': getUserSlug(user), 'file': '##' })" 
+        :replaceFileBaseUrl="route('users.file.replace', { 'user': getUserSlug(user), 'file': '##' })"
         :canDownload="true" />
 
       <SystemTimestamp :row="user" />
