@@ -134,6 +134,13 @@ class UserAdminController extends SystemBaseController
             'genders' => User::genders(),
             'userDiagnoses' => $user->diagnoses,
             'diagnoses' => $diagnoses,
+            'canEdit' => true,
+            'pageTitle' => "Diagnósticos de {$user->name}",
+            'headerTitle' => "Diagnósticos de {$user->name}",
+            'saveUrl' => route('users.update-diagnoses', $user),
+            'cancelUrl' => route('users.show', $user),
+            'editablePicture' => true,
+            'publicView' => false,
             'breadcrumbs' => Breadcrumbs::generate('users.edit-diagnoses', $user),
         ]);
     }

@@ -358,7 +358,7 @@ const columns = [
   },
   {
     name: 'birthdate',
-    label: 'Cumpleaños',
+    label: 'Fecha de nac.',
     field: 'birthdate',
     align: 'left',
     sortable: true

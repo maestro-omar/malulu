@@ -47,7 +47,7 @@ Breadcrumbs::for('users.edit', function (Trail $trail, $user) {
 
 Breadcrumbs::for('users.edit-diagnoses', function (Trail $trail, $user) {
     $trail->parent('users.show', $user);
-    $trail->push("Editar diagnósticos");
+    $trail->push("Diagnósticos");
 });
 
 Breadcrumbs::for('users.file.create', function (Trail $trail, $user) {
@@ -131,6 +131,11 @@ Breadcrumbs::for('schools.staff.edit', function (Trail $trail, $school, $staff) 
     $trail->push('Editar');
 });
 
+Breadcrumbs::for('schools.staff.edit-diagnoses', function (Trail $trail, $school, $staff) {
+    $trail->parent('schools.staff.show', $school, $staff);
+    $trail->push('Diagnósticos');
+});
+
 Breadcrumbs::for('schools.students', function (Trail $trail, $school) {
     $trail->parent('school.show', $school);
     $trail->push('Estudiantes', route('school.students', $school));
@@ -150,7 +155,7 @@ Breadcrumbs::for('schools.student.edit', function (Trail $trail, $school, $stude
 
 Breadcrumbs::for('schools.student.edit-diagnoses', function (Trail $trail, $school, $student) {
     $trail->parent('schools.student', $school, $student);
-    $trail->push("Editar diagnósticos");
+    $trail->push("Diagnósticos");
 });
 
 // 📅 Ciclos lectivos

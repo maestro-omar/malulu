@@ -225,7 +225,7 @@ import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
 import { route_school_staff } from '@/Utils/routes';
-import { formatNumber, getCombinedCriticalInfo } from '@/Utils/strings';
+import { formatNumber, getCombinedCriticalInfo, getUserSlug } from '@/Utils/strings';
 import noImage from '@images/no-image-person.png';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { watch, ref, onMounted, computed } from 'vue';

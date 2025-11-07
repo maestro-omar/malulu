@@ -2,7 +2,7 @@
   <AuthenticatedLayout>
     <Head title="Diagnósticos" />
     <template #admin-header>
-      <AdminHeader :title="`Editar Diagnóstico: ${props.diagnosis.name}`"></AdminHeader>
+      <AdminHeader :title="`Diagnóstico: ${props.diagnosis.name}`"></AdminHeader>
     </template>
 
     <template #main-page-content>

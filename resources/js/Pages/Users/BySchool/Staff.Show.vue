@@ -9,13 +9,17 @@
         href: route('school.staff.edit', { school: school.slug, idAndName: getUserSlug(user) }),
         label: 'Editar'
       }">
+        <template #additional-buttons>
+          <q-btn v-if="hasPermission($page.props, 'school.edit')" size="sm"
+            :href="route('school.staff.edit-diagnoses', { school: school.slug, idAndName: getUserSlug(user) })"
+            color="lime-7" label="Diagnósticos" icon="medical_information" />
+        </template>
       </AdminHeader>
     </template>
 
     <template #main-page-content>
 
-      <UserInformation :user="user" :genders="genders"
-        :editable-picture="hasPermission($page.props, 'school.edit')" />
+      <UserInformation :user="user" :genders="genders" :editable-picture="hasPermission($page.props, 'school.edit')" />
 
       <WorkerInformation :user="user" />
 

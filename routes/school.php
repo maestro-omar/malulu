@@ -26,6 +26,8 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get(__('routes.staff') . '/{idAndName}', [UserController::class, 'staffView'])->name('school.staff.show')->middleware('school.permission:partner.view');
         Route::get(__('routes.staff') . '/{idAndName}/' . __('routes.edit'), [UserController::class, 'staffEdit'])->name('school.staff.edit')->middleware('school.permission:school.edit');
         Route::put(__('routes.staff') . '/{idAndName}/' . __('routes.edit'), [UserController::class, 'staffUpdate'])->name('school.staff.update')->middleware('school.permission:school.edit');
+        Route::get(__('routes.staff') . '/{idAndName}/' . __('routes.edit-diagnoses'), [UserController::class, 'staffEditDiagnoses'])->name('school.staff.edit-diagnoses')->middleware('school.permission:school.edit');
+        Route::put(__('routes.staff') . '/{idAndName}/' . __('routes.edit-diagnoses'), [UserController::class, 'staffUpdateDiagnoses'])->name('school.staff.update-diagnoses')->middleware('school.permission:school.edit');
         Route::post(__('routes.staff') . '/{idAndName}/' . __('routes.upload-image'), [UserController::class, 'uploadImage'])->name('school.staff.upload-image')->middleware('school.permission:school.edit');
 
         Route::get(__('routes.students'), [UserController::class, 'students'])->name('school.students')->middleware('school.permission:student.view');

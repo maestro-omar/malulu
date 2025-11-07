@@ -15,9 +15,9 @@
       }">
         <template #additional-buttons>
           <q-btn v-if="hasPermission($page.props, 'student.edit')" size="sm"
-            :href="route('school.student.edit-diagnoses', { school: school.slug, idAndName: getUserSlug(user) })" color="lime-7">
-            Diagnósticos
-          </q-btn>
+            :href="route('school.student.edit-diagnoses', { school: school.slug, idAndName: getUserSlug(user) })"
+            color="lime-7" label="Diagnósticos" icon="medical_information" />
+
         </template>
       </AdminHeader>
     </template>
@@ -31,7 +31,8 @@
         :newFileUrl="route('school.student.file.create', { 'school': school.slug, 'user': getUserSlug(user) })"
         :showFileBaseUrl="route('school.student.file.show', { 'school': school.slug, 'user': getUserSlug(user), 'file': '##' })"
         :editFileBaseUrl="route('school.student.file.edit', { 'school': school.slug, 'user': getUserSlug(user), 'file': '##' })"
-        :replaceFileBaseUrl="route('school.student.file.replace', { 'school': school.slug, 'user': getUserSlug(user), 'file': '##' })" :canDownload="true" />
+        :replaceFileBaseUrl="route('school.student.file.replace', { 'school': school.slug, 'user': getUserSlug(user), 'file': '##' })"
+        :canDownload="true" />
 
       <SystemTimestamp :row="user" />
     </template>

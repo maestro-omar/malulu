@@ -171,13 +171,19 @@ class UserController extends SchoolBaseController
         $userDiagnoses = $student->diagnoses;
         $diagnoses = Diagnosis::getAllWithCategory($canEdit ? null : $userDiagnoses->pluck('id')->toArray());
 
-        return $this->render($request, 'Users/BySchool/Student.EditDiagnoses', [
+        return $this->render($request, 'Users/EditDiagnoses', [
             'user' => $student,
             'school' => $this->school,
             'genders' => User::genders(),
             'userDiagnoses' => $userDiagnoses,
             'diagnoses' => $diagnoses,
             'canEdit' => $canEdit,
+            'pageTitle' => "Diagnósticos de {$student->name}",
+            'headerTitle' => "Diagnósticos de {$student->name}",
+            'saveUrl' => route('school.student.update-diagnoses', ['school' => $schoolSlug, 'idAndName' => $studentIdAndName]),
+            'cancelUrl' => route('school.student.show', ['school' => $schoolSlug, 'idAndName' => $studentIdAndName]),
+            'editablePicture' => false,
+            'publicView' => true,
             'breadcrumbs' => Breadcrumbs::generate('schools.student.edit-diagnoses', $this->school, $student),
         ]);
     }
@@ -191,6 +197,57 @@ class UserController extends SchoolBaseController
             $diagnosisService = new DiagnosisService();
             $diagnosisService->updateUserDiagnoses($student, $request->input('diagnoses', []));
             return redirect()->route('school.student.show', ['school' => $schoolSlug, 'idAndName' => $studentIdAndName])->with('success', 'Diagnósticos actualizados exitosamente.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()])
+                ->withInput();
+        }
+    }
+
+    public function staffEditDiagnoses(Request $request, $schoolSlug, $staffIdAndName): Response
+    {
+        $this->setSchool($schoolSlug);
+        $data = $this->getStaffData($staffIdAndName);
+        $staff = $data ? $data['user'] : null;
+
+        if (!$staff) {
+            abort(404);
+        }
+
+        $canEdit = $request->user()?->can('school.edit') ?? false;
+        $userDiagnoses = $staff->diagnoses;
+        $diagnoses = Diagnosis::getAllWithCategory($canEdit ? null : $userDiagnoses->pluck('id')->toArray());
+
+        return $this->render($request, 'Users/EditDiagnoses', [
+            'user' => $staff,
+            'school' => $this->school,
+            'genders' => User::genders(),
+            'userDiagnoses' => $userDiagnoses,
+            'diagnoses' => $diagnoses,
+            'canEdit' => $canEdit,
+            'pageTitle' => "Diagnósticos de {$staff->name}",
+            'headerTitle' => "Diagnósticos de {$staff->name}",
+            'saveUrl' => route('school.staff.update-diagnoses', ['school' => $schoolSlug, 'idAndName' => $staffIdAndName]),
+            'cancelUrl' => route('school.staff.show', ['school' => $schoolSlug, 'idAndName' => $staffIdAndName]),
+            'editablePicture' => $canEdit,
+            'publicView' => false,
+            'breadcrumbs' => Breadcrumbs::generate('schools.staff.edit-diagnoses', $this->school, $staff),
+        ]);
+    }
+
+    public function staffUpdateDiagnoses(Request $request, $schoolSlug, $staffIdAndName)
+    {
+        $this->setSchool($schoolSlug);
+        $staff = $this->getUserFromUrlParameter($staffIdAndName);
+
+        try {
+            $diagnosisService = new DiagnosisService();
+            $diagnosisService->updateUserDiagnoses($staff, $request->input('diagnoses', []));
+            return redirect()->route('school.staff.show', ['school' => $schoolSlug, 'idAndName' => $staffIdAndName])->with('success', 'Diagnósticos actualizados exitosamente.');
         } catch (ValidationException $e) {
             return redirect()->back()
                 ->withErrors($e->errors())
