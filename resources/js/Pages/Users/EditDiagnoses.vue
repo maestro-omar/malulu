@@ -1,10 +1,10 @@
 <template>
 
-  <Head :title="`Editar Diagnósticos de ${props.user.name}`" />
+  <Head :title="`Diagnósticos de ${props.user.name}`" />
 
   <AuthenticatedLayout>
     <template #admin-header>
-      <AdminHeader :title="`Editar Diagnósticos de Usuario: ${props.user.name}`"></AdminHeader>
+      <AdminHeader :title="`Diagnósticos de Usuario: ${props.user.name}`"></AdminHeader>
     </template>
 
     <template #main-page-content>

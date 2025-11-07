@@ -71,9 +71,14 @@ class Diagnosis extends Model
     {
         return self::categories()[$category] ?? $category;
     }
-    public static function getAllWithCategory()
+
+    public static function getAllWithCategory(?array $ids = null)
     {
-        return self::orderBy('category', 'asc')->orderBy('name', 'asc')->get()->map(function ($diagnosis) {
+        $query = self::orderBy('category', 'asc')->orderBy('name', 'asc');
+        if (!empty($ids)) {
+            $query->whereIn('id', $ids);
+        }
+        return $query->get()->map(function ($diagnosis) {
             $diagnosis->category_name = self::getCategoryName($diagnosis->category);
             return $diagnosis;
         });

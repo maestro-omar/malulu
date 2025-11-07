@@ -167,14 +167,17 @@ class UserController extends SchoolBaseController
         if (!$student) {
             abort(404);
         }
+        $canEdit = $request->user()?->can('student.edit') ?? false;
+        $userDiagnoses = $student->diagnoses;
+        $diagnoses = Diagnosis::getAllWithCategory($canEdit ? null : $userDiagnoses->pluck('id')->toArray());
 
-        $diagnoses = Diagnosis::getAllWithCategory();
         return $this->render($request, 'Users/BySchool/Student.EditDiagnoses', [
             'user' => $student,
             'school' => $this->school,
             'genders' => User::genders(),
-            'userDiagnoses' => $student->diagnoses,
+            'userDiagnoses' => $userDiagnoses,
             'diagnoses' => $diagnoses,
+            'canEdit' => $canEdit,
             'breadcrumbs' => Breadcrumbs::generate('schools.student.edit-diagnoses', $this->school, $student),
         ]);
     }
