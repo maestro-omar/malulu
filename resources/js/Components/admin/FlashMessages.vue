@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import { usePage } from '@inertiajs/vue3';
 
@@ -17,10 +17,21 @@ const props = defineProps({
   },
 });
 
-const showSuccess = ref(true);
-const showError = ref(true);
+const activeNotifications = ref(new Set());
 
 const showNotification = (message, type) => {
+  if (!message) {
+    return;
+  }
+
+  const key = `${type}:${message}`;
+
+  if (activeNotifications.value.has(key)) {
+    return;
+  }
+
+  activeNotifications.value.add(key);
+
   $q.notify({
     message: message,
     type: type,
@@ -38,32 +49,68 @@ const showNotification = (message, type) => {
       }
     ]
   });
+
+  setTimeout(() => {
+    activeNotifications.value.delete(key);
+  });
 };
 
-const dismissSuccess = () => {
-  showSuccess.value = false;
+const extractErrorMessages = (errors) => {
+  if (!errors) {
+    return [];
+  }
+
+  if (typeof errors === 'string') {
+    return [errors];
+  }
+
+  if (Array.isArray(errors)) {
+    return errors
+      .flatMap((error) => extractErrorMessages(error))
+      .filter(Boolean);
+  }
+
+  if (typeof errors === 'object') {
+    return Object.values(errors)
+      .flatMap((value) => extractErrorMessages(value))
+      .filter(Boolean);
+  }
+
+  return [];
 };
 
-const dismissError = () => {
-  showError.value = false;
-};
+const lastFlash = ref({ success: null, error: null });
 
 // Watch for flash messages and show notifications
-watch(() => props.flash, (newFlash) => {
-  if (newFlash?.success && showSuccess.value) {
-    showNotification(newFlash.success, 'positive');
-  }
+watch(
+  () => props.flash,
+  (newFlash) => {
+    const successMessage = newFlash?.success;
+    const errorMessage = newFlash?.error;
 
-  if (newFlash?.error && showError.value) {
-    showNotification(newFlash.error, 'negative');
-  }
-}, { immediate: true, deep: true });
+    if (successMessage && successMessage !== lastFlash.value.success) {
+      showNotification(successMessage, 'positive');
+    }
+
+    if (errorMessage && errorMessage !== lastFlash.value.error) {
+      showNotification(errorMessage, 'negative');
+    }
+
+    lastFlash.value = {
+      success: successMessage ?? null,
+      error: errorMessage ?? null,
+    };
+  },
+  { immediate: true, deep: true }
+);
 
 // Watch for page errors (validation errors from controller exceptions)
 watch(() => $page.props.errors, (newErrors) => {
-  if (newErrors?.error && showError.value) {
-    showNotification(newErrors.error, 'negative');
-  }
+  const errorMessages = extractErrorMessages(newErrors);
+
+  errorMessages.forEach((message) => {
+    showNotification(message, 'negative');
+  });
 }, { immediate: true, deep: true });
 
 

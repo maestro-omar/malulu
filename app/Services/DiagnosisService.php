@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Catalogs\Diagnosis;
 use App\Models\Entities\User;
 use App\Models\Relations\UserDiagnosis;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -117,12 +118,18 @@ class DiagnosisService
      */
     public function validateUserDiagnosesData(array $data)
     {
-        $rules = [
-            'diagnoses' => 'required|array',
-            'diagnoses.*.id' => 'required|exists:diagnoses,id',
-            'diagnoses.*.diagnosed_at' => 'nullable|date',
-            'diagnoses.*.notes' => 'nullable|string|max:1000',
-        ];
+        //Need this way because if the array is empty, the validator will fail and won't be able to remove all diagnoses
+        if (array_key_exists('diagnoses', $data) && empty($data['diagnoses'])) {
+            $rules = ['diagnoses' => 'array'];
+        } else {
+
+            $rules = [
+                'diagnoses' => 'required|array',
+                'diagnoses.*.id' => 'required|exists:diagnoses,id',
+                'diagnoses.*.diagnosed_at' => 'nullable|date',
+                'diagnoses.*.notes' => 'nullable|string|max:1000',
+            ];
+        }
 
         $validator = Validator::make($data, $rules);
 
@@ -148,21 +155,21 @@ class DiagnosisService
             ->whereNull('deleted_at')
             ->pluck('diagnosis_id')
             ->toArray();
-        
+
         //2) get new diagnoses IDs
         $newDiagnoses = array_map(function ($diagnosis) {
             return $diagnosis['id'];
         }, $diagnosesData);
-        
+
         //3) get diagnoses to add
         $diagnosesToAdd = array_diff($newDiagnoses, $currentDiagnoses);
-        
+
         //4) get diagnoses to remove
         $diagnosesToRemove = array_diff($currentDiagnoses, $newDiagnoses);
-        
+
         //5) get diagnoses to update (exist in both lists)
         $diagnosesToUpdate = array_intersect($currentDiagnoses, $newDiagnoses);
-        
+
         //6) add new diagnoses
         foreach ($diagnosesData as $diagnosis) {
             if (in_array($diagnosis['id'], $diagnosesToAdd)) {
@@ -172,7 +179,7 @@ class DiagnosisService
                 ]);
             }
         }
-        
+
         //7) update existing diagnoses
         foreach ($diagnosesData as $diagnosis) {
             if (in_array($diagnosis['id'], $diagnosesToUpdate)) {
@@ -185,14 +192,16 @@ class DiagnosisService
                     ]);
             }
         }
-        
+
         //8) soft delete removed diagnoses
-        foreach ($diagnosesToRemove as $diagnosisId) {
-            UserDiagnosis::where('user_id', $user->id)
-                ->where('diagnosis_id', $diagnosisId)
+        if (!empty($diagnosesToRemove)) {
+            DB::table('user_diagnosis')
+                ->where('user_id', $user->id)
+                ->whereIn('diagnosis_id', $diagnosesToRemove)
+                ->whereNull('deleted_at')
                 ->update(['deleted_at' => now()]);
         }
-        
+
         return $user;
     }
 }

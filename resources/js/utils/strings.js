@@ -28,17 +28,6 @@ export function slugify(text) {
     .replace(/--+/g, '-');
 }
 
-
-export function getUserSlug(user) {
-  if (!user) return '';
-  if (user.id_and_name) return user.id_and_name;
-
-  // Build the base slug with ID, number and letter
-  let slug = user.id + '-' + user.lastname + '-' + user.firstname;
-
-  return slugify(slug);
-}
-
 /**
  * Get user ID and name slug for school routes (idAndName parameter)
  * Format: id-name-lastname (slugified)

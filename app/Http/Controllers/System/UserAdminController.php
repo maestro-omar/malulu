@@ -85,8 +85,9 @@ class UserAdminController extends SystemBaseController
                 ->withErrors($e->errors())
                 ->withInput();
         } catch (\Exception $e) {
+            report($e);
             return redirect()->back()
-                ->withErrors(['error' => $e->getMessage()])
+                ->with('error', $e->getMessage())
                 ->withInput();
         }
     }

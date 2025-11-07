@@ -10,7 +10,7 @@
     <template #main-page-content>
       <div class="container">
 
-        <UserInformation :user="user" :genders="genders" :editable-picture="true" />
+        <UserInformation :user="user" :genders="genders" :editable-picture="false" :public-view="true" />
 
         <form @submit.prevent="submit" class="admin-form__container">
           <q-card class="admin-form__card">
@@ -22,12 +22,8 @@
                 <!-- Category column -->
                 <template #body-cell-category="props">
                   <q-td :props="props">
-                    <DiagnosisCategoryBadge
-                      v-if="props.row.category"
-                      :category="props.row.category"
-                      :category-name="props.row.category_name"
-                      size="sm"
-                    />
+                    <DiagnosisCategoryBadge v-if="props.row.category" :category="props.row.category"
+                      :category-name="props.row.category_name" size="sm" />
                   </q-td>
                 </template>
 
@@ -110,7 +106,7 @@ import { getUserSlug } from '@/Utils/strings';
 const props = defineProps({
   user: Object,
   school: Object,
-  genders: Array,
+  genders: Object,
   userDiagnoses: Array,
   diagnoses: Array,
 });
@@ -264,4 +260,3 @@ const submit = () => {
   }));
 };
 </script>
-

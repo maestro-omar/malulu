@@ -107,7 +107,7 @@ import { formatDateForInput } from '@/Utils/date';
 
 const props = defineProps({
   user: Object,
-  genders: Array,
+  genders: Object,
   userDiagnoses: Array,
   diagnoses: Array,
 });

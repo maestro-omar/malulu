@@ -163,7 +163,7 @@ class UserController extends SchoolBaseController
         $this->setSchool($schoolSlug);
         $data = $this->getUserData($studentIdAndName);
         $student = $data ? $data['user'] : null;
-        
+
         if (!$student) {
             abort(404);
         }
@@ -183,7 +183,7 @@ class UserController extends SchoolBaseController
     {
         $this->setSchool($schoolSlug);
         $student = $this->getUserFromUrlParameter($studentIdAndName);
-        
+
         try {
             $diagnosisService = new DiagnosisService();
             $diagnosisService->updateUserDiagnoses($student, $request->input('diagnoses', []));
@@ -204,7 +204,7 @@ class UserController extends SchoolBaseController
         $this->setSchool($schoolSlug);
         $data = $this->getStaffData($staffIdAndName);
         $staff = $data ? $data['user'] : null;
-        
+
         return Inertia::render('Users/BySchool/Staff.Edit', [
             'school' => $this->school,
             'user' => $staff,
