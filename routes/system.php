@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix(__('routes.system'))->group(function () {
     Route::middleware('auth')->group(function () {
-        Route::get('/' . __('routes.profile'), [ProfileAdminController::class, 'edit'])->name('profile.edit');
+        Route::get('/' . __('routes.profile'), [ProfileAdminController::class, 'show'])->name('profile.show');
+        Route::get('/' . __('routes.profile') . '/' . __('routes.edit'), [ProfileAdminController::class, 'edit'])->name('profile.edit');
         Route::patch('/' . __('routes.profile'), [ProfileAdminController::class, 'update'])->name('profile.update');
         Route::delete('/' . __('routes.profile'), [ProfileAdminController::class, 'destroy'])->name('profile.destroy');
         Route::post('/' . __('routes.profile') . '/' . __('routes.upload-image'), [ProfileAdminController::class, 'uploadImage'])->name('profile.upload-image');

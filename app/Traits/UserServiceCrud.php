@@ -59,6 +59,7 @@ trait UserServiceCrud
             'password' => $user ? ['nullable', 'string', 'min:8', 'confirmed'] : ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['nullable', 'string', 'exists:roles,name'],
             'critical_info' => ['nullable', 'string', 'max:1000'],
+            'occupation' => ['nullable', 'string', 'max:255'],
         ];
 
         $messages = [
@@ -104,6 +105,7 @@ trait UserServiceCrud
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
             'critical_info' => $validatedData['critical_info'] ?? null,
+            'occupation' => $validatedData['occupation'] ?? null,
         ]);
 
         if (!empty($validatedData['role'])) {
@@ -133,6 +135,7 @@ trait UserServiceCrud
             'nationality' => $validatedData['nationality'] ?? $user->nationality,
             'email' => $validatedData['email'],
             'critical_info' => $validatedData['critical_info'] ?? $user->critical_info,
+            'occupation' => $validatedData['occupation'] ?? $user->occupation,
         ]);
 
         if (!empty($validatedData['password'])) {

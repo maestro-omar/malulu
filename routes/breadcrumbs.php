@@ -24,9 +24,15 @@ Breadcrumbs::for('dashboard', function (Trail $trail) {
 });
 
 // 👤 Perfil
-Breadcrumbs::for('profile.edit', function (Trail $trail) {
+Breadcrumbs::for('profile.show', function (Trail $trail, $user) {
     $trail->parent('dashboard');
     $trail->push('Mi perfil', route('profile.edit'));
+});
+
+// 👤 Perfil
+Breadcrumbs::for('profile.edit', function (Trail $trail, $user) {
+    $trail->parent('profile.show', $user);
+    $trail->push('Editar', route('profile.edit'));
 });
 
 // 👥 Usuarios

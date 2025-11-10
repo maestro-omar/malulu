@@ -13,7 +13,7 @@
         onClick: destroy,
         label: 'Eliminar'
       }">
-        <template #additional-buttons>
+        <template v-if="hasPermission($page.props, 'user.manage')" #additional-buttons>
           <q-btn v-if="hasPermission($page.props, 'user.manage')" size="sm"
             :href="route('users.edit-diagnoses', { 'user': user.id })" color="lime-7" label="Diagnósticos"
             icon="medical_information" />

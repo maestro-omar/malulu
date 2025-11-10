@@ -89,6 +89,7 @@ class HandleInertiaRequests extends Middleware
                     // 'birth_place' => $user->birth_place,
                     // 'nationality' => $user->nationality,
                     // 'critical_info' => $user->critical_info,
+                    // 'occupation' => $user->occupation,
                     // 'diagnoses_data' => $user->diagnoses_data,
                     // 'email_verified_at' => $user->email_verified_at,
                     //omar importante
@@ -316,7 +317,7 @@ class HandleInertiaRequests extends Middleware
             ['type' => 'separator'],
             [
                 'name' => 'Perfil',
-                'route' => 'profile.edit',
+                'route' => 'profile.show',
                 'icon' => 'account_circle',
             ],
             [

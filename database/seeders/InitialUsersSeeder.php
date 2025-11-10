@@ -187,6 +187,7 @@ class InitialUsersSeeder extends Seeder
             'birth_place' => $birth_place,
             'nationality' => $nationality,
             'critical_info' => $critical_info,
+            'occupation' => 'Estudiante',
             'password' => '123123123', // Default password
             'password_confirmation' => '123123123', // Required for validation
         ];
@@ -272,7 +273,7 @@ class InitialUsersSeeder extends Seeder
         $address = $userData['Direccion'] ?? null;
         $locality = $userData['Localidad'] ?? null;
         $shift = $this->mapShift($jsonRowData['Turno'] ?? 'mañana');
-        $ocupation = $jsonRowData['TUTOR_Profesion'] ?? '';
+        $occupation = $jsonRowData['TUTOR_Profesion'] ?? '';
         if (empty($email)) {
             $email = $this->faker->guardianEmail($firstName, $lastName);
         }
@@ -288,7 +289,7 @@ class InitialUsersSeeder extends Seeder
             'gender' => $gender,
             'birthdate' => $birthdate,
             'phone' =>  $phone,
-            'ocupation' => $ocupation,
+            'occupation' => $occupation,
             'address' => $address,
             'locality' => $locality,
             'province_id' => $this->province->id,

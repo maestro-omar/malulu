@@ -31,6 +31,7 @@ class ProfileUpdateRequest extends FormRequest
             'birth_place' => ['nullable', 'string', 'max:255'],
             'nationality' => ['nullable', 'string', 'max:255'],
             'critical_info' => ['nullable', 'string', 'max:1000'],
+            'occupation' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

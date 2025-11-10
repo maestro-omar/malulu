@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\System;
 
+use App\Models\Entities\User;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -22,18 +23,33 @@ class ProfileAdminController extends SystemBaseController
     {
         $this->userService = $userService;
     }
+
+
+    public function show(): Response
+    {
+        $user = auth()->user();
+        $userData = $this->userService->getFullUserShowData($user);
+        return Inertia::render('Users/Show', [
+            'user' => $userData,
+            'files' => $this->userService->getFiles($user, $user),
+            'genders' => User::genders(),
+            'breadcrumbs' => Breadcrumbs::generate('profile.show', $user),
+        ]);
+    }
+
     /**
      * Display the user's profile form.
      */
     public function edit(Request $request): Response
     {
+        $user = auth()->user();
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
             'provinces' => \App\Models\Catalogs\Province::orderBy('order')->get(),
             'countries' => \App\Models\Catalogs\Country::orderBy('order')->get(),
             'genders' => \App\Models\Entities\User::genders(),
-            'breadcrumbs' => Breadcrumbs::generate('profile.edit'),
+            'breadcrumbs' => Breadcrumbs::generate('profile.edit', $user),
         ]);
     }
 
