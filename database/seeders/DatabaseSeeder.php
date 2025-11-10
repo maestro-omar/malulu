@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Catalogs\Province;
 use App\Models\Catalogs\Country;
 
+use Spatie\Activitylog\Models\Activity;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -16,6 +18,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+        activity()->disableLogging();
+
         $this->call([
             // Static catalogs
             JobStatusSeeder::class,
@@ -82,5 +87,7 @@ class DatabaseSeeder extends Seeder
             FakeAttendanceSeeder::class,
             FakeUserDiagnosisSeeder::class,
         ]);
+
+        activity()->enableLogging();
     }
 }
