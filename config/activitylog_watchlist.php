@@ -20,6 +20,7 @@ return [
         App\Models\Entities\User::class => [
             'log_name' => 'entities-user',
             'ignore' => ['password', 'remember_token'],
+            'record_events' => ['updated', 'deleted'], // skip "created"
         ],
         App\Models\Entities\File::class => [
             'log_name' => 'entities-file',
@@ -102,6 +103,7 @@ return [
         ],
         App\Models\Relations\Attendance::class => [
             'log_name' => 'relations-attendance',
+            'record_events' => ['updated', 'deleted'], // skip "created"
         ],
         App\Models\Relations\GuardianRelationship::class => [
             'log_name' => 'relations-guardian-relationship',
@@ -139,6 +141,6 @@ return [
         'attributes' => 'fillable',
         'ignore' => ['created_at', 'updated_at', 'deleted_at'],
         'log_name' => null,
-        'with_context' => true,
+        'with_context' => false,
     ],
 ];

@@ -227,8 +227,8 @@ class ActivityLogObserver
         }
 
         return array_filter([
-            'ip' => $request->ip(),
-            'user_agent' => $request->userAgent(),
+            // 'ip' => $request->ip(),
+            // 'user_agent' => $request->userAgent(),
             'url' => $request->fullUrl(),
         ]);
     }

@@ -11,6 +11,10 @@ class UserDiagnosis extends Pivot
 {
     use SoftDeletes;
 
+    public $incrementing = true;
+    protected $primaryKey = 'id';
+    protected $keyType = 'int';
+
     protected $table = 'user_diagnosis';
 
     protected $fillable = [
