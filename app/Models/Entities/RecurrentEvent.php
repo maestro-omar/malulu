@@ -14,6 +14,11 @@ class RecurrentEvent extends Model
 {
     use HasFactory;
 
+    const WORKING_DAY = 'laborable';
+    const NON_WORKING_FIXED = 'feriado_fijo';
+    const NON_WORKING_FLEXIBLE = 'feriado_variable';
+
+
     protected $table = 'recurrent_events';
 
     protected $fillable = [
@@ -26,11 +31,12 @@ class RecurrentEvent extends Model
         'province_id',
         'school_id',
         'academic_year_id',
-        'is_non_working_day',
+        'non_working_type',
         'notes',
         'created_by',
         'updated_by',
     ];
+
 
     public function type()
     {

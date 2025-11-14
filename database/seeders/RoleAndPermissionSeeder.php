@@ -270,6 +270,7 @@ class RoleAndPermissionSeeder extends Seeder
             'academic-year.manage',
             'file-type.manage',
             'file-subtype.manage',
+            'recurrent-event.manage',
             'country.manage',
             'district.manage',
             'province.manage',

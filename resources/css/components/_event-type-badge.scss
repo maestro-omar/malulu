@@ -1,0 +1,74 @@
+@use '../abstracts/mixins';
+@use '../abstracts/variables';
+@use 'sass:color';
+
+.q-chip.event-type-badge {
+
+  &--default {
+    background: color.adjust(variables.$color-grey, $lightness: -5%);
+    color: variables.$color-text;
+  }
+
+  &--feriado_nacional {
+    background: color.adjust(variables.$color-cyan, $alpha: -0.8);
+    color: color.adjust(variables.$color-cyan, $lightness: -20%);
+  }
+
+  &--feriado_provincial {
+    background: color.adjust(variables.$color-sky, $alpha: -0.8);
+    color: color.adjust(variables.$color-sky, $lightness: -20%);
+  }
+
+  &--conmemoracion_nacional {
+    background: color.adjust(variables.$color-yellow, $alpha: -0.7);
+    color: color.adjust(variables.$color-yellow, $lightness: -30%);
+  }
+
+  &--conmemoracion_provincial {
+    background: color.adjust(variables.$color-terciary, $alpha: -0.7);
+    color: color.adjust(variables.$color-terciary, $lightness: -30%);
+  }
+
+  &--conmemoracion_escolar {
+    background: color.adjust(variables.$color-amber, $alpha: -0.8);
+    color: color.adjust(variables.$color-amber, $lightness: -20%);
+  }
+
+  &--salida_didactica {
+    background: color.adjust(variables.$color-orange, $alpha: -0.8);
+    color: color.adjust(variables.$color-orange, $lightness: -20%);
+  }
+
+  &--acto_escolar {
+    background: color.adjust(variables.$color-pink, $alpha: -0.8);
+    color: color.adjust(variables.$color-pink, $lightness: -20%);
+  }
+
+  &--reunion_padres,
+  &--reunion_docente,
+  &--reunion_grupal {
+    background: color.adjust(variables.$color-purple, $alpha: -0.8);
+    color: color.adjust(variables.$color-purple, $lightness: -20%);
+  }
+
+  &--examen {
+    background: color.adjust(variables.$color-indigo, $alpha: -0.8);
+    color: color.adjust(variables.$color-indigo, $lightness: -20%);
+  }
+
+  &--vacaciones {
+    background: color.adjust(variables.$color-green, $alpha: -0.8);
+    color: color.adjust(variables.$color-green, $lightness: -20%);
+  }
+
+  &--inscripcion {
+    background: color.adjust(variables.$color-emerald, $alpha: -0.7);
+    color: color.adjust(variables.$color-emerald, $lightness: -30%);
+  }
+
+  &--entrega_libreta {
+    background: color.adjust(variables.$color-brand, $alpha: -0.8);
+    color: color.adjust(variables.$color-brand, $lightness: -20%);
+  }
+}
+

@@ -13,6 +13,7 @@ use Spatie\Activitylog\Models\Activity;
 
 class DatabaseSeeder extends Seeder
 {
+    private bool $withFakeDate = true;
     /**
      * Seed the application's database.
      */
@@ -48,6 +49,7 @@ class DatabaseSeeder extends Seeder
             StudentCourseEndReasonSeeder::class,
             RoleRelationshipEndReasonSeeder::class,
         ]);
+        activity()->enableLogging();
 
         // Create initial admin user with explicit password
         User::factory()->create([
@@ -67,26 +69,30 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('123123123'),
         ]);
 
+        activity()->disableLogging();
         $this->call([
-            // Roles and permissions
             RoleAndPermissionSeeder::class,
 
             SchoolPageSeeder::class,
-
-            InitialUsersSeeder::class,
 
             EventsSeeder::class,
 
             ProvincialExternalFilesSeeder::class,
         ]);
+        activity()->enableLogging();
 
         $this->call([
-            FakeAcademicEventsSeeder::class,
-            // FakeUsersSeeder::class,
-            FakeFilesSeeder::class,
-            FakeAttendanceSeeder::class,
-            FakeUserDiagnosisSeeder::class,
+            InitialUsersSeeder::class,
         ]);
+
+        if ($this->withFakeDate)
+            $this->call([
+                FakeAcademicEventsSeeder::class,
+                // FakeUsersSeeder::class,
+                FakeFilesSeeder::class,
+                FakeAttendanceSeeder::class,
+                FakeUserDiagnosisSeeder::class,
+            ]);
 
         activity()->enableLogging();
     }

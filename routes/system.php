@@ -7,6 +7,7 @@ use App\Http\Controllers\System\SchoolAdminController;
 use App\Http\Controllers\System\AcademicYearAdminController;
 use App\Http\Controllers\System\FileTypeAdminController;
 use App\Http\Controllers\System\FileSubtypeAdminController;
+use App\Http\Controllers\System\RecurrentEventAdminController;
 use App\Http\Controllers\System\ProvinceAdminController;
 use App\Http\Controllers\System\DiagnosisAdminController;
 use Illuminate\Support\Facades\Route;
@@ -85,6 +86,16 @@ Route::prefix(__('routes.system'))->group(function () {
             Route::get(__('routes.academic-year') . '/{academicYear}/' . __('routes.edit'), [AcademicYearAdminController::class, 'edit'])->name('academic-years.edit');
             Route::put(__('routes.academic-year') . '/{academicYear}', [AcademicYearAdminController::class, 'update'])->name('academic-years.update');
             Route::delete(__('routes.academic-year') . '/{academicYear}', [AcademicYearAdminController::class, 'destroy'])->name('academic-years.destroy');
+        });
+
+        Route::middleware('permission:recurrent-event.manage')->group(function () {
+            Route::get(__('routes.recurrent-events'), [RecurrentEventAdminController::class, 'index'])->name('recurrent-events.index');
+            Route::get(__('routes.recurrent-events') . '/' . __('routes.create'), [RecurrentEventAdminController::class, 'create'])->name('recurrent-events.create');
+            Route::post(__('routes.recurrent-events'), [RecurrentEventAdminController::class, 'store'])->name('recurrent-events.store');
+            Route::get(__('routes.recurrent-events') . '/{recurrentEvent}', [RecurrentEventAdminController::class, 'show'])->name('recurrent-events.show');
+            Route::get(__('routes.recurrent-events') . '/{recurrentEvent}/' . __('routes.edit'), [RecurrentEventAdminController::class, 'edit'])->name('recurrent-events.edit');
+            Route::put(__('routes.recurrent-events') . '/{recurrentEvent}', [RecurrentEventAdminController::class, 'update'])->name('recurrent-events.update');
+            Route::delete(__('routes.recurrent-events') . '/{recurrentEvent}', [RecurrentEventAdminController::class, 'destroy'])->name('recurrent-events.destroy');
         });
 
         // Diagnoses Routes

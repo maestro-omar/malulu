@@ -36,6 +36,7 @@ return [
     'delete-image' => 'eliminar-imagen',
     'schools' => 'escuelas',
     'academic-year' => 'ciclo-escolar',
+    'recurrent-events' => 'eventos-recurrentes',
     'file' => 'archivo',
     'files' => 'archivos',
     'file-types' => 'tipos-archivo',

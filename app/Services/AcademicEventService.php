@@ -10,6 +10,7 @@ use App\Models\Entities\AcademicYear;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 use App\Models\Entities\Course;
 use Carbon\Carbon;
 
@@ -301,11 +302,14 @@ class AcademicEventService
                 $effectiveDate = $event->calculated_date ?? $event->date;
             }
 
+            $nonWorkingType = $event->non_working_type ?? 0;
+
             return [
                 'id' => $event->id,
                 'title' => $event->title,
                 'date' => $effectiveDate, //? $effectiveDate->format('d/m/Y') : null,
-                'is_non_working_day' => true && $event->is_non_working_day,
+                'non_working_type' => $nonWorkingType,
+                'is_non_working_day' => $nonWorkingType > 0,
                 'notes' => $event->notes,
                 'event_type' => [
                     'id' => $event->type?->id,
@@ -371,28 +375,28 @@ class AcademicEventService
             [
                 'title' => 'Inicio del ciclo lectivo',
                 'date' => now()->setDate($academicYearId, 3, 3), // adjust logic per rules
-                'is_non_working_day' => false,
+                'non_working_type' => AcademicEvent::WORKING_DAY,
                 'notes' => 'Primer día de clases',
                 'event_type_id' => EventType::CODE_INICIO_ESCOLAR,
             ],
             [
                 'title' => 'Fin del ciclo lectivo',
                 'date' => now()->setDate($academicYearId, 12, 15),
-                'is_non_working_day' => false,
+                'non_working_type' => AcademicEvent::WORKING_DAY,
                 'notes' => 'Último día de clases',
                 'event_type_id' => EventType::CODE_FIN_ESCOLAR,
             ],
             [
                 'title' => 'Inicio de las vacaciones de invierno',
                 'date' => now()->setDate($academicYearId, 12, 15),
-                'is_non_working_day' => false,
+                'non_working_type' => AcademicEvent::WORKING_DAY,
                 'notes' => 'Inicio de las vacaciones de invierno',
                 'event_type_id' => EventType::CODE_INICIO_INVIERNO
             ],
             [
                 'title' => 'Fin de las vacaciones de invierno',
                 'date' => now()->setDate($academicYearId, 12, 31),
-                'is_non_working_day' => false,
+                'non_working_type' => AcademicEvent::WORKING_DAY,
                 'notes' => 'Fin de las vacaciones de invierno',
                 'event_type_id' => EventType::CODE_FIN_INVIERNO
             ],
@@ -414,7 +418,11 @@ class AcademicEventService
         $rules = [
             'title' => ['required', 'string', 'max:255'],
             'date' => ['required', 'date'],
-            'is_non_working_day' => ['boolean'],
+            'non_working_type' => ['required', 'integer', Rule::in([
+                AcademicEvent::WORKING_DAY,
+                AcademicEvent::NON_WORKING_FIXED,
+                AcademicEvent::NON_WORKING_FLEXIBLE,
+            ])],
             'notes' => ['nullable', 'string', 'max:1000'],
             'event_type_id' => ['required', 'exists:event_types,id'],
             'province_id' => ['nullable', 'exists:provinces,id'],
@@ -429,7 +437,9 @@ class AcademicEventService
             'title.max' => 'El título no puede superar los 255 caracteres',
             'date.required' => 'La fecha es obligatoria',
             'date.date' => 'La fecha debe tener un formato válido',
-            'is_non_working_day.boolean' => 'El campo "día no laborable" debe ser verdadero o falso',
+            'non_working_type.required' => 'Debe indicar si es un día laborable o no laborable',
+            'non_working_type.integer' => 'El tipo de día no laborable debe ser un número válido',
+            'non_working_type.in' => 'El tipo de día no laborable seleccionado no es válido',
             'notes.max' => 'Las notas no pueden superar los 1000 caracteres',
             'event_type_id.required' => 'El tipo de evento es obligatorio',
             'event_type_id.exists' => 'El tipo de evento seleccionado no existe',
@@ -445,6 +455,9 @@ class AcademicEventService
             throw new ValidationException($validator);
         }
 
-        return $validator->validated();
+        $validated = $validator->validated();
+        $validated['non_working_type'] = (int) ($validated['non_working_type'] ?? AcademicEvent::WORKING_DAY);
+
+        return $validated;
     }
 }

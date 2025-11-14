@@ -239,6 +239,14 @@ class HandleInertiaRequests extends Middleware
             'route' => 'diagnoses.index',
             'icon' => 'medical_services',
         ];
+
+        $items[] = [
+            'name' => 'Eventos recurrentes',
+            'route' => 'recurrent-events.index',
+            'icon' => 'event',
+        ];
+
+
         // $items[] = [
         //     'name' => 'Materias',
         //     'route' => 'class-subject.index',

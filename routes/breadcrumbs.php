@@ -10,6 +10,7 @@ use App\Models\Catalogs\Locality;
 use App\Models\Entities\Course;
 use App\Models\Entities\File;
 use App\Models\Entities\User;
+use App\Models\Entities\RecurrentEvent;
 use Illuminate\Support\Str;
 
 
@@ -184,6 +185,27 @@ Breadcrumbs::for('academic-years.show', function (Trail $trail, $year) {
 Breadcrumbs::for('academic-years.edit', function (Trail $trail, $year) {
     $trail->parent('academic-years.show', $year);
     $trail->push("Editar");
+});
+
+// 🔁 Eventos recurrentes
+Breadcrumbs::for('recurrent-events.index', function (Trail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Eventos recurrentes', route('recurrent-events.index'), ['icon' => 'event_repeat']);
+});
+
+Breadcrumbs::for('recurrent-events.create', function (Trail $trail) {
+    $trail->parent('recurrent-events.index');
+    $trail->push('Crear evento recurrente');
+});
+
+Breadcrumbs::for('recurrent-events.show', function (Trail $trail, RecurrentEvent $recurrentEvent) {
+    $trail->parent('recurrent-events.index');
+    $trail->push($recurrentEvent->title, route('recurrent-events.show', $recurrentEvent));
+});
+
+Breadcrumbs::for('recurrent-events.edit', function (Trail $trail, RecurrentEvent $recurrentEvent) {
+    $trail->parent('recurrent-events.show', $recurrentEvent);
+    $trail->push('Editar');
 });
 
 

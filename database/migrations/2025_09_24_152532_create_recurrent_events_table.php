@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->foreignId('province_id')->nullable()->constrained('provinces');
             $table->foreignId('school_id')->nullable()->constrained('schools');
 
-            $table->boolean('is_non_working_day')->default(false); // true = holiday, no classes
+            $table->string('non_working_type')->default(App\Models\Entities\RecurrentEvent::WORKING_DAY); // laborable, feriado_fijo, feriado_variable
             $table->text('notes')->nullable();
 
             $table->foreignId('created_by')->constrained('users');

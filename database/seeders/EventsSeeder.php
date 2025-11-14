@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalogs\EventType;
+use App\Models\Entities\RecurrentEvent;
 use App\Models\Entities\School;
 
 class EventsSeeder extends Seeder
@@ -65,26 +66,24 @@ class EventsSeeder extends Seeder
 
         // Feriados nacionales (recurren todos los años)
         $feriados = [
-            ['title' => 'Año Nuevo', 'date' => '2025-01-01', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
-            ['title' => 'Día de la Memoria por la Verdad y la Justicia', 'date' => '2025-03-24', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
-            ['title' => 'Día del Veterano y de los Caídos en la Guerra de Malvinas', 'date' => '2025-04-02', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
-            ['title' => 'Día del Trabajador', 'date' => '2025-05-01', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
-            ['title' => 'Día de la Revolución de Mayo', 'date' => '2025-05-25', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
-            ['title' => 'Paso a la Inmortalidad del General Don Martín Miguel de Güemes', 'date' => '2025-06-17', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
-            ['title' => 'Paso a la Inmortalidad del General Manuel Belgrano / Día de la Bandera', 'date' => '2025-06-20', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
-            ['title' => 'Día de la Independencia', 'date' => '2025-07-09', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
-            ['title' => 'Paso a la Inmortalidad del General José de San Martín', 'date' => '2025-08-17', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
-            ['title' => 'Día del Respeto a la Diversidad Cultural', 'date' => '2025-10-12', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
-            ['title' => 'Día de la Soberanía Nacional', 'date' => '2025-11-20', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
-            ['title' => 'Día de la Inmaculada Concepción de María', 'date' => '2025-12-08', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
-            ['title' => 'Navidad', 'date' => '2025-12-25', 'event_type_code' => 'feriado_nacional', 'is_non_working_day' => true],
+            ['title' => 'Año Nuevo', 'date' => '2025-01-01', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
+            ['title' => 'Día de la Memoria por la Verdad y la Justicia', 'date' => '2025-03-24', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
+            ['title' => 'Día del Veterano y de los Caídos en la Guerra de Malvinas', 'date' => '2025-04-02', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
+            ['title' => 'Día del Trabajador', 'date' => '2025-05-01', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
+            ['title' => 'Día de la Revolución de Mayo', 'date' => '2025-05-25', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
+            ['title' => 'Paso a la Inmortalidad del General Don Martín Miguel de Güemes', 'date' => '2025-06-17', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
+            ['title' => 'Paso a la Inmortalidad del General Manuel Belgrano / Día de la Bandera', 'date' => '2025-06-20', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
+            ['title' => 'Día de la Independencia', 'date' => '2025-07-09', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
+            ['title' => 'Paso a la Inmortalidad del General José de San Martín', 'date' => '2025-08-17', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
+            ['title' => 'Día del Respeto a la Diversidad Cultural', 'date' => '2025-10-12', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
+            ['title' => 'Día de la Soberanía Nacional', 'date' => '2025-11-20', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
+            ['title' => 'Día de la Inmaculada Concepción de María', 'date' => '2025-12-08', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
+            ['title' => 'Navidad', 'date' => '2025-12-25', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
         ];
 
 
         foreach ($feriados as $feriado) {
-            $type = $allTypesByCode[$feriado['event_type_code']];
-            $feriado['event_type_id'] = $type->id;
-            unset($feriado['event_type_code']);
+            $feriado['event_type_id'] = $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id;
             DB::table('recurrent_events')->insert(array_merge($feriado, [
                 'province_id' => null,
                 'school_id' => null,
@@ -96,24 +95,22 @@ class EventsSeeder extends Seeder
         }
 
         $conmemoraciones = [
-            ['title' => 'Día Internacional de la No Violencia y la Paz', 'date' => '2025-01-30', 'event_type_code' => 'conmemoracion_nacional', 'is_non_working_day' => false],
-            ['title' => 'Día del Aborigen Americano', 'date' => '2025-04-19', 'event_type_code' => 'conmemoracion_nacional', 'is_non_working_day' => false],
-            ['title' => 'Día de la Constitución Nacional', 'date' => '2025-05-01', 'event_type_code' => 'conmemoracion_nacional', 'is_non_working_day' => false],
-            ['title' => 'Día del Periodista', 'date' => '2025-06-07', 'event_type_code' => 'conmemoracion_nacional', 'is_non_working_day' => false],
-            ['title' => 'Día del Profesor', 'date' => '2025-09-17', 'event_type_code' => 'conmemoracion_nacional', 'is_non_working_day' => false],
-            ['title' => 'Día del Estudiante / Día de la Primavera', 'date' => '2025-09-21', 'event_type_code' => 'conmemoracion_nacional', 'is_non_working_day' => false],
-            ['title' => 'Día del Director de Escuela', 'date' => '2025-09-28', 'event_type_code' => 'conmemoracion_nacional', 'is_non_working_day' => false],
-            ['title' => 'Día Nacional de la Danza', 'date' => '2025-10-10', 'event_type_code' => 'conmemoracion_nacional', 'is_non_working_day' => false],
-            ['title' => 'Día de la Tradición', 'date' => '2025-11-10', 'event_type_code' => 'conmemoracion_nacional', 'is_non_working_day' => false],
-            ['title' => 'Día de la Música / Día de Santa Cecilia', 'date' => '2025-11-22', 'event_type_code' => 'conmemoracion_nacional', 'is_non_working_day' => false],
-            ['title' => 'Día de los Derechos Humanos y de la Restauración de la Democracia', 'date' => '2025-12-10', 'event_type_code' => 'conmemoracion_nacional', 'is_non_working_day' => false],
-            ['title' => 'Día del Maestro', 'date' => '2025-09-11', 'event_type_code' => 'conmemoracion_nacional', 'is_non_working_day' => false],
+            ['title' => 'Día Internacional de la No Violencia y la Paz', 'date' => '2025-01-30', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['title' => 'Día del Aborigen Americano', 'date' => '2025-04-19', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['title' => 'Día de la Constitución Nacional', 'date' => '2025-05-01', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['title' => 'Día del Periodista', 'date' => '2025-06-07', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['title' => 'Día del Profesor', 'date' => '2025-09-17', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['title' => 'Día del Estudiante / Día de la Primavera', 'date' => '2025-09-21', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['title' => 'Día del Director de Escuela', 'date' => '2025-09-28', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['title' => 'Día Nacional de la Danza', 'date' => '2025-10-10', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['title' => 'Día de la Tradición', 'date' => '2025-11-10', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['title' => 'Día de la Música / Día de Santa Cecilia', 'date' => '2025-11-22', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['title' => 'Día de los Derechos Humanos y de la Restauración de la Democracia', 'date' => '2025-12-10', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['title' => 'Día del Maestro', 'date' => '2025-09-11', 'non_working_type' => RecurrentEvent::WORKING_DAY],
         ];
 
         foreach ($conmemoraciones as $conmemoracion) {
-            $type = $allTypesByCode[$conmemoracion['event_type_code']];
-            $conmemoracion['event_type_id'] = $type->id;
-            unset($conmemoracion['event_type_code']);
+            $conmemoracion['event_type_id'] = $allTypesByCode[EventType::CODE_CONMEMORACION_NACIONAL]->id;
             DB::table('recurrent_events')->insert(array_merge($conmemoracion, [
                 'province_id' => null,
                 'school_id' => null,
@@ -131,7 +128,7 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_PROVINCIAL]->id,
             'province_id' => 1,
             'school_id' => null,
-            'is_non_working_day' => true,
+            'non_working_type' => RecurrentEvent::NON_WORKING_FIXED,
             'notes' => '',
             'created_by' => $this->firstUserId,
             'created_at' => now(),
@@ -148,7 +145,7 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_CONMEMORACION_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'is_non_working_day' => false,
+            'non_working_type' => RecurrentEvent::WORKING_DAY,
             'notes' => '3er domingo de junio',
             'created_by' => $this->firstUserId,
             'created_at' => now(),
@@ -164,7 +161,7 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_CONMEMORACION_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'is_non_working_day' => false,
+            'non_working_type' => RecurrentEvent::WORKING_DAY,
             'notes' => '3er domingo de octubre',
             'created_by' => $this->firstUserId,
             'created_at' => now(),
@@ -180,7 +177,7 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_CONMEMORACION_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'is_non_working_day' => false,
+            'non_working_type' => RecurrentEvent::WORKING_DAY,
             'notes' => '2do domingo de agosto',
             'created_by' => $this->firstUserId,
             'created_at' => now(),
@@ -197,7 +194,7 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'is_non_working_day' => true,
+            'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE,
             'notes' => 'Jueves Santo (fecha variable según calendario lunar)',
             'created_by' => $this->firstUserId,
             'created_at' => now(),
@@ -213,7 +210,7 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'is_non_working_day' => true,
+            'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE,
             'notes' => 'Viernes Santo (fecha variable según calendario lunar)',
             'created_by' => $this->firstUserId,
             'created_at' => now(),
@@ -230,7 +227,7 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'is_non_working_day' => true,
+            'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE,
             'notes' => 'Lunes de Carnaval (47 días antes de Pascua)',
             'created_by' => $this->firstUserId,
             'created_at' => now(),
@@ -246,7 +243,7 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
-            'is_non_working_day' => true,
+            'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE,
             'notes' => 'Martes de Carnaval (46 días antes de Pascua)',
             'created_by' => $this->firstUserId,
             'created_at' => now(),
@@ -261,7 +258,7 @@ class EventsSeeder extends Seeder
             'event_type_id' => $allTypesByCode[EventType::CODE_CONMEMORACION_ESCOLAR]->id,
             'province_id' => null,
             'school_id' => School::where('code', School::CUE_LUCIO_LUCERO)->first()->id,
-            'is_non_working_day' => false,
+            'non_working_type' => RecurrentEvent::WORKING_DAY,
             'notes' => 'Celebración interna de la escuela',
             'created_by' => $this->firstUserId,
             'created_at' => now(),

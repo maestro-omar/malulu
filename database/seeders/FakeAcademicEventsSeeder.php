@@ -158,7 +158,9 @@ class FakeAcademicEventsSeeder extends Seeder
         return [
             'title' => $title,
             'date' => $eventDate,
-            'is_non_working_day' => $this->shouldBeNonWorkingDay($eventType->code),
+            'non_working_type' => $this->shouldBeNonWorkingDay($eventType->code)
+                ? AcademicEvent::NON_WORKING_TYPE_FIXED
+                : AcademicEvent::NON_WORKING_TYPE_WORKING_DAY,
             'notes' => $this->faker->optional(0.3)->sentence(),
             'active' => true,
         ];
