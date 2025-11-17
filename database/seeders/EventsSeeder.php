@@ -75,7 +75,7 @@ class EventsSeeder extends Seeder
             ['title' => 'Día de la Independencia', 'date' => '1816-07-09', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
             ['title' => 'Día del Maestro', 'date' => '1888-09-11', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
             ['title' => 'Día del Estudiante / Día de la Primavera', 'date' => '1888-09-21', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
-            ['title' => 'Día de la Inmaculada Concepción de María', 'date' => '1854 -12-08', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
+            ['title' => 'Día de la Inmaculada Concepción de María', 'date' => '1854-12-08', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
             ['title' => 'Navidad', 'date' => '336-12-25', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
 
             //Movibles
