@@ -36,6 +36,22 @@ return new class extends Migration
 
             // Ensure unique record per user/date
             $table->unique(['user_id', 'date']);
+
+            // Performance indexes for queries that will become slower as table grows (130k+ rows per year)
+            // Index on date for date range queries (whereBetween, whereIn with dates)
+            $table->index('date');
+            
+            // Index on status_id for joins with attendance_statuses table
+            $table->index('status_id');
+            
+            // Composite index for course-specific date queries
+            // Optimizes: where('course_id', X)->where('date', Y) and date ranges
+            $table->index(['course_id', 'date']);
+            
+            // Composite index for date-first queries with user filtering
+            // Complements the existing unique index on (user_id, date)
+            // Optimizes: whereBetween('date', ...)->whereIn('user_id', ...)
+            $table->index(['date', 'user_id']);
         });
     }
 
