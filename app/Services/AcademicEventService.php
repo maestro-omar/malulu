@@ -64,27 +64,6 @@ class AcademicEventService
         });
 
         $events = $this->parseForView($allEvents);
-        /*
-2 => array:12 [▼
-    "id" => 19
-    "title" => "Día del Estudiante / Día de la Primavera"
-    "date" => "2025-09-21"
-    "is_non_working_day" => false
-    "notes" => "Conmemoración nacional"
-    "event_type" => array:4 [▼
-      "id" => 2
-      "code" => "conmemoracion_nacional"
-      "name" => "Conmemoración"
-      "scope" => "nacional"
-    ]
-    "province" => null
-    "school" => null
-    "academic_year" => null
-    "courses" => []
-    "is_recurrent" => true
-    "recurrence_info" => null
-  ]
-        */
         return ['from' => $from, 'to' => $to, 'events' => $events];
     }
 
