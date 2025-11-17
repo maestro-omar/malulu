@@ -83,7 +83,7 @@ import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { computed } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { formatDate } from '@/Utils/date';
+import { formatDate, monthNames, weekdayNames, weekLabels } from '@/Utils/date';
 
 const deleteForm = useForm({});
 
@@ -93,21 +93,6 @@ const props = defineProps({
     required: true
   }
 });
-
-const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-const weekdayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-const weekLabels = {
-  1: 'Primer',
-  2: 'Segundo',
-  3: 'Tercero',
-  4: 'Cuarto',
-  5: 'Quinto',
-  '-1': 'Último',
-  '-2': 'Penúltimo',
-  '-3': 'Antepenúltimo',
-  '-4': 'Cuarto desde el final',
-  '-5': 'Quinto desde el final'
-};
 
 const getNonWorkingTypeMeta = (value) => {
   const map = {

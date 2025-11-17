@@ -12,7 +12,7 @@
         <div class="course-schedule__header-cell course-schedule__header-cell--time">Horario</div>
         <div v-for="day in availableDays" :key="`header${day}`"
           class="course-schedule__header-cell course-schedule__header-cell--day">
-          {{ dayNames[day] || '' }}
+          {{ dayNamesFullSchedule[day] || '' }}
         </div>
       </div>
 
@@ -55,6 +55,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import SubjectBadge from '../Badges/SubjectBadge.vue'
+import { dayNamesFullSchedule, dayNames2LetterUppercaseSchedule } from '@/Utils/date'
 
 const props = defineProps({
   schedule: { type: Object, required: true },
@@ -62,16 +63,6 @@ const props = defineProps({
 })
 
 const isVisible = ref(true)
-
-const dayNames = {
-  1: 'Lunes',
-  2: 'Martes',
-  3: 'Miércoles',
-  4: 'Jueves',
-  5: 'Viernes',
-  6: 'Sábado',
-  7: 'Domingo'
-}
 
 const availableDays = computed(() => {
   // Try different ways to get the days
@@ -95,12 +86,10 @@ const scheduleColumns = computed(() => {
     { name: 'time', label: 'Horario', field: 'time', align: 'left', style: 'width: 100px' }
   ]
 
-  const dayNames = { 1: 'LU', 2: 'MA', 3: 'MI', 4: 'JU', 5: 'VI', 6: 'SA', 7: 'DO' }
-
   availableDays.value.forEach(day => {
     columns.push({
       name: `day${day}`,
-      label: dayNames[day] || '',
+      label: dayNames2LetterUppercaseSchedule[day] || '',
       field: `day${day}`,
       align: 'center'
     })

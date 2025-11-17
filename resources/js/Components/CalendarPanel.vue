@@ -123,13 +123,14 @@
                     <template v-else-if="item.type === 'birthdate'">
                       <div class="calendar-panel__list-event-date">
                         <span class="calendar-panel__list-event-date-text">
-                          {{ formatEventDayName(item.data.birthdate) }} {{ formatEventDate(item.data.birthdate) }}{{
+                          {{ formatEventDayName(item.data.birthdate) }} {{ formatEventDate(item.data.birthdate)
+                          }}{{
                             formatEventMonth(item.data.birthdate) }}
                         </span>
                       </div>
                       <div class="calendar-panel__list-event-content">
                         <h5 class="calendar-panel__list-event-title">🎂 {{ item.data.firstname }} {{ item.data.lastname
-                        }}
+                          }}
                         </h5>
                         <div class="calendar-panel__list-event-meta">
                           <span class="calendar-panel__list-event-notes">
@@ -216,7 +217,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { calculateAge } from '@/Utils/date'
+import { calculateAge, dayNames2Letter, dayNames3Letter, dayNamesFull, monthNames } from '@/Utils/date'
 
 
 const props = defineProps({
@@ -227,7 +228,7 @@ const props = defineProps({
   }
 })
 
-const weekDays = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá']
+const weekDays = dayNames2Letter
 
 // Toggle between calendar and list view
 const isListView = ref(false)
@@ -497,20 +498,24 @@ const formatEventMonth = (dateString) => {
 const formatEventDayName = (dateString) => {
   const date = parseLocalDate(dateString)
   if (!date) return ''
-  const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
-  return dayNames[date.getDay()]
+
+  // Always use the current year to get the correct day of the week
+  const currentYear = new Date().getFullYear()
+  date.setFullYear(currentYear)
+
+  return dayNames3Letter[date.getDay()]
 }
 
-// Get event icon based on event properties
-const getEventIcon = (event) => {
-  if (event.is_non_working_day) {
-    return '🔒'
-  }
-  if (event.is_recurrent) {
-    return '↻'
-  }
-  return null
-}
+// // Get event icon based on event properties
+// const getEventIcon = (event) => {
+//   if (event.is_non_working_day) {
+//     return '🔒'
+//   }
+//   if (event.is_recurrent) {
+//     return '↻'
+//   }
+//   return null
+// }
 
 // Get badge color for event type
 const getEventBadgeColor = (eventTypeCode) => {
@@ -605,9 +610,6 @@ const closePopup = () => {
 }
 
 const formatPopupDate = (date) => {
-  const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
-  const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-
-  return `${dayNames[date.getDay()]}, ${date.getDate()} de ${monthNames[date.getMonth()]}`
+  return `${dayNamesFull[date.getDay()]}, ${date.getDate()} de ${monthNames[date.getMonth()]}`
 }
 </script>

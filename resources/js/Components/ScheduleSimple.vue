@@ -25,6 +25,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { dayNames2LetterSchedule } from '@/Utils/date'
 
 const props = defineProps({
   schedule: {
@@ -39,17 +40,6 @@ const props = defineProps({
     }
   }
 })
-
-// Day names mapping (1 = Monday, 2 = Tuesday, etc.)
-const dayNames = {
-  1: 'Lu', // Lunes
-  2: 'Ma', // Martes  
-  3: 'Mi', // Miércoles
-  4: 'Ju', // Jueves
-  5: 'Vi', // Viernes
-  6: 'Sá', // Sábado
-  7: 'Do'  // Domingo
-}
 
 // Computed property to get visible days (from first to last used day)
 const visibleDays = computed(() => {
@@ -70,7 +60,7 @@ const visibleDays = computed(() => {
 
 // Get day name abbreviation
 const getDayName = (dayNumber) => {
-  return dayNames[dayNumber] || `D${dayNumber}`
+  return dayNames2LetterSchedule[dayNumber] || `D${dayNumber}`
 }
 
 // Format time range

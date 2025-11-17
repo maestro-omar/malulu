@@ -120,15 +120,11 @@
           </div>
 
           <div class="recurrent-events-form__section recurrent-events-form__field">
-            <label class="recurrent-events-form__label">Condición laboral</label>
-            <q-option-group
-              v-model="form.non_working_type"
-              type="radio"
-              :options="nonWorkingTypeOptions"
-              color="primary"
-              class="recurrent-events-form__option-group"
-            />
-            <InputError class="recurrent-events-form__error" :message="form.errors.non_working_type" />
+            <label class="recurrent-events-form__checkbox">
+              <input type="checkbox" v-model="form.is_non_working_day" />
+              <span>Marca como día no laborable</span>
+            </label>
+            <InputError class="recurrent-events-form__error" :message="form.errors.is_non_working_day" />
           </div>
 
           <div class="recurrent-events-form__section recurrent-events-form__field">
@@ -157,6 +153,7 @@ import CancelLink from '@/Components/admin/CancelLink.vue';
 import PrimaryButton from '@/Components/admin/PrimaryButton.vue';
 import InputError from '@/Components/admin/InputError.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { recurrenceMonths, recurrenceWeeks, recurrenceWeekdays } from '@/Utils/date';
 
 const props = defineProps({
   eventTypes: {
@@ -181,62 +178,6 @@ const props = defineProps({
   }
 });
 
-const recurrenceMonths = [
-  { value: 1, label: 'Enero' },
-  { value: 2, label: 'Febrero' },
-  { value: 3, label: 'Marzo' },
-  { value: 4, label: 'Abril' },
-  { value: 5, label: 'Mayo' },
-  { value: 6, label: 'Junio' },
-  { value: 7, label: 'Julio' },
-  { value: 8, label: 'Agosto' },
-  { value: 9, label: 'Septiembre' },
-  { value: 10, label: 'Octubre' },
-  { value: 11, label: 'Noviembre' },
-  { value: 12, label: 'Diciembre' }
-];
-
-const recurrenceWeeks = [
-  { value: 1, label: 'Primera semana' },
-  { value: 2, label: 'Segunda semana' },
-  { value: 3, label: 'Tercera semana' },
-  { value: 4, label: 'Cuarta semana' },
-  { value: 5, label: 'Quinta semana' },
-  { value: -1, label: 'Última semana' },
-  { value: -2, label: 'Penúltima semana' },
-  { value: -3, label: 'Antepenúltima semana' },
-  { value: -4, label: 'Cuarta desde el final' },
-  { value: -5, label: 'Quinta desde el final' }
-];
-
-const recurrenceWeekdays = [
-  { value: 0, label: 'Domingo' },
-  { value: 1, label: 'Lunes' },
-  { value: 2, label: 'Martes' },
-  { value: 3, label: 'Miércoles' },
-  { value: 4, label: 'Jueves' },
-  { value: 5, label: 'Viernes' },
-  { value: 6, label: 'Sábado' }
-];
-
-const nonWorkingTypeOptions = [
-  {
-    value: 0,
-    label: 'Día laborable',
-    description: 'Se trabaja con normalidad.',
-  },
-  {
-    value: 1,
-    label: 'No laborable (fecha fija)',
-    description: 'La fecha no se traslada. Ej: 9 de Julio.',
-  },
-  {
-    value: 2,
-    label: 'No laborable (fecha trasladable)',
-    description: 'Se puede mover para conformar fines de semana largos.',
-  },
-];
-
 const form = useForm({
   title: props.recurrentEvent.title || '',
   event_type_id: props.recurrentEvent.event_type_id ?? '',
@@ -247,7 +188,7 @@ const form = useForm({
   province_id: props.recurrentEvent.province_id ?? '',
   school_id: props.recurrentEvent.school_id ?? '',
   academic_year_id: props.recurrentEvent.academic_year_id ?? '',
-  non_working_type: Number(props.recurrentEvent.non_working_type ?? 0),
+  is_non_working_day: !!props.recurrentEvent.is_non_working_day,
   notes: props.recurrentEvent.notes ?? ''
 });
 
@@ -331,13 +272,17 @@ const handleDelete = () => {
   resize: vertical;
 }
 
-.recurrent-events-form__option-group {
-  display: grid;
-  gap: 0.4rem;
+.recurrent-events-form__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #1f2937;
 }
 
-.recurrent-events-form__option-group .q-item__label {
-  white-space: normal;
+.recurrent-events-form__checkbox input {
+  width: 18px;
+  height: 18px;
 }
 
 .recurrent-events-form__subtitle {
