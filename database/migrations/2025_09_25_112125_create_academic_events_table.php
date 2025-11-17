@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->foreignId('school_id')->nullable()->constrained('schools')->onDelete('cascade');
             $table->foreignId('academic_year_id')->constrained('academic_years')->onDelete('cascade');
             $table->foreignId('event_type_id')->constrained('event_types');
+            $table->foreignId('recurrent_event_id')->nullable()->constrained('recurrent_events');
 
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('updated_by')->nullable()->constrained('users');

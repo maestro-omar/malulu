@@ -66,19 +66,24 @@ class EventsSeeder extends Seeder
 
         // Feriados nacionales (recurren todos los años)
         $feriados = [
+            //Fijos
             ['title' => 'Año Nuevo', 'date' => '1582-01-01', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
             ['title' => 'Día de la Memoria por la Verdad y la Justicia', 'date' => '1976-03-24', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
             ['title' => 'Día del Veterano y de los Caídos en la Guerra de Malvinas', 'date' => '1982-04-02', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
             ['title' => 'Día del Trabajador', 'date' => '1886-05-01', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
             ['title' => 'Día de la Revolución de Mayo', 'date' => '1810-05-25', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
-            ['title' => 'Paso a la Inmortalidad del General Don Martín Miguel de Güemes', 'date' => '1821-06-17', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
-            ['title' => 'Paso a la Inmortalidad del General Manuel Belgrano / Día de la Bandera', 'date' => '1820-06-20', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
             ['title' => 'Día de la Independencia', 'date' => '1816-07-09', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
-            ['title' => 'Paso a la Inmortalidad del General José de San Martín', 'date' => '1850-08-17', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
-            ['title' => 'Día del Respeto a la Diversidad Cultural', 'date' => '1492-10-12', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
-            ['title' => 'Día de la Soberanía Nacional', 'date' => '1845-11-20', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
+            ['title' => 'Día del Maestro', 'date' => '1888-09-11', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
+            ['title' => 'Día del Estudiante / Día de la Primavera', 'date' => '1888-09-21', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
             ['title' => 'Día de la Inmaculada Concepción de María', 'date' => '1854 -12-08', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
             ['title' => 'Navidad', 'date' => '336-12-25', 'non_working_type' => RecurrentEvent::NON_WORKING_FIXED],
+
+            //Movibles
+            ['title' => 'Paso a la Inmortalidad del General José de San Martín', 'date' => '1850-08-17', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
+            ['title' => 'Paso a la Inmortalidad del General Don Martín Miguel de Güemes', 'date' => '1821-06-17', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
+            ['title' => 'Paso a la Inmortalidad del General Manuel Belgrano / Día de la Bandera', 'date' => '1820-06-20', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
+            ['title' => 'Día del Respeto a la Diversidad Cultural', 'date' => '1492-10-12', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
+            ['title' => 'Día de la Soberanía Nacional', 'date' => '1845-11-20', 'non_working_type' => RecurrentEvent::NON_WORKING_FLEXIBLE],
         ];
 
 
@@ -100,13 +105,11 @@ class EventsSeeder extends Seeder
             ['title' => 'Día de la Constitución Nacional', 'date' => '1853-05-01', 'non_working_type' => RecurrentEvent::WORKING_DAY],
             ['title' => 'Día del Periodista', 'date' => '1810-06-07', 'non_working_type' => RecurrentEvent::WORKING_DAY],
             ['title' => 'Día del Profesor', 'date' => '1894-09-17', 'non_working_type' => RecurrentEvent::WORKING_DAY],
-            ['title' => 'Día del Estudiante / Día de la Primavera', 'date' => '1888-09-21', 'non_working_type' => RecurrentEvent::WORKING_DAY],
             ['title' => 'Día del Director de Escuela', 'date' => '1930-09-28', 'non_working_type' => RecurrentEvent::WORKING_DAY],
             ['title' => 'Día Nacional de la Danza', 'date' => '1971-10-10', 'non_working_type' => RecurrentEvent::WORKING_DAY],
             ['title' => 'Día de la Tradición', 'date' => '1834-11-10', 'non_working_type' => RecurrentEvent::WORKING_DAY],
             ['title' => 'Día de la Música / Día de Santa Cecilia', 'date' => '230-11-22', 'non_working_type' => RecurrentEvent::WORKING_DAY],
             ['title' => 'Día de los Derechos Humanos y de la Restauración de la Democracia', 'date' => '1983-12-10', 'non_working_type' => RecurrentEvent::WORKING_DAY],
-            ['title' => 'Día del Maestro', 'date' => '1888-09-11', 'non_working_type' => RecurrentEvent::WORKING_DAY],
         ];
 
         foreach ($conmemoraciones as $conmemoracion) {
