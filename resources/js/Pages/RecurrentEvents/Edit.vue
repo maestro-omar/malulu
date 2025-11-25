@@ -48,7 +48,6 @@
                   </div>
 
                   <div v-if="dateType === 'recurrence'" class="admin-form__section">
-    
                     <div class="admin-form__grid admin-form__grid--3">
                       <div class="admin-form__field">
                         <InputLabel for="recurrence_month" value="Mes" />

@@ -148,5 +148,3 @@ class RecurrentEventService
         return $normalized;
     }
 }
-
-
