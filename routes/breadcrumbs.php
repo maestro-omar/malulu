@@ -11,6 +11,7 @@ use App\Models\Entities\Course;
 use App\Models\Entities\File;
 use App\Models\Entities\User;
 use App\Models\Entities\RecurrentEvent;
+use App\Models\Entities\AcademicEvent;
 use Illuminate\Support\Str;
 
 
@@ -208,6 +209,26 @@ Breadcrumbs::for('recurrent-events.edit', function (Trail $trail, RecurrentEvent
     $trail->push('Editar');
 });
 
+// 📅 Eventos académicos (School)
+Breadcrumbs::for('school.academic-events.index', function (Trail $trail, School $school) {
+    $trail->parent('school.show', $school);
+    $trail->push('Eventos académicos', route('school.academic-events.index', $school), ['icon' => 'event']);
+});
+
+Breadcrumbs::for('school.academic-events.create', function (Trail $trail, School $school) {
+    $trail->parent('school.academic-events.index', $school);
+    $trail->push('Crear evento académico');
+});
+
+Breadcrumbs::for('school.academic-events.show', function (Trail $trail, School $school, AcademicEvent $academicEvent) {
+    $trail->parent('school.academic-events.index', $school);
+    $trail->push($academicEvent->title, route('school.academic-events.show', [$school, $academicEvent]));
+});
+
+Breadcrumbs::for('school.academic-events.edit', function (Trail $trail, School $school, AcademicEvent $academicEvent) {
+    $trail->parent('school.academic-events.show', $school, $academicEvent);
+    $trail->push('Editar');
+});
 
 Breadcrumbs::for('provinces.index', function (Trail $trail) {
     $trail->parent('dashboard');

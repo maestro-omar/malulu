@@ -323,7 +323,22 @@ class AcademicEventService
     public function create(array $data): AcademicEvent
     {
         $validatedData = $this->validateEventData($data);
-        return AcademicEvent::create($validatedData);
+        
+        // Extract course_ids if present
+        $courseIds = $validatedData['course_ids'] ?? [];
+        unset($validatedData['course_ids']);
+        
+        $event = AcademicEvent::create($validatedData);
+        
+        // Attach courses if provided
+        if (!empty($courseIds)) {
+            $event->courses()->attach($courseIds, [
+                'created_by' => $validatedData['created_by'] ?? auth()->id(),
+                'updated_by' => $validatedData['updated_by'] ?? auth()->id(),
+            ]);
+        }
+        
+        return $event->load('courses');
     }
 
     /**
@@ -332,8 +347,26 @@ class AcademicEventService
     public function update(AcademicEvent $event, array $data): AcademicEvent
     {
         $validatedData = $this->validateEventData($data, $event);
+        
+        // Extract course_ids if present
+        $courseIds = $validatedData['course_ids'] ?? null;
+        unset($validatedData['course_ids']);
+        
         $event->update($validatedData);
-        return $event;
+        
+        // Sync courses if provided
+        if ($courseIds !== null) {
+            $event->courses()->sync($courseIds);
+            
+            // Update timestamps in pivot table
+            if (!empty($courseIds)) {
+                $event->courses()->updateExistingPivot($courseIds, [
+                    'updated_by' => $validatedData['updated_by'] ?? auth()->id(),
+                ]);
+            }
+        }
+        
+        return $event->load('courses');
     }
 
     /**
@@ -354,28 +387,28 @@ class AcademicEventService
             [
                 'title' => 'Inicio del ciclo lectivo',
                 'date' => now()->setDate($academicYearId, 3, 3), // adjust logic per rules
-                'non_working_type' => AcademicEvent::WORKING_DAY,
+                'non_working_type' => AcademicEvent::NON_WORKING_TYPE_WORKING_DAY,
                 'notes' => 'Primer día de clases',
                 'event_type_id' => EventType::CODE_INICIO_ESCOLAR,
             ],
             [
                 'title' => 'Fin del ciclo lectivo',
                 'date' => now()->setDate($academicYearId, 12, 15),
-                'non_working_type' => AcademicEvent::WORKING_DAY,
+                'non_working_type' => AcademicEvent::NON_WORKING_TYPE_WORKING_DAY,
                 'notes' => 'Último día de clases',
                 'event_type_id' => EventType::CODE_FIN_ESCOLAR,
             ],
             [
                 'title' => 'Inicio de las vacaciones de invierno',
                 'date' => now()->setDate($academicYearId, 12, 15),
-                'non_working_type' => AcademicEvent::WORKING_DAY,
+                'non_working_type' => AcademicEvent::NON_WORKING_TYPE_WORKING_DAY,
                 'notes' => 'Inicio de las vacaciones de invierno',
                 'event_type_id' => EventType::CODE_INICIO_INVIERNO
             ],
             [
                 'title' => 'Fin de las vacaciones de invierno',
                 'date' => now()->setDate($academicYearId, 12, 31),
-                'non_working_type' => AcademicEvent::WORKING_DAY,
+                'non_working_type' => AcademicEvent::NON_WORKING_TYPE_WORKING_DAY,
                 'notes' => 'Fin de las vacaciones de invierno',
                 'event_type_id' => EventType::CODE_FIN_INVIERNO
             ],
@@ -398,9 +431,9 @@ class AcademicEventService
             'title' => ['required', 'string', 'max:255'],
             'date' => ['required', 'date'],
             'non_working_type' => ['required', 'integer', Rule::in([
-                AcademicEvent::WORKING_DAY,
-                AcademicEvent::NON_WORKING_FIXED,
-                AcademicEvent::NON_WORKING_FLEXIBLE,
+                AcademicEvent::NON_WORKING_TYPE_WORKING_DAY,
+                AcademicEvent::NON_WORKING_TYPE_FIXED,
+                AcademicEvent::NON_WORKING_TYPE_FLEXIBLE,
             ])],
             'notes' => ['nullable', 'string', 'max:1000'],
             'event_type_id' => ['required', 'exists:event_types,id'],
@@ -409,6 +442,8 @@ class AcademicEventService
             'academic_year_id' => ['required', 'exists:academic_years,id'],
             'created_by' => ['required', 'exists:users,id'],
             'updated_by' => ['nullable', 'exists:users,id'],
+            'course_ids' => ['nullable', 'array'],
+            'course_ids.*' => ['exists:courses,id'],
         ];
 
         $messages = [
@@ -435,7 +470,7 @@ class AcademicEventService
         }
 
         $validated = $validator->validated();
-        $validated['non_working_type'] = (int) ($validated['non_working_type'] ?? AcademicEvent::WORKING_DAY);
+        $validated['non_working_type'] = (int) ($validated['non_working_type'] ?? AcademicEvent::NON_WORKING_TYPE_WORKING_DAY);
 
         return $validated;
     }

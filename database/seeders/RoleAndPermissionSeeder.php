@@ -312,6 +312,10 @@ class RoleAndPermissionSeeder extends Seeder
             'partner.view',
         ];
 
+        $academicEventPermissions = [
+            'academic-event.manage',
+        ];
+
         $studentsGuardiansPermissions = [
             'guardian.view',
             'guardian.create',
@@ -343,6 +347,11 @@ class RoleAndPermissionSeeder extends Seeder
             'library.borrow.manage',
             'library.return.manage',
             'library.catalog.manage',
+        ];
+
+        $documentPermissions = [
+            'document.view',
+            'document.upload',
         ];
 
         $documentPermissions = [
@@ -396,6 +405,7 @@ class RoleAndPermissionSeeder extends Seeder
                     $schoolEditPermissions,
                     $academicAdminPermissions,
                     $teacherPermissions,
+                    $academicEventPermissions,
                     $studentsGuardiansPermissions,
                     $studentPermissions,
                     $academicPermissions,
@@ -418,6 +428,7 @@ class RoleAndPermissionSeeder extends Seeder
                     $schoolEditPermissions,
                     $academicAdminPermissions,
                     $teacherPermissions,
+                    $academicEventPermissions,
                     $studentsGuardiansPermissions,
                     $studentPermissions,
                     $academicPermissions,
@@ -436,6 +447,7 @@ class RoleAndPermissionSeeder extends Seeder
                     $schoolEditPermissions,
                     $academicAdminPermissions,
                     $teacherPermissions,
+                    $academicEventPermissions,
                     $studentsGuardiansPermissions,
                     $studentPermissions,
                     $academicPermissions,
@@ -462,6 +474,7 @@ class RoleAndPermissionSeeder extends Seeder
             case Role::SPECIAL_TEACHER:
                 return array_merge(
                     $teacherPermissions,
+                    $academicEventPermissions,
                     $studentsGuardiansPermissions,
                     $studentPermissions,
                     $academicPermissions,

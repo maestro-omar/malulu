@@ -3,11 +3,14 @@
         <!-- Trigger Button -->
         <div class="course-popover__trigger" @click="togglePopover">
             <div class="course-popover__trigger-content">
-                <span v-if="selectedCourse" class="course-popover__selected">
+                <span v-if="isMultiple && selectedCourses.length > 0" class="course-popover__selected">
+                    {{ selectedCourses.length }} curso{{ selectedCourses.length !== 1 ? 's' : '' }} seleccionado{{ selectedCourses.length !== 1 ? 's' : '' }}
+                </span>
+                <span v-else-if="!isMultiple && selectedCourse" class="course-popover__selected">
                     {{ selectedCourse.nice_name }}
                 </span>
                 <span v-else class="course-popover__placeholder">
-                    Sin curso anterior
+                    {{ placeholderText }}
                 </span>
             </div>
             <svg class="course-popover__trigger-icon" :class="{ 'course-popover__trigger-icon--open': isOpen }"
@@ -21,7 +24,7 @@
         <div v-if="isOpen" class="course-popover__content">
             <!-- Header -->
             <div class="course-popover__header">
-                <h3 class="course-popover__title">Seleccionar Curso Anterior (opcional)</h3>
+                <h3 class="course-popover__title">{{ popoverTitle }}</h3>
                 <button @click="closePopover" class="course-popover__close">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -33,7 +36,7 @@
             <!-- Filters -->
             <div class="course-popover__filters">
                 <div class="course-popover__filters-grid">
-                    <div class="course-popover__filter-group">
+                    <div v-if="!forceYear" class="course-popover__filter-group">
                         <label class="course-popover__filter-label">Año</label>
                         <input type="number" v-model.number="filters.year" @input="triggerFilter" :max="maxYear"
                             class="course-popover__filter-input" :placeholder="`Ej: ${maxYear}`" />
@@ -42,7 +45,7 @@
                         </small>
                     </div>
 
-                    <div class="course-popover__filter-group">
+                    <div v-if="!forceActive" class="course-popover__filter-group">
                         <label class="course-popover__filter-label">Estado</label>
                         <div class="course-popover__filter-radio-group">
                             <label class="course-popover__filter-radio">
@@ -87,8 +90,8 @@
             <!-- Course List -->
             <div v-else-if="filteredCourses.length > 0" class="course-popover__list">
                 
-                <!-- "Sin curso anterior" option -->
-                <div class="course-popover__item course-popover__item--no-course"
+                <!-- "Sin curso anterior" option (only for single select) -->
+                <div v-if="!isMultiple" class="course-popover__item course-popover__item--no-course"
                     :class="{ 'course-popover__item--selected': selectedCourse === null }">
                     <div class="course-popover__item-content">
                         <div class="course-popover__item-main" @click="selectNoCourse">
@@ -106,9 +109,13 @@
                 
                 <!-- Course items -->
                 <div v-for="course in filteredCourses" :key="course.id" class="course-popover__item"
-                    :class="{ 'course-popover__item--selected': selectedCourse?.id === course.id }">
+                    :class="{ 
+                        'course-popover__item--selected': isMultiple 
+                            ? selectedCourses.some(c => c.id === course.id)
+                            : selectedCourse?.id === course.id 
+                    }">
                     <div class="course-popover__item-content">
-                        <div class="course-popover__item-main" @click="selectCourse(course)">
+                        <div class="course-popover__item-main" @click="isMultiple ? toggleCourse(course) : selectCourse(course)">
                             <div class="course-popover__item-details">
                                 <h4 class="course-popover__item-title">{{ course.nice_name }}</h4>
                                 <span class="course-popover__item-shift">
@@ -128,12 +135,24 @@
                                 <div v-if="props.currentCourse?.id === course.id" class="course-popover__item-current">
                                     <span class="course-popover__current-legend">- curso actual -</span>
                                 </div>
+                                <!-- Show checkmark for multi-select -->
+                                <div v-if="isMultiple && selectedCourses.some(c => c.id === course.id)" class="course-popover__item-checkmark">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                         <div class="course-popover__item-actions">
                             <!-- Hide select button for current course being edited -->
-                            <button v-if="props.currentCourse?.id !== course.id" @click="selectCourse(course)" class="course-popover__select-btn">
-                                Seleccionar
+                            <button v-if="props.currentCourse?.id !== course.id" 
+                                @click="isMultiple ? toggleCourse(course) : selectCourse(course)" 
+                                class="course-popover__select-btn"
+                                :class="{ 'course-popover__select-btn--selected': isMultiple && selectedCourses.some(c => c.id === course.id) }">
+                                {{ isMultiple 
+                                    ? (selectedCourses.some(c => c.id === course.id) ? 'Quitar' : 'Agregar')
+                                    : 'Seleccionar' 
+                                }}
                             </button>
                         </div>
                     </div>
@@ -171,6 +190,13 @@
                     </template>
                 </div>
             </div>
+
+            <!-- Done Button for Multi-select -->
+            <div v-if="isMultiple" class="course-popover__footer">
+                <button @click="closePopover" class="course-popover__done-btn">
+                    Listo ({{ selectedCourses.length }} seleccionado{{ selectedCourses.length !== 1 ? 's' : '' }})
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -183,7 +209,7 @@ import { formatDate } from '@/Utils/date'
 
 const props = defineProps({
     modelValue: {
-        type: [Number, null],
+        type: [Number, Array, null],
         default: null
     },
     lastSaved: {
@@ -213,10 +239,39 @@ const props = defineProps({
     currentCourse: {
         type: [Object, null],
         default: null
+    },
+    multiple: {
+        type: Boolean,
+        default: false
+    },
+    title: {
+        type: String,
+        default: 'Seleccionar Curso Anterior (opcional)'
+    },
+    placeholder: {
+        type: String,
+        default: 'Sin curso anterior'
+    },
+    forceActive: {
+        type: Boolean,
+        default: false
+    },
+    forceYear: {
+        type: Boolean,
+        default: false
+    },
+    selectedCourses: {
+        type: Array,
+        default: () => []
     }
 })
 
-const emit = defineEmits(['update:modelValue', 'courseSelected'])
+const emit = defineEmits(['update:modelValue', 'courseSelected', 'coursesSelected'])
+
+// Computed
+const isMultiple = computed(() => props.multiple)
+const popoverTitle = computed(() => props.title)
+const placeholderText = computed(() => props.placeholder)
 
 // Refs
 const popoverRef = ref(null)
@@ -225,7 +280,9 @@ const isOpen = ref(false)
 const loading = ref(false)
 const search = ref('')
 const selectedCourse = ref(null)
+const selectedCourses = ref([...props.selectedCourses]) // For multi-select
 const originalSelectedCourse = ref(null) // Store the original value when opening popover
+const originalSelectedCourses = ref([]) // Store the original values when opening popover
 const courses = ref([])
 const paginationData = ref(null)
 const yearError = ref(false)
@@ -233,7 +290,7 @@ const yearError = ref(false)
 // Filters
 const filters = ref({
     year: props.startDate ? new Date(props.startDate).getFullYear() : new Date().getFullYear(),
-    active: true, // Default to active courses
+    active: props.forceActive ? true : true, // Default to active courses, force if prop is true
     schoolShift: props.schoolShift || null
 })
 
@@ -277,17 +334,28 @@ const filteredCourses = computed(() => {
 const togglePopover = () => {
     isOpen.value = !isOpen.value
     if (isOpen.value) {
-        // Save the current selected course as original value
-        originalSelectedCourse.value = selectedCourse.value
+        if (isMultiple.value) {
+            // Save the current selected courses as original values
+            originalSelectedCourses.value = [...selectedCourses.value]
+        } else {
+            // Save the current selected course as original value
+            originalSelectedCourse.value = selectedCourse.value
+        }
         loadCourses()
     }
 }
 
 const closePopover = () => {
     isOpen.value = false
-    // Restore original value if popover was closed without selection
-    if (originalSelectedCourse.value && selectedCourse.value !== originalSelectedCourse.value) {
-        selectedCourse.value = originalSelectedCourse.value
+    if (isMultiple.value) {
+        // Emit the selected courses when closing
+        emit('coursesSelected', selectedCourses.value)
+        emit('update:modelValue', selectedCourses.value.map(c => c.id))
+    } else {
+        // Restore original value if popover was closed without selection
+        if (originalSelectedCourse.value && selectedCourse.value !== originalSelectedCourse.value) {
+            selectedCourse.value = originalSelectedCourse.value
+        }
     }
 }
 
@@ -357,9 +425,21 @@ const loadCourses = async () => {
                 paginationData.value = null
             }
             
-            // After loading courses, set selectedCourse if modelValue exists
-            if (props.modelValue && courses.value.length > 0) {
-                selectedCourse.value = courses.value.find(course => course.id === props.modelValue)
+            // After loading courses, set selectedCourse/selectedCourses if modelValue exists
+            if (isMultiple.value) {
+                if (Array.isArray(props.modelValue) && props.modelValue.length > 0 && courses.value.length > 0) {
+                    selectedCourses.value = courses.value
+                        .filter(course => props.modelValue.includes(course.id))
+                        .map(course => ({
+                            id: course.id,
+                            nice_name: course.nice_name,
+                            school_shift: course.school_shift || null
+                        }))
+                }
+            } else {
+                if (props.modelValue && courses.value.length > 0) {
+                    selectedCourse.value = courses.value.find(course => course.id === props.modelValue)
+                }
             }
         } else {
             courses.value = []
@@ -391,6 +471,22 @@ const loadCourses = async () => {
 
 const filterCourses = () => {
     // Local filtering is handled by computed property
+}
+
+const toggleCourse = (course) => {
+    const index = selectedCourses.value.findIndex(c => c.id === course.id)
+    if (index > -1) {
+        // Remove course
+        selectedCourses.value.splice(index, 1)
+    } else {
+        // Add course with school_shift information
+        selectedCourses.value.push({
+            id: course.id,
+            nice_name: course.nice_name,
+            school_shift: course.school_shift || null
+        })
+    }
+    // Don't close popover in multi-select mode, allow selecting multiple
 }
 
 const selectCourse = (course) => {
@@ -467,9 +563,21 @@ const handlePagination = async (url) => {
                 paginationData.value = null
             }
             
-            // After loading courses, set selectedCourse if modelValue exists
-            if (props.modelValue && courses.value.length > 0) {
-                selectedCourse.value = courses.value.find(course => course.id === props.modelValue)
+            // After loading courses, set selectedCourse/selectedCourses if modelValue exists
+            if (isMultiple.value) {
+                if (Array.isArray(props.modelValue) && props.modelValue.length > 0 && courses.value.length > 0) {
+                    selectedCourses.value = courses.value
+                        .filter(course => props.modelValue.includes(course.id))
+                        .map(course => ({
+                            id: course.id,
+                            nice_name: course.nice_name,
+                            school_shift: course.school_shift || null
+                        }))
+                }
+            } else {
+                if (props.modelValue && courses.value.length > 0) {
+                    selectedCourse.value = courses.value.find(course => course.id === props.modelValue)
+                }
             }
         } else {
             courses.value = []
@@ -484,32 +592,54 @@ const handlePagination = async (url) => {
 
 // Watch for external changes
 watch(() => props.modelValue, (newValue) => {
-    if (newValue) {
-        // If courses are already loaded, find the course immediately
-        if (courses.value.length > 0) {
-            selectedCourse.value = courses.value.find(course => course.id === newValue)
+    if (isMultiple.value) {
+        if (Array.isArray(newValue) && newValue.length > 0) {
+            if (courses.value.length > 0) {
+                selectedCourses.value = courses.value
+                    .filter(course => newValue.includes(course.id))
+                    .map(course => ({
+                        id: course.id,
+                        nice_name: course.nice_name
+                    }))
+            }
         } else {
-            // If courses aren't loaded yet, we'll need to load them and then find the course
-            // This will be handled in the loadCourses method
-            // Don't set to null if we have lastSaved
+            selectedCourses.value = []
+        }
+    } else {
+        if (newValue) {
+            // If courses are already loaded, find the course immediately
+            if (courses.value.length > 0) {
+                selectedCourse.value = courses.value.find(course => course.id === newValue)
+            } else {
+                // If courses aren't loaded yet, we'll need to load them and then find the course
+                // This will be handled in the loadCourses method
+                // Don't set to null if we have lastSaved
+                if (!props.lastSaved) {
+                    selectedCourse.value = null
+                }
+            }
+        } else {
+            // Only clear if we don't have lastSaved
             if (!props.lastSaved) {
                 selectedCourse.value = null
             }
-        }
-    } else {
-        // Only clear if we don't have lastSaved
-        if (!props.lastSaved) {
-            selectedCourse.value = null
         }
     }
 }, { immediate: true })
 
 // Initialize selectedCourse with lastSaved if available
 watch(() => props.lastSaved, (newValue) => {
-    if (newValue) {
+    if (newValue && !isMultiple.value) {
         selectedCourse.value = newValue
     }
 }, { immediate: true })
+
+// Watch for selectedCourses prop changes (for multi-select)
+watch(() => props.selectedCourses, (newValue) => {
+    if (isMultiple.value && Array.isArray(newValue)) {
+        selectedCourses.value = [...newValue]
+    }
+}, { immediate: true, deep: true })
 
 // Watch for schoolShift changes
 watch(() => props.schoolShift, (newValue) => {

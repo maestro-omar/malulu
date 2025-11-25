@@ -6,6 +6,7 @@ use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\School\SchoolPageController;
 use App\Http\Controllers\School\UserController;
 use App\Http\Controllers\School\FileController;
+use App\Http\Controllers\School\AcademicEventController;
 use Illuminate\Support\Facades\Route;
 // use Inertia\Inertia;
 
@@ -67,6 +68,15 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get(__('routes.pages') . '/{schoolPage}/' . __('routes.edit'), [SchoolPageController::class, 'edit'])->name('school-pages.edit')->middleware('school.permission:school-page.manage');
         Route::put(__('routes.pages') . '/{schoolPage}/' . __('routes.edit'), [SchoolPageController::class, 'update'])->name('school-pages.update')->middleware('school.permission:school-page.manage');
         Route::delete(__('routes.pages') . '/{schoolPage}', [SchoolPageController::class, 'destroy'])->name('school-pages.destroy')->middleware('school.permission:school-page.manage');
+
+        // Academic Events Routes
+        Route::get(__('routes.events'), [AcademicEventController::class, 'index'])->name('school.academic-events.index')->middleware('school.permission:academic-event.manage');
+        Route::get(__('routes.events') . '/' . __('routes.create'), [AcademicEventController::class, 'create'])->name('school.academic-events.create')->middleware('school.permission:academic-event.manage');
+        Route::post(__('routes.events'), [AcademicEventController::class, 'store'])->name('school.academic-events.store')->middleware('school.permission:academic-event.manage');
+        Route::get(__('routes.events') . '/{academicEvent}', [AcademicEventController::class, 'show'])->name('school.academic-events.show')->middleware('school.permission:academic-event.manage');
+        Route::get(__('routes.events') . '/{academicEvent}/' . __('routes.edit'), [AcademicEventController::class, 'edit'])->name('school.academic-events.edit')->middleware('school.permission:academic-event.manage');
+        Route::put(__('routes.events') . '/{academicEvent}', [AcademicEventController::class, 'update'])->name('school.academic-events.update')->middleware('school.permission:academic-event.manage');
+        Route::delete(__('routes.events') . '/{academicEvent}', [AcademicEventController::class, 'destroy'])->name('school.academic-events.destroy')->middleware('school.permission:academic-event.manage');
 
 
 

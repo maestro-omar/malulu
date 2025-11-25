@@ -37,6 +37,7 @@ return [
     'schools' => 'escuelas',
     'academic-year' => 'ciclo-escolar',
     'recurrent-events' => 'eventos-recurrentes',
+    'events' => 'eventos',
     'file' => 'archivo',
     'files' => 'archivos',
     'file-types' => 'tipos-archivo',
