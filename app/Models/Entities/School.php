@@ -12,6 +12,7 @@ use App\Models\Catalogs\SchoolLevel;
 use App\Models\Catalogs\SchoolShift;
 use App\Models\Catalogs\SchoolManagementType;
 use App\Models\Catalogs\Locality;
+use Illuminate\Support\Collection;
 
 class School extends Model
 {
@@ -111,5 +112,15 @@ class School extends Model
     public static function specialGlobalId(): int
     {
         return self::where('code', self::GLOBAL)->select('id')->firstOrFail()->id;
+    }
+
+    public static function forDropdown(): Collection
+    {
+        return self::select('id', 'name')->where('code', '!=', self::GLOBAL)->get()->map(function ($school) {
+            return [
+                'id' => $school->id,
+                'name' => $school->name,
+            ];
+        })->values();
     }
 }

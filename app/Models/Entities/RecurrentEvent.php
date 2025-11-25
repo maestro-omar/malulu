@@ -37,6 +37,7 @@ class RecurrentEvent extends Model
         'updated_by',
     ];
 
+    protected $appends = ['non_working_type_label'];
 
     public function type()
     {
@@ -207,5 +208,33 @@ class RecurrentEvent extends Model
         }
 
         return null;
+    }
+
+    public function getNonWorkingTypeLabelAttribute()
+    {
+        $map = [
+            self::WORKING_DAY => 'Laborable',
+            self::NON_WORKING_FIXED => 'No laborable',
+            self::NON_WORKING_FLEXIBLE => 'No laborable (flexible)',
+        ];
+        return $map[$this->non_working_type] ?? 'Laborable';
+    }
+
+    public static function nonWorkingTypeOptions(): array
+    {
+        return [
+            [
+                'value' => self::WORKING_DAY,
+                'label' => 'Laborable'
+            ],
+            [
+                'value' => self::NON_WORKING_FIXED,
+                'label' =>  'No laborable'
+            ],
+            [
+                'value' => self::NON_WORKING_FLEXIBLE,
+                'label' => 'No laborable (flexible)'
+            ]
+        ];
     }
 }

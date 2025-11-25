@@ -115,13 +115,7 @@ class RecurrentEventAdminController extends SystemBaseController
      */
     protected function formOptions(array $extra = []): array
     {
-        $eventTypes = EventType::orderBy('name')->get()->map(function (EventType $type) {
-            return [
-                'id' => $type->id,
-                'name' => $type->name,
-                'code' => $type->code,
-            ];
-        })->values();
+        $eventTypes = EventType::forDropdown();
 
         $provinces = Province::orderBy('name')->get()->map(function (Province $province) {
             return [
@@ -130,27 +124,17 @@ class RecurrentEventAdminController extends SystemBaseController
             ];
         })->values();
 
-        $schools = School::orderBy('name')->get()->map(function (School $school) {
-            return [
-                'id' => $school->id,
-                'name' => $school->name,
-            ];
-        })->values();
+        $schools = School::forDropdown();
 
-        $academicYears = AcademicYear::orderBy('year', 'desc')->get()->map(function (AcademicYear $academicYear) {
-            return [
-                'id' => $academicYear->id,
-                'year' => $academicYear->year,
-            ];
-        })->values();
+        // $nonWorkingTypeOptions = collect(RecurrentEvent::nonWorkingTypeOptions());
+        $nonWorkingTypeOptions = RecurrentEvent::nonWorkingTypeOptions();
+
 
         return array_merge([
             'eventTypes' => $eventTypes,
             'provinces' => $provinces,
             'schools' => $schools,
-            'academicYears' => $academicYears,
+            'nonWorkingTypeOptions' => $nonWorkingTypeOptions
         ], $extra);
     }
 }
-
-

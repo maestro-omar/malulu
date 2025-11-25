@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Entities\RecurrentEvent;
 use App\Models\Entities\AcademicEvent;
+use Illuminate\Support\Collection;
 
 class EventType extends Model
 {
@@ -69,5 +70,26 @@ class EventType extends Model
     public function academicEvents()
     {
         return $this->hasMany(AcademicEvent::class, 'event_type_id');
+    }
+
+    public static function forDropdown(): Collection
+    {
+        return self::orderBy('scope')->orderBy('name')->get()->map(function (EventType $eventType) {
+            return [
+                'id' => $eventType->id,
+                'label' => $eventType->name . ' (' . $eventType->labelForScope($eventType->scope) . ')',
+                'code' => $eventType->code,
+            ];
+        })->values();
+    }
+
+    public static function labelForScope($code): ?string
+    {
+        return match ($code) {
+            self::SCOPE_NACIONAL => 'Nacional',
+            self::SCOPE_PROVINCIAL => 'Provincial',
+            self::SCOPE_ESCOLAR => 'Escolar',
+            default => null,
+        };
     }
 }

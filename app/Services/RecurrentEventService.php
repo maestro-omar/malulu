@@ -15,7 +15,7 @@ class RecurrentEventService
      */
     public function getRecurrentEvents()
     {
-        return RecurrentEvent::with(['type', 'province', 'school', 'academicYear'])
+        return RecurrentEvent::with(['type', 'province', 'school'])
             ->orderBy('title')
             ->orderBy('date')
             ->get();
@@ -39,8 +39,7 @@ class RecurrentEventService
             'event_type_id' => ['required', 'exists:event_types,id'],
             'province_id' => ['nullable', 'exists:provinces,id'],
             'school_id' => ['nullable', 'exists:schools,id'],
-            'academic_year_id' => ['nullable', 'exists:academic_years,id'],
-            'non_working_type' => ['required', 'integer', Rule::in([
+            'non_working_type' => ['required', 'string', Rule::in([
                 RecurrentEvent::WORKING_DAY,
                 RecurrentEvent::NON_WORKING_FIXED,
                 RecurrentEvent::NON_WORKING_FLEXIBLE,
@@ -104,7 +103,7 @@ class RecurrentEventService
 
         $recurrentEvent->update($validated);
 
-        return $recurrentEvent->fresh(['type', 'province', 'school', 'academicYear']);
+        return $recurrentEvent->fresh(['type', 'province', 'school']);
     }
 
     /**
@@ -132,11 +131,9 @@ class RecurrentEventService
         $normalized['recurrence_weekday'] = $normalizeNullable($normalized['recurrence_weekday'] ?? null);
         $normalized['province_id'] = $normalizeNullable($normalized['province_id'] ?? null);
         $normalized['school_id'] = $normalizeNullable($normalized['school_id'] ?? null);
-        $normalized['academic_year_id'] = $normalizeNullable($normalized['academic_year_id'] ?? null);
         $normalized['notes'] = $normalizeNullable($normalized['notes'] ?? null);
 
         $normalized['non_working_type'] = $normalized['non_working_type'] ?? RecurrentEvent::WORKING_DAY;
-        $normalized['non_working_type'] = (int) $normalized['non_working_type'];
 
         if ($normalized['recurrence_month'] !== null) {
             $normalized['recurrence_month'] = (int) $normalized['recurrence_month'];

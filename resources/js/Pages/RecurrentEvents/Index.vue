@@ -13,8 +13,52 @@
 
     <template #main-page-content>
       <div class="recurrent-events-index">
-        <q-table class="mll-table striped-table recurrent-events-index__table" dense :rows="recurrentEvents"
-          :columns="columns" row-key="id" :pagination="{ rowsPerPage: 30 }">
+        <!-- Search and Filters -->
+        <div class="row q-mb-md q-gutter-x-md">
+          <div class="col-12 col-md-4">
+            <q-input v-model="searchInput" dense outlined placeholder="Buscar eventos..." @keyup.enter="performSearch"
+              clearable>
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+              <template v-slot:append>
+                <q-btn flat round dense icon="send" @click="performSearch" color="primary" />
+              </template>
+            </q-input>
+          </div>
+          <div class="col-12 col-md-2">
+            <q-select v-model="selectedType" dense outlined :options="typeOptions" option-label="label"
+              option-value="value" @update:model-value="triggerFilter" clearable placeholder="Filtrar por tipo"
+              emit-value map-options>
+              <template v-slot:prepend>
+                <q-icon name="category" />
+              </template>
+            </q-select>
+          </div>
+          <div class="col-12 col-md-2">
+            <q-select v-model="selectedMonth" dense outlined :options="monthOptions" option-label="label"
+              option-value="value" @update:model-value="triggerFilter" clearable placeholder="Filtrar por mes"
+              emit-value map-options>
+              <template v-slot:prepend>
+                <q-icon name="calendar_month" />
+              </template>
+            </q-select>
+          </div>
+          <div class="col-12 col-md-2">
+            <q-btn color="grey" icon="clear" label="Limpiar" @click="clearFilters" />
+          </div>
+        </div>
+
+        <!-- Results summary -->
+        <div v-if="filteredEvents && filteredEvents.length > 0" class="q-mb-md text-grey-7">
+          Mostrando {{ filteredEvents.length }} evento{{ filteredEvents.length !== 1 ? 's' : '' }}
+          {{ (selectedType || selectedMonth || search) ? 'filtrado' + (filteredEvents.length !== 1 ? 's' : '') : '' }}
+          de {{ props.recurrentEvents.length }} total
+        </div>
+
+        <q-table v-if="filteredEvents && filteredEvents.length > 0"
+          class="mll-table striped-table recurrent-events-index__table" dense :rows="filteredEvents" :columns="columns"
+          row-key="id" :pagination="{ rowsPerPage: 30 }">
 
           <template #body-cell-date="props">
             <q-td :props="props">
@@ -43,14 +87,10 @@
 
           <template #body-cell-non_working_type="props">
             <q-td :props="props">
-              <q-chip
-                v-if="getNonWorkingTypeMeta(props.row.non_working_type)"
-                :color="getNonWorkingTypeMeta(props.row.non_working_type).color"
-                :text-color="getNonWorkingTypeMeta(props.row.non_working_type).textColor"
-                size="xs"
-                class="recurrent-events-index__nwd-chip"
-              >
-                {{ getNonWorkingTypeMeta(props.row.non_working_type).label }}
+              <q-chip v-if="props.row.non_working_type_label"
+                :color="getNonWorkingTypeColor(props.row.non_working_type)" text-color="white" size="xs"
+                class="recurrent-events-index__nwd-chip">
+                {{ props.row.non_working_type_label }}
               </q-chip>
             </q-td>
           </template>
@@ -67,6 +107,13 @@
           </template>
 
         </q-table>
+
+        <div v-else class="text-center q-pa-lg">
+          <q-icon name="event_busy" size="4rem" color="grey-5" />
+          <div class="text-grey-6 q-mt-md">
+            {{ filteredEvents.length === 0 && (selectedType || selectedMonth || search) ? 'No se encontraron eventos con los filtros aplicados' : 'No hay eventos disponibles' }}
+          </div>
+        </div>
       </div>
     </template>
   </AuthenticatedLayout>
@@ -78,16 +125,119 @@ import AdminHeader from '@/Sections/AdminHeader.vue';
 import EventTypeBadge from '@/Components/Badges/EventTypeBadge.vue';
 import { hasPermission } from '@/Utils/permissions';
 import { Head, usePage } from '@inertiajs/vue3';
-import { formatDate, monthNames, weekdayNames, weekLabels } from '@/Utils/date';
+import { formatDate, monthNames, weekdayNames, weekLabels, recurrenceMonths } from '@/Utils/date';
+import { ref, computed } from 'vue';
 
 const $page = usePage();
 
-defineProps({
+const props = defineProps({
   recurrentEvents: {
     type: Array,
     required: true
   }
 });
+
+// Filter state
+const selectedType = ref(null);
+const selectedMonth = ref(null);
+const searchInput = ref('');
+const search = ref('');
+
+// Get unique event types from events
+const typeOptions = computed(() => {
+  const typesMap = new Map();
+  props.recurrentEvents.forEach(event => {
+    if (event.type && event.type.id) {
+      typesMap.set(event.type.id, {
+        label: event.type.name,
+        value: event.type.id
+      });
+    }
+  });
+  return Array.from(typesMap.values()).sort((a, b) => a.label.localeCompare(b.label));
+});
+
+// Month options
+const monthOptions = computed(() => {
+  return recurrenceMonths.map(month => ({
+    label: month.label,
+    value: month.value
+  }));
+});
+
+// Filtered events based on all criteria
+const filteredEvents = computed(() => {
+  let filtered = props.recurrentEvents;
+
+  // Filter by type
+  if (selectedType.value) {
+    filtered = filtered.filter(event => event.type?.id === selectedType.value);
+  }
+
+  // Filter by month
+  if (selectedMonth.value) {
+    filtered = filtered.filter(event => {
+      // Check recurrence_month first
+      if (event.recurrence_month === selectedMonth.value) {
+        return true;
+      }
+
+      // Also check the fixed date (fecha fija) if it exists
+      if (event.date) {
+        const date = new Date(`${event.date}T00:00:00`);
+        if (!Number.isNaN(date.getTime())) {
+          // JavaScript months are 0-indexed, so add 1 to match recurrence_month (1-12)
+          const monthFromDate = date.getMonth() + 1;
+          return monthFromDate === selectedMonth.value;
+        }
+      }
+
+      return false;
+    });
+  }
+
+  // Filter by search text
+  if (search.value) {
+    const searchLower = search.value.toLowerCase();
+    filtered = filtered.filter(event =>
+      event.title?.toLowerCase().includes(searchLower) ||
+      event.notes?.toLowerCase().includes(searchLower) ||
+      event.province?.name?.toLowerCase().includes(searchLower) ||
+      event.school?.short?.toLowerCase().includes(searchLower) ||
+      event.school?.name?.toLowerCase().includes(searchLower) ||
+      event.type?.name?.toLowerCase().includes(searchLower)
+    );
+  }
+
+  return filtered;
+});
+
+// Perform search function
+const performSearch = () => {
+  search.value = searchInput.value;
+};
+
+// Clear all filters
+const clearFilters = () => {
+  selectedType.value = null;
+  selectedMonth.value = null;
+  searchInput.value = '';
+  search.value = '';
+};
+
+// Debounce function and filter trigger
+let filterTimeout = null;
+
+const triggerFilter = () => {
+  if (filterTimeout) {
+    clearTimeout(filterTimeout);
+  }
+
+  filterTimeout = setTimeout(() => {
+    // Auto-update search when filters change
+    search.value = searchInput.value;
+  }, 300);
+};
 
 const formatRecurrence = (event) => {
   if (event.recurrence_month === null || event.recurrence_week === null || event.recurrence_weekday === null) {
@@ -155,26 +305,14 @@ const recurrenceSort = (_a, _b, rowA, rowB) => {
   return dayA - dayB;
 };
 
-const getNonWorkingTypeMeta = (value) => {
+const getNonWorkingTypeColor = (value) => {
   const map = {
-    0: {
-      label: 'Laborable',
-      color: 'grey-5',
-      textColor: 'black',
-    },
-    1: {
-      label: 'No laborable fijo',
-      color: 'negative',
-      textColor: 'white',
-    },
-    2: {
-      label: 'No laborable trasladable',
-      color: 'orange',
-      textColor: 'black',
-    },
+    'laborable': 'pink-5',
+    'feriado_fijo': 'teal',
+    'feriado_variable': 'cyan'
   };
 
-  return map[value] || map[0];
+  return map[value] || map['laborable'];
 };
 
 const getMonthDaySortValue = (dateString) => {
