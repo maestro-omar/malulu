@@ -49,17 +49,21 @@ class AcademicEventService
     {
         $academicEvents = $this->getAcademicEventsByDateRange($provinceId, $schoolId, $from, $to);
         $recurrentEvents = $this->getRecurrentEventsByDateRange($provinceId, $schoolId, $from, $to);
+        $academicYearEvents = $this->getAcademicYearEventsByDateRange($from, $to);
 
-        // Combine both types of events
-        $allEvents = collect()->concat($academicEvents)->concat($recurrentEvents);
+        // Combine all types of events
+        $allEvents = collect()->concat($academicEvents)->concat($recurrentEvents)->concat($academicYearEvents);
 
         // Sort by date
         $allEvents = $allEvents->sortBy(function ($event) use ($from, $to) {
             if ($event instanceof AcademicEvent) {
                 return $event->date;
-            } else {
+            } elseif ($event instanceof RecurrentEvent) {
                 // For RecurrentEvent, use the calculated_date if available, otherwise the fixed date
                 return $event->calculateDate($from, $to);
+            } else {
+                // For stdClass objects (like AcademicYear events), use the date property directly
+                return $event->date ?? null;
             }
         });
         // DEBUG dd($allEvents->map(function ($event) {
@@ -150,6 +154,151 @@ class AcademicEventService
     }
 
     /**
+     * Get academic year date events (start_date, end_date, winter breaks) within the date range.
+     */
+    private function getAcademicYearEventsByDateRange(\DateTime $from, \DateTime $to): Collection
+    {
+        $fromCarbon = Carbon::parse($from);
+        $toCarbon = Carbon::parse($to);
+        
+        // Get event types once (optimization)
+        $startEventType = EventType::where('code', EventType::CODE_INICIO_ESCOLAR)->first();
+        $endEventType = EventType::where('code', EventType::CODE_FIN_ESCOLAR)->first();
+        $winterStartEventType = EventType::where('code', EventType::CODE_INICIO_INVIERNO)->first();
+        $winterEndEventType = EventType::where('code', EventType::CODE_FIN_INVIERNO)->first();
+        $suspensionEventType = EventType::where('code', EventType::CODE_SUSPENCION_PROVINCIAL)->first();
+        
+        // Query academic years where any of their dates fall within the range
+        // or where the winter break period overlaps with the range
+        $academicYears = AcademicYear::where(function ($query) use ($fromCarbon, $toCarbon) {
+            $query->whereBetween('start_date', [$fromCarbon, $toCarbon])
+                ->orWhereBetween('end_date', [$fromCarbon, $toCarbon])
+                ->orWhereBetween('winter_break_start', [$fromCarbon, $toCarbon])
+                ->orWhereBetween('winter_break_end', [$fromCarbon, $toCarbon])
+                // Also include cases where the range is completely within the winter break period
+                ->orWhere(function ($q) use ($fromCarbon, $toCarbon) {
+                    $q->where('winter_break_start', '<=', $fromCarbon)
+                      ->where('winter_break_end', '>=', $toCarbon);
+                })
+                // Or where the winter break period overlaps with the range
+                ->orWhere(function ($q) use ($fromCarbon, $toCarbon) {
+                    $q->where('winter_break_start', '<=', $toCarbon)
+                      ->where('winter_break_end', '>=', $fromCarbon);
+                });
+        })->get();
+
+        $events = collect();
+
+        foreach ($academicYears as $academicYear) {
+
+            // Check start_date
+            if ($academicYear->start_date && $academicYear->start_date->between($fromCarbon, $toCarbon)) {
+                $event = (object) [
+                    'id' => 'academic_year_' . $academicYear->id . '_start',
+                    'title' => 'Inicio del ciclo lectivo ' . $academicYear->year,
+                    'date' => $academicYear->start_date,
+                    'is_non_working_day' => false,
+                    'notes' => 'Primer día de clases del ciclo lectivo ' . $academicYear->year,
+                    'type' => $startEventType,
+                    'province' => null,
+                    'school' => null,
+                    'academicYear' => $academicYear,
+                    'courses' => collect(),
+                    'is_recurrent' => false,
+                ];
+                $events->push($event);
+            }
+
+            // Check end_date
+            if ($academicYear->end_date && $academicYear->end_date->between($fromCarbon, $toCarbon)) {
+                $event = (object) [
+                    'id' => 'academic_year_' . $academicYear->id . '_end',
+                    'title' => 'Fin del ciclo lectivo ' . $academicYear->year,
+                    'date' => $academicYear->end_date,
+                    'is_non_working_day' => false,
+                    'notes' => 'Último día de clases del ciclo lectivo ' . $academicYear->year,
+                    'type' => $endEventType,
+                    'province' => null,
+                    'school' => null,
+                    'academicYear' => $academicYear,
+                    'courses' => collect(),
+                    'is_recurrent' => false,
+                ];
+                $events->push($event);
+            }
+
+            // Check winter_break_start
+            if ($academicYear->winter_break_start && $academicYear->winter_break_start->between($fromCarbon, $toCarbon)) {
+                $event = (object) [
+                    'id' => 'academic_year_' . $academicYear->id . '_winter_start',
+                    'title' => 'Inicio de las vacaciones de invierno',
+                    'date' => $academicYear->winter_break_start,
+                    'is_non_working_day' => true,
+                    'type' => $winterStartEventType,
+                    'province' => null,
+                    'school' => null,
+                    'academicYear' => $academicYear,
+                    'courses' => collect(),
+                    'is_recurrent' => false,
+                ];
+                $events->push($event);
+            }
+
+            // Check winter_break_end
+            if ($academicYear->winter_break_end && $academicYear->winter_break_end->between($fromCarbon, $toCarbon)) {
+                $event = (object) [
+                    'id' => 'academic_year_' . $academicYear->id . '_winter_end',
+                    'title' => 'Fin de las vacaciones de invierno ' . $academicYear->year,
+                    'date' => $academicYear->winter_break_end,
+                    'is_non_working_day' => true,
+                    'notes' => 'Fin de las vacaciones de invierno del ciclo lectivo ' . $academicYear->year,
+                    'type' => $winterEndEventType,
+                    'province' => null,
+                    'school' => null,
+                    'academicYear' => $academicYear,
+                    'courses' => collect(),
+                    'is_recurrent' => false,
+                ];
+                $events->push($event);
+            }
+
+            // Add events for all dates between winter_break_start and winter_break_end
+            if ($academicYear->winter_break_start && $academicYear->winter_break_end) {
+                $winterBreakStart = Carbon::parse($academicYear->winter_break_start);
+                $winterBreakEnd = Carbon::parse($academicYear->winter_break_end);
+                
+                // Only process dates that fall within the requested range
+                $currentDate = $winterBreakStart->copy();
+                while ($currentDate <= $winterBreakEnd) {
+                    // Skip weekends (Saturday = 6, Sunday = 0)
+                    $dayOfWeek = $currentDate->dayOfWeek;
+                    $isWeekend = $dayOfWeek === Carbon::SATURDAY || $dayOfWeek === Carbon::SUNDAY;
+                    
+                    // Only add if this date is within the requested range and not a weekend
+                    if ($currentDate->between($fromCarbon, $toCarbon) && !$isWeekend) {
+                        $event = (object) [
+                            'id' => 'academic_year_' . $academicYear->id . '_winter_' . $currentDate->format('Y-m-d'),
+                            'title' => 'receso escolar',
+                            'date' => $currentDate->copy(),
+                            'is_non_working_day' => true,
+                            'type' => $suspensionEventType,
+                            'province' => null,
+                            'school' => null,
+                            'academicYear' => $academicYear,
+                            'courses' => collect(),
+                            'is_recurrent' => false,
+                        ];
+                        $events->push($event);
+                    }
+                    $currentDate->addDay();
+                }
+            }
+        }
+
+        return $events;
+    }
+
+    /**
      * Parse academic events for a view.
      */
     public function parseForView(Collection $events): array
@@ -161,34 +310,48 @@ class AcademicEventService
                 $effectiveDate = $event->date;
             } elseif ($event instanceof RecurrentEvent) {
                 $effectiveDate = $event->calculated_date ?? $event->date;
+            } else {
+                // Handle stdClass objects (like AcademicYear events)
+                $effectiveDate = $event->date ?? null;
             }
 
             $isNonWorkingDay = $event->is_non_working_day ?? false;
+
+            // Get courses - handle both AcademicEvent instances and stdClass objects
+            $courses = [];
+            if ($event instanceof AcademicEvent && $event->courses->isNotEmpty()) {
+                $courses = $event->courses->map(function (Course $course) {
+                    return [
+                        'id' => $course->id,
+                        'nice_name' => $course->nice_name,
+                    ];
+                })->toArray();
+            } elseif (isset($event->courses) && $event->courses instanceof Collection && $event->courses->isNotEmpty()) {
+                $courses = $event->courses->map(function ($course) {
+                    return [
+                        'id' => $course->id ?? null,
+                        'nice_name' => $course->nice_name ?? null,
+                    ];
+                })->toArray();
+            }
 
             return [
                 'id' => $event->id,
                 'title' => $event->title,
                 'date' => $effectiveDate, //? $effectiveDate->format('d/m/Y') : null,
                 'is_non_working_day' => $isNonWorkingDay,
-                'notes' => $event->notes,
+                'notes' => $event->notes ?? null,
                 'event_type' => [
-                    'id' => $event->type?->id,
-                    'code' => $event->type?->code,
-                    'name' => $event->type?->name,
-                    'scope' => $event->type?->scope,
+                    'id' => $event->type?->id ?? null,
+                    'code' => $event->type?->code ?? null,
+                    'name' => $event->type?->name ?? null,
+                    'scope' => $event->type?->scope ?? null,
                 ],
-                'province' => $event->province?->name,
-                'school' => $event->school?->name,
-                'academic_year' => $event->academicYear?->year,
-                'courses' => $event instanceof AcademicEvent && $event->courses->isNotEmpty()
-                    ? $event->courses->map(function (Course $course) {
-                        return [
-                            'id' => $course->id,
-                            'nice_name' => $course->nice_name,
-                        ];
-                    })
-                    : [],
-                'is_recurrent' => $event instanceof RecurrentEvent,
+                'province' => $event->province?->name ?? null,
+                'school' => $event->school?->name ?? null,
+                'academic_year' => $event->academicYear?->year ?? null,
+                'courses' => $courses,
+                'is_recurrent' => $event instanceof RecurrentEvent || ($event->is_recurrent ?? false),
                 'recurrence_info' => $event instanceof RecurrentEvent && empty($event->date) ? [
                     'month' => $event->recurrence_month,
                     'week' => $event->recurrence_week,
