@@ -79,7 +79,10 @@
 
         <!-- Calendar Panel -->
         <div v-if="!isLoading && calendarData">
-          <CalendarPanel :calendar-data="calendarData" />
+          <CalendarPanel 
+            :calendar-data="calendarData" 
+            v-model:show-birthdates-model="showBirthdates"
+          />
         </div>
 
         <!-- Loading State -->
@@ -94,7 +97,7 @@
 
 <script setup>
 import { Head, router, usePage } from '@inertiajs/vue3'
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
 import CalendarPanel from '@/Components/CalendarPanel.vue'
@@ -121,6 +124,19 @@ const props = defineProps({
 const isLoading = ref(false)
 const selectedMonth = ref(props.currentMonth)
 const selectedYear = ref(props.currentYear)
+
+// Persist showBirthdates state in localStorage
+const getStoredShowBirthdates = () => {
+  const stored = localStorage.getItem('calendar.showBirthdates')
+  return stored === 'true'
+}
+
+const showBirthdates = ref(getStoredShowBirthdates())
+
+// Watch for changes and save to localStorage
+watch(showBirthdates, (value) => {
+  localStorage.setItem('calendar.showBirthdates', value.toString())
+})
 
 // Month options
 const monthOptions = computed(() => {

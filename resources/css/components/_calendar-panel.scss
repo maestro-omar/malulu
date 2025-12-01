@@ -241,14 +241,20 @@
       background: white;
     }
 
-    &:not(.calendar-panel__day--current-month) {
-      background: color.adjust(variables.$color-grey, $lightness: 5%);
-      color: color.adjust(variables.$color-text, $alpha: -0.5);
-    }
 
     &--past {
       background: color.adjust(variables.$color-rose, $alpha: -0.9) !important;
       color: color.adjust(variables.$color-rose, $lightness: -10%) !important;
+    }
+    
+    &--past:not(.calendar-panel__day--current-month) {
+      background: color.adjust(variables.$color-rose, $alpha: -0.8) !important;
+      color: color.adjust(variables.$color-rose, $lightness: -10%) !important;
+    }
+
+    &:not(.calendar-panel__day--current-month):not(.calendar-panel__day--feriado):not(.calendar-panel__day--past) {
+      background: color.adjust(variables.$color-slate, $alpha: -0.9) !important;
+      color: color.adjust(variables.$color-slate, $lightness: -10%) !important;
     }
 
     &--today {

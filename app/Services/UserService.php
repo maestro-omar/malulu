@@ -328,8 +328,9 @@ class UserService
         $provinceId = $user->province_id;
         
         // Create date range for the entire month
+        // Use start of next day for $to to ensure the last day is fully included
         $from = Carbon::create($year, $month, 1)->startOfDay();
-        $to = Carbon::create($year, $month, 1)->endOfMonth()->startOfDay();
+        $to = Carbon::create($year, $month, 1)->endOfMonth()->addDay()->startOfDay();
         
         $eventsData = $this->academicEventService->listAround($provinceId, null, $from, $to);
         $from = $eventsData['from'];

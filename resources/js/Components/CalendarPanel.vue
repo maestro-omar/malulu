@@ -130,7 +130,7 @@
                       </div>
                       <div class="calendar-panel__list-event-content">
                         <h5 class="calendar-panel__list-event-title">🎂 {{ item.data.firstname }} {{ item.data.lastname
-                          }}
+                        }}
                         </h5>
                         <div class="calendar-panel__list-event-meta">
                           <span class="calendar-panel__list-event-notes">
@@ -225,14 +225,32 @@ const props = defineProps({
     type: Object,
     required: true,
     default: () => ({ from: null, to: null, events: [] })
+  },
+  showBirthdatesModel: {
+    type: Boolean,
+    default: undefined
   }
 })
+
+const emit = defineEmits(['update:showBirthdatesModel'])
 
 const weekDays = dayNames2Letter
 
 // Toggle between calendar and list view
 const isListView = ref(false)
-const showBirthdates = ref(false)
+const internalShowBirthdates = ref(false)
+
+// Use prop if provided, otherwise use internal state
+const showBirthdates = computed({
+  get: () => props.showBirthdatesModel !== undefined ? props.showBirthdatesModel : internalShowBirthdates.value,
+  set: (value) => {
+    if (props.showBirthdatesModel !== undefined) {
+      emit('update:showBirthdatesModel', value)
+    } else {
+      internalShowBirthdates.value = value
+    }
+  }
+})
 
 // Popup state management
 const showPopup = ref(false)
@@ -331,13 +349,16 @@ const calendarWeeks = computed(() => {
         event.event_type && (event.event_type.code === 'feriado_nacional' || event.event_type.code === 'feriado_provincial')
       )
 
+      const today = new Date(new Date().setHours(0, 0, 0, 0))
+      const isCurrentRange = dayDate >= from && dayDate < to;
+
       week.push({
         date: dayDate,
         events: dayEvents,
         birthdates: dayBirthdates,
-        isCurrentMonth: dayDate >= from && dayDate <= to,
+        isCurrentRange: isCurrentRange,
         isToday: isToday(dayDate),
-        isPast: dayDate < from || dayDate < new Date(new Date().setHours(0, 0, 0, 0)),
+        isPast: dayDate < today, // & isCurrentRange
         isFeriado: hasFeriado
       })
 
@@ -355,7 +376,7 @@ const getEventsForDate = (date) => {
   const dateStr = date.getFullYear() + '-' +
     String(date.getMonth() + 1).padStart(2, '0') + '-' +
     String(date.getDate()).padStart(2, '0')
-  
+
   // Format date as MM-DD for recurrent event comparison
   const monthDayStr = String(date.getMonth() + 1).padStart(2, '0') + '-' +
     String(date.getDate()).padStart(2, '0')
@@ -414,11 +435,11 @@ const isToday = (date) => {
 
 const getDayClasses = (day) => {
   return {
-    'calendar-panel__day--current-month': day.isCurrentMonth,
     'calendar-panel__day--today': day.isToday,
-    'calendar-panel__day--past': day.isPast,
     'calendar-panel__day--has-events': day.events.length > 0,
-    'calendar-panel__day--feriado': day.isFeriado
+    'calendar-panel__day--feriado': day.isFeriado,
+    'calendar-panel__day--past': day.isPast,
+    'calendar-panel__day--current-month': day.isCurrentRange,
   }
 }
 
