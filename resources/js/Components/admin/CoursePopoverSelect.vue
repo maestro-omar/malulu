@@ -172,21 +172,24 @@
                         <!-- Previous Link -->
                         <div v-if="key === 0 && link.url === null" class="pagination__item pagination__item--disabled"
                             v-html="link.label" />
-                                                <button v-else-if="key === 0" class="pagination__item" @click.prevent="handlePagination(link.url)"
+                        <button v-else-if="key === 0" class="pagination__item" 
+                            @click.prevent="handlePagination(link.url, link.label)"
                             v-html="link.label" />
                         
                         <!-- Page Numbers -->
                         <div v-else-if="link.url === null && key !== paginationData.links.length - 1"
                             class="pagination__item pagination__item--disabled" v-html="link.label" />
                         <button v-else-if="key !== paginationData.links.length - 1" class="pagination__item"
-                            :class="{ 'pagination__item--active': link.active }" @click.prevent="handlePagination(link.url)"
+                            :class="{ 'pagination__item--active': link.active }" 
+                            @click.prevent="handlePagination(link.url, link.label)"
                             v-html="link.label" />
                         
                         <!-- Next Link -->
                         <div v-if="key === paginationData.links.length - 1 && link.url === null"
                             class="pagination__item pagination__item--disabled" v-html="link.label" />
                         <button v-else-if="key === paginationData.links.length - 1" class="pagination__item"
-                            @click.prevent="handlePagination(link.url)" v-html="link.label" />
+                            @click.prevent="handlePagination(link.url, link.label)"
+                            v-html="link.label" />
                     </template>
                 </div>
             </div>
@@ -570,26 +573,86 @@ const selectNoCourse = () => {
     closePopover()
 }
 
-const handlePagination = async (url) => {
+const handlePagination = async (url, label = null) => {
     loading.value = true
 
     try {
         // Get CSRF token from meta tag
         const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
 
-        // Extract page number from URL
-        const urlParams = new URLSearchParams(url.split('?')[1])
-        const page = urlParams.get('page')
+        // Laravel pagination URLs are GET URLs, but we need to POST
+        // Prioritize label extraction for page numbers since labels are always accurate
+        let page = null
+        
+        // Method 1: Extract page number from label first (most reliable for page numbers)
+        if (label) {
+            // Try to extract numeric value from label (strip HTML entities and get number)
+            const labelText = label.replace(/&[^;]+;/g, '').trim() // Remove HTML entities like &laquo;
+            const labelMatch = labelText.match(/^(\d+)$/) // Match pure numbers like "1", "2", "3"
+            if (labelMatch && labelMatch[1]) {
+                // Found a numeric page number in the label - use it!
+                page = labelMatch[1]
+            } else if (labelText.toLowerCase().includes('anterior') || labelText.toLowerCase().includes('previous')) {
+                // For "Previous" / "Anterior", go to current_page - 1
+                if (paginationData.value) {
+                    const currentPage = paginationData.value.current_page || 1
+                    page = Math.max(1, currentPage - 1).toString()
+                }
+            } else if (labelText.toLowerCase().includes('siguiente') || labelText.toLowerCase().includes('next')) {
+                // For "Next" / "Siguiente", go to current_page + 1
+                if (paginationData.value) {
+                    const currentPage = paginationData.value.current_page || 1
+                    const lastPage = paginationData.value.last_page || 1
+                    page = Math.min(lastPage, currentPage + 1).toString()
+                }
+            }
+        }
+        
+        // Method 2: Fallback to URL extraction if label didn't work
+        if (!page && url) {
+            // Try regex match first (works for both relative and absolute URLs)
+            const pageMatch = url.match(/[?&]page=(\d+)/)
+            if (pageMatch && pageMatch[1]) {
+                page = pageMatch[1]
+            } else {
+                // Try parsing as URL
+                try {
+                    // Handle both relative and absolute URLs
+                    let fullUrl = url
+                    if (!url.startsWith('http')) {
+                        const baseUrl = window.location.origin
+                        fullUrl = baseUrl + url
+                    }
+                    
+                    const urlObj = new URL(fullUrl)
+                    const extractedPage = urlObj.searchParams.get('page')
+                    if (extractedPage) {
+                        page = extractedPage
+                    }
+                } catch (e) {
+                    // URL parsing failed
+                }
+            }
+        }
+        
+        // Default to page 1 if nothing worked
+        if (!page) {
+            page = '1'
+        }
 
-        // Construct the full URL by using the route helper with the page parameter
-        const fullUrl = route('school.courses.search', {
+        // Use the same route as loadCourses
+        const routeUrl = route('school.courses.search', {
             school: props.school.slug,
-            schoolLevel: props.schoolLevel.code,
-            page: page
+            schoolLevel: props.schoolLevel.code
         })
 
+        // Laravel pagination uses 'p' as the page parameter (see resources/lang/es/pagination.php)
+        // Build the full URL with page parameter in query string
+        const finalUrl = `${routeUrl}?p=${page}`
+
         // Use fetch to load the paginated data
-        const response = await fetch(fullUrl, {
+        // Include 'p' in both query string and body to ensure backend reads it correctly
+        const response = await fetch(finalUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -602,7 +665,8 @@ const handlePagination = async (url) => {
                 school_shift_id: filters.value.schoolShift,
                 start_date: props.startDate,
                 year: filters.value.year,
-                active: filters.value.active
+                active: filters.value.active,
+                p: parseInt(page) // Include 'p' in body as well (Laravel pagination parameter)
             })
         })
 

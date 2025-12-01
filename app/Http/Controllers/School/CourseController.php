@@ -167,6 +167,8 @@ class CourseController extends SchoolBaseController
             'school_id' => $school->id,
             'year' => $request->input('year', date('Y')),
             'active' => $request->input('active'),
+            // Ensure page parameter from query string is available
+            'p' => $request->input('p', $request->query('p', 1)),
         ]);
 
         $courses = $this->courseService->getCourses($request, $school->id);
