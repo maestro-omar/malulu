@@ -133,6 +133,7 @@ class HandleInertiaRequests extends Middleware
             'name' => 'Calendario',
             'route' => 'calendar.index',
             'icon' => 'calendar_month',
+            'colorClass' => 'text-deep-purple',
         ];
         if ($user->isSuperadmin()) {
             // Role::SUPERADMIN

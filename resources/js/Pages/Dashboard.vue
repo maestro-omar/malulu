@@ -21,7 +21,7 @@
           :combinationCount="combinationCount" />
         <FormerStudentPanel v-if="isFormerStudent" :data="isFormerStudent" :schools="schools"
           :combinationCount="combinationCount" />
-        <CalendarPanel :calendar-data="$page.props.eventsData" />
+        <CalendarPanel :calendar-data="$page.props.eventsData" title="Agenda" />
         <DefaultPanel />
       </div>
     </template>

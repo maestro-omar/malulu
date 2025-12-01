@@ -2,10 +2,10 @@
   <div class="dbsub-panel q-mt-lg">
     <div class="row q-col-gutter-md">
       <!-- Welcome Section -->
-      <div class="col-12">
+      <div v-if="title" class="col-12">
         <q-card class="dbsub-panel__welcome-card">
           <q-card-section>
-            <h2 class="dbsub-panel__title">Agenda</h2>
+            <h2 class="dbsub-panel__title">{{ title }}</h2>
           </q-card-section>
         </q-card>
       </div>
@@ -229,6 +229,10 @@ const props = defineProps({
   showBirthdatesModel: {
     type: Boolean,
     default: undefined
+  },
+  title: {
+    type: String,
+    default: ''
   }
 })
 
