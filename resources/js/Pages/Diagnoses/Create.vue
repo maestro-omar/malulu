@@ -1,6 +1,8 @@
 <template>
+
+  <Head title="Diagnósticos" />
+
   <AuthenticatedLayout>
-    <Head title="Diagnósticos" />
     <template #admin-header>
       <AdminHeader :title="`Nuevo Diagnóstico`"></AdminHeader>
     </template>

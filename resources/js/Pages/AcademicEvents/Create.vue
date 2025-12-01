@@ -1,7 +1,8 @@
 <template>
-  <AuthenticatedLayout>
 
-    <Head title="Nuevo evento académico" />
+  <Head title="Nuevo evento académico" />
+
+  <AuthenticatedLayout>
 
     <template #admin-header>
       <AdminHeader title="Nuevo evento académico" />
@@ -61,24 +62,14 @@
                 <div class="admin-form__card-content">
                   <div class="admin-form__field">
                     <InputLabel value="Tipo de alcance" />
-                    <q-option-group 
-                      v-model="scopeType" 
-                      type="radio" 
-                      :options="scopeTypeOptions"
-                      color="primary"
-                      @update:model-value="handleScopeTypeChange"
-                    />
+                    <q-option-group v-model="scopeType" type="radio" :options="scopeTypeOptions" color="primary"
+                      @update:model-value="handleScopeTypeChange" />
                   </div>
 
                   <div v-if="scopeType === 'province'" class="admin-form__field">
                     <InputLabel for="province_id" value="Provincia" />
-                    <SelectInput 
-                      id="province_id" 
-                      name="province_id" 
-                      v-model="form.province_id"
-                      class="admin-form__input"
-                      :disabled="true"
-                    >
+                    <SelectInput id="province_id" name="province_id" v-model="form.province_id"
+                      class="admin-form__input" :disabled="true">
                       <option :value="sanLuisProvinceId">{{ sanLuisProvinceName }}</option>
                     </SelectInput>
                     <InputError class="admin-form__error" :message="form.errors.province_id" />
@@ -90,29 +81,15 @@
                       <!-- Course Selection -->
                       <div class="academic-events-courses__selector">
                         <div v-if="selectedSchoolLevel" class="academic-events-courses__popover-wrapper">
-                          <CoursePopoverSelect
-                            :model-value="selectedCourseIds"
-                            :school="school"
-                            :schoolLevel="selectedSchoolLevel"
-                            :schoolShift="null"
-                            :schoolShifts="schoolShifts"
-                            :startDate="form.date"
-                            :currentCourse="null"
-                            :multiple="true"
-                            :title="'Seleccionar Cursos'"
-                            :placeholder="'Selecciona cursos'"
-                            :forceActive="true"
-                            :forceYear="true"
-                            :selectedCourses="selectedCourses"
-                            @coursesSelected="handleCoursesSelected"
-                          />
+                          <CoursePopoverSelect :model-value="selectedCourseIds" :school="school"
+                            :schoolLevel="selectedSchoolLevel" :schoolShift="null" :schoolShifts="schoolShifts"
+                            :startDate="form.date" :currentCourse="null" :multiple="true" :title="'Seleccionar Cursos'"
+                            :placeholder="'Selecciona cursos'" :forceActive="true" :forceYear="true"
+                            :selectedCourses="selectedCourses" @coursesSelected="handleCoursesSelected" />
                         </div>
                         <div v-else-if="!oneSchoolOnlyPrimary" class="academic-events-courses__level-selector">
-                          <SelectInput
-                            v-model="selectedSchoolLevelId"
-                            class="admin-form__input"
-                            @update:model-value="handleLevelSelected"
-                          >
+                          <SelectInput v-model="selectedSchoolLevelId" class="admin-form__input"
+                            @update:model-value="handleLevelSelected">
                             <option value="" disabled>Selecciona un nivel para agregar cursos</option>
                             <option v-for="level in schoolLevels" :key="level.id" :value="level.id">
                               {{ level.name }}
@@ -123,15 +100,9 @@
 
                       <!-- Selected Courses Display -->
                       <div v-if="selectedCourses.length > 0" class="academic-events-courses__selected">
-                        <q-chip
-                          v-for="course in selectedCourses"
-                          :key="course.id"
-                          removable
-                          @remove="removeCourse(course.id)"
-                          size="sm"
-                          :class="getChipClasses(course)"
-                          class="academic-events-courses__chip"
-                        >
+                        <q-chip v-for="course in selectedCourses" :key="course.id" removable
+                          @remove="removeCourse(course.id)" size="sm" :class="getChipClasses(course)"
+                          class="academic-events-courses__chip">
                           {{ course.nice_name }}
                         </q-chip>
                       </div>
@@ -162,10 +133,8 @@
               </q-card-section>
             </q-card>
 
-            <ActionButtons 
-              button-label="Guardar evento" 
-              :cancel-href="route('school.academic-events.index', school.slug)"
-              :disabled="form.processing" />
+            <ActionButtons button-label="Guardar evento"
+              :cancel-href="route('school.academic-events.index', school.slug)" :disabled="form.processing" />
           </form>
         </div>
       </div>
@@ -329,14 +298,14 @@ const submit = () => {
     course_ids: scopeType.value === 'school' ? form.courses : []
   };
   delete data.courses;
-  
+
   // Ensure province_id is set correctly based on scope type
   if (scopeType.value === 'province') {
     data.province_id = sanLuisProvinceId.value || null;
   } else {
     data.province_id = null;
   }
-  
+
   form.transform(() => data).post(route('school.academic-events.store', props.school.slug));
 };
 </script>
@@ -372,4 +341,3 @@ const submit = () => {
   width: 100%;
 }
 </style>
-

@@ -1,7 +1,8 @@
 <template>
-  <AuthenticatedLayout>
 
-    <Head title="Crear Escuela" />
+  <Head title="Crear Escuela" />
+
+  <AuthenticatedLayout>
     <template #admin-header>
       <AdminHeader  :title="`Crear Nueva Escuela`">
       </AdminHeader>

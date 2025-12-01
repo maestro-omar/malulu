@@ -1,7 +1,8 @@
 <template>
-  <AuthenticatedLayout>
 
-    <Head :title="`Editar evento: ${form.title}`" />
+  <Head :title="`Editar evento: ${form.title}`" />
+
+  <AuthenticatedLayout>
 
     <template #admin-header>
       <AdminHeader title="Editar evento académico" :del="{
@@ -82,29 +83,16 @@
                         <!-- Course Selection -->
                         <div class="academic-events-courses__selector">
                           <div v-if="selectedSchoolLevel" class="academic-events-courses__popover-wrapper">
-                            <CoursePopoverSelect
-                              :model-value="selectedCourseIds"
-                              :school="school"
-                              :schoolLevel="selectedSchoolLevel"
-                              :schoolShift="null"
-                              :schoolShifts="schoolShifts"
-                              :startDate="form.date"
-                              :currentCourse="null"
-                              :multiple="true"
-                              :title="'Seleccionar Cursos'"
-                              :placeholder="'Selecciona cursos'"
-                              :forceActive="true"
-                              :forceYear="true"
-                              :selectedCourses="selectedCourses"
-                              @coursesSelected="handleCoursesSelected"
-                            />
+                            <CoursePopoverSelect :model-value="selectedCourseIds" :school="school"
+                              :schoolLevel="selectedSchoolLevel" :schoolShift="null" :schoolShifts="schoolShifts"
+                              :startDate="form.date" :currentCourse="null" :multiple="true"
+                              :title="'Seleccionar Cursos'" :placeholder="'Selecciona cursos'" :forceActive="true"
+                              :forceYear="true" :selectedCourses="selectedCourses"
+                              @coursesSelected="handleCoursesSelected" />
                           </div>
                           <div v-else-if="!oneSchoolOnlyPrimary" class="academic-events-courses__level-selector">
-                            <SelectInput
-                              v-model="selectedSchoolLevelId"
-                              class="admin-form__input"
-                              @update:model-value="handleLevelSelected"
-                            >
+                            <SelectInput v-model="selectedSchoolLevelId" class="admin-form__input"
+                              @update:model-value="handleLevelSelected">
                               <option value="" disabled>Selecciona un nivel para agregar cursos</option>
                               <option v-for="level in schoolLevels" :key="level.id" :value="level.id">
                                 {{ level.name }}
@@ -115,15 +103,9 @@
 
                         <!-- Selected Courses Display -->
                         <div v-if="selectedCourses.length > 0" class="academic-events-courses__selected">
-                          <q-chip
-                            v-for="course in selectedCourses"
-                            :key="course.id"
-                            removable
-                            @remove="removeCourse(course.id)"
-                            size="sm"
-                            :class="getChipClasses(course)"
-                            class="academic-events-courses__chip"
-                          >
+                          <q-chip v-for="course in selectedCourses" :key="course.id" removable
+                            @remove="removeCourse(course.id)" size="sm" :class="getChipClasses(course)"
+                            class="academic-events-courses__chip">
                             {{ course.nice_name }}
                           </q-chip>
                         </div>
@@ -155,10 +137,8 @@
               </q-card-section>
             </q-card>
 
-            <ActionButtons 
-              button-label="Actualizar evento" 
-              :cancel-href="route('school.academic-events.index', school.slug)"
-              :disabled="form.processing" />
+            <ActionButtons button-label="Actualizar evento"
+              :cancel-href="route('school.academic-events.index', school.slug)" :disabled="form.processing" />
           </form>
         </div>
       </div>
@@ -244,8 +224,8 @@ const form = useForm({
 // Scope type: 'province' or 'school'
 // Determine initial scope type based on existing data
 const scopeType = ref(
-  props.academicEvent.province_id && props.academicEvent.courses?.length === 0 
-    ? 'province' 
+  props.academicEvent.province_id && props.academicEvent.courses?.length === 0
+    ? 'province'
     : 'school'
 );
 
@@ -340,14 +320,14 @@ const submit = () => {
     course_ids: scopeType.value === 'school' ? form.courses : []
   };
   delete data.courses;
-  
+
   // Ensure province_id is set correctly based on scope type
   if (scopeType.value === 'province') {
     data.province_id = sanLuisProvinceId.value || null;
   } else {
     data.province_id = null;
   }
-  
+
   form.transform(() => data).put(route('school.academic-events.update', [props.school.slug, props.academicEvent.id]));
 };
 
@@ -389,4 +369,3 @@ const handleDelete = () => {
   width: 100%;
 }
 </style>
-

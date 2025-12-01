@@ -1,7 +1,8 @@
 <template>
-  <AuthenticatedLayout>
 
-    <Head :title="`Editar evento: ${form.title}`" />
+  <Head :title="`Editar evento: ${form.title}`" />
+
+  <AuthenticatedLayout>
 
     <template #admin-header>
       <AdminHeader title="Editar evento recurrente" :del="{

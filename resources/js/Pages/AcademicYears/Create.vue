@@ -1,7 +1,8 @@
 <template>
-  <AuthenticatedLayout>
 
-    <Head title="Ciclos lectivos" />
+  <Head title="Ciclos lectivos" />
+
+  <AuthenticatedLayout>
     <template #admin-header>
       <AdminHeader  :title="`Nuevo Ciclo Lectivo`"></AdminHeader>
     </template>

@@ -1,6 +1,8 @@
 <template>
+
+    <Head title="Crear Subtipo de Archivo" />
+
     <AuthenticatedLayout>
-        <Head title="Crear Subtipo de Archivo" />
         <h2 class="page-subtitle">
             Crear Subtipo de Archivo
         </h2>

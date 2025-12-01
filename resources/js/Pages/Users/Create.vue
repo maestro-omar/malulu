@@ -1,7 +1,8 @@
 <template>
-  <AuthenticatedLayout>
 
-    <Head title="Crear Usuario" />
+  <Head title="Crear Usuario" />
+
+  <AuthenticatedLayout>
     <template #admin-header>
       <AdminHeader :title="`Crear Usuario`"></AdminHeader>
     </template>

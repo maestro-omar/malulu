@@ -1,7 +1,8 @@
 <template>
-  <AuthenticatedLayout>
 
-    <Head title="Nuevo evento recurrente" />
+  <Head title="Nuevo evento recurrente" />
+
+  <AuthenticatedLayout>
 
     <template #admin-header>
       <AdminHeader title="Nuevo evento recurrente" />

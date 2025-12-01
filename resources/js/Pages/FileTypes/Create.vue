@@ -1,6 +1,8 @@
 <template>
+
+  <Head title="Crear Tipo de Archivo" />
+
   <AuthenticatedLayout>
-    <Head title="Crear Tipo de Archivo" />
     <h2 class="page-subtitle">
       Crear Tipo de Archivo
     </h2>
