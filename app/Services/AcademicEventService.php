@@ -62,7 +62,9 @@ class AcademicEventService
                 return $event->calculateDate($from, $to);
             }
         });
-
+        // DEBUG dd($allEvents->map(function ($event) {
+        //     return $event->title;
+        // })->toArray(),'rrrrrrrr');
         $events = $this->parseForView($allEvents);
         return ['from' => $from, 'to' => $to, 'events' => $events];
     }
@@ -122,149 +124,29 @@ class AcademicEventService
         $filteredEvents = collect();
 
         foreach ($recurrentEvents as $event) {
+            // Use the model method to get all occurrences in the range
+            $occurrences = $event->getOccurrencesInRange($from, $to);
+
+            if ($occurrences->isEmpty()) {
+                continue;
+            }
+
+            // For fixed date events (no recurrence rules), set calculated_date to first occurrence
             if ($event->date && !$event->recurrence_month && !$event->recurrence_week && $event->recurrence_weekday === null) {
-                // This is a fixed date event (not a recurring one) - check if it's in range
-                $eventDate = Carbon::parse($event->date);
-                if ($eventDate->between($from, $to)) {
-                    $filteredEvents->push($event);
-                }
-            } elseif ($event->date && ($event->recurrence_month || $event->recurrence_week || $event->recurrence_weekday !== null)) {
-                // This has a date field but also recurrence rules - the date represents day/month for every year
-                $occurrences = $this->calculateDayMonthOccurrences($event, $from, $to);
-                if ($occurrences->isNotEmpty()) {
-                    foreach ($occurrences as $occurrenceDate) {
-                        $virtualEvent = clone $event;
-                        $virtualEvent->calculated_date = $occurrenceDate;
-                        $filteredEvents->push($virtualEvent);
-                    }
-                }
+                $eventWithDate = clone $event;
+                $eventWithDate->calculated_date = $occurrences->first();
+                $filteredEvents->push($eventWithDate);
             } else {
-                // Pure recurring event based on recurrence rules only
-                $occurrences = $this->calculateRecurrenceOccurrences($event, $from, $to);
-                if ($occurrences->isNotEmpty()) {
-                    // Create virtual events for each occurrence
-                    foreach ($occurrences as $occurrenceDate) {
-                        $virtualEvent = clone $event;
-                        $virtualEvent->calculated_date = $occurrenceDate;
-                        $filteredEvents->push($virtualEvent);
-                    }
+                // For events with recurrence rules, create virtual events for each occurrence
+                foreach ($occurrences as $occurrenceDate) {
+                    $virtualEvent = clone $event;
+                    $virtualEvent->calculated_date = $occurrenceDate;
+                    $filteredEvents->push($virtualEvent);
                 }
             }
         }
 
         return $filteredEvents;
-    }
-
-    /**
-     * Calculate occurrences for events with day/month pattern (like Christmas on 25/12 every year)
-     */
-    private function calculateDayMonthOccurrences(RecurrentEvent $event, \DateTime $from, \DateTime $to): Collection
-    {
-        $occurrences = collect();
-        $fromCarbon = Carbon::parse($from);
-        $toCarbon = Carbon::parse($to);
-
-        // Parse the day/month from the event date
-        $eventDate = Carbon::parse($event->date);
-        $day = $eventDate->day;
-        $month = $eventDate->month;
-
-        // Get the year range to check
-        $startYear = $fromCarbon->year;
-        $endYear = $toCarbon->year;
-
-        for ($year = $startYear; $year <= $endYear; $year++) {
-            try {
-                $occurrenceDate = Carbon::create($year, $month, $day);
-
-                // Check if this date falls within our range
-                if ($occurrenceDate->between($fromCarbon, $toCarbon)) {
-                    $occurrences->push($occurrenceDate);
-                }
-            } catch (\Exception $e) {
-                // Skip invalid dates (like Feb 29 in non-leap years)
-                continue;
-            }
-        }
-
-        return $occurrences;
-    }
-
-    /**
-     * Calculate all occurrences of a recurring event within a date range
-     */
-    private function calculateRecurrenceOccurrences(RecurrentEvent $event, \DateTime $from, \DateTime $to): Collection
-    {
-        $occurrences = collect();
-        $fromCarbon = Carbon::parse($from);
-        $toCarbon = Carbon::parse($to);
-
-        // Get the year range to check
-        $startYear = $fromCarbon->year;
-        $endYear = $toCarbon->year;
-
-        for ($year = $startYear; $year <= $endYear; $year++) {
-            if ($event->recurrence_month && $event->recurrence_week && $event->recurrence_weekday !== null) {
-                $occurrenceDate = $this->calculateOccurrenceForYear(
-                    $year,
-                    $event->recurrence_month,
-                    $event->recurrence_week,
-                    $event->recurrence_weekday
-                );
-
-                if ($occurrenceDate && $occurrenceDate->between($fromCarbon, $toCarbon)) {
-                    $occurrences->push($occurrenceDate);
-                }
-            }
-        }
-
-        return $occurrences;
-    }
-
-    /**
-     * Calculate the occurrence date for a specific year
-     */
-    private function calculateOccurrenceForYear(int $year, int $month, int $week, int $weekday): ?Carbon
-    {
-        // Get the first day of the month
-        $firstDay = Carbon::create($year, $month, 1);
-
-        if ($week > 0) {
-            // Positive week: find the Nth occurrence
-            $targetDay = $firstDay->copy()->startOfWeek()->addDays($weekday);
-
-            // Find the first occurrence of the weekday in the month
-            while ($targetDay->month !== $month) {
-                $targetDay->addWeek();
-            }
-
-            // Add the required number of weeks
-            $targetDay->addWeeks($week - 1);
-
-            // Check if we're still in the same month
-            if ($targetDay->month === $month) {
-                return $targetDay;
-            }
-        } else {
-            // Negative week: find the Nth occurrence from the end
-            $lastDay = $firstDay->copy()->endOfMonth();
-            $targetDay = $lastDay->copy()->startOfWeek()->addDays($weekday);
-
-            // Find the last occurrence of the weekday in the month
-            while ($targetDay->month !== $month) {
-                $targetDay->subWeek();
-            }
-
-            // Subtract the required number of weeks (week is negative)
-            $targetDay->addWeeks($week + 1);
-
-            // Check if we're still in the same month
-            if ($targetDay->month === $month) {
-                return $targetDay;
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -322,13 +204,13 @@ class AcademicEventService
     public function create(array $data): AcademicEvent
     {
         $validatedData = $this->validateEventData($data);
-        
+
         // Extract course_ids if present
         $courseIds = $validatedData['course_ids'] ?? [];
         unset($validatedData['course_ids']);
-        
+
         $event = AcademicEvent::create($validatedData);
-        
+
         // Attach courses if provided
         if (!empty($courseIds)) {
             $event->courses()->attach($courseIds, [
@@ -336,7 +218,7 @@ class AcademicEventService
                 'updated_by' => $validatedData['updated_by'] ?? auth()->id(),
             ]);
         }
-        
+
         return $event->load('courses');
     }
 
@@ -346,17 +228,17 @@ class AcademicEventService
     public function update(AcademicEvent $event, array $data): AcademicEvent
     {
         $validatedData = $this->validateEventData($data, $event);
-        
+
         // Extract course_ids if present
         $courseIds = $validatedData['course_ids'] ?? null;
         unset($validatedData['course_ids']);
-        
+
         $event->update($validatedData);
-        
+
         // Sync courses if provided
         if ($courseIds !== null) {
             $event->courses()->sync($courseIds);
-            
+
             // Update timestamps in pivot table
             if (!empty($courseIds)) {
                 $event->courses()->updateExistingPivot($courseIds, [
@@ -364,7 +246,7 @@ class AcademicEventService
                 ]);
             }
         }
-        
+
         return $event->load('courses');
     }
 
@@ -463,7 +345,7 @@ class AcademicEventService
         }
 
         $validated = $validator->validated();
-        
+
         return $validated;
     }
 }

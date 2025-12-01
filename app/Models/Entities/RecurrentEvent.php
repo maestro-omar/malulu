@@ -9,6 +9,7 @@ use App\Models\Catalogs\Province;
 use App\Models\Entities\School;
 use App\Models\Entities\AcademicYear;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class RecurrentEvent extends Model
 {
@@ -70,10 +71,26 @@ class RecurrentEvent extends Model
         $today = Carbon::now();
 
         // Case 1: Event has a fixed date (not recurring)
+        // Extract month/day from the event date (ignoring the historical year)
         if ($this->date && !$this->recurrence_month && !$this->recurrence_week && $this->recurrence_weekday === null) {
             $eventDate = Carbon::parse($this->date);
-            if ($eventDate->between($fromCarbon, $toCarbon)) {
-                return $eventDate;
+            $day = $eventDate->day;
+            $month = $eventDate->month;
+            
+            // Check all years covered by the date range
+            $startYear = $fromCarbon->year;
+            $endYear = $toCarbon->year;
+            
+            for ($year = $startYear; $year <= $endYear; $year++) {
+                try {
+                    $occurrenceDate = Carbon::create($year, $month, $day);
+                    if ($occurrenceDate->between($fromCarbon, $toCarbon)) {
+                        return $occurrenceDate;
+                    }
+                } catch (\Exception $e) {
+                    // Skip invalid dates (like Feb 29 in non-leap years)
+                    continue;
+                }
             }
             return null;
         }
@@ -144,6 +161,87 @@ class RecurrentEvent extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Get all occurrences of this event within the given date range.
+     * Returns a collection of Carbon dates.
+     *
+     * @param \DateTime|string $from Start date of the range
+     * @param \DateTime|string $to End date of the range
+     * @return Collection Collection of Carbon dates representing occurrences
+     */
+    public function getOccurrencesInRange($from, $to): Collection
+    {
+        $occurrences = collect();
+        $fromCarbon = Carbon::parse($from);
+        $toCarbon = Carbon::parse($to);
+        $startYear = $fromCarbon->year;
+        $endYear = $toCarbon->year;
+
+        // Case 1: Event has a fixed date (not recurring)
+        // Extract month/day from the event date (ignoring the historical year)
+        if ($this->date && !$this->recurrence_month && !$this->recurrence_week && $this->recurrence_weekday === null) {
+            $eventDate = Carbon::parse($this->date);
+            $day = $eventDate->day;
+            $month = $eventDate->month;
+
+            // Check all years covered by the date range
+            for ($year = $startYear; $year <= $endYear; $year++) {
+                try {
+                    $occurrenceDate = Carbon::create($year, $month, $day);
+                    if ($occurrenceDate->between($fromCarbon, $toCarbon)) {
+                        $occurrences->push($occurrenceDate);
+                    }
+                } catch (\Exception $e) {
+                    // Skip invalid dates (like Feb 29 in non-leap years)
+                    continue;
+                }
+            }
+        }
+        // Case 2: Event has a day/month pattern (like Christmas on 25/12 every year)
+        elseif ($this->date && ($this->recurrence_month || $this->recurrence_week || $this->recurrence_weekday !== null)) {
+            $eventDate = Carbon::parse($this->date);
+            $day = $eventDate->day;
+            $month = $eventDate->month;
+
+            // Check all years covered by the date range
+            for ($year = $startYear; $year <= $endYear; $year++) {
+                $occurrenceDate = $this->createDateForYear($year, $month, $day);
+                if ($occurrenceDate && $occurrenceDate->between($fromCarbon, $toCarbon)) {
+                    $occurrences->push($occurrenceDate);
+                }
+            }
+        }
+        // Case 3: Pure recurring event based on recurrence rules only
+        elseif ($this->recurrence_month && $this->recurrence_week && $this->recurrence_weekday !== null) {
+            // Check all years covered by the date range
+            for ($year = $startYear; $year <= $endYear; $year++) {
+                $occurrenceDate = $this->calculateOccurrenceForYear(
+                    $year,
+                    $this->recurrence_month,
+                    $this->recurrence_week,
+                    $this->recurrence_weekday
+                );
+                if ($occurrenceDate && $occurrenceDate->between($fromCarbon, $toCarbon)) {
+                    $occurrences->push($occurrenceDate);
+                }
+            }
+        }
+
+        return $occurrences;
+    }
+
+    /**
+     * Check if this event has any occurrences within the given date range.
+     *
+     * @param \DateTime|string $from Start date of the range
+     * @param \DateTime|string $to End date of the range
+     * @return bool True if the event has occurrences in the range, false otherwise
+     */
+    public function matchesDateRange($from, $to): bool
+    {
+        return $this->getOccurrencesInRange($from, $to)->isNotEmpty();
     }
 
     /**

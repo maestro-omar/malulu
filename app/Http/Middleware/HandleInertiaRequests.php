@@ -129,6 +129,11 @@ class HandleInertiaRequests extends Middleware
         }
 
         $items = [];
+        $items[] = [
+            'name' => 'Calendario',
+            'route' => 'calendar.index',
+            'icon' => 'calendar_month',
+        ];
         if ($user->isSuperadmin()) {
             // Role::SUPERADMIN
             $items[] = [
@@ -250,7 +255,7 @@ class HandleInertiaRequests extends Middleware
         $items[] = [
             'name' => 'Eventos recurrentes',
             'route' => 'recurrent-events.index',
-            'icon' => 'event',
+            'icon' => 'event_repeat',
         ];
 
         $defaultSchool = School::where('code', School::CUE_LUCIO_LUCERO)->first();

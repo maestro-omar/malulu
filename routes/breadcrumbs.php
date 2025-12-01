@@ -188,6 +188,12 @@ Breadcrumbs::for('academic-years.edit', function (Trail $trail, $year) {
     $trail->push("Editar");
 });
 
+// 📅 Calendario
+Breadcrumbs::for('calendar.index', function (Trail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Calendario', route('calendar.index'), ['icon' => 'calendar_month']);
+});
+
 // 🔁 Eventos recurrentes
 Breadcrumbs::for('recurrent-events.index', function (Trail $trail) {
     $trail->parent('dashboard');

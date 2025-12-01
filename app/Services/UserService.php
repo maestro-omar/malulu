@@ -9,6 +9,7 @@ use App\Traits\UserServiceCrud;
 use App\Traits\UserServiceList;
 use App\Services\FileService;
 use App\Services\AcademicEventService;
+use Carbon\Carbon;
 
 class UserService
 {
@@ -309,6 +310,28 @@ class UserService
     public function getCalendarData($user)
     {
         $eventsData = $this->academicEventService->getDashboardCalendar($user);
+        $from = $eventsData['from'];
+        $to = $eventsData['to'];
+        $birthdates = $this->getLoggedUserRelevantBirthdays($user, $from, $to);
+
+        // Combine events and birthdates
+        $combinedData = $this->combineEventsAndBirthdates($eventsData['events'], $birthdates);
+        return [
+            'from' => $from,
+            'to' => $to,
+            'events' => $combinedData
+        ];
+    }
+
+    public function getCalendarDataForMonth($user, int $month, int $year)
+    {
+        $provinceId = $user->province_id;
+        
+        // Create date range for the entire month
+        $from = Carbon::create($year, $month, 1)->startOfDay();
+        $to = Carbon::create($year, $month, 1)->endOfMonth()->startOfDay();
+        
+        $eventsData = $this->academicEventService->listAround($provinceId, null, $from, $to);
         $from = $eventsData['from'];
         $to = $eventsData['to'];
         $birthdates = $this->getLoggedUserRelevantBirthdays($user, $from, $to);

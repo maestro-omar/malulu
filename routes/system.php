@@ -10,6 +10,7 @@ use App\Http\Controllers\System\FileSubtypeAdminController;
 use App\Http\Controllers\System\RecurrentEventAdminController;
 use App\Http\Controllers\System\ProvinceAdminController;
 use App\Http\Controllers\System\DiagnosisAdminController;
+use App\Http\Controllers\System\CalendarAdminController;
 use Illuminate\Support\Facades\Route;
 // use Inertia\Inertia;
 
@@ -97,6 +98,9 @@ Route::prefix(__('routes.system'))->group(function () {
             Route::put(__('routes.recurrent-events') . '/{recurrentEvent}', [RecurrentEventAdminController::class, 'update'])->name('recurrent-events.update');
             Route::delete(__('routes.recurrent-events') . '/{recurrentEvent}', [RecurrentEventAdminController::class, 'destroy'])->name('recurrent-events.destroy');
         });
+
+        // Calendar Route (no specific permission required - all authenticated users can view)
+        Route::get(__('routes.calendar'), [CalendarAdminController::class, 'index'])->name('calendar.index');
 
         // Diagnoses Routes
         Route::middleware('permission:superadmin')->group(function () {

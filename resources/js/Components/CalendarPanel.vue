@@ -355,6 +355,10 @@ const getEventsForDate = (date) => {
   const dateStr = date.getFullYear() + '-' +
     String(date.getMonth() + 1).padStart(2, '0') + '-' +
     String(date.getDate()).padStart(2, '0')
+  
+  // Format date as MM-DD for recurrent event comparison
+  const monthDayStr = String(date.getMonth() + 1).padStart(2, '0') + '-' +
+    String(date.getDate()).padStart(2, '0')
 
   return eventsArray.value.filter(event => {
     if (!event || !event.date) return false
@@ -363,6 +367,15 @@ const getEventsForDate = (date) => {
     const eventDate = parseLocalDate(event.date)
     if (!eventDate) return false
 
+    // For recurrent events, compare only month and day (ignore year)
+    // This handles events with historical years (e.g., 1816-07-04 should match 2024-07-04)
+    if (event.is_recurrent) {
+      const eventMonthDayStr = String(eventDate.getMonth() + 1).padStart(2, '0') + '-' +
+        String(eventDate.getDate()).padStart(2, '0')
+      return eventMonthDayStr === monthDayStr
+    }
+
+    // For non-recurrent events, compare full date including year
     const eventDateStr = eventDate.getFullYear() + '-' +
       String(eventDate.getMonth() + 1).padStart(2, '0') + '-' +
       String(eventDate.getDate()).padStart(2, '0')

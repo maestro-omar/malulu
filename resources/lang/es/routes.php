@@ -38,6 +38,7 @@ return [
     'academic-year' => 'ciclo-escolar',
     'recurrent-events' => 'eventos-recurrentes',
     'events' => 'eventos',
+    'calendar' => 'calendario',
     'file' => 'archivo',
     'files' => 'archivos',
     'file-types' => 'tipos-archivo',
