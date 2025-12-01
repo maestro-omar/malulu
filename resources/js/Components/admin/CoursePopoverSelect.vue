@@ -310,6 +310,24 @@ const filteredCourses = computed(() => {
         return []
     }
 
+    // Get selected course IDs and full course objects
+    let selectedCourseIds = []
+    let selectedCourseObjects = []
+    
+    if (isMultiple.value) {
+        selectedCourseIds = selectedCourses.value.map(c => c.id)
+        // Try to find full course objects from courses.value, or use the stored objects
+        selectedCourseObjects = selectedCourses.value.map(selected => {
+            const fullCourse = courses.value.find(c => c.id === selected.id)
+            return fullCourse || selected // Use full course if available, otherwise use stored object
+        })
+    } else if (selectedCourse.value) {
+        selectedCourseIds = [selectedCourse.value.id]
+        // Try to find full course object from courses.value, or use the stored object
+        const fullCourse = courses.value.find(c => c.id === selectedCourse.value.id)
+        selectedCourseObjects = fullCourse ? [fullCourse] : [selectedCourse.value]
+    }
+
     let result = courses.value
 
     // Filter by course number (only show courses with number <= current course number)
@@ -327,6 +345,25 @@ const filteredCourses = computed(() => {
         )
     }
 
+    // Always include selected courses at the top, even if they don't match filters
+    if (selectedCourseIds.length > 0) {
+        // Find selected courses that are already in the filtered result
+        const selectedInResult = result.filter(course => 
+            selectedCourseIds.includes(course.id)
+        )
+        
+        // Find selected courses that are NOT in the filtered result (need to add them)
+        const selectedNotInResult = selectedCourseObjects.filter(selected => 
+            !result.some(c => c.id === selected.id)
+        )
+        
+        // Combine: selected courses at top (those in result + those not in result), then rest
+        const notSelectedInResult = result.filter(course => 
+            !selectedCourseIds.includes(course.id)
+        )
+        result = [...selectedInResult, ...selectedNotInResult, ...notSelectedInResult]
+    }
+
     return result
 })
 
@@ -337,6 +374,14 @@ const togglePopover = () => {
         if (isMultiple.value) {
             // Save the current selected courses as original values
             originalSelectedCourses.value = [...selectedCourses.value]
+            // Ensure selectedCourses is synced with props before loading
+            if (props.selectedCourses && props.selectedCourses.length > 0) {
+                selectedCourses.value = [...props.selectedCourses]
+            } else if (Array.isArray(props.modelValue) && props.modelValue.length > 0) {
+                // If we have modelValue but no selectedCourses prop, initialize from modelValue
+                // This will be updated when courses are loaded
+                selectedCourses.value = []
+            }
         } else {
             // Save the current selected course as original value
             originalSelectedCourse.value = selectedCourse.value
@@ -425,20 +470,39 @@ const loadCourses = async () => {
                 paginationData.value = null
             }
             
-            // After loading courses, set selectedCourse/selectedCourses if modelValue exists
+            // After loading courses, update selectedCourse/selectedCourses if modelValue exists
+            // IMPORTANT: Preserve existing selected courses that don't match current filters
             if (isMultiple.value) {
-                if (Array.isArray(props.modelValue) && props.modelValue.length > 0 && courses.value.length > 0) {
-                    selectedCourses.value = courses.value
-                        .filter(course => props.modelValue.includes(course.id))
-                        .map(course => ({
-                            id: course.id,
-                            nice_name: course.nice_name,
-                            school_shift: course.school_shift || null
-                        }))
+                if (Array.isArray(props.modelValue) && props.modelValue.length > 0) {
+                    // Find courses from newly loaded courses that match modelValue (store full objects)
+                    const newSelectedFromLoaded = courses.value.filter(course => props.modelValue.includes(course.id))
+                    
+                    // Merge: preserve existing selected courses, update with full data if found in loaded courses
+                    const updatedSelected = props.modelValue.map(id => {
+                        // Check if we already have this course in selectedCourses
+                        const existing = selectedCourses.value.find(c => c.id === id)
+                        if (existing) {
+                            // Update with full course data if available in loaded courses
+                            const fullCourse = newSelectedFromLoaded.find(c => c.id === id)
+                            return fullCourse || existing // Use full course data if available, otherwise keep existing
+                        }
+                        // New selection from loaded courses
+                        return newSelectedFromLoaded.find(c => c.id === id)
+                    }).filter(Boolean) // Remove any undefined entries
+                    
+                    // Only update if we have valid selections (preserve existing if no matches found)
+                    if (updatedSelected.length > 0) {
+                        selectedCourses.value = updatedSelected
+                    }
+                    // If updatedSelected is empty but we have existing selections, keep them
                 }
             } else {
-                if (props.modelValue && courses.value.length > 0) {
-                    selectedCourse.value = courses.value.find(course => course.id === props.modelValue)
+                if (props.modelValue) {
+                    const foundCourse = courses.value.find(course => course.id === props.modelValue)
+                    if (foundCourse) {
+                        selectedCourse.value = foundCourse
+                    }
+                    // If not found in loaded courses, keep existing selectedCourse
                 }
             }
         } else {
@@ -479,10 +543,9 @@ const toggleCourse = (course) => {
         // Remove course
         selectedCourses.value.splice(index, 1)
     } else {
-        // Add course with school_shift information
+        // Add full course object to preserve all data (needed when filters change)
         selectedCourses.value.push({
-            id: course.id,
-            nice_name: course.nice_name,
+            ...course, // Store full course object
             school_shift: course.school_shift || null
         })
     }
@@ -563,20 +626,39 @@ const handlePagination = async (url) => {
                 paginationData.value = null
             }
             
-            // After loading courses, set selectedCourse/selectedCourses if modelValue exists
+            // After loading courses, update selectedCourse/selectedCourses if modelValue exists
+            // IMPORTANT: Preserve existing selected courses that don't match current filters
             if (isMultiple.value) {
-                if (Array.isArray(props.modelValue) && props.modelValue.length > 0 && courses.value.length > 0) {
-                    selectedCourses.value = courses.value
-                        .filter(course => props.modelValue.includes(course.id))
-                        .map(course => ({
-                            id: course.id,
-                            nice_name: course.nice_name,
-                            school_shift: course.school_shift || null
-                        }))
+                if (Array.isArray(props.modelValue) && props.modelValue.length > 0) {
+                    // Find courses from newly loaded courses that match modelValue (store full objects)
+                    const newSelectedFromLoaded = courses.value.filter(course => props.modelValue.includes(course.id))
+                    
+                    // Merge: preserve existing selected courses, update with full data if found in loaded courses
+                    const updatedSelected = props.modelValue.map(id => {
+                        // Check if we already have this course in selectedCourses
+                        const existing = selectedCourses.value.find(c => c.id === id)
+                        if (existing) {
+                            // Update with full course data if available in loaded courses
+                            const fullCourse = newSelectedFromLoaded.find(c => c.id === id)
+                            return fullCourse || existing // Use full course data if available, otherwise keep existing
+                        }
+                        // New selection from loaded courses
+                        return newSelectedFromLoaded.find(c => c.id === id)
+                    }).filter(Boolean) // Remove any undefined entries
+                    
+                    // Only update if we have valid selections (preserve existing if no matches found)
+                    if (updatedSelected.length > 0) {
+                        selectedCourses.value = updatedSelected
+                    }
+                    // If updatedSelected is empty but we have existing selections, keep them
                 }
             } else {
-                if (props.modelValue && courses.value.length > 0) {
-                    selectedCourse.value = courses.value.find(course => course.id === props.modelValue)
+                if (props.modelValue) {
+                    const foundCourse = courses.value.find(course => course.id === props.modelValue)
+                    if (foundCourse) {
+                        selectedCourse.value = foundCourse
+                    }
+                    // If not found in loaded courses, keep existing selectedCourse
                 }
             }
         } else {
@@ -594,13 +676,55 @@ const handlePagination = async (url) => {
 watch(() => props.modelValue, (newValue) => {
     if (isMultiple.value) {
         if (Array.isArray(newValue) && newValue.length > 0) {
-            if (courses.value.length > 0) {
-                selectedCourses.value = courses.value
-                    .filter(course => newValue.includes(course.id))
-                    .map(course => ({
-                        id: course.id,
-                        nice_name: course.nice_name
-                    }))
+            // Get current selected course IDs
+            const currentSelectedIds = selectedCourses.value.map(c => c.id)
+            
+            // Check if modelValue matches current selection - if so, don't overwrite
+            const modelValueSet = new Set(newValue)
+            const currentSet = new Set(currentSelectedIds)
+            const areEqual = modelValueSet.size === currentSet.size && 
+                            [...modelValueSet].every(id => currentSet.has(id))
+            
+            if (!areEqual) {
+                // Only update if courses are loaded and we can find matches
+                if (courses.value.length > 0) {
+                    const newSelectedFromLoaded = courses.value
+                        .filter(course => newValue.includes(course.id))
+                        .map(course => ({
+                            id: course.id,
+                            nice_name: course.nice_name,
+                            school_shift: course.school_shift || null
+                        }))
+                    
+                    // Merge: preserve existing selections, update with new data
+                    const updatedSelected = newValue.map(id => {
+                        const existing = selectedCourses.value.find(c => c.id === id)
+                        if (existing) {
+                            const fullCourse = newSelectedFromLoaded.find(c => c.id === id)
+                            return fullCourse || existing
+                        }
+                        return newSelectedFromLoaded.find(c => c.id === id)
+                    }).filter(Boolean)
+                    
+                    if (updatedSelected.length > 0) {
+                        selectedCourses.value = updatedSelected
+                    }
+                } else {
+                    // If courses aren't loaded yet, preserve existing selections that match modelValue
+                    selectedCourses.value = selectedCourses.value.filter(c => newValue.includes(c.id))
+                    // Add any new IDs from modelValue (will be updated when courses load)
+                    const newIds = newValue.filter(id => !currentSelectedIds.includes(id))
+                    if (newIds.length > 0) {
+                        // Add placeholder objects - will be updated when courses load
+                        newIds.forEach(id => {
+                            selectedCourses.value.push({
+                                id: id,
+                                nice_name: `Curso ${id}`,
+                                school_shift: null
+                            })
+                        })
+                    }
+                }
             }
         } else {
             selectedCourses.value = []

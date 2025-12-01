@@ -36,7 +36,7 @@
   }
 
   &--tarde-light {
-    background: color.scale(variables.$color-shift-afternoon-bg, $lightness: 60%);
+    background: color.scale(variables.$color-shift-afternoon-bg, $lightness: 10%);
     color: variables.$color-text;
     border: 0 none;
   }

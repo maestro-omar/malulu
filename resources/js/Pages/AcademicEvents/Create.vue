@@ -148,7 +148,7 @@
                   <div class="admin-form__field">
                     <InputLabel value="Condición laboral" />
                     <q-option-group v-model="form.non_working_type" type="radio" :options="nonWorkingTypeOptions"
-                      color="primary" />
+                      color="primary" inline />
                     <InputError class="admin-form__error" :message="form.errors.non_working_type" />
                   </div>
 

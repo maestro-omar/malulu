@@ -28,13 +28,13 @@ class AcademicEventController extends SchoolBaseController
     {
         // Get academic year from request or use current/default
         $academicYearId = $request->get('academic_year_id');
-        
+
         if ($academicYearId) {
             $academicYear = AcademicYear::find($academicYearId);
         } else {
             $academicYear = AcademicYear::getCurrent() ?? AcademicYear::orderBy('year', 'desc')->first();
         }
-        
+
         if (!$academicYear) {
             return redirect()->route('school.show', $school->slug)
                 ->with('error', 'No hay ciclos lectivos disponibles.');
@@ -48,7 +48,7 @@ class AcademicEventController extends SchoolBaseController
                 'id' => $event->id,
                 'title' => $event->title,
                 'date' => $event->date,
-                'non_working_type' => $event->non_working_type,
+                'is_non_working_day' => $event->is_non_working_day,
                 'notes' => $event->notes,
                 'type' => $event->type ? [
                     'id' => $event->type->id,
@@ -80,7 +80,7 @@ class AcademicEventController extends SchoolBaseController
     {
         // Get the current academic year or the first available
         $academicYear = AcademicYear::getCurrent() ?? AcademicYear::orderBy('year', 'desc')->first();
-        
+
         if (!$academicYear) {
             return redirect()->route('school.academic-events.index', $school->slug)
                 ->with('error', 'No hay ciclos lectivos disponibles.');
@@ -103,14 +103,14 @@ class AcademicEventController extends SchoolBaseController
             $data['school_id'] = $school->id;
             $data['created_by'] = auth()->id();
             $data['updated_by'] = auth()->id();
-            
+
             // Handle course_ids if present
             if ($request->has('course_ids')) {
                 $data['course_ids'] = $request->input('course_ids', []);
             }
-            
+
             $this->academicEventService->create($data);
-            
+
             return redirect()
                 ->route('school.academic-events.index', $school->slug)
                 ->with('success', 'Evento académico creado exitosamente.');
@@ -172,14 +172,14 @@ class AcademicEventController extends SchoolBaseController
             $data = $request->all();
             $data['school_id'] = $school->id;
             $data['updated_by'] = auth()->id();
-            
+
             // Handle course_ids if present
             if ($request->has('course_ids')) {
                 $data['course_ids'] = $request->input('course_ids', []);
             }
-            
+
             $this->academicEventService->update($academicEvent, $data);
-            
+
             return redirect()
                 ->route('school.academic-events.index', $school->slug)
                 ->with('success', 'Evento académico actualizado exitosamente.');
@@ -205,7 +205,7 @@ class AcademicEventController extends SchoolBaseController
 
         try {
             $this->academicEventService->delete($academicEvent);
-            
+
             return redirect()
                 ->route('school.academic-events.index', $school->slug)
                 ->with('success', 'Evento académico eliminado exitosamente.');
@@ -258,6 +258,7 @@ class AcademicEventController extends SchoolBaseController
         $schoolShifts = $school->shifts()->orderBy('id')->get()->map(function (SchoolShift $shift) {
             return [
                 'id' => $shift->id,
+                'code' => $shift->code,
                 'name' => $shift->name,
             ];
         })->values();
@@ -274,16 +275,12 @@ class AcademicEventController extends SchoolBaseController
 
         $nonWorkingTypeOptions = [
             [
-                'value' => AcademicEvent::NON_WORKING_TYPE_WORKING_DAY,
+                'value' => true,
                 'label' => 'Laborable'
             ],
             [
-                'value' => AcademicEvent::NON_WORKING_TYPE_FIXED,
+                'value' => false,
                 'label' => 'No laborable'
-            ],
-            [
-                'value' => AcademicEvent::NON_WORKING_TYPE_FLEXIBLE,
-                'label' => 'No laborable (flexible)'
             ]
         ];
 
@@ -300,4 +297,3 @@ class AcademicEventController extends SchoolBaseController
         ], $extra);
     }
 }
-

@@ -198,6 +198,13 @@ class HandleInertiaRequests extends Middleware
         } elseif ($user->can('admin.create')) {
             $items = array_merge($items, $this->sideMenuItemsForSchoolAdmin($school));
             $items[] = ['type' => 'separator'];
+        } elseif ($user->can('academic-event.manage')) {
+            $items[] = [
+                'name' => 'Eventos',
+                'href' => route('school.academic-events.index', $school->slug),
+                'icon' => 'event',
+            ];
+            $items[] = ['type' => 'separator'];
         }
 
 
@@ -246,6 +253,14 @@ class HandleInertiaRequests extends Middleware
             'icon' => 'event',
         ];
 
+        $defaultSchool = School::where('code', School::CUE_LUCIO_LUCERO)->first();
+
+        $items[] = [
+            'name' => 'Eventos',
+            'href' => route('school.academic-events.index', $defaultSchool->slug),
+            'icon' => 'event',
+        ];
+
 
         // $items[] = [
         //     'name' => 'Materias',
@@ -289,7 +304,7 @@ class HandleInertiaRequests extends Middleware
                 'icon' => 'class',
             ];
         }
-        $items[] = ['type' => 'separator'];
+
         $items[] = ['type' => 'separator'];
         $items[] = [
             'name' => 'Estudiantes',
@@ -309,6 +324,12 @@ class HandleInertiaRequests extends Middleware
             'icon' => 'co_present',
         ];
 
+        $items[] = ['type' => 'separator'];
+        $items[] = [
+            'name' => 'Eventos',
+            'href' => route('school.academic-events.index', $school->slug),
+            'icon' => 'event',
+        ];
 
 
         return $items;

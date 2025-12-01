@@ -20,7 +20,7 @@ class AcademicEvent extends Model
     protected $fillable = [
         'title',
         'date',
-        'non_working_type',
+        'is_non_working_day',
         'notes',
         'province_id',
         'school_id',
@@ -30,23 +30,6 @@ class AcademicEvent extends Model
         'created_by',
         'updated_by',
     ];
-
-    protected $casts = [
-        'non_working_type' => 'integer',
-    ];
-
-    protected $appends = [
-        'is_non_working_day',
-    ];
-
-    public const NON_WORKING_TYPE_WORKING_DAY = 0;
-    public const NON_WORKING_TYPE_FIXED = 1;
-    public const NON_WORKING_TYPE_FLEXIBLE = 2;
-
-    public function getIsNonWorkingDayAttribute(): bool
-    {
-        return ($this->attributes['non_working_type'] ?? 0) > 0;
-    }
 
     public function type()
     {

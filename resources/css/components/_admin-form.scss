@@ -92,7 +92,14 @@
     }
   }
 
-  &__input {
+  &__input,
+  &__input[type="text"],
+  &__input[type="number"],
+  &__input[type="email"],
+  &__input[type="tel"],
+  &__input[type="url"],
+  &__input[type="password"],
+  &__input[type="date"] {
     border: 1px solid variables.$color-grey-dark;
     border-radius: 0.375rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -102,7 +109,9 @@
     background: #fff;
     color: variables.$color-text;
     transition: border-color 0.2s;
+  }
 
+  &__input {
     &:focus {
       border-color: variables.$color-brand;
       box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);

@@ -66,8 +66,15 @@ const shiftOptions = computed(() => {
 })
 
 const getShiftChipClasses = (shiftCode, isActive) => {
+  // Map shift codes to CSS classes matching _school-shift-badge.scss
+  // Valid codes: 'manana', 'tarde', 'noche', 'default'
+  // For 'ambos' or unknown codes, use 'default'
+  const normalizedCode = (shiftCode && ['manana', 'tarde', 'noche'].includes(shiftCode)) 
+    ? shiftCode 
+    : 'default'
+  
   const baseClasses = 'school-shift'
-  const shiftClass = `school-shift--${shiftCode || 'default'}`
+  const shiftClass = `school-shift--${normalizedCode}`
   const stateClass = isActive ? shiftClass : `${shiftClass}-light`
   return `${baseClasses} ${stateClass}`
 }
