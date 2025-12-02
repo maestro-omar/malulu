@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Entities\Builders;
 
 use App\Models\Entities\Builders\BuilderAbstract;
+use Carbon\Carbon;
 
 class User extends BuilderAbstract
 {
@@ -45,6 +46,47 @@ class User extends BuilderAbstract
             $q->forRoles($roleIds)
                 ->forSchool($schoolId)
                 ->active();
+        });
+    }
+
+    /**
+     * Filter users by birthdate month-day range, handling year boundaries correctly.
+     * 
+     * @param Carbon $from Start date
+     * @param Carbon $to End date
+     * @return self
+     */
+    public function birthdateInRange(Carbon $from, Carbon $to): self
+    {
+        $fromYear = $from->year;
+        $toYear = $to->year;
+        $yearDiff = $toYear - $fromYear;
+
+        // If range spans more than one year, return all dates (01-01 to 12-31)
+        if ($yearDiff > 1) {
+            return $this->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", ['01-01'])
+                ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", ['12-31']);
+        }
+
+        // If same year, simple range query
+        if ($yearDiff === 0) {
+            return $this->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
+                ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')]);
+        }
+
+        // If crosses one year boundary (yearDiff === 1), split into two periods
+        // Period 1: from $from date to end of year (12-31)
+        // Period 2: from start of year (01-01) to $to date
+        return $this->where(function ($q) use ($from, $to) {
+            $q->where(function ($subQ) use ($from) {
+                // Period 1: from date to end of year
+                $subQ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
+                    ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", ['12-31']);
+            })->orWhere(function ($subQ) use ($to) {
+                // Period 2: start of year to to date
+                $subQ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", ['01-01'])
+                    ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')]);
+            });
         });
     }
     /**

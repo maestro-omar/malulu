@@ -10,7 +10,7 @@ use App\Models\Catalogs\Role;
 use App\Models\Relations\RoleRelationship;
 use App\Models\Entities\User;
 use App\Models\Catalogs\SchoolLevel;
-
+use App\Services\UserContextService;
 class DashboardService
 {
     private Userservice $userService;
@@ -28,9 +28,13 @@ class DashboardService
     public function getData($request)
     {
         $this->user = auth()->user();
-        $data = $this->getFlagsForCards();
 
-        $eventsData = $this->userService->getCalendarData($this->user);
+        $activeSchool = UserContextService::activeSchool();
+        $schoolId = $activeSchool ? $activeSchool['id'] : null;
+
+        $eventsData = $this->userService->getCalendarDataForDashboard($this->user, $schoolId);
+
+        $data = $this->getFlagsForCards();
 
         return $data + [
             'eventsData' => $eventsData,

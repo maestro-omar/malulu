@@ -21,6 +21,7 @@ class SchoolPermission
     public function handle(Request $request, Closure $next, $permission)
     {
         $user = Auth::user();
+        /** @var \App\Models\Entities\User $user */
         $route = $request->route();
         $routeName = $route->getName();
         $publicRoutes = ['school.show'];

@@ -130,7 +130,7 @@
                       </div>
                       <div class="calendar-panel__list-event-content">
                         <h5 class="calendar-panel__list-event-title">🎂 {{ item.data.firstname }} {{ item.data.lastname
-                        }}
+                          }}
                         </h5>
                         <div class="calendar-panel__list-event-meta">
                           <span class="calendar-panel__list-event-notes">
@@ -235,6 +235,7 @@ const props = defineProps({
     default: ''
   }
 })
+console.log('calendarData', props.calendarData)
 
 const emit = defineEmits(['update:showBirthdatesModel'])
 
@@ -354,7 +355,8 @@ const calendarWeeks = computed(() => {
       )
 
       const today = new Date(new Date().setHours(0, 0, 0, 0))
-      const isCurrentRange = dayDate >= from && dayDate < to;
+      const isCurrentRange = dayDate >= from && dayDate <= to
+      // if (!isCurrentRange) console.log(dayDate, to);
 
       week.push({
         date: dayDate,

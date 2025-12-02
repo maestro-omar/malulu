@@ -20,7 +20,7 @@ class AcademicEventService
     //quizas debería consturir el calendario dentro de cada panel del dashboard que ya tengo la información de rol, escuela
     //por ahora, buscamos generales asumiendo una escuela y una provincia
 
-    public function getDashboardCalendar(User $user): array
+    public function getDashboardCalendar(User $user, ?int $schoolId): array
     {
         $provinceId = $user->province_id;
         $today = Carbon::now()->startOfDay();
@@ -28,7 +28,7 @@ class AcademicEventService
         $from = $today->copy()->startOfWeek(Carbon::SUNDAY);
         // Set $to to 27 days after $from (to cover 4 full weeks)
         $to = $from->copy()->addDays(27);
-        return $this->listAround($provinceId, null, $from, $to);
+        return $this->listAround($provinceId, $schoolId, $from, $to);
     }
     /**
      * List all academic events for a given school and academic year.
@@ -160,14 +160,14 @@ class AcademicEventService
     {
         $fromCarbon = Carbon::parse($from);
         $toCarbon = Carbon::parse($to);
-        
+
         // Get event types once (optimization)
         $startEventType = EventType::where('code', EventType::CODE_INICIO_ESCOLAR)->first();
         $endEventType = EventType::where('code', EventType::CODE_FIN_ESCOLAR)->first();
         $winterStartEventType = EventType::where('code', EventType::CODE_INICIO_INVIERNO)->first();
         $winterEndEventType = EventType::where('code', EventType::CODE_FIN_INVIERNO)->first();
         $suspensionEventType = EventType::where('code', EventType::CODE_SUSPENCION_PROVINCIAL)->first();
-        
+
         // Query academic years where any of their dates fall within the range
         // or where the winter break period overlaps with the range
         $academicYears = AcademicYear::where(function ($query) use ($fromCarbon, $toCarbon) {
@@ -178,12 +178,12 @@ class AcademicEventService
                 // Also include cases where the range is completely within the winter break period
                 ->orWhere(function ($q) use ($fromCarbon, $toCarbon) {
                     $q->where('winter_break_start', '<=', $fromCarbon)
-                      ->where('winter_break_end', '>=', $toCarbon);
+                        ->where('winter_break_end', '>=', $toCarbon);
                 })
                 // Or where the winter break period overlaps with the range
                 ->orWhere(function ($q) use ($fromCarbon, $toCarbon) {
                     $q->where('winter_break_start', '<=', $toCarbon)
-                      ->where('winter_break_end', '>=', $fromCarbon);
+                        ->where('winter_break_end', '>=', $fromCarbon);
                 });
         })->get();
 
@@ -266,14 +266,14 @@ class AcademicEventService
             if ($academicYear->winter_break_start && $academicYear->winter_break_end) {
                 $winterBreakStart = Carbon::parse($academicYear->winter_break_start);
                 $winterBreakEnd = Carbon::parse($academicYear->winter_break_end);
-                
+
                 // Only process dates that fall within the requested range
                 $currentDate = $winterBreakStart->copy();
                 while ($currentDate <= $winterBreakEnd) {
                     // Skip weekends (Saturday = 6, Sunday = 0)
                     $dayOfWeek = $currentDate->dayOfWeek;
                     $isWeekend = $dayOfWeek === Carbon::SATURDAY || $dayOfWeek === Carbon::SUNDAY;
-                    
+
                     // Only add if this date is within the requested range and not a weekend
                     if ($currentDate->between($fromCarbon, $toCarbon) && !$isWeekend) {
                         $event = (object) [

@@ -497,6 +497,42 @@ trait UserServiceList
         return $query;
     }
 
+    /**
+     * Check if a birthdate (month-day only) falls within the given date range,
+     * handling year boundaries correctly.
+     * Used for filtering collections in PHP (not SQL queries).
+     * 
+     * @param string $birthdayMonthDay Format: 'm-d' (e.g., '12-25')
+     * @param \Carbon\Carbon $from
+     * @param \Carbon\Carbon $to
+     * @return bool
+     */
+    private function isBirthdayInRange($birthdayMonthDay, $from, $to)
+    {
+        $fromYear = $from->year;
+        $toYear = $to->year;
+        $yearDiff = $toYear - $fromYear;
+
+        $fromMonthDay = $from->format('m-d');
+        $toMonthDay = $to->format('m-d');
+
+        // If range spans more than one year, all dates match (01-01 to 12-31)
+        if ($yearDiff > 1) {
+            return $birthdayMonthDay >= '01-01' && $birthdayMonthDay <= '12-31';
+        }
+
+        // If same year, simple range check
+        if ($yearDiff === 0) {
+            return $birthdayMonthDay >= $fromMonthDay && $birthdayMonthDay <= $toMonthDay;
+        }
+
+        // If crosses one year boundary (yearDiff === 1), check both periods
+        // Period 1: from date to end of year (12-31)
+        // Period 2: start of year (01-01) to to date
+        return ($birthdayMonthDay >= $fromMonthDay && $birthdayMonthDay <= '12-31') ||
+               ($birthdayMonthDay >= '01-01' && $birthdayMonthDay <= $toMonthDay);
+    }
+
     public function getLoggedUserRelevantBirthdays($user, $from, $to)
     {
         /** @var User $loggedUser */
@@ -507,14 +543,15 @@ trait UserServiceList
 
         // If user is superadmin, return all users within birthdate range
         if ($loggedUser->isSuperadmin()) {
-            $return = User::whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
-                ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
-                ->get()
+            $query = User::query()->birthdateInRange($from, $to);
+            // $sql = $query->toRawSql();
+            $return = $query->get()
                 ->map(function ($user) {
                     $user->context = ['code' => 'superadmin_view', 'name' => 'Vista admin'];
                     return $user;
                 });
 
+            // dd($return, $from, $to, $sql, 'aaaaaaaa');
             return $return->map(function ($user) {
                 return $this->parseUserForBirthdayCalendar($user);
             })->toArray();
@@ -601,10 +638,7 @@ trait UserServiceList
                 }
 
                 $userBirthday = $user->birthdate->format('m-d');
-                $fromDate = $from->format('m-d');
-                $toDate = $to->format('m-d');
-
-                return $userBirthday >= $fromDate && $userBirthday <= $toDate;
+                return $this->isBirthdayInRange($userBirthday, $from, $to);
             });
 
         return $return->map(function ($user) {
@@ -634,8 +668,7 @@ trait UserServiceList
 
         return User::withActiveRoleRelationships($workerRoleIds, $schoolId)
             ->with(['roleRelationships.role'])
-            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
-            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
+            ->birthdateInRange($from, $to)
             ->get()
             ->map(function ($user) use ($schoolId) {
                 // Get the specific role for this school
@@ -688,8 +721,7 @@ trait UserServiceList
             ->whereHas('studentRelationships', function ($query) use ($courseIds) {
                 $query->whereIn('current_course_id', $courseIds);
             })
-            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
-            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
+            ->birthdateInRange($from, $to)
             ->get()
             ->map(function ($user) {
                 $user->context = ['code' => 'student', 'name' => 'Estudiante'];
@@ -733,8 +765,7 @@ trait UserServiceList
                 $query->where('current_course_id', $currentCourseId);
             })
             ->where('id', '!=', $student->id) // Exclude the student themselves
-            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
-            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
+            ->birthdateInRange($from, $to)
             ->get()
             ->map(function ($user) {
                 $user->context = ['code' => 'classmate', 'name' => 'Compañero/a'];
@@ -749,8 +780,7 @@ trait UserServiceList
             ->whereHas('roleRelationships.teacherCourses', function ($query) use ($currentCourseId) {
                 $query->where('course_id', $currentCourseId);
             })
-            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') >= ?", [$from->format('m-d')])
-            ->whereRaw("DATE_FORMAT(birthdate, '%m-%d') <= ?", [$to->format('m-d')])
+            ->birthdateInRange($from, $to)
             ->get()
             ->map(function ($user) {
                 $user->context = ['code' => 'teacher', 'name' => 'Docente'];

@@ -307,9 +307,9 @@ class UserService
         return $this->fileService->getUserFiles($user, $loggedUser);
     }
 
-    public function getCalendarData($user)
+    public function getCalendarDataForDashboard($user, $schoolId)
     {
-        $eventsData = $this->academicEventService->getDashboardCalendar($user);
+        $eventsData = $this->academicEventService->getDashboardCalendar($user, $schoolId);
         $from = $eventsData['from'];
         $to = $eventsData['to'];
         $birthdates = $this->getLoggedUserRelevantBirthdays($user, $from, $to);
@@ -323,16 +323,16 @@ class UserService
         ];
     }
 
-    public function getCalendarDataForMonth($user, int $month, int $year)
+    public function getCalendarDataForMonth($user, $schoolId, int $month, int $year)
     {
         $provinceId = $user->province_id;
         
         // Create date range for the entire month
         // Use start of next day for $to to ensure the last day is fully included
         $from = Carbon::create($year, $month, 1)->startOfDay();
-        $to = Carbon::create($year, $month, 1)->endOfMonth()->addDay()->startOfDay();
+        $to = Carbon::create($year, $month, 1)->endOfMonth()->endOfDay();
         
-        $eventsData = $this->academicEventService->listAround($provinceId, null, $from, $to);
+        $eventsData = $this->academicEventService->listAround($provinceId, $schoolId, $from, $to);
         $from = $eventsData['from'];
         $to = $eventsData['to'];
         $birthdates = $this->getLoggedUserRelevantBirthdays($user, $from, $to);
