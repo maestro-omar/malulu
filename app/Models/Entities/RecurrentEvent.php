@@ -186,6 +186,7 @@ class RecurrentEvent extends Model
             $day = $eventDate->day;
             $month = $eventDate->month;
 
+            // dd($this,$fromCarbon, $toCarbon);
             // Check all years covered by the date range
             for ($year = $startYear; $year <= $endYear; $year++) {
                 try {

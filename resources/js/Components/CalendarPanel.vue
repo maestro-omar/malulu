@@ -356,7 +356,6 @@ const calendarWeeks = computed(() => {
 
       const today = new Date(new Date().setHours(0, 0, 0, 0))
       const isCurrentRange = dayDate >= from && dayDate <= to
-      // if (!isCurrentRange) console.log(dayDate, to);
 
       week.push({
         date: dayDate,

@@ -28,7 +28,8 @@ class AcademicEventService
         $from = $today->copy()->startOfWeek(Carbon::SUNDAY);
         // Set $to to 27 days after $from (to cover 4 full weeks)
         $to = $from->copy()->addDays(27);
-        return $this->listAround($provinceId, $schoolId, $from, $to);
+        $events = $this->listAround($provinceId, $schoolId, $from, $to);
+        return ['from' => $from, 'to' => $to, 'events' => $events];
     }
     /**
      * List all academic events for a given school and academic year.
@@ -70,7 +71,7 @@ class AcademicEventService
         //     return $event->title;
         // })->toArray(),'rrrrrrrr');
         $events = $this->parseForView($allEvents);
-        return ['from' => $from, 'to' => $to, 'events' => $events];
+        return $events;
     }
 
     private function getAcademicEventsByDateRange(?int $provinceId, ?int $schoolId, \DateTime $from, \DateTime $to): Collection

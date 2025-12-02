@@ -326,19 +326,20 @@ class UserService
     public function getCalendarDataForMonth($user, $schoolId, int $month, int $year)
     {
         $provinceId = $user->province_id;
-        
+
         // Create date range for the entire month
         // Use start of next day for $to to ensure the last day is fully included
         $from = Carbon::create($year, $month, 1)->startOfDay();
         $to = Carbon::create($year, $month, 1)->endOfMonth()->endOfDay();
-        
-        $eventsData = $this->academicEventService->listAround($provinceId, $schoolId, $from, $to);
-        $from = $eventsData['from'];
-        $to = $eventsData['to'];
-        $birthdates = $this->getLoggedUserRelevantBirthdays($user, $from, $to);
+
+        $startWeek = $from->copy()->startOfWeek(Carbon::SUNDAY);
+        $endWeek = $to->copy()->endOfWeek(Carbon::SATURDAY);
+
+        $eventsData = $this->academicEventService->listAround($provinceId, $schoolId, $startWeek, $endWeek);
+        $birthdates = $this->getLoggedUserRelevantBirthdays($user, $startWeek, $endWeek);
 
         // Combine events and birthdates
-        $combinedData = $this->combineEventsAndBirthdates($eventsData['events'], $birthdates);
+        $combinedData = $this->combineEventsAndBirthdates($eventsData, $birthdates);
         return [
             'from' => $from,
             'to' => $to,
