@@ -36,6 +36,7 @@ class RecurrentEvent extends Model
         'notes',
         'created_by',
         'updated_by',
+        'easter_offset',
     ];
 
     protected $appends = ['non_working_type_label'];
@@ -69,6 +70,32 @@ class RecurrentEvent extends Model
         $fromCarbon = Carbon::parse($from);
         $toCarbon = Carbon::parse($to);
         $today = Carbon::now();
+
+        // NEW: Case 0: Easter-based events
+        if ($this->easter_offset !== null) {
+            // Check current year first
+            $currentYearEaster = $this->calculateEasterDate($today->year);
+            $currentYearDate = $this->calculateEasterBasedDate($currentYearEaster, $this->easter_offset);
+            if ($currentYearDate && $currentYearDate->between($fromCarbon, $toCarbon)) {
+                return $currentYearDate;
+            }
+
+            // Check next year
+            $nextYearEaster = $this->calculateEasterDate($today->year + 1);
+            $nextYearDate = $this->calculateEasterBasedDate($nextYearEaster, $this->easter_offset);
+            if ($nextYearDate && $nextYearDate->between($fromCarbon, $toCarbon)) {
+                return $nextYearDate;
+            }
+
+            // Check previous year
+            $prevYearEaster = $this->calculateEasterDate($today->year - 1);
+            $prevYearDate = $this->calculateEasterBasedDate($prevYearEaster, $this->easter_offset);
+            if ($prevYearDate && $prevYearDate->between($fromCarbon, $toCarbon)) {
+                return $prevYearDate;
+            }
+
+            return null;
+        }
 
         // Case 1: Event has a fixed date (not recurring)
         // Extract month/day from the event date (ignoring the historical year)
@@ -178,6 +205,19 @@ class RecurrentEvent extends Model
         $toCarbon = Carbon::parse($to);
         $startYear = $fromCarbon->year;
         $endYear = $toCarbon->year;
+
+        // NEW: Case 0: Easter-based events
+        if ($this->easter_offset !== null) {
+            for ($year = $startYear; $year <= $endYear; $year++) {
+                $easterDate = $this->calculateEasterDate($year);
+                $occurrenceDate = $this->calculateEasterBasedDate($easterDate, $this->easter_offset);
+                
+                if ($occurrenceDate && $occurrenceDate->between($fromCarbon, $toCarbon)) {
+                    $occurrences->push($occurrenceDate);
+                }
+            }
+            return $occurrences;
+        }
 
         // Case 1: Event has a fixed date (not recurring)
         // Extract month/day from the event date (ignoring the historical year)
@@ -307,6 +347,52 @@ class RecurrentEvent extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Calculate the Easter date for a specific year.
+     * This method uses Carbon's built-in Easter calculation.
+     */
+    private function calculateEasterDate(int $year): Carbon
+    {
+        // Carbon has built-in Easter calculation
+        // return Carbon::create($year, 1, 1)->easterDate();
+        return Carbon::createFromTimestamp(easter_date($year));
+    }
+
+    /**
+     * Calculate a date based on Easter offset, adjusting for weekday if specified.
+     * This ensures Carnival dates fall on the correct weekday (Monday/Tuesday).
+     *
+     * @param Carbon $easterDate The Easter date for the year
+     * @param int $offset Days offset from Easter (e.g., -47 for Carnival Monday)
+     * @return Carbon|null The calculated date adjusted to match recurrence_weekday if specified
+     */
+    private function calculateEasterBasedDate(Carbon $easterDate, int $offset): ?Carbon
+    {
+        // Start with the approximate date based on offset
+        $baseDate = $easterDate->copy()->addDays($offset);
+        
+        // If recurrence_weekday is specified, adjust to match the required weekday
+        if ($this->recurrence_weekday !== null) {
+            $targetWeekday = $this->recurrence_weekday; // 0=Sunday, 1=Monday, ..., 6=Saturday
+            $currentWeekday = $baseDate->dayOfWeek; // Carbon: 0=Sunday, 1=Monday, ..., 6=Saturday
+            
+            // Calculate the difference
+            $dayDifference = $targetWeekday - $currentWeekday;
+            
+            // Handle wrap-around (e.g., if we need Monday but got Wednesday, go back 2 days)
+            if ($dayDifference > 3) {
+                $dayDifference -= 7; // Go back a week
+            } elseif ($dayDifference < -3) {
+                $dayDifference += 7; // Go forward a week
+            }
+            
+            // Adjust the date to match the required weekday
+            $baseDate->addDays($dayDifference);
+        }
+        
+        return $baseDate;
     }
 
     public function getNonWorkingTypeLabelAttribute()

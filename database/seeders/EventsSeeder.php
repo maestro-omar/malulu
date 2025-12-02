@@ -187,13 +187,15 @@ class EventsSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
+
         // Eventos de Semana Santa (recurrencia especial)
         DB::table('recurrent_events')->insert([
             'title' => 'Jueves Santo',
             'date' => null,
-            'recurrence_month' => 4,
-            'recurrence_week' => -1, // Última semana del mes
-            'recurrence_weekday' => 4, // Jueves
+            'recurrence_month' => null,
+            'recurrence_week' => null,
+            'recurrence_weekday' => 4,
+            'easter_offset' => -3,
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
@@ -207,9 +209,10 @@ class EventsSeeder extends Seeder
         DB::table('recurrent_events')->insert([
             'title' => 'Viernes Santo',
             'date' => null,
-            'recurrence_month' => 4,
-            'recurrence_week' => -1, // Última semana del mes
+            'recurrence_month' => null,
+            'recurrence_week' => null, // Última semana del mes
             'recurrence_weekday' => 5, // Viernes
+            'easter_offset' => -2,
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
@@ -224,9 +227,10 @@ class EventsSeeder extends Seeder
         DB::table('recurrent_events')->insert([
             'title' => 'Carnaval',
             'date' => null,
-            'recurrence_month' => 2,
-            'recurrence_week' => -1, // Última semana del mes (puede ser febrero o marzo)
+            'recurrence_month' => null,
+            'recurrence_week' => null,
             'recurrence_weekday' => 1, // Lunes
+            'easter_offset' => -47,
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,
@@ -240,9 +244,10 @@ class EventsSeeder extends Seeder
         DB::table('recurrent_events')->insert([
             'title' => 'Carnaval',
             'date' => null,
-            'recurrence_month' => 2,
-            'recurrence_week' => -1, // Última semana del mes (puede ser febrero o marzo)
+            'recurrence_month' => 0,
+            'recurrence_week' => 0, 
             'recurrence_weekday' => 2, // Martes
+            'easter_offset' => -46,
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,
             'province_id' => null,
             'school_id' => null,

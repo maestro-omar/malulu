@@ -15,8 +15,8 @@ return new class extends Migration {
             // Recurrence rules
             $table->unsignedTinyInteger('recurrence_month')->nullable();   // 1–12
             $table->integer('recurrence_week')->nullable();    // 1 = first, 2 = second, etc. signed integer to support negative values 
-            $table->unsignedTinyInteger('recurrence_weekday')->nullable(); // 0=Sunday … 6=Saturday
-
+            $table->unsignedTinyInteger('recurrence_weekday')->nullable()->comment('0=Sunday … 6=Saturday');
+            $table->tinyInteger('easter_offset')->nullable()->comment('Days offset from Easter (e.g., -2 for Good Friday, -47 for Carnival)');
             $table->foreignId('event_type_id')->constrained('event_types');
 
             // Optional scope
