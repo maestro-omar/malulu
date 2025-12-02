@@ -4,6 +4,7 @@ namespace App\Http\Controllers\School;
 
 use App\Http\Controllers\School\SchoolBaseController;
 use App\Models\Entities\AcademicEvent;
+use App\Models\Entities\RecurrentEvent;
 use App\Models\Entities\School;
 use App\Models\Catalogs\EventType;
 use App\Models\Catalogs\Province;
@@ -221,6 +222,44 @@ class AcademicEventController extends SchoolBaseController
      */
     protected function formOptions(School $school, array $extra = []): array
     {
+        // Get RecurrentEvents with NON_WORKING_FLEXIBLE type
+        $recurrentEvents = RecurrentEvent::with(['type'])
+            ->where('non_working_type', RecurrentEvent::NON_WORKING_FLEXIBLE)
+            ->orderBy('title')
+            ->get()
+            ->map(function (RecurrentEvent $recurrentEvent) {
+                $dateFormatted = null;
+                if ($recurrentEvent->date) {
+                    // Format as DD/MM (e.g., "25/12" for Christmas)
+                    $dateFormatted = \Carbon\Carbon::parse($recurrentEvent->date)->format('d/m');
+                }
+                
+                return [
+                    'id' => $recurrentEvent->id,
+                    'title' => $recurrentEvent->title,
+                    'date' => $recurrentEvent->date,
+                    'date_formatted' => $dateFormatted,
+                    'event_type' => $recurrentEvent->type ? [
+                        'id' => $recurrentEvent->type->id,
+                        'name' => $recurrentEvent->type->name,
+                        'code' => $recurrentEvent->type->code,
+                    ] : null,
+                ];
+            })->values();
+
+        // Get event types grouped by scope
+        $eventTypesByScope = EventType::orderBy('scope')->orderBy('name')->get()->groupBy('scope')->map(function ($types, $scope) {
+            return $types->map(function (EventType $eventType) {
+                return [
+                    'id' => $eventType->id,
+                    'label' => $eventType->name,
+                    'code' => $eventType->code,
+                    'scope' => $eventType->scope,
+                ];
+            })->values();
+        });
+
+        // Also provide flat list for backward compatibility
         $eventTypes = EventType::forDropdown();
 
         $provinces = Province::orderBy('name')->get()->map(function (Province $province) {
@@ -285,6 +324,8 @@ class AcademicEventController extends SchoolBaseController
         ];
 
         return array_merge([
+            'recurrentEvents' => $recurrentEvents,
+            'eventTypesByScope' => $eventTypesByScope,
             'eventTypes' => $eventTypes,
             'provinces' => $provinces,
             'academicYears' => $academicYears,

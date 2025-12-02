@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Entities\School;
 use App\Models\Entities\Course;
 use App\Models\Entities\AcademicYear;
+use App\Models\Entities\RecurrentEvent;
 use App\Models\Catalogs\EventType;
 use App\Models\Catalogs\Province;
 
@@ -26,6 +27,7 @@ class AcademicEvent extends Model
         'school_id',
         'academic_year_id',
         'event_type_id',
+        'recurrent_event_id',
         'active',
         'created_by',
         'updated_by',
@@ -54,5 +56,10 @@ class AcademicEvent extends Model
     public function courses()
     {
         return $this->belongsToMany(Course::class, 'academic_event_course');
+    }
+
+    public function recurrentEvent()
+    {
+        return $this->belongsTo(RecurrentEvent::class, 'recurrent_event_id');
     }
 }

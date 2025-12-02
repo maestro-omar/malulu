@@ -369,6 +369,34 @@ class AcademicEventService
     {
         $validatedData = $this->validateEventData($data);
 
+        // If recurrent_event_id is provided, populate data from RecurrentEvent
+        if (!empty($validatedData['recurrent_event_id'])) {
+            $recurrentEvent = RecurrentEvent::with(['type'])->findOrFail($validatedData['recurrent_event_id']);
+            
+            // Use RecurrentEvent's title and event_type_id
+            $validatedData['title'] = $recurrentEvent->title;
+            $validatedData['event_type_id'] = $recurrentEvent->event_type_id;
+            
+            // Calculate date for the current academic year
+            $academicYear = AcademicYear::findOrFail($validatedData['academic_year_id']);
+            $yearStart = Carbon::create($academicYear->year, 1, 1)->startOfYear();
+            $yearEnd = Carbon::create($academicYear->year, 12, 31)->endOfYear();
+            
+            $calculatedDate = $recurrentEvent->calculateDate($yearStart, $yearEnd);
+            if ($calculatedDate) {
+                $validatedData['date'] = $calculatedDate->format('Y-m-d');
+            } else {
+                // Fallback: use the RecurrentEvent's date if calculation fails
+                $validatedData['date'] = $recurrentEvent->date;
+            }
+            
+            // Set is_non_working_day based on RecurrentEvent's non_working_type
+            $validatedData['is_non_working_day'] = in_array($recurrentEvent->non_working_type, [
+                RecurrentEvent::NON_WORKING_FIXED,
+                RecurrentEvent::NON_WORKING_FLEXIBLE
+            ]);
+        }
+
         // Extract course_ids if present
         $courseIds = $validatedData['course_ids'] ?? [];
         unset($validatedData['course_ids']);
@@ -472,12 +500,16 @@ class AcademicEventService
      */
     public function validateEventData(array $data, ?AcademicEvent $event = null): array
     {
+        // If recurrent_event_id is provided, event_type_id and title/date are optional (will be set from RecurrentEvent)
+        $hasRecurrentEvent = !empty($data['recurrent_event_id']);
+        
         $rules = [
-            'title' => ['required', 'string', 'max:255'],
-            'date' => ['required', 'date'],
+            'title' => $hasRecurrentEvent ? ['nullable', 'string', 'max:255'] : ['required', 'string', 'max:255'],
+            'date' => $hasRecurrentEvent ? ['nullable', 'date'] : ['required', 'date'],
             'is_non_working_day' => ['required', 'bool'],
             'notes' => ['nullable', 'string', 'max:1000'],
-            'event_type_id' => ['required', 'exists:event_types,id'],
+            'event_type_id' => $hasRecurrentEvent ? ['nullable', 'exists:event_types,id'] : ['required', 'exists:event_types,id'],
+            'recurrent_event_id' => ['nullable', 'exists:recurrent_events,id'],
             'province_id' => ['nullable', 'exists:provinces,id'],
             'school_id' => ['nullable', 'exists:schools,id'],
             'academic_year_id' => ['required', 'exists:academic_years,id'],
