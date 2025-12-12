@@ -153,7 +153,7 @@ class AcademicEventController extends SchoolBaseController
 
         // Load school relationships
         $school->load(['schoolLevels', 'shifts']);
-        $academicEvent->load(['type', 'province', 'school', 'academicYear', 'courses.schoolShift']);
+        $academicEvent->load(['type', 'province', 'school', 'academicYear', 'courses.schoolShift', 'recurrentEvent']);
 
         return Inertia::render('AcademicEvents/Edit', $this->formOptions($school, [
             'academicEvent' => $academicEvent,

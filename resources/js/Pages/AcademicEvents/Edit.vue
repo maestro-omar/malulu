@@ -18,66 +18,39 @@
           <form @submit.prevent="submit" class="admin-form__container">
             <q-card class="admin-form__card">
               <q-card-section>
+                <h3 class="admin-form__card-title">Tipo de evento</h3>
                 <div class="admin-form__card-content">
                   <div class="admin-form__field">
-                    <InputLabel for="title" value="Título" />
-                    <TextInput id="title" type="text" v-model="form.title" class="admin-form__input" required />
-                    <InputError class="admin-form__error" :message="form.errors.title" />
+                    <InputLabel value="Origen del evento" />
+                    <q-option-group v-model="eventSourceType" type="radio" :options="eventSourceTypeOptions"
+                      color="primary" @update:model-value="handleEventSourceTypeChange" inline />
                   </div>
 
-                  <div class="admin-form__field">
-                    <InputLabel for="event_type_id" value="Tipo de evento" />
-                    <SelectInput id="event_type_id" name="event_type_id" v-model="form.event_type_id"
-                      class="admin-form__input" required>
-                      <option value="" disabled>Selecciona un tipo</option>
-                      <option v-for="type in eventTypes" :key="type.id" :value="type.id">
-                        {{ type.label }}
+                  <!-- Recurrent Event Selection -->
+                  <div v-if="eventSourceType === 'recurrent'" class="admin-form__field">
+                    <InputLabel for="recurrent_event_id" value="Evento recurrente flexible" />
+                    <SelectInput id="recurrent_event_id" name="recurrent_event_id" v-model="form.recurrent_event_id"
+                      class="admin-form__input" required @update:model-value="handleRecurrentEventSelected">
+                      <option value="" disabled>Selecciona un evento recurrente</option>
+                      <option v-for="recurrentEvent in recurrentEvents" :key="recurrentEvent.id"
+                        :value="recurrentEvent.id">
+                        {{ recurrentEvent.title }}
+                        <span v-if="recurrentEvent.date_formatted"> - {{ recurrentEvent.date_formatted }}</span>
+                        <span v-if="recurrentEvent.event_type"> ({{ recurrentEvent.event_type.name }})</span>
                       </option>
                     </SelectInput>
-                    <InputError class="admin-form__error" :message="form.errors.event_type_id" />
+                    <InputError class="admin-form__error" :message="form.errors.recurrent_event_id" />
                   </div>
 
-                  <div class="admin-form__grid admin-form__grid--2">
+                  <!-- Scope-based Event Type Selection -->
+                  <div v-if="eventSourceType === 'scope'">
                     <div class="admin-form__field">
-                      <InputLabel for="date" value="Fecha" />
-                      <TextInput id="date" type="date" v-model="form.date" class="admin-form__input" required />
-                      <InputError class="admin-form__error" :message="form.errors.date" />
+                      <InputLabel value="Alcance" />
+                      <q-option-group v-model="selectedScope" type="radio" :options="scopeOptions" color="primary"
+                        @update:model-value="handleScopeChange" inline />
                     </div>
 
-                    <div class="admin-form__field">
-                      <InputLabel for="academic_year_id" value="Ciclo lectivo" />
-                      <SelectInput id="academic_year_id" name="academic_year_id" v-model="form.academic_year_id"
-                        class="admin-form__input" required>
-                        <option value="" disabled>Selecciona un ciclo lectivo</option>
-                        <option v-for="year in academicYears" :key="year.id" :value="year.id">
-                          {{ year.label }}
-                        </option>
-                      </SelectInput>
-                      <InputError class="admin-form__error" :message="form.errors.academic_year_id" />
-                    </div>
-                  </div>
-                </div>
-              </q-card-section>
-            </q-card>
-
-            <q-card class="admin-form__card">
-              <q-card-section>
-                <h3 class="admin-form__card-title">Alcance</h3>
-                <div class="admin-form__card-content">
-                  <div class="admin-form__grid admin-form__grid--2">
-                    <div class="admin-form__field">
-                      <InputLabel for="province_id" value="Provincia" />
-                      <SelectInput id="province_id" name="province_id" v-model="form.province_id"
-                        class="admin-form__input">
-                        <option value="">Sin especificar</option>
-                        <option v-for="province in provinces" :key="province.id" :value="province.id">
-                          {{ province.name }}
-                        </option>
-                      </SelectInput>
-                      <InputError class="admin-form__error" :message="form.errors.province_id" />
-                    </div>
-
-                    <div class="admin-form__field">
+                    <div v-if="selectedScope === 'cursos'" class="admin-form__field">
                       <InputLabel for="courses" value="Cursos" />
                       <div class="academic-events-courses">
                         <!-- Course Selection -->
@@ -99,18 +72,64 @@
                               </option>
                             </SelectInput>
                           </div>
-                        </div>
 
-                        <!-- Selected Courses Display -->
-                        <div v-if="selectedCourses.length > 0" class="academic-events-courses__selected">
-                          <q-chip v-for="course in selectedCourses" :key="course.id" removable
-                            @remove="removeCourse(course.id)" size="sm" :class="getChipClasses(course)"
-                            class="academic-events-courses__chip">
-                            {{ course.nice_name }}
-                          </q-chip>
+                          <!-- Selected Courses Display -->
+                          <div v-if="selectedCourses.length > 0" class="academic-events-courses__selected">
+                            <q-chip v-for="course in selectedCourses" :key="course.id" removable
+                              @remove="removeCourse(course.id)" size="sm" :class="getChipClasses(course)"
+                              class="academic-events-courses__chip">
+                              {{ course.nice_name }}
+                            </q-chip>
+                          </div>
                         </div>
+                        <InputError class="admin-form__error" :message="form.errors.courses" />
                       </div>
-                      <InputError class="admin-form__error" :message="form.errors.courses" />
+                    </div>
+
+                    <div class="admin-form__field">
+                      <InputLabel for="event_type_id" value="Tipo de evento" />
+                      <SelectInput id="event_type_id" name="event_type_id" v-model="form.event_type_id"
+                        class="admin-form__input" :required="eventSourceType === 'scope'">
+                        <option value="" disabled>Selecciona un tipo</option>
+                        <option v-for="type in filteredEventTypes" :key="type.id" :value="type.id">
+                          {{ type.label }}
+                        </option>
+                      </SelectInput>
+                      <InputError class="admin-form__error" :message="form.errors.event_type_id" />
+                    </div>
+
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+
+            <q-card class="admin-form__card">
+              <q-card-section>
+                <div class="admin-form__card-content">
+                  <div class="admin-form__field">
+                    <InputLabel for="title" value="Título" />
+                    <TextInput id="title" type="text" v-model="form.title" class="admin-form__input"
+                      :disabled="eventSourceType === 'recurrent'" required />
+                    <InputError class="admin-form__error" :message="form.errors.title" />
+                  </div>
+
+                  <div class="admin-form__grid admin-form__grid--2">
+                    <div class="admin-form__field">
+                      <InputLabel for="date" value="Fecha" />
+                      <TextInput id="date" type="date" v-model="form.date" class="admin-form__input" required />
+                      <InputError class="admin-form__error" :message="form.errors.date" />
+                    </div>
+
+                    <div class="admin-form__field">
+                      <InputLabel for="academic_year_id" value="Ciclo lectivo" />
+                      <SelectInput id="academic_year_id" name="academic_year_id" v-model="form.academic_year_id"
+                        class="admin-form__input" required>
+                        <option value="" disabled>Selecciona un ciclo lectivo</option>
+                        <option v-for="year in academicYears" :key="year.id" :value="year.id">
+                          {{ year.label }}
+                        </option>
+                      </SelectInput>
+                      <InputError class="admin-form__error" :message="form.errors.academic_year_id" />
                     </div>
                   </div>
                 </div>
@@ -157,9 +176,18 @@ import SelectInput from '@/Components/admin/SelectInput.vue';
 import CoursePopoverSelect from '@/Components/admin/CoursePopoverSelect.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import { useAcademicEventForm } from '@/Composables/useAcademicEventForm';
 
 const props = defineProps({
   academicEvent: {
+    type: Object,
+    required: true
+  },
+  recurrentEvents: {
+    type: Array,
+    required: true
+  },
+  eventTypesByScope: {
     type: Object,
     required: true
   },
@@ -210,9 +238,29 @@ const formatDate = (date) => {
   return new Date(date).toISOString().split('T')[0];
 };
 
+// Determine initial event source type and scope based on existing data
+const hasRecurrentEvent = props.academicEvent.recurrent_event_id !== null && props.academicEvent.recurrent_event_id !== undefined;
+const hasCourses = props.academicEvent.courses && props.academicEvent.courses.length > 0;
+const hasProvince = props.academicEvent.province_id !== null && props.academicEvent.province_id !== undefined;
+
+// Determine initial scope based on event type scope if available
+let initialScope = 'escolar';
+if (props.academicEvent.type && props.academicEvent.type.scope) {
+  if (hasCourses) {
+    initialScope = 'cursos';
+  } else if (props.academicEvent.type.scope === 'nacional') {
+    initialScope = 'nacional';
+  } else if (props.academicEvent.type.scope === 'provincial') {
+    initialScope = 'provincial';
+  } else if (props.academicEvent.type.scope === 'escolar') {
+    initialScope = hasCourses ? 'cursos' : 'escolar';
+  }
+}
+
 const form = useForm({
   title: props.academicEvent.title || '',
   event_type_id: props.academicEvent.event_type_id ?? '',
+  recurrent_event_id: props.academicEvent.recurrent_event_id ?? null,
   date: formatDate(props.academicEvent.date),
   academic_year_id: props.academicEvent.academic_year_id ?? '',
   province_id: props.academicEvent.province_id ?? '',
@@ -221,43 +269,46 @@ const form = useForm({
   notes: props.academicEvent.notes ?? ''
 });
 
-// Scope type: 'province' or 'school'
-// Determine initial scope type based on existing data
-const scopeType = ref(
-  props.academicEvent.province_id && props.academicEvent.courses?.length === 0
-    ? 'province'
-    : 'school'
-);
+// Use shared composable for event form logic
+const {
+  eventSourceType: eventSourceTypeBase,
+  eventSourceTypeOptions,
+  selectedScope: selectedScopeBase,
+  scopeOptions,
+  sanLuisProvinceId,
+  sanLuisProvinceName,
+  filteredEventTypes,
+  handleEventSourceTypeChange: handleEventSourceTypeChangeBase,
+  handleRecurrentEventSelected: handleRecurrentEventSelectedBase,
+  handleScopeChange: handleScopeChangeBase
+} = useAcademicEventForm(props, form);
 
-// Find San Luis province
-const sanLuisProvince = computed(() => {
-  return props.provinces.find(p => p.code === 'sl') || props.provinces.find(p => p.name === 'San Luis');
-});
+// Initialize eventSourceType and selectedScope based on existing data
+const eventSourceType = ref(hasRecurrentEvent ? 'recurrent' : 'scope');
+const selectedScope = ref(initialScope);
 
-const sanLuisProvinceId = computed(() => {
-  return sanLuisProvince.value?.id || null;
-});
-
-const sanLuisProvinceName = computed(() => {
-  return sanLuisProvince.value?.name || 'San Luis';
-});
-
-const scopeTypeOptions = [
-  { label: 'Para la provincia (San Luis)', value: 'province' },
-  { label: 'Para la escuela (seleccionar cursos)', value: 'school' }
-];
-
-const handleScopeTypeChange = (value) => {
-  if (value === 'province') {
-    // Auto-select San Luis and clear courses
-    form.province_id = sanLuisProvinceId.value || '';
-    form.courses = [];
+// Override handleEventSourceTypeChange to also clear selectedCourses
+const handleEventSourceTypeChange = (value) => {
+  handleEventSourceTypeChangeBase(value);
+  if (value === 'recurrent') {
     selectedCourses.value = [];
-  } else if (value === 'school') {
-    // Clear province and allow course selection
-    form.province_id = '';
+  } else if (value === 'scope') {
+    // Don't clear title/date when editing
   }
 };
+
+// Override handleScopeChange to also clear selectedCourses
+const handleScopeChange = (scope) => {
+  handleScopeChangeBase(scope);
+  if (scope === 'provincial' || scope === 'nacional' || scope === 'escolar') {
+    if (scope !== initialScope || !hasCourses) {
+      selectedCourses.value = [];
+    }
+  }
+};
+
+// Override handleRecurrentEventSelected to use the base function
+const handleRecurrentEventSelected = handleRecurrentEventSelectedBase;
 
 // Course selection state
 const selectedCourses = ref(
@@ -317,14 +368,19 @@ const submit = () => {
   // Convert courses array to course_ids format
   const data = {
     ...form.data(),
-    course_ids: scopeType.value === 'school' ? form.courses : []
+    course_ids: (eventSourceType.value === 'scope' && selectedScope.value === 'cursos') ? form.courses : []
   };
   delete data.courses;
 
-  // Ensure province_id is set correctly based on scope type
-  if (scopeType.value === 'province') {
+  // Ensure province_id is set correctly based on scope
+  if (eventSourceType.value === 'scope' && selectedScope.value === 'provincial') {
     data.province_id = sanLuisProvinceId.value || null;
-  } else {
+  } else if (eventSourceType.value === 'scope' && selectedScope.value === 'nacional') {
+    data.province_id = null;
+  } else if (eventSourceType.value === 'scope' && (selectedScope.value === 'escolar' || selectedScope.value === 'cursos')) {
+    data.province_id = null;
+  } else if (eventSourceType.value === 'recurrent') {
+    // For recurrent events, province_id should be null (handled by backend)
     data.province_id = null;
   }
 

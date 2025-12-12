@@ -173,6 +173,7 @@ import SelectInput from '@/Components/admin/SelectInput.vue';
 import CoursePopoverSelect from '@/Components/admin/CoursePopoverSelect.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import { useAcademicEventForm } from '@/Composables/useAcademicEventForm';
 
 const props = defineProps({
   recurrentEvents: {
@@ -241,160 +242,41 @@ const form = useForm({
   notes: ''
 });
 
-// Event source type: 'recurrent' or 'scope'
-const eventSourceType = ref('scope'); // Default to scope-based
+// Use shared composable for event form logic
+const {
+  eventSourceType,
+  eventSourceTypeOptions,
+  selectedScope,
+  scopeOptions,
+  sanLuisProvinceId,
+  sanLuisProvinceName,
+  filteredEventTypes,
+  handleEventSourceTypeChange: handleEventSourceTypeChangeBase,
+  handleRecurrentEventSelected: handleRecurrentEventSelectedBase,
+  handleScopeChange: handleScopeChangeBase
+} = useAcademicEventForm(props, form);
 
-const eventSourceTypeOptions = [
-  { label: 'Desde evento recurrente flexible', value: 'recurrent' },
-  { label: 'Por alcance', value: 'scope' }
-];
-
-// Scope selection for scope-based events
-const selectedScope = ref('escolar'); // Default to escolar
-
-const scopeOptions = [
-  { label: 'Nacional', value: 'nacional' },
-  { label: 'Provincial', value: 'provincial' },
-  { label: 'Escolar', value: 'escolar' },
-  { label: 'Cursos', value: 'cursos' }
-];
-
-// Find San Luis province
-const sanLuisProvince = computed(() => {
-  return props.provinces.find(p => p.code === 'sl') || props.provinces.find(p => p.name === 'San Luis');
-});
-
-const sanLuisProvinceId = computed(() => {
-  return sanLuisProvince.value?.id || null;
-});
-
-const sanLuisProvinceName = computed(() => {
-  return sanLuisProvince.value?.name || 'San Luis';
-});
-
-// Filter event types based on selected scope
-const filteredEventTypes = computed(() => {
-  if (eventSourceType.value !== 'scope') return [];
-
-  // For 'cursos', use 'escolar' scope but enable course selection
-  const scopeToUse = selectedScope.value === 'cursos' ? 'escolar' : selectedScope.value;
-
-  const types = props.eventTypesByScope[scopeToUse] || [];
-  return types.map(type => ({
-    id: type.id,
-    label: type.label,
-    code: type.code,
-    scope: type.scope
-  }));
-});
-
+// Override handleEventSourceTypeChange to also clear selectedCourses
 const handleEventSourceTypeChange = (value) => {
+  handleEventSourceTypeChangeBase(value);
   if (value === 'recurrent') {
-    // Clear scope-based fields
-    form.event_type_id = '';
-    form.province_id = '';
-    form.courses = [];
     selectedCourses.value = [];
-    selectedScope.value = 'escolar';
   } else if (value === 'scope') {
-    // Clear recurrent event
-    form.recurrent_event_id = null;
     form.title = '';
     form.date = '';
   }
 };
 
-const handleRecurrentEventSelected = (recurrentEventId) => {
-  if (!recurrentEventId) {
-    form.title = '';
-    form.date = '';
-    form.event_type_id = '';
-    return;
-  }
-
-  const recurrentEvent = props.recurrentEvents.find(re => re.id === recurrentEventId);
-  if (recurrentEvent) {
-    form.title = recurrentEvent.title;
-    if (recurrentEvent.event_type) {
-      form.event_type_id = recurrentEvent.event_type.id;
-    }
-    
-    // Calculate Monday date based on the recurrent event date
-    if (recurrentEvent.date) {
-      // Parse the date from the recurrent event (format: YYYY-MM-DD)
-      const eventDate = new Date(recurrentEvent.date + 'T00:00:00'); // Add time to avoid timezone issues
-      const month = eventDate.getMonth(); // 0-11
-      const day = eventDate.getDate();
-      const dayOfWeek = eventDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-      
-      // Determine which Monday to use
-      let mondayOffset = 0;
-      if (dayOfWeek >= 1 && dayOfWeek <= 3) {
-        // Monday, Tuesday, Wednesday -> previous Monday
-        mondayOffset = -(dayOfWeek - 1);
-      } else if (dayOfWeek >= 4 && dayOfWeek <= 5) {
-        // Thursday, Friday -> next Monday
-        mondayOffset = 8 - dayOfWeek; // 8 - 4 = 4 (Thu -> Mon), 8 - 5 = 3 (Fri -> Mon)
-      } else if (dayOfWeek === 0) {
-        // Sunday -> previous Monday (6 days back)
-        mondayOffset = -6;
-      } else if (dayOfWeek === 6) {
-        // Saturday -> previous Monday (5 days back)
-        mondayOffset = -5;
-      }
-      
-      // Calculate the Monday date in the same month/year as the event
-      const mondayDate = new Date(eventDate);
-      mondayDate.setDate(day + mondayOffset);
-      
-      // Determine year: current year if today is before the date, otherwise next year
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
-      
-      const currentYear = today.getFullYear();
-      const mondayThisYear = new Date(currentYear, mondayDate.getMonth(), mondayDate.getDate());
-      mondayThisYear.setHours(0, 0, 0, 0);
-      
-      let finalYear = currentYear;
-      if (mondayThisYear < today) {
-        // Date has already passed this year, use next year
-        finalYear = currentYear + 1;
-      }
-      
-      // Create final date
-      const finalDate = new Date(finalYear, mondayDate.getMonth(), mondayDate.getDate());
-      
-      // Format as YYYY-MM-DD for the date input
-      const year = finalDate.getFullYear();
-      const finalMonth = String(finalDate.getMonth() + 1).padStart(2, '0');
-      const finalDay = String(finalDate.getDate()).padStart(2, '0');
-      form.date = `${year}-${finalMonth}-${finalDay}`;
-    }
-  }
-};
-
+// Override handleScopeChange to also clear selectedCourses
 const handleScopeChange = (scope) => {
-  // Reset event type when scope changes
-  form.event_type_id = '';
-
-  // Handle province selection for provincial scope
-  if (scope === 'provincial') {
-    form.province_id = sanLuisProvinceId.value || '';
-    form.courses = [];
+  handleScopeChangeBase(scope);
+  if (scope === 'provincial' || scope === 'nacional' || scope === 'escolar') {
     selectedCourses.value = [];
-  } else if (scope === 'nacional') {
-    form.province_id = '';
-    form.courses = [];
-    selectedCourses.value = [];
-  } else if (scope === 'escolar') {
-    form.province_id = '';
-    form.courses = [];
-    selectedCourses.value = [];
-  } else if (scope === 'cursos') {
-    form.province_id = '';
-    // Keep courses selection available
   }
 };
+
+// Override handleRecurrentEventSelected to use the base function
+const handleRecurrentEventSelected = handleRecurrentEventSelectedBase;
 
 // Course selection state
 const selectedCourses = ref([]);
