@@ -59,7 +59,9 @@ return [
             'strict' => true,
             'engine' => 'InnoDB',
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                (version_compare(PHP_VERSION, '8.5.0', '>=') && class_exists(\Pdo\Mysql::class)
+                    ? \Pdo\Mysql::ATTR_SSL_CA 
+                    : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
 
