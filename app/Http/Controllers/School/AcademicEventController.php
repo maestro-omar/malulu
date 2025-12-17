@@ -233,7 +233,7 @@ class AcademicEventController extends SchoolBaseController
                     // Format as DD/MM (e.g., "25/12" for Christmas)
                     $dateFormatted = \Carbon\Carbon::parse($recurrentEvent->date)->format('d/m');
                 }
-                
+
                 return [
                     'id' => $recurrentEvent->id,
                     'title' => $recurrentEvent->title,
@@ -314,11 +314,11 @@ class AcademicEventController extends SchoolBaseController
 
         $nonWorkingTypeOptions = [
             [
-                'value' => true,
+                'value' => false,
                 'label' => 'Laborable'
             ],
             [
-                'value' => false,
+                'value' => true,
                 'label' => 'No laborable'
             ]
         ];

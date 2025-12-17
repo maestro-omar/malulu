@@ -138,9 +138,9 @@
                 <div class="admin-form__card-content">
                   <div class="admin-form__field">
                     <InputLabel value="Condición laboral" />
-                    <q-option-group v-model="form.non_working_type" type="radio" :options="nonWorkingTypeOptions"
+                    <q-option-group v-model="form.is_non_working_day" type="radio" :options="nonWorkingTypeOptions"
                       color="primary" inline />
-                    <InputError class="admin-form__error" :message="form.errors.non_working_type" />
+                    <InputError class="admin-form__error" :message="form.errors.is_non_working_day" />
                   </div>
 
                   <div class="admin-form__field">
@@ -238,7 +238,7 @@ const form = useForm({
   academic_year_id: props.academicYear.id,
   province_id: '',
   courses: [],
-  non_working_type: 0,
+  is_non_working_day: 0,
   notes: ''
 });
 

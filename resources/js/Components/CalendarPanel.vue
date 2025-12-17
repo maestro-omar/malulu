@@ -350,8 +350,12 @@ const calendarWeeks = computed(() => {
       const dayEvents = getEventsForDate(dayDate)
       const dayBirthdates = getBirthdatesForDate(dayDate, false)
 
+      // A day is marked as feriado if there's an event with feriado type AND is_non_working_day is true
+      // This ensures that recurrent events with associated academic events don't mark the day as feriado
       const hasFeriado = dayEvents.some(event =>
-        event.event_type && (event.event_type.code === 'feriado_nacional' || event.event_type.code === 'feriado_provincial')
+        event.event_type && 
+        (event.event_type.code === 'feriado_nacional' || event.event_type.code === 'feriado_provincial') &&
+        event.is_non_working_day === true
       )
 
       const today = new Date(new Date().setHours(0, 0, 0, 0))

@@ -49,7 +49,19 @@ class AcademicEventService
     public function listAround(?int $provinceId, ?int $schoolId, $from, $to): array
     {
         $academicEvents = $this->getAcademicEventsByDateRange($provinceId, $schoolId, $from, $to);
-        $recurrentEvents = $this->getRecurrentEventsByDateRange($provinceId, $schoolId, $from, $to);
+        
+        // Get academic events that are associated with recurrent events to filter them out
+        $academicEventsWithRecurrent = $academicEvents->filter(function ($event) {
+            return $event->recurrent_event_id !== null;
+        });
+        
+        // Get the recurrent event IDs that have associated academic events
+        $recurrentEventIdsWithAcademicEvents = $academicEventsWithRecurrent
+            ->pluck('recurrent_event_id')
+            ->unique()
+            ->toArray();
+        
+        $recurrentEvents = $this->getRecurrentEventsByDateRange($provinceId, $schoolId, $from, $to, $recurrentEventIdsWithAcademicEvents);
         $academicYearEvents = $this->getAcademicYearEventsByDateRange($from, $to);
 
         // Combine all types of events
@@ -76,7 +88,7 @@ class AcademicEventService
 
     private function getAcademicEventsByDateRange(?int $provinceId, ?int $schoolId, \DateTime $from, \DateTime $to): Collection
     {
-        $query = AcademicEvent::with(['type', 'province', 'school', 'academicYear', 'courses'])->whereBetween('date', [
+        $query = AcademicEvent::with(['type', 'province', 'school', 'academicYear', 'courses', 'recurrentEvent'])->whereBetween('date', [
             $from,
             $to,
         ]);
@@ -99,7 +111,7 @@ class AcademicEventService
         return $query->get();
     }
 
-    private function getRecurrentEventsByDateRange(?int $provinceId, ?int $schoolId, \DateTime $from, \DateTime $to): Collection
+    private function getRecurrentEventsByDateRange(?int $provinceId, ?int $schoolId, \DateTime $from, \DateTime $to, array $recurrentEventIdsWithAcademicEvents = []): Collection
     {
         // Get all recurrent events and filter in PHP since we need to calculate dates
         $query = RecurrentEvent::with(['type', 'province', 'school']);
@@ -136,16 +148,30 @@ class AcademicEventService
                 continue;
             }
 
+            // Check if this recurrent event has any associated academic events
+            // If it does, it should NOT be marked as feriado (the academic event handles that)
+            $hasAssociatedAcademicEvent = in_array($event->id, $recurrentEventIdsWithAcademicEvents);
+
             // For fixed date events (no recurrence rules), set calculated_date to first occurrence
             if ($event->date && !$event->recurrence_month && !$event->recurrence_week && $event->recurrence_weekday === null) {
+                $occurrenceDate = $occurrences->first();
+
                 $eventWithDate = clone $event;
-                $eventWithDate->calculated_date = $occurrences->first();
+                $eventWithDate->calculated_date = $occurrenceDate;
+                // If there's an associated academic event, mark as working day (not feriado)
+                if ($hasAssociatedAcademicEvent) {
+                    $eventWithDate->non_working_type = RecurrentEvent::WORKING_DAY;
+                }
                 $filteredEvents->push($eventWithDate);
             } else {
                 // For events with recurrence rules, create virtual events for each occurrence
                 foreach ($occurrences as $occurrenceDate) {
                     $virtualEvent = clone $event;
                     $virtualEvent->calculated_date = $occurrenceDate;
+                    // If there's an associated academic event, mark as working day (not feriado)
+                    if ($hasAssociatedAcademicEvent) {
+                        $virtualEvent->non_working_type = RecurrentEvent::WORKING_DAY;
+                    }
                     $filteredEvents->push($virtualEvent);
                 }
             }
@@ -316,7 +342,19 @@ class AcademicEventService
                 $effectiveDate = $event->date ?? null;
             }
 
-            $isNonWorkingDay = $event->is_non_working_day ?? false;
+            // For RecurrentEvent, determine is_non_working_day based on non_working_type
+            // If the event was modified to WORKING_DAY (because it has an associated AcademicEvent),
+            // it should not be marked as non-working
+            if ($event instanceof RecurrentEvent) {
+                $nonWorkingType = $event->non_working_type ?? RecurrentEvent::WORKING_DAY;
+                $isNonWorkingDay = in_array($nonWorkingType, [
+                    RecurrentEvent::NON_WORKING_FIXED,
+                    RecurrentEvent::NON_WORKING_FLEXIBLE
+                ]);
+            } else {
+                // For AcademicEvent and other event types, use is_non_working_day directly
+                $isNonWorkingDay = $event->is_non_working_day ?? false;
+            }
 
             // Get courses - handle both AcademicEvent instances and stdClass objects
             $courses = [];
@@ -336,12 +374,22 @@ class AcademicEventService
                 })->toArray();
             }
 
+            // Build notes - add "Corresponde a: (evento recurrente)" for AcademicEvents with recurrent_event_id
+            $notes = $event->notes ?? null;
+            if ($event instanceof AcademicEvent && $event->recurrent_event_id) {
+                $recurrentEvent = $event->recurrentEvent;
+                if ($recurrentEvent) {
+                    $correspondeText = "Corresponde a: {$recurrentEvent->title}";
+                    $notes = $notes ? "{$notes}\n{$correspondeText}" : $correspondeText;
+                }
+            }
+
             return [
                 'id' => $event->id,
                 'title' => $event->title,
                 'date' => $effectiveDate, //? $effectiveDate->format('d/m/Y') : null,
                 'is_non_working_day' => $isNonWorkingDay,
-                'notes' => $event->notes ?? null,
+                'notes' => $notes,
                 'event_type' => [
                     'id' => $event->type?->id ?? null,
                     'code' => $event->type?->code ?? null,
@@ -372,16 +420,16 @@ class AcademicEventService
         // If recurrent_event_id is provided, populate data from RecurrentEvent
         if (!empty($validatedData['recurrent_event_id'])) {
             $recurrentEvent = RecurrentEvent::with(['type'])->findOrFail($validatedData['recurrent_event_id']);
-            
+
             // Use RecurrentEvent's title and event_type_id
             $validatedData['title'] = $recurrentEvent->title;
             $validatedData['event_type_id'] = $recurrentEvent->event_type_id;
-            
+
             // Calculate date for the current academic year
             $academicYear = AcademicYear::findOrFail($validatedData['academic_year_id']);
             $yearStart = Carbon::create($academicYear->year, 1, 1)->startOfYear();
             $yearEnd = Carbon::create($academicYear->year, 12, 31)->endOfYear();
-            
+
             $calculatedDate = $recurrentEvent->calculateDate($yearStart, $yearEnd);
             if ($calculatedDate) {
                 $validatedData['date'] = $calculatedDate->format('Y-m-d');
@@ -389,7 +437,7 @@ class AcademicEventService
                 // Fallback: use the RecurrentEvent's date if calculation fails
                 $validatedData['date'] = $recurrentEvent->date;
             }
-            
+
             // Set is_non_working_day based on RecurrentEvent's non_working_type
             $validatedData['is_non_working_day'] = in_array($recurrentEvent->non_working_type, [
                 RecurrentEvent::NON_WORKING_FIXED,
@@ -401,6 +449,7 @@ class AcademicEventService
         $courseIds = $validatedData['course_ids'] ?? [];
         unset($validatedData['course_ids']);
 
+        // dd($validatedData);
         $event = AcademicEvent::create($validatedData);
 
         // Attach courses if provided
@@ -502,7 +551,7 @@ class AcademicEventService
     {
         // If recurrent_event_id is provided, event_type_id and title/date are optional (will be set from RecurrentEvent)
         $hasRecurrentEvent = !empty($data['recurrent_event_id']);
-        
+
         $rules = [
             'title' => $hasRecurrentEvent ? ['nullable', 'string', 'max:255'] : ['required', 'string', 'max:255'],
             'date' => $hasRecurrentEvent ? ['nullable', 'date'] : ['required', 'date'],
@@ -515,6 +564,10 @@ class AcademicEventService
             'academic_year_id' => ['required', 'exists:academic_years,id'],
             'course_ids' => ['nullable', 'array'],
             'course_ids.*' => ['exists:courses,id'],
+            'created_by' => ['nullable', 'exists:users,id'],
+            'updated_by' => ['nullable', 'exists:users,id'],
+            'created_at' => ['nullable', 'date'],
+            'updated_at' => ['nullable', 'date'],
         ];
 
         $messages = [

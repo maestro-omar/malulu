@@ -313,7 +313,8 @@ class RecurrentEvent extends Model
 
         if ($week > 0) {
             // Positive week: find the Nth occurrence
-            $targetDay = $firstDay->copy()->startOfWeek()->addDays($weekday);
+            // Use SUNDAY as start of week to match database schema (0=Sunday, 6=Saturday)
+            $targetDay = $firstDay->copy()->startOfWeek(Carbon::SUNDAY)->addDays($weekday);
 
             // Find the first occurrence of the weekday in the month
             while ($targetDay->month !== $month) {
@@ -330,7 +331,8 @@ class RecurrentEvent extends Model
         } else {
             // Negative week: find the Nth occurrence from the end
             $lastDay = $firstDay->copy()->endOfMonth();
-            $targetDay = $lastDay->copy()->startOfWeek()->addDays($weekday);
+            // Use SUNDAY as start of week to match database schema (0=Sunday, 6=Saturday)
+            $targetDay = $lastDay->copy()->startOfWeek(Carbon::SUNDAY)->addDays($weekday);
 
             // Find the last occurrence of the weekday in the month
             while ($targetDay->month !== $month) {
