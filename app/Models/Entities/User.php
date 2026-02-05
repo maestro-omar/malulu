@@ -55,6 +55,7 @@ class User extends Authenticatable
         'picture',
         'critical_info',
         'occupation',
+        'status',
     ];
 
     /**
@@ -87,6 +88,10 @@ class User extends Authenticatable
     const GENDER_FLUID = 'fluido';
     const GENDER_NOBINARY = 'no-bin';
     const GENDER_OTHER = 'otro';
+
+    const STATUS_ACTIVE = 'active';
+    const STATUS_INACTIVE = 'inactive';
+    const STATUS_BLOCKED = 'blocked';
 
     private $permissionBySchoolCache;
 
@@ -512,7 +517,8 @@ class User extends Authenticatable
         return $this->hasMany(Attendance::class, 'user_id');
     }
 
-    public function getDiagnosesDataAttribute(){
+    public function getDiagnosesDataAttribute()
+    {
         $diagnoses = $this->diagnoses()->pluck('name')->join(', ');
         return $diagnoses;
     }
@@ -563,5 +569,25 @@ class User extends Authenticatable
         }, $lastNames));
         $return = $oneName . $otherNamesInitials . $lastNamesInitials;
         return $return;
+    }
+
+    /**
+     * Check if user can login based on status and role
+     */
+    public function canLogin(): bool
+    {
+        return ($this->status === self::STATUS_ACTIVE);
+    }
+
+    /**
+     * Get status options for select
+     */
+    public static function statusOptions(): array
+    {
+        return [
+            self::STATUS_ACTIVE => 'Activo',
+            self::STATUS_INACTIVE => 'Inactivo',
+            self::STATUS_BLOCKED => 'Bloqueado',
+        ];
     }
 }

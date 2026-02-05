@@ -190,6 +190,7 @@ class InitialUsersSeeder extends Seeder
             'occupation' => 'Estudiante',
             'password' => '123123123', // Default password
             'password_confirmation' => '123123123', // Required for validation
+            'status' => User::STATUS_INACTIVE,
         ];
 
         // Map role and create role details
@@ -408,6 +409,7 @@ class InitialUsersSeeder extends Seeder
             'nationality' => $nationality,
             'password' => '123123123', // Default password
             'password_confirmation' => '123123123', // Required for validation
+            'status' => User::STATUS_ACTIVE,
         ];
 
         // Map role and create role details

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\Entities\User;
 
 class LoginRequest extends FormRequest
 {
@@ -49,6 +50,26 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Get the authenticated user
+        /** @var \App\Models\Entities\User $user */	
+        $user = Auth::user();
+
+        // Check if user can login (status and role check)
+        if (!$user || !$user->canLogin()) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            $message = match ($user?->status) {
+                \App\Models\Entities\User::STATUS_INACTIVE => 'Tu cuenta está inactiva. Contacta al administrador.',
+                \App\Models\Entities\User::STATUS_BLOCKED => 'Tu cuenta ha sido bloqueada. Contacta al administrador.',
+                default => 'No tienes permiso para iniciar sesión.',
+            };
+
+            throw ValidationException::withMessages([
+                'email' => $message,
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 
@@ -80,6 +101,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
     }
 }

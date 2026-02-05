@@ -189,8 +189,8 @@ class AcademicEventService
         $toCarbon = Carbon::parse($to);
 
         // Get event types once (optimization)
-        $startEventType = EventType::where('code', EventType::CODE_INICIO_ESCOLAR)->first();
-        $endEventType = EventType::where('code', EventType::CODE_FIN_ESCOLAR)->first();
+        $startEventType = EventType::where('code', EventType::CODE_INICIO_CLASES)->first();
+        $endEventType = EventType::where('code', EventType::CODE_FIN_CLASES)->first();
         $winterStartEventType = EventType::where('code', EventType::CODE_INICIO_INVIERNO)->first();
         $winterEndEventType = EventType::where('code', EventType::CODE_FIN_INVIERNO)->first();
         $suspensionEventType = EventType::where('code', EventType::CODE_SUSPENCION_PROVINCIAL)->first();
@@ -511,14 +511,14 @@ class AcademicEventService
                 'date' => now()->setDate($academicYearId, 3, 3), // adjust logic per rules
                 'is_non_working_day' => false,
                 'notes' => 'Primer día de clases',
-                'event_type_id' => EventType::CODE_INICIO_ESCOLAR,
+                'event_type_id' => EventType::CODE_INICIO_CLASES,
             ],
             [
                 'title' => 'Fin del ciclo lectivo',
                 'date' => now()->setDate($academicYearId, 12, 15),
                 'is_non_working_day' => false,
                 'notes' => 'Último día de clases',
-                'event_type_id' => EventType::CODE_FIN_ESCOLAR,
+                'event_type_id' => EventType::CODE_FIN_CLASES,
             ],
             [
                 'title' => 'Inicio de las vacaciones de invierno',

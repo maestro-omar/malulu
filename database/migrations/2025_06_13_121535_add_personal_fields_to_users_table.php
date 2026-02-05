@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use App\Models\Entities\User;
 
 return new class extends Migration
 {
@@ -28,6 +29,7 @@ return new class extends Migration
             $table->string('picture')->nullable()->after('nationality');
             $table->string('critical_info')->nullable()->after('picture');
             $table->string('occupation')->nullable()->after('critical_info');
+            $table->string('status')->default(User::STATUS_ACTIVE);
         });
 
         $sql = "ALTER TABLE users 
@@ -59,7 +61,8 @@ return new class extends Migration
                 'nationality',
                 'picture',
                 'critical_info',
-                'occupation'
+                'occupation',
+                'status'
             ]);
         });
     }

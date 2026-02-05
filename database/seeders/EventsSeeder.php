@@ -35,8 +35,8 @@ class EventsSeeder extends Seeder
 
             ['code' => EventType::CODE_CONMEMORACION_ESCOLAR, 'scope' => EventType::SCOPE_ESCOLAR, 'name' => 'Conmemoración escolar'],
             ['code' => EventType::CODE_SUSPENCION_ESCOLAR, 'scope' => EventType::SCOPE_ESCOLAR, 'name' => 'Suspensión de clases'],
-            ['code' => EventType::CODE_INICIO_ESCOLAR, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Inicio del ciclo escolar'],
-            ['code' => EventType::CODE_FIN_ESCOLAR, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Fin del ciclo escolar'],
+            ['code' => EventType::CODE_INICIO_CLASES, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Inicio del clases'],
+            ['code' => EventType::CODE_FIN_CLASES, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Fin del clases'],
             ['code' => EventType::CODE_INICIO_INVIERNO, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Inicio de las vacaciones de invierno'],
             ['code' => EventType::CODE_FIN_INVIERNO, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Fin de las vacaciones de invierno'],
             ['code' => EventType::CODE_ACADEMICO_ESCOLAR, 'scope' => EventType::SCOPE_ESCOLAR, 'name' => 'Evento académico'],
@@ -245,7 +245,7 @@ class EventsSeeder extends Seeder
             'title' => 'Carnaval',
             'date' => null,
             'recurrence_month' => 0,
-            'recurrence_week' => 0, 
+            'recurrence_week' => 0,
             'recurrence_weekday' => 2, // Martes
             'easter_offset' => -46,
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_NACIONAL]->id,

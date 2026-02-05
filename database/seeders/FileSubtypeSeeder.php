@@ -35,6 +35,7 @@ class FileSubtypeSeeder extends Seeder
             ['requires_expiration' => false, 'hidden_for_familiy' => true, 'upload_by_familiy' => false, 'order' => 7, 'file_type' => 'provincial', 'code' => 'provincial_other', 'name' => 'Otro', 'new_overwrites' => false],
 
             // Institutional file types
+            ['requires_expiration' => false, 'hidden_for_familiy' => true, 'upload_by_familiy' => false, 'order' => 1, 'file_type' => 'institutional', 'code' => 'institutional_regulations', 'name' => 'Normativa', 'new_overwrites' => false],
             ['requires_expiration' => false, 'hidden_for_familiy' => true, 'upload_by_familiy' => false, 'order' => 1, 'file_type' => 'institutional', 'code' => 'institutional_sample', 'name' => 'Modelo', 'new_overwrites' => false],
             ['requires_expiration' => false, 'hidden_for_familiy' => true, 'upload_by_familiy' => false, 'order' => 2, 'file_type' => 'institutional', 'code' => 'institutional_form_student', 'name' => 'Formulario para alumno', 'new_overwrites' => false],
             ['requires_expiration' => false, 'hidden_for_familiy' => true, 'upload_by_familiy' => false, 'order' => 3, 'file_type' => 'institutional', 'code' => 'institutional_form_teacher', 'name' => 'Formulario para docente', 'new_overwrites' => false],

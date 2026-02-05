@@ -49,7 +49,7 @@
                   <div v-for="(week, weekIndex) in calendarWeeks" :key="weekIndex" class="calendar-panel__week">
                     <div v-for="(day, dayIndex) in week" :key="dayIndex" class="calendar-panel__day"
                       :class="getDayClasses(day)" @click="openDatePopup(day.date)">
-                      <div class="calendar-panel__day-number">
+                      <div class="calendar-panel__day-number" :class="getDayNumberClasses(day.date)">
                         <span class="calendar-panel__day-date">{{ day.date.getDate() }}</span><span
                           class="calendar-panel__day-month">{{ getMonthAbbreviation(day.date) }}</span>
                       </div>
@@ -449,6 +449,14 @@ const getDayClasses = (day) => {
     'calendar-panel__day--feriado': day.isFeriado,
     'calendar-panel__day--past': day.isPast,
     'calendar-panel__day--current-month': day.isCurrentRange,
+  }
+}
+
+const getDayNumberClasses = (date) => {
+  const dayOfWeek = date.getDay()
+  return {
+    'calendar-panel__day-number--sunday': dayOfWeek === 0,
+    'calendar-panel__day-number--saturday': dayOfWeek === 6
   }
 }
 

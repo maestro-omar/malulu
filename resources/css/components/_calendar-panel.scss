@@ -295,6 +295,14 @@
   &__day-number {
     text-align: center;
     margin-bottom: 0.25rem;
+
+    &--sunday,
+    &--saturday {
+      .calendar-panel__day-date,
+      .calendar-panel__day-month {
+        color: variables.$color-purple;
+      }
+    }
   }
 
   &__day-date {

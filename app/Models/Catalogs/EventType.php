@@ -27,8 +27,8 @@ class EventType extends Model
 
     const CODE_CONMEMORACION_ESCOLAR = 'conmemoracion_escolar';
     const CODE_SUSPENCION_ESCOLAR = 'suspencion_escolar';
-    const CODE_INICIO_ESCOLAR = 'inicio_escolar';
-    const CODE_FIN_ESCOLAR = 'fin_escolar';
+    const CODE_INICIO_CLASES = 'inicio_clases';
+    const CODE_FIN_CLASES = 'fin_clases';
     const CODE_INICIO_INVIERNO = 'inicio_invierno';
     const CODE_FIN_INVIERNO = 'fin_invierno';
     const CODE_ENTREGA_LIBRETA = 'entrega_libreta';
