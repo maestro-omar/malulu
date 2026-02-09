@@ -16,10 +16,11 @@ trait UserServiceList
 
     public function getUsers(Request $request)
     {
-        $expectedFilters = ['search', 'sort', 'direction', 'per_page'];
+        $expectedFilters = ['search', 'sort', 'direction', 'per_page', 'status'];
 
         $query = User::with('allRolesAcrossTeams');
         $query = $this->addTextSearch($request, $query);
+        $query = $this->addStatusFilter($request, $query);
         $query = $this->addSorting($request, $query);
 
         // Handle pagination
@@ -295,6 +296,24 @@ trait UserServiceList
         return $query;
     }
 
+    /**
+     * Add status filter to the query
+     */
+    protected function addStatusFilter(Request $request, $query)
+    {
+        $status = $request->input('status');
+
+        if ($status !== null && $status !== '') {
+            $statusInt = (int) $status;
+            // Validate status value (1 = active, 0 = inactive, -1 = blocked)
+            if (in_array($statusInt, [User::STATUS_ACTIVE, User::STATUS_INACTIVE, User::STATUS_BLOCKED])) {
+                $query->where('users.status', $statusInt);
+            }
+        }
+
+        return $query;
+    }
+
     private function addSorting(Request $request, $query)
     {
         if ($request->filled('sort')) {
@@ -328,6 +347,7 @@ trait UserServiceList
             'firstname',
             'lastname',
             'id_number',
+            'status',
             'gender',
             'birthdate',
             'phone',

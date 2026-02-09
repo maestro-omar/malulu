@@ -18,7 +18,7 @@
 
     <template #main-page-content>
       <!-- Search Filter -->
-      <div class="row q-mb-md">
+      <div class="row q-mb-md q-gutter-md">
         <div class="col-12 col-md-6">
           <q-input v-model="searchInput" dense outlined placeholder="Buscar usuarios..." @keyup.enter="performSearch"
             clearable>
@@ -29,6 +29,25 @@
               <q-btn flat round dense icon="send" @click="performSearch" color="primary" />
             </template>
           </q-input>
+        </div>
+        <div class="col-12 col-md-3">
+          <q-select
+            v-model="selectedStatus"
+            :options="statusOptions"
+            option-value="value"
+            option-label="label"
+            emit-value
+            map-options
+            dense
+            outlined
+            placeholder="Filtrar por estado"
+            clearable
+            @update:model-value="applyFilters"
+          >
+            <template v-slot:prepend>
+              <q-icon name="filter_alt" />
+            </template>
+          </q-select>
         </div>
       </div>
 
@@ -76,6 +95,16 @@
           <q-td :props="props">
             <BirthdateAge v-if="props.row.birthdate" :birthdate="props.row.birthdate" />
             <span v-else class="text-grey-5">-</span>
+          </q-td>
+        </template>
+
+        <!-- Custom cell for status -->
+        <template #body-cell-status="props">
+          <q-td :props="props">
+            <q-badge 
+              :color="getStatusColor(props.row.status)" 
+              :label="getStatusLabel(props.row.status)"
+            />
           </q-td>
         </template>
 
@@ -162,6 +191,16 @@ const search = ref(props.filters?.search || '');
 const sortField = ref(props.filters?.sort || '');
 const sortDirection = ref(props.filters?.direction || 'asc');
 
+// Status filter options
+const statusOptions = [
+  { label: 'Activo', value: 1 },
+  { label: 'Inactivo', value: 0 },
+  { label: 'Bloqueado', value: -1 }
+];
+
+// Status filter state
+const selectedStatus = ref(props.filters?.status !== undefined ? Number(props.filters.status) : null);
+
 // Loading state
 const loading = ref(false);
 
@@ -174,16 +213,17 @@ const pagination = ref({
   rowsNumber: props.users.total
 });
 
-// Perform search function
-const performSearch = () => {
+// Apply filters function
+const applyFilters = () => {
   loading.value = true;
 
   const requestParams = {
-    p: 1, // Always start from page 1 when searching
+    p: 1, // Always start from page 1 when filtering
     per_page: pagination.value.rowsPerPage,
     sort: sortField.value,
     direction: sortDirection.value,
-    search: searchInput.value || ''
+    search: searchInput.value || '',
+    status: selectedStatus.value !== null ? selectedStatus.value : ''
   };
 
   router.get(
@@ -213,6 +253,11 @@ const performSearch = () => {
       }
     }
   );
+};
+
+// Perform search function
+const performSearch = () => {
+  applyFilters();
 };
 
 // Handle search input changes
@@ -308,6 +353,13 @@ const columns = [
     align: 'center',
     sortable: true
   },
+  {
+    name: 'status',
+    label: 'Estado',
+    field: 'status',
+    align: 'center',
+    sortable: true
+  },
   // {
   //   name: 'schools',
   //   label: 'Escuelas',
@@ -373,6 +425,24 @@ const getUniqueRoles = (roles) => {
   );
 };
 
+const getStatusColor = (status) => {
+  // Convert to number for comparison
+  const statusNum = Number(status);
+  if (statusNum === 1) return 'positive';   // active
+  if (statusNum === 0) return 'warning';   // inactive
+  if (statusNum === -1) return 'negative'; // blocked
+  return 'grey';
+};
+
+const getStatusLabel = (status) => {
+  // Convert to number for comparison
+  const statusNum = Number(status);
+  if (statusNum === 1) return 'Activo';     // active
+  if (statusNum === 0) return 'Inactivo';   // inactive
+  if (statusNum === -1) return 'Bloqueado'; // blocked
+  return '-';
+};
+
 
 // Handle pagination and sorting requests
 function onRequest({ pagination: newPagination }) {
@@ -389,7 +459,8 @@ function onRequest({ pagination: newPagination }) {
     per_page: rowsPerPage,
     sort: sortBy,
     direction: descending ? 'desc' : 'asc',
-    search: searchInput.value || '' // Use searchInput to preserve what user typed
+    search: searchInput.value || '', // Use searchInput to preserve what user typed
+    status: selectedStatus.value !== null ? selectedStatus.value : ''
   };
 
   router.get(
@@ -427,12 +498,14 @@ watch(() => window.location.search, () => {
   const sort = urlParams.get('sort') || sortField.value;
   const direction = urlParams.get('direction') || 'asc';
   const urlSearch = urlParams.get('search') || '';
+  const urlStatus = urlParams.get('status');
 
   // Update search input to match URL parameter
   searchInput.value = urlSearch;
   search.value = urlSearch;
   sortField.value = sort;
   sortDirection.value = direction;
+  selectedStatus.value = urlStatus !== null && urlStatus !== '' ? Number(urlStatus) : null;
 
   pagination.value = {
     ...pagination.value,

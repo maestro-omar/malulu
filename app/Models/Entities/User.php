@@ -89,9 +89,9 @@ class User extends Authenticatable
     const GENDER_NOBINARY = 'no-bin';
     const GENDER_OTHER = 'otro';
 
-    const STATUS_ACTIVE = 'active';
-    const STATUS_INACTIVE = 'inactive';
-    const STATUS_BLOCKED = 'blocked';
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
+    const STATUS_BLOCKED = -1;
 
     private $permissionBySchoolCache;
 

@@ -43,7 +43,7 @@ class UserAdminController extends SystemBaseController
     {
         return Inertia::render('Users/Index', [
             'users' => $this->userService->getUsers($request),
-            'filters' => $request->only(['search', 'sort', 'direction']),
+            'filters' => $request->only(['search', 'sort', 'direction', 'status']),
             'breadcrumbs' => Breadcrumbs::generate('users.index'),
         ]);
     }
@@ -68,6 +68,7 @@ class UserAdminController extends SystemBaseController
             'provinces' => Province::orderBy('order')->get(),
             'countries' => Country::orderBy('order')->get(),
             'genders' => User::genders(),
+            'statusOptions' => User::statusOptions(),
             'breadcrumbs' => Breadcrumbs::generate('users.create'),
         ]);
     }
@@ -103,6 +104,7 @@ class UserAdminController extends SystemBaseController
             'provinces' => Province::orderBy('order')->get(),
             'countries' => Country::orderBy('order')->get(),
             'genders' => User::genders(),
+            'statusOptions' => User::statusOptions(),
             'breadcrumbs' => Breadcrumbs::generate('users.edit', $user),
         ]);
     }

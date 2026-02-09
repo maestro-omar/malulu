@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('picture')->nullable()->after('nationality');
             $table->string('critical_info')->nullable()->after('picture');
             $table->string('occupation')->nullable()->after('critical_info');
-            $table->string('status')->default(User::STATUS_ACTIVE);
+            $table->integer('status')->default(User::STATUS_ACTIVE);
         });
 
         $sql = "ALTER TABLE users 

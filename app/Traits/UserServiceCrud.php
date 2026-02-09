@@ -60,6 +60,7 @@ trait UserServiceCrud
             'role' => ['nullable', 'string', 'exists:roles,name'],
             'critical_info' => ['nullable', 'string', 'max:1000'],
             'occupation' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', 'integer', Rule::in([User::STATUS_ACTIVE, User::STATUS_INACTIVE, User::STATUS_BLOCKED])],
         ];
 
         $messages = [
@@ -106,6 +107,7 @@ trait UserServiceCrud
             'password' => Hash::make($validatedData['password']),
             'critical_info' => $validatedData['critical_info'] ?? null,
             'occupation' => $validatedData['occupation'] ?? null,
+            'status' => $validatedData['status'] ?? User::STATUS_ACTIVE,
         ]);
 
         if (!empty($validatedData['role'])) {
@@ -136,6 +138,7 @@ trait UserServiceCrud
             'email' => $validatedData['email'],
             'critical_info' => $validatedData['critical_info'] ?? $user->critical_info,
             'occupation' => $validatedData['occupation'] ?? $user->occupation,
+            'status' => $validatedData['status'] ?? $user->status,
         ]);
 
         if (!empty($validatedData['password'])) {

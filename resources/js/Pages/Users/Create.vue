@@ -68,6 +68,26 @@
               </q-card-section>
             </q-card>
 
+            <!-- Status Card -->
+            <q-card class="admin-form__card">
+              <q-card-section>
+                <h3 class="admin-form__card-title">Estado</h3>
+                <div class="admin-form__card-content">
+                  <div class="admin-form__field">
+                    <label class="admin-form__label">Estado</label>
+                    <select v-model="form.status" class="admin-form__select">
+                      <option v-for="(label, value) in statusOptions" :key="value" :value="value">
+                        {{ label }}
+                      </option>
+                    </select>
+                    <div v-if="form.errors.status" class="admin-form__error">
+                      {{ form.errors.status }}
+                    </div>
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+
             <div class="admin-form__actions">
               <PrimaryButton :disabled="form.processing">
                 Crear Usuario
@@ -92,7 +112,10 @@ const $page = usePage();
 const roles = $page.props.roles || [];
 
 const props = defineProps({
-
+  statusOptions: {
+    type: Object,
+    default: () => ({})
+  }
 });
 
 const form = useForm({
@@ -101,6 +124,7 @@ const form = useForm({
   password: "",
   password_confirmation: "",
   role: "",
+  status: 1, // STATUS_ACTIVE
 });
 
 function submit() {

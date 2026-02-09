@@ -152,6 +152,24 @@
               </q-card-section>
             </q-card>
 
+            <!-- Status Card -->
+            <q-card class="admin-form__card">
+              <q-card-section>
+                <h3 class="admin-form__card-title">Estado</h3>
+                <div class="admin-form__card-content">
+                  <div class="admin-form__field">
+                    <InputLabel for="status" value="Estado" />
+                    <select id="status" class="admin-form__select" v-model="form.status">
+                      <option v-for="(label, value) in statusOptions" :key="value" :value="value">
+                        {{ label }}
+                      </option>
+                    </select>
+                    <InputError class="admin-form__error" :message="form.errors.status" />
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+
             <ActionButtons button-label="Guardar Cambios" :cancel-href="route('users.show', props.user.id)"
               :disabled="form.processing" />
           </form>
@@ -176,6 +194,10 @@ const props = defineProps({
   provinces: Array,
   countries: Array,
   genders: Array,
+  statusOptions: {
+    type: Object,
+    default: () => ({})
+  }
 });
 
 const form = useForm({
@@ -198,6 +220,7 @@ const form = useForm({
   password_confirmation: '',
   role: props.user.roles?.[0]?.name || '',
   critical_info: props.user.critical_info || '',
+  status: props.user.status !== undefined ? props.user.status : 1, // STATUS_ACTIVE
 });
 
 const submit = () => {
