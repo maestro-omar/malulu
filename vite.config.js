@@ -10,6 +10,7 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.scss', 'resources/js/app.js'],
             refresh: true,
+            buildDirectory: 'build',
         }),
         vue({
             template: {
@@ -45,6 +46,8 @@ export default defineConfig({
         },
     },
     build: {
+        outDir: 'public/build',
+        emptyOutDir: true,
         chunkSizeWarningLimit: 1600,
         rollupOptions: {
             output: {
