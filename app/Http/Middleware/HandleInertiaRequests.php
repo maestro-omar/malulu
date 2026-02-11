@@ -50,10 +50,17 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        // Handle case when database is empty (before migrations)
         try {
             $schoolGlobalId = School::specialGlobalId();
         } catch (\Exception $e) {
-            throw new \Exception('Verificá la instalación de la aplicación <br>(no se encuentra la escuela "global")');
+            // If database is empty, allow admin-tools to work
+            // Check if this is an admin-tools route
+            if ($request->routeIs('admin-tools.*')) {
+                $schoolGlobalId = null; // Allow admin-tools to work without global school
+            } else {
+                throw new \Exception('Verificá la instalación de la aplicación <br>(no se encuentra la escuela "global")');
+            }
         }
         $user = $request->user();
         $activeSchool = UserContextService::activeSchool();
@@ -62,8 +69,13 @@ class HandleInertiaRequests extends Middleware
             app(PermissionRegistrar::class)->setPermissionsTeamId($activeSchool['id']);
         }
 
-        $headerMenuItems = $this->headerMenuItems($user, $activeSchoolObj);
-        $sideMenuItems = $this->sideMenuItems($user, $activeSchoolObj);
+        // Skip menu generation for admin-tools when database is empty
+        $headerMenuItems = [];
+        $sideMenuItems = [];
+        if ($schoolGlobalId !== null) {
+            $headerMenuItems = $this->headerMenuItems($user, $activeSchoolObj);
+            $sideMenuItems = $this->sideMenuItems($user, $activeSchoolObj);
+        }
         $flash = $this->getFlash($request);
         // dd($flash);
         return [
@@ -104,13 +116,19 @@ class HandleInertiaRequests extends Middleware
             ],
             'constants' => [
                 'schoolGlobalId' => $schoolGlobalId,
-                'catalogs' => [
+                'catalogs' => $schoolGlobalId !== null ? [
                     'schoolLevels' => SchoolLevel::vueOptions(),
                     'schoolShifts' => SchoolShift::vueOptions(),
                     'attendanceStatuses' => AttendanceStatus::vueOptions(),
                     'jobStatuses' => JobStatus::vueOptions(),
                     'roles' => Role::vueOptions(),
-                ],
+                ] : [
+                    'schoolLevels' => [],
+                    'schoolShifts' => [],
+                    'attendanceStatuses' => [],
+                    'jobStatuses' => [],
+                    'roles' => [],
+                ], // Empty catalogs if database not initialized
             ],
             'debug' => [
                 'guard' => Auth::getDefaultDriver(),

@@ -29,9 +29,17 @@ class InitialUsersSeeder extends Seeder
     private bool $deleteExisting = false;
     private $faker;
 
-    private $jsonFolder = 'database' . DIRECTORY_SEPARATOR . 'seeders' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
+    private $jsonFolder;
     private $jsonStaffFileName = 'ce-8_initial_staff.json';
     private $jsonStudentsFileName = 'ce-8_initial_students_with_guardian.json';
+    
+    public function __construct()
+    {
+        // Use absolute path based on seeder file location
+        $this->jsonFolder = __DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
+        $this->faker = \Faker\Factory::create('es_ES'); // Using Spanish locale for more realistic names
+        $this->faker->addProvider(new UserFaker($this->faker));
+    }
 
     private $userService;
 
@@ -45,12 +53,6 @@ class InitialUsersSeeder extends Seeder
     private $country;
     private $countries;
     private $academicYears;
-
-    public function __construct()
-    {
-        $this->faker = \Faker\Factory::create('es_ES'); // Using Spanish locale for more realistic names
-        $this->faker->addProvider(new UserFaker($this->faker));
-    }
 
     /**
      * Run the database seeds.
@@ -86,16 +88,31 @@ class InitialUsersSeeder extends Seeder
         }
 
         // Get all active courses for the default school and primary level
+        // Use Carbon to get the start of the current year (format: Y-m-d)
+        $currentYearStart = now()->startOfYear()->format('Y-m-d');
         $this->courses = Course::where('school_id', $this->defaultSchool->id)
             ->where('school_level_id', $this->primaryLevel->id)
-            ->where('start_date', '>=', now()->year() . '-01-01')
+            ->where('start_date', '>=', $currentYearStart)
             ->where('active', true)
             ->get();
     }
     private function createInitiaStaffUsers()
     {
         $jsonPath = $this->jsonFolder . $this->jsonStaffFileName;
-        $jsonData = json_decode(file_get_contents($jsonPath), true);
+        
+        if (!file_exists($jsonPath)) {
+            throw new \Exception("JSON file not found: {$jsonPath}. Expected path: " . realpath($this->jsonFolder) . DIRECTORY_SEPARATOR . $this->jsonStaffFileName);
+        }
+        
+        $jsonContent = file_get_contents($jsonPath);
+        if ($jsonContent === false) {
+            throw new \Exception("Failed to read JSON file: {$jsonPath}");
+        }
+        
+        $jsonData = json_decode($jsonContent, true);
+        if ($jsonData === null && json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("Invalid JSON in file: {$jsonPath}. Error: " . json_last_error_msg());
+        }
 
         foreach ($jsonData as $jsonUserData) {
             $this->createOneStaffUser($jsonUserData, true);
@@ -106,7 +123,20 @@ class InitialUsersSeeder extends Seeder
     private function createInitiaStudentsUsers()
     {
         $jsonPath = $this->jsonFolder . $this->jsonStudentsFileName;
-        $jsonData = json_decode(file_get_contents($jsonPath), true);
+        
+        if (!file_exists($jsonPath)) {
+            throw new \Exception("JSON file not found: {$jsonPath}. Expected path: " . realpath($this->jsonFolder) . DIRECTORY_SEPARATOR . $this->jsonStudentsFileName);
+        }
+        
+        $jsonContent = file_get_contents($jsonPath);
+        if ($jsonContent === false) {
+            throw new \Exception("Failed to read JSON file: {$jsonPath}");
+        }
+        
+        $jsonData = json_decode($jsonContent, true);
+        if ($jsonData === null && json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("Invalid JSON in file: {$jsonPath}. Error: " . json_last_error_msg());
+        }
 
         foreach ($jsonData as $index => $jsonRowData) {
             $this->createOneStudentWithGuardian($index, $jsonRowData);
