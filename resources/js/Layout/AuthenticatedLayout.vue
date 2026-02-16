@@ -71,6 +71,24 @@
         <!-- Flash Messages -->
         <FlashMessages :flash="flash" />
 
+        <!-- System warning: no academic year defined (avoids null reference errors in attendance, etc.) -->
+        <q-banner v-if="noCurrentAcademicYear" class="bg-amber-2 text-amber-10 q-mb-md" rounded>
+          <template v-slot:avatar>
+            <q-icon name="calendar_today" size="sm" />
+          </template>
+          No hay un ciclo lectivo definido para el año actual. Algunas funciones (asistencia, informes) pueden no estar disponibles o mostrar datos vacíos.
+          <template v-slot:action>
+            <q-btn
+              v-if="$page.props.canManageAcademicYears"
+              flat
+              label="Ciclos lectivos"
+              :href="route('academic-years.index')"
+              color="primary"
+              no-caps
+            />
+          </template>
+        </q-banner>
+
         <slot name="main-page-content" />
 
       </q-page>
@@ -97,6 +115,7 @@ defineProps({
 })
 const $page = usePage();
 const flash = $page.props.flash;
+const noCurrentAcademicYear = computed(() => !!$page.props.noCurrentAcademicYear);
 
 const rightDrawerOpen = ref(false)
 // const showingNavigationDropdown = ref(false);

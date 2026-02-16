@@ -8,6 +8,7 @@ use Inertia\Middleware;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Entities\School;
 use App\Models\Entities\User;
+use App\Models\Entities\AcademicYear;
 
 use App\Models\Catalogs\Role;
 use App\Models\Catalogs\SchoolLevel;
@@ -77,7 +78,21 @@ class HandleInertiaRequests extends Middleware
             $sideMenuItems = $this->sideMenuItems($user, $activeSchoolObj);
         }
         $flash = $this->getFlash($request);
-        // dd($flash);
+        // Warn admins when no academic year is defined for current date (avoids null reference errors app-wide)
+        $noCurrentAcademicYear = false;
+        $canManageAcademicYears = false;
+        if ($schoolGlobalId !== null && $user) {
+            $canManageAcademicYears = $user->isSuperadmin() || $user->can('country.manage');
+            $isAdmin = $canManageAcademicYears || $user->can('admin.create');
+            if ($isAdmin) {
+                try {
+                    $currentYear = (int) date('Y');
+                    $noCurrentAcademicYear = AcademicYear::findByYear($currentYear) === null;
+                } catch (\Throwable $e) {
+                    // Ignore (e.g. DB not ready)
+                }
+            }
+        }
         return [
             ...parent::share($request),
             //
@@ -134,6 +149,8 @@ class HandleInertiaRequests extends Middleware
                 'guard' => Auth::getDefaultDriver(),
             ],
             'flash' => $flash,
+            'noCurrentAcademicYear' => $noCurrentAcademicYear,
+            'canManageAcademicYears' => $canManageAcademicYears,
         ];
     }
 

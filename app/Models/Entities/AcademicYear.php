@@ -132,11 +132,25 @@ class AcademicYear extends Model
     }
 
 
-    public static function findByDate(\DateTime $date)
+    /**
+     * Find the academic year that contains the given date.
+     * First tries exact date range; if not found, falls back to the year field (calendar year of $date).
+     *
+     * @param \DateTime $date
+     * @return AcademicYear|null
+     */
+    public static function findByDate(\DateTime $date): ?AcademicYear
     {
-        return self::where('start_date', '<=', $date)
+        $byRange = self::where('start_date', '<=', $date)
             ->where('end_date', '>=', $date)
             ->first();
+
+        if ($byRange !== null) {
+            return $byRange;
+        }
+
+        $year = (int) $date->format('Y');
+        return self::findByYear($year);
     }
 
     public function getNext()
