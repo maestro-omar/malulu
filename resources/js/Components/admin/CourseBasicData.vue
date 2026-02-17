@@ -61,8 +61,8 @@
           <div class="col-md-4 col-6">
             <DataFieldShow label="Curso/s siguiente/s">
               <template #slotValue>
-                <span v-if="course.next_courses.length === 0">-</span>
-                <Link v-for="oneNext in course.next_courses"
+                <span v-if="!(course.next_courses && course.next_courses.length)">-</span>
+                <Link v-for="oneNext in (course.next_courses || [])"
                   :href="route('school.course.show', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(oneNext) })"
                   class="text-primary">
                 {{ oneNext.nice_name }}
@@ -77,7 +77,7 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-6 course-schedule-col">
+      <div v-if="schedule" class="col-12 col-md-6 course-schedule-col">
         <CourseSchedule :schedule="schedule" :container="false" class="q-mb-md" />
       </div>
 

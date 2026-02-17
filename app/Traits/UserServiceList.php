@@ -279,20 +279,41 @@ trait UserServiceList
         return $transformedUsers;
     }
      */
+    /**
+     * Searchable user fields (for word-by-word matching).
+     */
+    private static function searchableUserFields(): array
+    {
+        return ['name', 'email', 'firstname', 'lastname', 'phone', 'id_number'];
+    }
+
     private function addTextSearch(Request $request, $query)
     {
-        // Apply search filter if present
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('firstname', 'like', "%{$search}%")
-                    ->orWhere('lastname', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('id_number', 'like', "%{$search}%");
-            });
+        if (!$request->filled('search')) {
+            return $query;
         }
+
+        $search = trim($request->input('search'));
+        $words = array_filter(preg_split('/\s+/u', $search, -1, PREG_SPLIT_NO_EMPTY));
+
+        if (empty($words)) {
+            return $query;
+        }
+
+        // Each word must match at least one searchable field (e.g. "monica sosa" or "sosa monica" finds firstname Mónica + lastname Sosa)
+        $fields = self::searchableUserFields();
+
+        $query->where(function ($q) use ($words, $fields) {
+            foreach ($words as $word) {
+                $term = '%' . $word . '%';
+                $q->where(function ($inner) use ($term, $fields) {
+                    foreach ($fields as $field) {
+                        $inner->orWhere("users.{$field}", 'like', $term);
+                    }
+                });
+            }
+        });
+
         return $query;
     }
 

@@ -35,6 +35,16 @@
       <StudentsTable :students="students" :courseId="getCourseSlug(course)" :schoolLevel="selectedLevel.code"
         :school="school" />
 
+      <StudentsTable
+        v-if="pastStudents && pastStudents.length > 0"
+        title="Estudiantes que ya no están en el curso"
+        :students="pastStudents"
+        :courseId="getCourseSlug(course)"
+        :schoolLevel="selectedLevel.code"
+        :school="school"
+        :pastMode="true"
+      />
+
       <FilesTable :files="files" title="Archivos del curso"
         :newFileUrl="hasPermission($page.props, 'course.manage') ? route('school.course.file.create', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course) }) : null"
         :showFileBaseUrl="route('school.course.file.show', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course), file: '##' })"
@@ -76,6 +86,10 @@ const props = defineProps({
   students: {
     type: Array,
     required: true,
+  },
+  pastStudents: {
+    type: Array,
+    default: () => [],
   },
   teachers: {
     type: Array,

@@ -76,8 +76,8 @@ class CourseService
                     }
                 });
             })
-            ->when($request->input('active') !== null, function ($query) use ($request) {
-                $query->where('active', $request->boolean('active'));
+            ->when(($activeFilter = $this->resolveActiveFilter($request)) !== null, function ($query) use ($activeFilter) {
+                $query->where('active', $activeFilter);
             })
             ->when($request->input('year'), function ($query, $year) {
                 $query->whereYear('start_date', $year);
@@ -105,6 +105,24 @@ class CourseService
         ]);
 
         return $result;
+    }
+
+    /**
+     * Resolve active filter from request (handles scalar or array active[label]/active[value] from query string).
+     */
+    private function resolveActiveFilter(Request $request): ?bool
+    {
+        $active = $request->input('active');
+        if ($active === null) {
+            return null;
+        }
+        if (is_array($active) && array_key_exists('value', $active)) {
+            $active = $active['value'];
+        }
+        if ($active === '' || $active === null || (is_string($active) && strtolower($active) === 'null')) {
+            return null;
+        }
+        return filter_var($active, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? null;
     }
 
     /**
@@ -357,14 +375,37 @@ class CourseService
     }
 
 
-    public function getStudents(Course $course, bool $withGuardians, ?string $attendanceDate, bool $withAttendanceSummary): array
+    /** Enrollment scope: 'active' = end_date IS NULL, 'past' = end_date IS NOT NULL, 'all' = no filter */
+    public const STUDENTS_SCOPE_ACTIVE = 'active';
+    public const STUDENTS_SCOPE_PAST = 'past';
+    public const STUDENTS_SCOPE_ALL = 'all';
+
+    /**
+     * @param Course $course
+     * @param bool $withGuardians
+     * @param string|null $attendanceDate
+     * @param bool $withAttendanceSummary
+     * @param string $enrollmentScope 'active' (default), 'past', or 'all'
+     * @return array
+     */
+    public function getStudents(Course $course, bool $withGuardians, ?string $attendanceDate, bool $withAttendanceSummary, string $enrollmentScope = self::STUDENTS_SCOPE_ACTIVE): array
     {
-        $students = $course->courseStudents->load(['roleRelationship.user', 'endReason']);
+        $query = $course->courseStudents();
+        if ($enrollmentScope === self::STUDENTS_SCOPE_ACTIVE) {
+            $query->whereNull('end_date');
+        } elseif ($enrollmentScope === self::STUDENTS_SCOPE_PAST) {
+            $query->whereNotNull('end_date');
+        }
+        // 'all' = no extra constraint
+        $students = $query->get()->load([
+            'roleRelationship.user',
+            'roleRelationship.studentRelationship.currentCourse.school',
+            'roleRelationship.studentRelationship.currentCourse.schoolLevel',
+            'endReason',
+        ]);
         $studentsIds = $students->pluck('roleRelationship.user.id')->toArray();
         $attendanceMinimalSummary = $withAttendanceSummary ? $this->attendanceService->getStudentsAttendanceMinimal($studentsIds, null, null) : null;
-        // student_relationships OMAR PREGUNTA ¿esta relacion es redundante? ¿estuvo hecha para facilitar búsquedas?
         $parsedStudents = $students->map(function ($oneRel) use ($course, $withGuardians, $attendanceDate, $attendanceMinimalSummary) {
-            // dd($oneRel, $course, $oneRel, $withGuardians, $attendanceDate, $attendanceMinimalSummary);
             return $this->parseRelatedStudent($course, $oneRel, $withGuardians, $attendanceDate, $attendanceMinimalSummary);
         }, $students);
         $parsedStudents = $parsedStudents->sortBy([['rel_end_date'], ['lastname'], ['firstname']]);
@@ -412,6 +453,21 @@ class CourseService
             "rel_notes" => $studentRel->notes,
             "rel_custom_fields" => $studentRel->custom_fields,
         ];
+        $studentRelationship = $studentRel->roleRelationship->studentRelationship ?? null;
+        $currentCourse = $studentRelationship?->currentCourse;
+        if ($currentCourse) {
+            $student['current_course'] = [
+                'id' => $currentCourse->id,
+                'nice_name' => $currentCourse->nice_name,
+                'url' => route('school.course.show', [
+                    'school' => $currentCourse->school->slug,
+                    'schoolLevel' => $currentCourse->schoolLevel->code,
+                    'idAndLabel' => $currentCourse->id_and_label,
+                ]),
+            ];
+        } else {
+            $student['current_course'] = null;
+        }
         if ($withGuardians) {
             $student["guardians"] = $this->userservice->getStudentParents($user);
             if (empty($student["phone"]) && !empty($student["guardians"])) {

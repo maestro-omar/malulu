@@ -198,15 +198,16 @@ class CourseController extends SchoolBaseController
 
 
         $students = $this->courseService->getStudents($course, true, null, true);
+        $pastStudents = $this->courseService->getStudents($course, true, null, true, \App\Services\CourseService::STUDENTS_SCOPE_PAST);
         $teachers = $this->courseService->getTeachers($course);
         $files = $this->courseService->getFiles($course, $user);
         $schedule = $this->courseService->getSchedule($course);
-        // dd($schedule);
         return Inertia::render($view, [
             'course' => $course,
             'school' => $school,
             'files' => $files,
             'students' => $students,
+            'pastStudents' => $pastStudents,
             'teachers' => $teachers,
             'schedule' => $schedule,
             'selectedLevel' => $schoolLevel,

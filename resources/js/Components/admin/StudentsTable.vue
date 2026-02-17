@@ -9,14 +9,22 @@
         {{ title }}
       </q-item-section>
 
-      <q-item-section avatar v-if="true">
-        <q-btn size="sm" padding="sm" dense icon="add" color="green" title="Inscribir estudiante">
+      <q-item-section avatar v-if="!pastMode">
+        <q-btn
+          size="sm"
+          padding="sm"
+          dense
+          icon="add"
+          color="green"
+          title="Inscribir estudiante"
+          :href="enrollUrl"
+        >
           Inscribir estudiante
         </q-btn>
       </q-item-section>
     </template>
     <!-- Quasar Table -->
-    <q-table class="mll-table mll-table--students striped-table" dense :rows="students" :columns="columns" row-key="id"
+    <q-table class="mll-table mll-table--students striped-table" dense :rows="students" :columns="tableColumns" row-key="id"
       binary-state-sort :pagination="pagination" :rows-per-page-options="[10, 20, 30, 50, 100]">
 
       <!-- Custom cell for picture -->
@@ -112,6 +120,23 @@
         </q-td>
       </template>
 
+      <!-- Past-only: reason no longer in course -->
+      <template #body-cell-rel_end_reason="props">
+        <q-td :props="props">
+          {{ props.row.rel_end_reason || '—' }}
+        </q-td>
+      </template>
+
+      <!-- Past-only: current course -->
+      <template #body-cell-current_course="props">
+        <q-td :props="props">
+          <a v-if="props.row.current_course?.url" :href="props.row.current_course.url" class="text-primary">
+            {{ props.row.current_course.nice_name }}
+          </a>
+          <span v-else>—</span>
+        </q-td>
+      </template>
+
       <!-- Custom cell for actions -->
       <template #body-cell-actions="props">
         <q-td :props="props">
@@ -124,9 +149,9 @@
             <q-btn v-if="hasPermission($page.props, 'student.edit')" flat round color="warning" icon="edit" size="sm"
               :href="route_school_student(school, props.row, 'edit')" title="Editar" />
 
-            <!-- Delete button - conditional -->
+            <!-- Delete button - only for active list (not past) -->
             <q-btn
-              v-if="hasPermission($page.props, 'course.student.delete') && !isAdmin(props.row) && props.row.id !== $page.props.auth.user.id"
+              v-if="!pastMode && hasPermission($page.props, 'course.student.delete') && !isAdmin(props.row) && props.row.id !== $page.props.auth.user.id"
               flat round color="negative" icon="person_remove" size="sm" @click="removeUserFromCourse(props.row.id)"
               title="Quitar del curso" />
           </div>
@@ -137,7 +162,8 @@
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { computed } from 'vue';
+import { Link } from '@inertiajs/vue3';
 import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
 // import EmailField from '@/Components/admin/mField.vue';
 import GenderBadge from '@/Components/Badges/GenderBadge.vue';
@@ -175,7 +201,16 @@ const props = defineProps({
   courseId: { type: [String, Number], required: true },
   schoolLevel: { type: String, required: true },
   school: { type: Object, required: true },
+  pastMode: { type: Boolean, default: false },
 });
+
+const enrollUrl = computed(() =>
+  route('school.course.student.enroll', {
+    school: props.school.slug,
+    schoolLevel: props.schoolLevel,
+    idAndLabel: props.courseId,
+  })
+);
 
 // Pagination configuration
 const pagination = {
@@ -185,8 +220,8 @@ const pagination = {
   rowsPerPage: 30
 };
 
-// Table columns definition
-const columns = [
+// Base columns (shared by active and past tables)
+const baseColumns = [
   {
     name: 'picture',
     label: '',
@@ -273,15 +308,41 @@ const columns = [
     sortable: false,
     style: 'width: 120px'
   },
-  {
-    name: 'actions',
-    label: 'Acciones',
-    field: 'actions',
-    align: 'center',
-    sortable: false,
-    classes: 'mll-table__cell-actions',
-    headerClasses: 'mll-table__cell-actions-header',
-    style: 'width: 150px'
-  }
 ];
+
+// Past-only columns (reason left, current course)
+const pastOnlyColumns = [
+  {
+    name: 'rel_end_reason',
+    label: 'Motivo de baja',
+    field: 'rel_end_reason',
+    align: 'left',
+    sortable: false,
+  },
+  {
+    name: 'current_course',
+    label: 'Curso actual',
+    field: 'current_course',
+    align: 'left',
+    sortable: false,
+  },
+];
+
+const actionsColumn = {
+  name: 'actions',
+  label: 'Acciones',
+  field: 'actions',
+  align: 'center',
+  sortable: false,
+  classes: 'mll-table__cell-actions',
+  headerClasses: 'mll-table__cell-actions-header',
+  style: 'width: 150px'
+};
+
+// Table columns: past mode adds reason + current course before actions
+const tableColumns = computed(() =>
+  props.pastMode
+    ? [...baseColumns, ...pastOnlyColumns, actionsColumn]
+    : [...baseColumns, actionsColumn]
+);
 </script>

@@ -84,6 +84,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             LucioCoursesFixSeeder::class,
             InitialUsersSeeder::class,
+            UpdateDataTo2026Seeder::class,
         ]);
 
         if ($this->withFakeData)

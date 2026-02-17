@@ -29,7 +29,7 @@
         </div>
         <div class="col-12 col-md-2">
           <q-select v-model="activeStatus" dense outlined :options="activeStatusOptions" option-label="label"
-            option-value="value" @update:model-value="triggerFilter" clearable>
+            option-value="value" emit-value map-options @update:model-value="triggerFilter" clearable>
             <template v-slot:prepend>
               <q-icon name="filter_list" />
             </template>
@@ -172,8 +172,23 @@ const $page = usePage();
 
 const currentYear = computed(() => new Date().getFullYear());
 const selectedYear = ref(props.year || currentYear.value);
-const activeStatus = ref(props.active !== undefined ? props.active : true);
+// Normalize active from props (can be object when coming from URL active[label]/active[value])
+const initialActive = (() => {
+  const a = props.active;
+  if (a === undefined || a === null) return null;
+  if (typeof a === 'object' && a !== null && 'value' in a) return a.value;
+  return a;
+})();
+const activeStatus = ref(initialActive !== undefined ? initialActive : true);
 const selectedShift = ref(props.shift || null);
+
+// Always send scalar active value (true/false/null) so backend receives a proper boolean param
+function getActiveFilterValue() {
+  const v = activeStatus.value;
+  if (v === null || v === undefined) return null;
+  if (typeof v === 'object' && v !== null && 'value' in v) return v.value;
+  return v;
+}
 
 // Search input state (separate from URL search parameter)
 const searchInput = ref(props.filters?.search || '');
@@ -221,7 +236,7 @@ const performSearch = () => {
     direction: sortDirection.value,
     search: searchInput.value || '',
     year: selectedYear.value,
-    active: activeStatus.value,
+    active: getActiveFilterValue(),
     shift: selectedShift.value,
   };
 
@@ -345,7 +360,7 @@ function onRequest({ pagination: newPagination }) {
     direction: descending ? 'desc' : 'asc',
     search: searchInput.value || '', // Use searchInput to preserve what user typed
     year: selectedYear.value,
-    active: activeStatus.value,
+    active: getActiveFilterValue(),
     shift: selectedShift.value,
   };
 
