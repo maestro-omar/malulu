@@ -284,6 +284,8 @@ class AcademicEventController extends SchoolBaseController
                 'id' => $level->id,
                 'code' => $level->code,
                 'name' => $level->name,
+                'years_duration' => $level->pivot->years_duration,
+                'grades' => $level->pivot->grades,
             ];
         })->values();
 

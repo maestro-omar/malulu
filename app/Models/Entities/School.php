@@ -71,7 +71,8 @@ class School extends Model
      */
     public function schoolLevels(): BelongsToMany
     {
-        return $this->belongsToMany(SchoolLevel::class, 'school_level');
+        return $this->belongsToMany(SchoolLevel::class, 'school_level')
+            ->withPivot('years_duration', 'grades');
     }
 
     /**

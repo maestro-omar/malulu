@@ -208,11 +208,21 @@ class SchoolSeeder extends Seeder
 
             $newSchool = School::create($school);
 
-            // Attach the predefined levels
-            $levelIds = array_map(function ($level) {
-                return $this->schoolLevels[$level];
-            }, $levels);
-            $newSchool->schoolLevels()->attach($levelIds);
+            // Attach the predefined levels (null for KINDER; grades=8 for Lucio Lucero primary)
+            $attachData = [];
+            foreach ($levels as $level) {
+                $levelId = $this->schoolLevels[$level];
+                if ($level === SchoolLevel::KINDER) {
+                    $attachData[$levelId] = ['years_duration' => null, 'grades' => null];
+                } else {
+                    $isLucioPrimary = ($school['cue'] ?? '') === School::CUE_LUCIO_LUCERO && $level === SchoolLevel::PRIMARY;
+                    $attachData[$levelId] = [
+                        'years_duration' => 6,
+                        'grades' => $isLucioPrimary ? 8 : 6,
+                    ];
+                }
+            }
+            $newSchool->schoolLevels()->attach($attachData);
 
             // Attach the predefined shifts if any
             if (!empty($shifts)) {

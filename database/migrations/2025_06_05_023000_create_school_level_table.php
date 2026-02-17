@@ -15,18 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('school_id')->constrained()->onDelete('cascade');
             $table->foreignId('school_level_id')->constrained()->onDelete('cascade');
+            $table->unsignedTinyInteger('years_duration')->default(6)->nullable();
+            $table->unsignedTinyInteger('grades')->default(6)->nullable();
             $table->timestamps();
-
-            // Add unique constraint to prevent duplicate school-level combinations
-            $table->unique(['school_id', 'school_level_id']);
         });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('school_level');
     }
 };
