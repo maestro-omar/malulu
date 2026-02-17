@@ -2,7 +2,7 @@
   <q-expansion-item expand-separator default-opened class="mll-table-expansion q-mt-md">
     <template v-slot:header>
       <q-item-section avatar>
-        <q-icon name="person" size="sm" color="accent" />
+        <q-icon name="person" size="sm" :color="pastMode ? 'warning' : 'accent'" />
       </q-item-section>
 
       <q-item-section align="left">
