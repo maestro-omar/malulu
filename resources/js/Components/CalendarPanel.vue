@@ -16,16 +16,16 @@
           <q-card-section>
             <div class="calendar-panel">
               <div class="calendar-panel__controls q-gutter-md">
-                <q-btn-toggle v-model="isListView" toggle-color="info" :options="[
-                  { label: '📅 Calendario', value: false },
-                  { label: '📋 Lista', value: true }
-                ]" class="calendar-panel__view-toggle" />
+                <q-btn-toggle v-model="isListView" toggle-color="info" :options="viewToggleOptions"
+                  class="calendar-panel__view-toggle" no-caps />
 
-                <q-toggle v-if="hasBirthdates" v-model="showBirthdates" label="🎂 Mostrar Cumpleaños" color="warning"
-                  class="calendar-panel__birthdate-toggle" />
+                <q-toggle v-if="hasBirthdates" v-model="showBirthdates" color="warning"
+                  class="calendar-panel__birthdate-toggle" aria-label="Mostrar Cumpleaños">
+                  <template #default>🎂<span class="calendar-panel__control-label"> Mostrar Cumpleaños</span></template>
+                </q-toggle>
 
                 <div v-else class="calendar-panel__no-birthdates text-grey-6">
-                  🎂 Sin Cumpleaños
+                  🎂<span class="calendar-panel__control-label"> Sin Cumpleaños</span>
                 </div>
               </div>
 
@@ -217,8 +217,10 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useQuasar } from 'quasar'
 import { calculateAge, dayNames2Letter, dayNames3Letter, dayNamesFull, monthNames } from '@/Utils/date'
 
+const $q = useQuasar()
 
 const props = defineProps({
   calendarData: {
@@ -240,6 +242,20 @@ console.log('calendarData', props.calendarData)
 const emit = defineEmits(['update:showBirthdatesModel'])
 
 const weekDays = dayNames2Letter
+
+// Icon-only on mobile (lt sm), full labels on sm+
+const viewToggleOptions = computed(() => {
+  const mobile = $q.screen.lt.sm
+  return mobile
+    ? [
+        { label: '📅', value: false },
+        { label: '📋', value: true }
+      ]
+    : [
+        { label: '📅 Calendario', value: false },
+        { label: '📋 Lista', value: true }
+      ]
+})
 
 // Toggle between calendar and list view
 const isListView = ref(false)

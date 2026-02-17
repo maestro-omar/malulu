@@ -2,10 +2,27 @@
 @use '../abstracts/variables'as *;
 @use 'sass:color';
 
+// Column that contains course schedule: allow flex item to shrink so table scrolls inside viewport
+.course-schedule-col {
+  min-width: 0;
+}
+
 // Course Schedule Component Styles
 .course-schedule {
   margin-top: 16px;
   position: relative;
+  max-width: 100%;
+  min-width: 0; // Allow shrinking inside flex/grid so wrapper can scroll
+
+  // On mobile: only this wrapper scrolls horizontally; page stays within viewport
+  &__table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0; // Critical: allow flex/grid child to shrink below content width
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+  }
 
   &__toggle-btn {
     position: absolute;
@@ -47,14 +64,12 @@
 
   &__table {
     border-radius: 6px;
-    overflow: auto;
     border: 1px solid #e0e0e0;
     display: flex;
     flex-direction: column;
     @include mixins.fz(1.1);
     width: fit-content;
-    max-width: 100%;
-    min-width: 400px; // Ensure minimum width for break rows
+    min-width: 300px; // Ensure minimum width for break rows; wrapper scrolls when narrower
 
     // Hide the default table structure
     .q-table__middle {
@@ -209,9 +224,10 @@
     }
   }
 
-  // Additional break row styling
+  // Additional break row styling (min-width keeps table width consistent for horizontal scroll)
   &__body-row--break-period {
     width: auto;
+    min-width: 40px + 60px + (90px * 5); // period + time + 5 days
 
     .course-schedule__break-merged-cell {
       background-color: #fff3e0 !important;

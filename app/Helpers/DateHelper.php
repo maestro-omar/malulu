@@ -2,10 +2,29 @@
 
 namespace App\Helpers;
 
+use Carbon\Carbon;
 use DateTimeImmutable;
 
 class DateHelper
 {
+    /**
+     * Easter Sunday for a given year (Western Christian calendar).
+     * Uses PHP's easter_date() which implements the Anonymous Gregorian algorithm.
+     */
+    public static function easterDate(int $year): Carbon
+    {
+        return Carbon::createFromTimestamp(easter_date($year));
+    }
+
+    /**
+     * Date that is offset days from Easter Sunday (e.g. -47 for Carnival Monday, -2 for Good Friday).
+     * Does not adjust for weekday; use recurrence logic in callers if needed.
+     */
+    public static function easterOffsetDate(int $year, int $offsetDays): Carbon
+    {
+        $easter = self::easterDate($year);
+        return $easter->copy()->addDays($offsetDays);
+    }
 
     public static function tomorrowOrMondayIfWeekend(DateTimeImmutable $startDate): DateTimeImmutable
     {

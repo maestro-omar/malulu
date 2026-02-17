@@ -168,6 +168,17 @@
     gap: 1rem;
   }
 
+  // Text labels hidden on mobile; icons (emojis) always visible
+  &__control-label {
+    display: none;
+  }
+
+  @include mixins.mq(sm) {
+    &__control-label {
+      display: inline;
+    }
+  }
+
 
 
   &__date-range {

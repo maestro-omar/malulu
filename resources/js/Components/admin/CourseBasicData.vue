@@ -77,7 +77,7 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-md-6 course-schedule-col">
         <CourseSchedule :schedule="schedule" :container="false" class="q-mb-md" />
       </div>
 

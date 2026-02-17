@@ -13,7 +13,7 @@ use Spatie\Activitylog\Models\Activity;
 
 class DatabaseSeeder extends Seeder
 {
-    private bool $withFakeDate = true;
+    private bool $withFakeData = false;
     /**
      * Seed the application's database.
      */
@@ -82,10 +82,11 @@ class DatabaseSeeder extends Seeder
         activity()->enableLogging();
 
         $this->call([
+            LucioCoursesFixSeeder::class,
             InitialUsersSeeder::class,
         ]);
 
-        if ($this->withFakeDate)
+        if ($this->withFakeData)
             $this->call([
                 FakeAcademicEventsSeeder::class,
                 // FakeUsersSeeder::class,

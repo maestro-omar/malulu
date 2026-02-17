@@ -32,7 +32,8 @@ class InitialUsersSeeder extends Seeder
     private $jsonFolder;
     private $jsonStaffFileName = 'ce-8_initial_staff.json';
     private $jsonStudentsFileName = 'ce-8_initial_students_with_guardian.json';
-    
+    private $jsonForYear = 2025;
+
     public function __construct()
     {
         // Use absolute path based on seeder file location
@@ -87,28 +88,35 @@ class InitialUsersSeeder extends Seeder
             throw new \Exception('Default province or country not found. Please run ProvinceSeeder and CountrySeeder first.');
         }
 
-        // Get all active courses for the default school and primary level
-        // Use Carbon to get the start of the current year (format: Y-m-d)
-        $currentYearStart = now()->startOfYear()->format('Y-m-d');
+        // Get courses that overlap with jsonForYear academic year only
+        $academicYear = AcademicYear::findByYear($this->jsonForYear);
+        if (!$academicYear) {
+            throw new \Exception("Academic year {$this->jsonForYear} not found. Run AcademicYearSeeder or add the year.");
+        }
+        $ayStart = $academicYear->start_date->format('Y-m-d');
+        $ayEnd = $academicYear->end_date->format('Y-m-d');
         $this->courses = Course::where('school_id', $this->defaultSchool->id)
             ->where('school_level_id', $this->primaryLevel->id)
-            ->where('start_date', '>=', $currentYearStart)
-            ->where('active', true)
+            ->where('start_date', '<=', $ayEnd)
+            ->where(function ($q) use ($ayStart) {
+                $q->where('end_date', '>=', $ayStart)->orWhereNull('end_date');
+            })
+            // ->where('active', true) bring if it even inactive, then will promote students to next course
             ->get();
     }
     private function createInitiaStaffUsers()
     {
         $jsonPath = $this->jsonFolder . $this->jsonStaffFileName;
-        
+
         if (!file_exists($jsonPath)) {
             throw new \Exception("JSON file not found: {$jsonPath}. Expected path: " . realpath($this->jsonFolder) . DIRECTORY_SEPARATOR . $this->jsonStaffFileName);
         }
-        
+
         $jsonContent = file_get_contents($jsonPath);
         if ($jsonContent === false) {
             throw new \Exception("Failed to read JSON file: {$jsonPath}");
         }
-        
+
         $jsonData = json_decode($jsonContent, true);
         if ($jsonData === null && json_last_error() !== JSON_ERROR_NONE) {
             throw new \Exception("Invalid JSON in file: {$jsonPath}. Error: " . json_last_error_msg());
@@ -123,16 +131,16 @@ class InitialUsersSeeder extends Seeder
     private function createInitiaStudentsUsers()
     {
         $jsonPath = $this->jsonFolder . $this->jsonStudentsFileName;
-        
+
         if (!file_exists($jsonPath)) {
             throw new \Exception("JSON file not found: {$jsonPath}. Expected path: " . realpath($this->jsonFolder) . DIRECTORY_SEPARATOR . $this->jsonStudentsFileName);
         }
-        
+
         $jsonContent = file_get_contents($jsonPath);
         if ($jsonContent === false) {
             throw new \Exception("Failed to read JSON file: {$jsonPath}");
         }
-        
+
         $jsonData = json_decode($jsonContent, true);
         if ($jsonData === null && json_last_error() !== JSON_ERROR_NONE) {
             throw new \Exception("Invalid JSON in file: {$jsonPath}. Error: " . json_last_error_msg());
@@ -452,6 +460,13 @@ class InitialUsersSeeder extends Seeder
 
         $courses = $this->normalizeCourses($shift, $userData['Agrupamientos']);
 
+        // DEBUG: vivianamrotelli@sanluis.edu.ar (ce-8_initial_staff.json:419)
+        if (($userData['Email'] ?? '') === 'vivianamrotelli@sanluis.edu.ar') {
+            $this->command->info('[DEBUG] Staff: ' . ($userData['Email'] ?? '') . ' | Agrupamientos: ' . ($userData['Agrupamientos'] ?? '') . ' | Shift: ' . ($shift->name ?? $shift->code ?? '') . ' | Courses count: ' . count($courses));
+            $this->command->info('[DEBUG] Courses: ' . json_encode($courses, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            $this->command->info('[DEBUG] Available courses (number,letter,shift_id): ' . $this->courses->map(fn($c) => $c->number . $c->letter . '@' . $c->school_shift_id)->implode(', '));
+        }
+
         // Create role details
         $details = [
             'start_date' => $this->parseDate($userData['Fecha de ingreso a la escuela'] ?? '') ?: now()->subYears(2),
@@ -758,8 +773,9 @@ class InitialUsersSeeder extends Seeder
             return $this->getCoursesByNumbers($shift, [1, 2, 3], false);
         }
 
+        // 7/8: take only grade 7 (Lucio's grade 7 becomes 8 mid-year; assigning both would reassign same cohort)
         if (str_contains(strtolower($agrupamiento), '7/8') || str_contains(strtolower($agrupamiento), '7mos / 8vos')) {
-            return $this->getCoursesByNumbers($shift, [7, 8], false);
+            return $this->getCoursesByNumbers($shift, [7], false);
         }
 
         if (str_contains(strtolower($agrupamiento), '7mos') || str_contains(strtolower($agrupamiento), '7mo')) {
@@ -846,18 +862,29 @@ class InitialUsersSeeder extends Seeder
     }
 
 
-    private function getCoursesByNumbers(SchoolShift $shift, $numbers, ?bool $specialAddToNumber = false)
+    private function getCoursesByNumbers(SchoolShift $shift, $numbers, ?bool $specialAddToNumber = false, ?bool $nextIfInactiveAndExists = true)
     {
         $courses = [];
 
         foreach ($numbers as $number) {
             $numberCourses = $this->courses->where('number', $number)->where('school_shift_id', $shift->id);
             foreach ($numberCourses as $course) {
-                $courses[] = [
+                $addCourse = [
                     'id' => $course->id,
                     'number' => $course->number,
                     'letter' => $course->letter
                 ];
+                if ($nextIfInactiveAndExists && !$course->active) {
+                    $nextCourse = $course->nextCourses()->first();
+                    if ($nextCourse) { // && $nextCourse->active
+                        $addCourse = [
+                            'id' => $nextCourse->id,
+                            'number' => $nextCourse->number,
+                            'letter' => $nextCourse->letter
+                        ];
+                    }
+                }
+                $courses[] = $addCourse;
             }
         }
         return $courses;

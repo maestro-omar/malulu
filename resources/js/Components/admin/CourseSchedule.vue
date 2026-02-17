@@ -5,7 +5,8 @@
     <q-btn :icon="isVisible ? 'visibility_off' : 'visibility'" :label="isVisible ? 'Ocultar horario' : 'Mostrar horario'"
       color="primary" size="sm" unelevated class="course-schedule__toggle-btn" @click="isVisible = !isVisible" />
     <transition name="course-schedule-slide">
-      <div v-show="isVisible" class="course-schedule__table">
+      <div v-show="isVisible" class="course-schedule__table-wrapper">
+      <div class="course-schedule__table">
       <!-- Header -->
       <div class="course-schedule__header">
         <div class="course-schedule__header-cell course-schedule__header-cell--period">#</div>
@@ -47,6 +48,7 @@
           </template>
         </div>
       </div>
+    </div>
     </div>
     </transition>
   </div>

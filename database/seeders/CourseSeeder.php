@@ -16,12 +16,17 @@ class CourseSeeder extends Seeder
     private $coursesBySchool = [];
     private $SIMPLE_LUCIO_LUCERO = false;
 
+    /** Skip creating Lucio Lucero primary courses; LucioCoursesFixSeeder handles the 8-grade structure. */
+    private $skipLucioPrimary = false;
+
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
         $this->SIMPLE_LUCIO_LUCERO = config('malulu.one_school_cue') === School::CUE_LUCIO_LUCERO;
+        $this->skipLucioPrimary = $this->SIMPLE_LUCIO_LUCERO
+            && filter_var(config('malulu.one_school_only_primary'), FILTER_VALIDATE_BOOLEAN) === true;
 
         $schoolLevels = SchoolLevel::all();
 
@@ -173,6 +178,9 @@ class CourseSeeder extends Seeder
             }
 
             foreach ($schoolLevels as $level) {
+                if ($this->skipLucioPrimary && $school->code === School::CUE_LUCIO_LUCERO && $level->code === SchoolLevel::PRIMARY) {
+                    continue; // LucioCoursesFixSeeder creates the 8-grade structure
+                }
                 if (isset($coursesByLevel[$level->code])) {
                     foreach ($coursesByLevel[$level->code] as $courseData) {
                         $coursesPerShift = $courseData['courses_per_shift'];

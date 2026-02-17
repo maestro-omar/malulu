@@ -310,7 +310,7 @@ class CourseService
 
         if ($existing) {
             throw ValidationException::withMessages([
-                'assignment' => ['El docente ya se encontraba asignado a este curso.'],
+                'assignment' => ['El docente ya se encontraba asignado a este curso ' . $existing->course->nice_name . ' hasta el ' . $existing->end_date->format('d/m/Y') . '.'],
             ]);
         }
 
