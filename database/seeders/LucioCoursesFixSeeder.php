@@ -283,18 +283,23 @@ class LucioCoursesFixSeeder extends Seeder
             })
             ->first();
 
-        if ($previousCourseId) {
+        // Future courses (start after today): keep inactive, don't deactivate previous (students still in prior course)
+        $isFutureCourse = $startDate->isFuture();
+
+        if (!$isFutureCourse && $previousCourseId) {
             Course::where('id', $previousCourseId)->update([
                 'active' => false,
             ]);
         }
+
+        $active = !$isFutureCourse;
 
         if ($existing) {
             $existing->update([
                 'start_date' => $startDate,
                 'end_date' => $endDate,
                 'previous_course_id' => $previousCourseId,
-                'active' => true,
+                'active' => $active,
             ]);
             $this->touchedCourseIds[] = $existing->id;
             return;
@@ -310,7 +315,7 @@ class LucioCoursesFixSeeder extends Seeder
             'name' => null,
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'active' => true,
+            'active' => $active,
         ]);
         $this->touchedCourseIds[] = $course->id;
     }
