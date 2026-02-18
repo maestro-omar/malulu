@@ -244,7 +244,8 @@ class CourseController extends SchoolBaseController
 
         $students = $this->courseService->getStudents($course, true, null, true);
         $pastStudents = $this->courseService->getStudents($course, true, null, true, \App\Services\CourseService::STUDENTS_SCOPE_PAST);
-        $teachers = $this->courseService->getTeachers($course);
+        $teachers = $this->courseService->getTeachers($course, \App\Services\CourseService::TEACHERS_SCOPE_ACTIVE);
+        $pastTeachers = $this->courseService->getTeachers($course, \App\Services\CourseService::TEACHERS_SCOPE_PAST);
         $files = $this->courseService->getFiles($course, $user);
         $schedule = $this->courseService->getSchedule($course);
         return Inertia::render($view, [
@@ -254,6 +255,7 @@ class CourseController extends SchoolBaseController
             'students' => $students,
             'pastStudents' => $pastStudents,
             'teachers' => $teachers,
+            'pastTeachers' => $pastTeachers,
             'schedule' => $schedule,
             'selectedLevel' => $schoolLevel,
             'breadcrumbs' => Breadcrumbs::generate('school.course.show', $school, $schoolLevel, $course),

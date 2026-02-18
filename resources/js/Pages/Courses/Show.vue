@@ -37,6 +37,16 @@
       <TeachersTable :teachers="teachers" :courseId="getCourseSlug(course)" :schoolLevel="selectedLevel.code"
         :school="school" />
 
+      <TeachersTable
+        v-if="pastTeachers && pastTeachers.length > 0"
+        title="Docentes que ya no están en el curso"
+        :teachers="pastTeachers"
+        :courseId="getCourseSlug(course)"
+        :schoolLevel="selectedLevel.code"
+        :school="school"
+        :pastMode="true"
+      />
+
       <StudentsTable :students="students" :courseId="getCourseSlug(course)" :schoolLevel="selectedLevel.code"
         :school="school" />
 
@@ -99,6 +109,10 @@ const props = defineProps({
   teachers: {
     type: Array,
     required: true,
+  },
+  pastTeachers: {
+    type: Array,
+    default: () => [],
   },
   files: {
     type: Array

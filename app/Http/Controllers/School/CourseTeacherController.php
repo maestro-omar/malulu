@@ -83,4 +83,26 @@ class CourseTeacherController extends SchoolBaseController
             ])
             ->with('success', $result['message']);
     }
+
+    /**
+     * Remove a teacher from the course (end their assignment).
+     */
+    public function destroy(School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel, int $teacherCourse)
+    {
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+
+        $result = $this->teacherService->unassignTeacherFromCourse($teacherCourse, $course->id);
+
+        if (isset($result['error'])) {
+            return back()->withErrors(['assignment' => $result['error']]);
+        }
+
+        return redirect()
+            ->route('school.course.show', [
+                'school' => $school->slug,
+                'schoolLevel' => $schoolLevel->code,
+                'idAndLabel' => $course->id_and_label,
+            ])
+            ->with('success', $result['message']);
+    }
 }

@@ -70,6 +70,29 @@
                     {{ props.row.email || '—' }}
                   </q-td>
                 </template>
+                <template #body-cell-role="props">
+                  <q-td :props="props">
+                    <RoleBadge v-if="props.row.role" :role="props.row.role" size="sm" />
+                    <span v-else>—</span>
+                  </q-td>
+                </template>
+                <template #body-cell-subject="props">
+                  <q-td :props="props">{{ props.row.subject || '—' }}</q-td>
+                </template>
+                <template #body-cell-shifts="props">
+                  <q-td :props="props">
+                    <template v-if="props.row.shifts && props.row.shifts.length">
+                      <SchoolShiftBadge
+                        v-for="shift in props.row.shifts"
+                        :key="shift.id"
+                        :shift="shift"
+                        size="sm"
+                        class="q-mr-xs"
+                      />
+                    </template>
+                    <span v-else>—</span>
+                  </q-td>
+                </template>
                 <template #body-cell-courses="props">
                   <q-td :props="props">
                     <template v-if="(props.row.courses || []).length">
@@ -84,7 +107,10 @@
                 </template>
                 <template #body-cell-actions="props">
                   <q-td :props="props">
-                    <q-btn size="sm" color="green" icon="person_add" label="Asignar" @click="openAssign(props.row)" />
+                    <template v-if="props.row.already_assigned">
+                      <q-btn size="sm" color="negative" icon="person_remove" label="Quitar" @click="openRemove(props.row)" />
+                    </template>
+                    <q-btn v-else size="sm" color="green" icon="person_add" label="Asignar" @click="openAssign(props.row)" />
                   </q-td>
                 </template>
               </q-table>
@@ -108,6 +134,22 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
+
+        <!-- Dialog: confirm remove -->
+        <q-dialog v-model="showConfirmRemove" persistent>
+          <q-card style="min-width: 320px">
+            <q-card-section>
+              <div class="text-h6">Quitar docente del curso</div>
+              <div class="q-mt-sm">
+                ¿Quitar a <strong>{{ teacherToRemove ? `${teacherToRemove.firstname} ${teacherToRemove.lastname}` : '' }}</strong> de este curso?
+              </div>
+            </q-card-section>
+            <q-card-actions align="right">
+              <q-btn flat label="Cancelar" v-close-popup />
+              <q-btn unelevated color="negative" label="Quitar" @click="submitRemove" />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
       </div>
     </template>
   </AuthenticatedLayout>
@@ -121,6 +163,8 @@ import AdminHeader from '@/Sections/AdminHeader.vue';
 import CourseBasicData from '@/Components/admin/CourseBasicData.vue';
 import { getCourseSlug } from '@/Utils/strings';
 import { route_school_staff } from '@/Utils/routes';
+import RoleBadge from '@/Components/Badges/RoleBadge.vue';
+import SchoolShiftBadge from '@/Components/Badges/SchoolShiftBadge.vue';
 import noImage from '@images/no-image-person.png';
 import axios from 'axios';
 
@@ -188,6 +232,9 @@ const columns = [
   { name: 'firstname', label: 'Nombre', field: 'firstname', align: 'left' },
   { name: 'lastname', label: 'Apellido', field: 'lastname', align: 'left' },
   { name: 'email', label: 'Email', field: 'email', align: 'left' },
+  { name: 'role', label: 'Rol', field: 'role', align: 'left', style: 'width: 140px' },
+  { name: 'subject', label: 'Materia', field: 'subject', align: 'left', style: 'width: 120px' },
+  { name: 'shifts', label: 'Turno', field: 'shifts', align: 'center', style: 'width: 120px' },
   { name: 'courses', label: 'Cursos actuales', field: 'courses', align: 'left' },
   { name: 'actions', label: '', field: 'actions', align: 'right', sortable: false },
 ];
@@ -195,6 +242,8 @@ const columns = [
 const selectedTeacher = ref(null);
 const showConfirmAssign = ref(false);
 const inCharge = ref(false);
+const teacherToRemove = ref(null);
+const showConfirmRemove = ref(false);
 
 function openAssign(row) {
   selectedTeacher.value = row;
@@ -210,5 +259,23 @@ function submitAssign() {
     in_charge: inCharge.value,
   });
   selectedTeacher.value = null;
+}
+
+function openRemove(row) {
+  teacherToRemove.value = row;
+  showConfirmRemove.value = true;
+}
+
+function submitRemove() {
+  if (!teacherToRemove.value?.rel_id) return;
+  showConfirmRemove.value = false;
+  const url = route('school.course.teacher.remove', {
+    school: props.school.slug,
+    schoolLevel: props.selectedLevel.code,
+    idAndLabel: getCourseSlug(props.course),
+    teacherCourse: teacherToRemove.value.rel_id,
+  });
+  router.delete(url);
+  teacherToRemove.value = null;
 }
 </script>

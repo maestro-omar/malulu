@@ -321,18 +321,33 @@ class CourseService
         }
 
         // Check if already assigned (active)
-        $existing = TeacherCourse::where('role_relationship_id', $roleRelationshipId)
+        $existingActive = TeacherCourse::where('role_relationship_id', $roleRelationshipId)
             ->where('course_id', $courseId)
             ->whereNull('end_date')
             ->first();
 
-        if ($existing) {
+        if ($existingActive) {
             throw ValidationException::withMessages([
-                'assignment' => ['El docente ya se encontraba asignado a este curso ' . $existing->course->nice_name . ' hasta el ' . $existing->end_date->format('d/m/Y') . '.'],
+                'assignment' => ['El docente ya está asignado a este curso.'],
             ]);
         }
 
-        // Create assignment
+        // If there is a past assignment (ended), reopen it instead of creating a duplicate
+        $pastAssignment = TeacherCourse::where('role_relationship_id', $roleRelationshipId)
+            ->where('course_id', $courseId)
+            ->whereNotNull('end_date')
+            ->first();
+
+        if ($pastAssignment) {
+            $pastAssignment->end_date = null;
+            $pastAssignment->start_date = \Carbon\Carbon::parse($data['start_date']);
+            $pastAssignment->in_charge = $data['in_charge'] ?? false;
+            $pastAssignment->notes = $data['notes'] ?? null;
+            $pastAssignment->save();
+            return $pastAssignment;
+        }
+
+        // Create new assignment
         return TeacherCourse::create([
             'role_relationship_id' => $roleRelationshipId,
             'course_id' => $courseId,
@@ -380,6 +395,11 @@ class CourseService
     public const STUDENTS_SCOPE_PAST = 'past';
     public const STUDENTS_SCOPE_ALL = 'all';
 
+    /** Teacher assignment scope: same as students */
+    public const TEACHERS_SCOPE_ACTIVE = 'active';
+    public const TEACHERS_SCOPE_PAST = 'past';
+    public const TEACHERS_SCOPE_ALL = 'all';
+
     /**
      * @param Course $course
      * @param bool $withGuardians
@@ -412,13 +432,26 @@ class CourseService
         return $parsedStudents->values()->all();
     }
 
-    public function getTeachers(Course $course): array
+    /**
+     * @param string $scope TEACHERS_SCOPE_ACTIVE (default), TEACHERS_SCOPE_PAST, or TEACHERS_SCOPE_ALL
+     */
+    public function getTeachers(Course $course, string $scope = self::TEACHERS_SCOPE_ACTIVE): array
     {
-        $teachers = $course->courseTeachers->load(['roleRelationship.user',]);
-        $parsedTeachers =  $teachers->map(function ($oneRel) {
+        $query = $course->courseTeachers();
+        if ($scope === self::TEACHERS_SCOPE_ACTIVE) {
+            $query->whereNull('end_date');
+        } elseif ($scope === self::TEACHERS_SCOPE_PAST) {
+            $query->whereNotNull('end_date');
+        }
+        $teachers = $query->get()->load(['roleRelationship.user', 'roleRelationship.role', 'roleRelationship.workerRelationship.classSubject']);
+        $parsedTeachers = $teachers->map(function ($oneRel) {
             return $this->parseRelatedTeacher($oneRel);
         });
-        $parsedTeachers = $parsedTeachers->sortBy([['rel.in_charge'], ['user.lastname'], ['user.firstname']]);
+        if ($scope === self::TEACHERS_SCOPE_PAST) {
+            $parsedTeachers = $parsedTeachers->sortBy([['rel_end_date'], ['lastname'], ['firstname']]);
+        } else {
+            $parsedTeachers = $parsedTeachers->sortBy([['rel_in_charge', true], ['lastname'], ['firstname']]);
+        }
         return $parsedTeachers->values()->all();
     }
 

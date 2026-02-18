@@ -36,20 +36,19 @@ class TeacherService
     }
 
     /**
-     * Search staff/teachers of the school for course assignment (exclude already actively assigned to this course).
-     * Uses UserService::getStaffBySchool. Builds a GET-style request so search is in the query (reliable for addTextSearch).
+     * Search staff/teachers of the school for course assignment.
+     * Includes everyone: already assigned get already_assigned: true and rel_id (TeacherCourse id) so frontend can show "Quitar".
      */
     public function searchTeachersForCourse(int $schoolId, int $courseId, ?string $search): array
     {
-        $assignedUserIds = TeacherCourse::query()
+        $assignedMap = TeacherCourse::query()
             ->where('teacher_courses.course_id', $courseId)
             ->whereNull('teacher_courses.end_date')
             ->join('role_relationships', 'teacher_courses.role_relationship_id', '=', 'role_relationships.id')
             ->whereNull('role_relationships.deleted_at')
-            ->pluck('role_relationships.user_id')
-            ->unique()
-            ->values()
-            ->all();
+            ->select('teacher_courses.id as rel_id', 'role_relationships.user_id')
+            ->get()
+            ->keyBy('user_id');
 
         $request = Request::create('/', 'GET', [
             'search' => $search ?? '',
@@ -60,10 +59,11 @@ class TeacherService
 
         $result = [];
         foreach ($data as $user) {
-            if (in_array($user['id'], $assignedUserIds, true)) {
-                continue;
-            }
+            $assignment = $assignedMap->get($user['id']);
             $courses = $user['courses'] ?? [];
+            $role = isset($user['roles'][0]) ? $user['roles'][0] : null;
+            $subject = $this->extractSubjectFromStaffUser($user);
+            $shifts = $this->extractShiftsFromStaffUser($user);
             $result[] = [
                 'id' => $user['id'],
                 'firstname' => $user['firstname'] ?? '',
@@ -72,10 +72,69 @@ class TeacherService
                 'email' => $user['email'] ?? null,
                 'picture' => $user['picture'] ?? null,
                 'courses' => $courses,
+                'role' => $role,
+                'subject' => $subject,
+                'shifts' => $shifts,
+                'already_assigned' => $assignment !== null,
+                'rel_id' => $assignment?->rel_id,
             ];
         }
 
         return $result;
+    }
+
+    private function extractSubjectFromStaffUser(array $user): ?string
+    {
+        $wr = $user['workerRelationships'] ?? null;
+        if ($wr instanceof \Illuminate\Support\Collection && $wr->isNotEmpty()) {
+            $first = $wr->first();
+            return $first->classSubject->name ?? null;
+        }
+        if (is_array($wr) && ! empty($wr)) {
+            $first = $wr[0];
+            return $first['class_subject']['name'] ?? $first['classSubject']['name'] ?? null;
+        }
+        return null;
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string, code: string}>
+     */
+    private function extractShiftsFromStaffUser(array $user): array
+    {
+        $courses = $user['courses'] ?? [];
+        $shiftById = [];
+        foreach (collect($courses)->pluck('school_shift')->filter() as $s) {
+            $id = \is_array($s) ? ($s['id'] ?? null) : $s->id;
+            $name = \is_array($s) ? ($s['name'] ?? null) : $s->name;
+            $code = \is_array($s) ? ($s['code'] ?? null) : $s->code;
+            if ($id !== null) {
+                $shiftById[$id] = ['id' => $id, 'name' => $name ?? '', 'code' => $code ?? ''];
+            }
+        }
+        return array_values($shiftById);
+    }
+
+    /**
+     * End a teacher's assignment to a course (set end_date on TeacherCourse).
+     *
+     * @return array{message: string}|array{error: string}
+     */
+    public function unassignTeacherFromCourse(int $teacherCourseId, int $courseId): array
+    {
+        $teacherCourse = TeacherCourse::where('id', $teacherCourseId)
+            ->where('course_id', $courseId)
+            ->whereNull('end_date')
+            ->first();
+
+        if (! $teacherCourse) {
+            return ['error' => 'Asignación no encontrada o ya finalizada.'];
+        }
+
+        $teacherCourse->end_date = now();
+        $teacherCourse->save();
+
+        return ['message' => 'Docente quitado del curso correctamente.'];
     }
 
     /**

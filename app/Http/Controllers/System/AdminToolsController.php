@@ -53,6 +53,11 @@ class AdminToolsController extends SystemBaseController
             }
 
             // Build the command with options
+            // For db:seed, allow specifying a specific seeder class via options
+            if ($command === 'db:seed' && isset($options['--class'])) {
+                // --class option is already in $options, Artisan::call will handle it
+            }
+            
             $exitCode = Artisan::call($command, $options);
             $output = Artisan::output();
 

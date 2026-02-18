@@ -57,6 +57,8 @@ return [
     'schedule' => 'horario',
     'inscribir' => 'inscribir',
     'asignar-docente' => 'asignar-docente',
+    'teacher' => 'docente',
+    'remove' => 'quitar',
 
     // Public routes slugs
     // 'school' and 'slug' are parameters, not slugs to translate
