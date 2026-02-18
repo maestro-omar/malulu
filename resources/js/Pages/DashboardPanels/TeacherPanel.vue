@@ -142,7 +142,7 @@
                   <div class="dbsub-panel__course-content column items-center">
                     <div class="dbsub-panel__course-name text-center q-mb-sm">
                       <a :href="course.url" class="dbsub-panel__course-link">
-                        {{ course.nice_name }}
+                        {{ course.nice_name }}{{ course.start_date ? ' (' + getFullYear(course.start_date) + ')' : '' }}
                       </a>
                     </div>
 
@@ -184,6 +184,7 @@
 <script setup>
 import { computed } from 'vue'
 import ScheduleSimple from '@/Components/ScheduleSimple.vue'
+import { getFullYear } from '@/Utils/date'
 
 const props = defineProps({
   data: {

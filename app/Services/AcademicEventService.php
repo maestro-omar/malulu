@@ -189,8 +189,8 @@ class AcademicEventService
         $toCarbon = Carbon::parse($to);
 
         // Get event types once (optimization)
-        $startEventType = EventType::where('code', EventType::CODE_INICIO_CLASES)->first();
-        $endEventType = EventType::where('code', EventType::CODE_FIN_CLASES)->first();
+        $startEventType = EventType::where('code', EventType::CODE_INICIO_CICLO)->first();
+        $endEventType = EventType::where('code', EventType::CODE_FIN_CICLO)->first();
         $winterStartEventType = EventType::where('code', EventType::CODE_INICIO_INVIERNO)->first();
         $winterEndEventType = EventType::where('code', EventType::CODE_FIN_INVIERNO)->first();
         $suspensionEventType = EventType::where('code', EventType::CODE_SUSPENCION_PROVINCIAL)->first();

@@ -60,6 +60,17 @@
       <q-table class="mll-table mll-table--courses striped-table" dense :rows="courses.data" :columns="columns"
         row-key="id" v-model:pagination="pagination" :loading="loading" @request="onRequest" binary-state-sort>
 
+        <!-- Custom cell for course label (link to see) -->
+        <template #body-cell-nice_name="props">
+          <q-td :props="props">
+            <Link
+              :href="route('school.course.show', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(props.row) })"
+              class="text-primary">
+              {{ props.row.nice_name }}
+            </Link>
+          </q-td>
+        </template>
+
         <!-- Custom cell for shift -->
         <template #body-cell-shift="props">
           <q-td :props="props">

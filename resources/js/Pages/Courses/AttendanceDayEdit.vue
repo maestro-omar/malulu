@@ -116,7 +116,7 @@
 
                 <!-- Student Name and Summary -->
                 <div class="col">
-                  <div class="text-h6 text-weight-bold">
+                  <div class="student-attendance-card__name text-h6 text-weight-bold">
                     {{ student.firstname }} {{ student.lastname }}
                   </div>
 

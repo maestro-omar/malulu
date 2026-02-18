@@ -35,8 +35,10 @@ class EventsSeeder extends Seeder
 
             ['code' => EventType::CODE_CONMEMORACION_ESCOLAR, 'scope' => EventType::SCOPE_ESCOLAR, 'name' => 'Conmemoración escolar'],
             ['code' => EventType::CODE_SUSPENCION_ESCOLAR, 'scope' => EventType::SCOPE_ESCOLAR, 'name' => 'Suspensión de clases'],
-            ['code' => EventType::CODE_INICIO_CLASES, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Inicio del clases'],
+            ['code' => EventType::CODE_INICIO_CICLO, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Inicio ciclo lectivo'],
+            ['code' => EventType::CODE_INICIO_CLASES, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Inicio de clases'],
             ['code' => EventType::CODE_FIN_CLASES, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Fin del clases'],
+            ['code' => EventType::CODE_FIN_CICLO, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Fin de ciclo lectivo'],
             ['code' => EventType::CODE_INICIO_INVIERNO, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Inicio de las vacaciones de invierno'],
             ['code' => EventType::CODE_FIN_INVIERNO, 'scope' => EventType::SCOPE_PROVINCIAL, 'name' => 'Fin de las vacaciones de invierno'],
             ['code' => EventType::CODE_ACADEMICO_ESCOLAR, 'scope' => EventType::SCOPE_ESCOLAR, 'name' => 'Evento académico'],

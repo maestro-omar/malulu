@@ -4,8 +4,11 @@
       <!-- Welcome Section -->
       <div v-if="title" class="col-12">
         <q-card class="dbsub-panel__welcome-card">
-          <q-card-section>
-            <h2 class="dbsub-panel__title">{{ title }}</h2>
+          <q-card-section class="row items-center no-wrap">
+            <h2 class="dbsub-panel__title q-ma-none">{{ title }}</h2>
+            <q-space />
+            <q-btn dense no-caps color="primary" text-color="white" icon="calendar_month" label="Ver calendario completo"
+              :href="calendarIndexUrl" class="calendar-panel__full-link" />
           </q-card-section>
         </q-card>
       </div>
@@ -240,6 +243,8 @@ const props = defineProps({
 console.log('calendarData', props.calendarData)
 
 const emit = defineEmits(['update:showBirthdatesModel'])
+
+const calendarIndexUrl = route('calendar.index')
 
 const weekDays = dayNames2Letter
 
