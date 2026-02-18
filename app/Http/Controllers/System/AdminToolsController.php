@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class AdminToolsController extends SystemBaseController
 {
@@ -33,7 +35,14 @@ class AdminToolsController extends SystemBaseController
 
         try {
             $command = $request->input('command');
-            $options = $request->input('options', []);
+            $optionsInput = $request->input('options', []);
+            
+            // Parse options if it's a JSON string (from streaming)
+            if (is_string($optionsInput)) {
+                $options = json_decode($optionsInput, true) ?: [];
+            } else {
+                $options = $optionsInput;
+            }
 
             // Increase execution time and memory limit for long-running commands
             // Especially important for migrations and seeders
@@ -52,6 +61,13 @@ class AdminToolsController extends SystemBaseController
                 return $this->dropAllTables($request);
             }
 
+            // Streaming disabled for now - show output after completion
+            // Uncomment below to enable streaming (may not work in all environments)
+            // $stream = $request->input('stream', false);
+            // if ($stream) {
+            //     return $this->executeCommandStreaming($command, $options, $request);
+            // }
+
             // Build the command with options
             // For db:seed, allow specifying a specific seeder class via options
             if ($command === 'db:seed' && isset($options['--class'])) {
@@ -61,21 +77,118 @@ class AdminToolsController extends SystemBaseController
             $exitCode = Artisan::call($command, $options);
             $output = Artisan::output();
 
+            // Determine success based on exit code (0 = success, non-zero = error)
+            // Note: Laravel's Artisan::call() returns 0 on success, but some commands
+            // might return non-zero even on partial success (e.g., seeders with warnings)
+            $success = $exitCode === 0;
+            
+            // For seeders, even if exit code is 0, check if output indicates real errors
+            // Seeders might output "Error creating user..." via echo but still complete successfully
+            $outputLower = strtolower($output);
+            $hasRealErrors = false;
+            
+            if ($command === 'db:seed') {
+                // For seeders, check if there are fatal errors vs warnings
+                // If output contains "Error" but exit code is 0, it's likely just warnings
+                // We'll still mark as success if exit code is 0, but log it
+                if ($success && str_contains($outputLower, 'error')) {
+                    // Check if it's just warnings (echo statements) vs real exceptions
+                    // Real exceptions would cause non-zero exit code
+                    Log::warning('Admin Tools - Seeder completed with warnings', [
+                        'command' => $command,
+                        'options' => $options,
+                        'output_preview' => substr($output, 0, 500),
+                    ]);
+                }
+            }
+
             // Log the command execution
             Log::info('Admin Tools - Artisan command executed', [
                 'command' => $command,
                 'options' => $options,
                 'exit_code' => $exitCode,
+                'success' => $success,
+                'output_length' => strlen($output),
+                'has_warnings' => $success && str_contains($outputLower, 'error'),
                 'ip' => $request->ip(),
                 'user' => Auth::id(),
             ]);
 
-            return response()->json([
-                'success' => true,
-                'exit_code' => $exitCode,
+            // Handle large outputs - truncate if too large to avoid JSON encoding issues
+            $maxOutputLength = 500000; // 500KB max
+            $outputLength = strlen($output);
+            $truncated = false;
+            
+            if ($outputLength > $maxOutputLength) {
+                $truncated = true;
+                $output = substr($output, 0, $maxOutputLength) . "\n\n... [Output truncated - " . number_format($outputLength) . " bytes total, showing first " . number_format($maxOutputLength) . " bytes]";
+                Log::warning('Admin Tools - Output truncated due to size', [
+                    'command' => $command,
+                    'original_length' => $outputLength,
+                    'truncated_to' => $maxOutputLength,
+                ]);
+            }
+            
+            // Ensure success is explicitly a boolean (not null/undefined)
+            $responseData = [
+                'success' => (bool) $success,
+                'exit_code' => (int) $exitCode,
                 'output' => $output,
-                'message' => 'Command executed successfully.',
+                'output_length' => $outputLength,
+                'truncated' => $truncated,
+                'message' => $success 
+                    ? 'Command executed successfully.' 
+                    : 'Command completed with exit code ' . $exitCode . '.',
+            ];
+            
+            // Log the response data being sent for debugging (but truncate output in log)
+            Log::debug('Admin Tools - Sending response', [
+                'success' => $responseData['success'],
+                'success_type' => gettype($responseData['success']),
+                'exit_code' => $responseData['exit_code'],
+                'output_length' => $responseData['output_length'],
+                'truncated' => $truncated,
+                'output_preview' => substr($output, 0, 200) . ($outputLength > 200 ? '...' : ''),
             ]);
+            
+            // Ensure JSON encoding works - catch any encoding errors
+            try {
+                $jsonResponse = response()->json($responseData);
+                
+                // Verify the response can be encoded
+                $testEncode = json_encode($responseData);
+                if ($testEncode === false) {
+                    $jsonError = json_last_error_msg();
+                    Log::error('Admin Tools - JSON encoding failed', [
+                        'error' => $jsonError,
+                        'output_length' => $outputLength,
+                    ]);
+                    
+                    // Fallback: return truncated/simplified response
+                    return response()->json([
+                        'success' => (bool) $success,
+                        'exit_code' => (int) $exitCode,
+                        'output' => substr($output, 0, 10000) . "\n\n... [Output too large for JSON encoding, truncated]",
+                        'message' => $success ? 'Command executed successfully (output truncated).' : 'Command completed with errors (output truncated).',
+                        'error' => 'Output too large to encode in JSON response',
+                    ]);
+                }
+                
+                return $jsonResponse;
+            } catch (\Exception $e) {
+                Log::error('Admin Tools - Response creation failed', [
+                    'error' => $e->getMessage(),
+                    'output_length' => $outputLength,
+                ]);
+                
+                // Fallback response
+                return response()->json([
+                    'success' => (bool) $success,
+                    'exit_code' => (int) $exitCode,
+                    'output' => substr($output, 0, 10000) . "\n\n... [Error creating response, output truncated]",
+                    'message' => $success ? 'Command executed successfully (response error).' : 'Command completed with errors (response error).',
+                ], 200);
+            }
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
             $errorDetails = '';
@@ -276,6 +389,159 @@ class AdminToolsController extends SystemBaseController
                 'message' => 'Error dropping tables: ' . $e->getMessage(),
                 'output' => $e->getMessage() . "\n\nFile: " . $e->getFile() . "\nLine: " . $e->getLine(),
             ], 500);
+        }
+    }
+
+    /**
+     * Execute command with streaming output using Symfony Process
+     */
+    private function executeCommandStreaming(string $command, array $options, Request $request)
+    {
+        try {
+            // Get PHP binary - try multiple methods for compatibility
+            $phpBinary = defined('PHP_BINARY') ? PHP_BINARY : 'php';
+            if (empty($phpBinary) || !file_exists($phpBinary)) {
+                // Try common PHP locations
+                $phpBinary = 'php';
+            }
+            
+            // Build artisan command
+            $artisanPath = base_path('artisan');
+            $cmd = [$phpBinary, $artisanPath, $command];
+            
+            // Add options
+            foreach ($options as $key => $value) {
+                if (is_bool($value) && $value) {
+                    $cmd[] = $key;
+                } elseif (!is_bool($value)) {
+                    $cmd[] = $key;
+                    if (is_string($value)) {
+                        $cmd[] = $value;
+                    }
+                }
+            }
+
+            return response()->stream(function () use ($cmd, $command, $options, $request) {
+                try {
+                    // Create process with proper constructor signature
+                    $process = Process::fromShellCommandline(
+                        implode(' ', array_map('escapeshellarg', $cmd)),
+                        base_path(),
+                        null,
+                        null,
+                        600 // 10 minutes timeout
+                    );
+                    
+                    // Start process and stream output
+                    $process->start(function ($type, $buffer) {
+                        $data = [
+                            'type' => $type === Process::ERR ? 'error' : 'output',
+                            'data' => $buffer,
+                        ];
+                        echo "data: " . json_encode($data) . "\n\n";
+                        if (ob_get_level() > 0) {
+                            ob_flush();
+                        }
+                        flush();
+                    });
+
+                    // Wait for completion
+                    $process->wait();
+                    
+                    $exitCode = $process->getExitCode();
+                    $finalOutput = $process->getOutput();
+                    $errorOutput = $process->getErrorOutput();
+                    
+                    // Send any remaining output
+                    if (!empty($finalOutput)) {
+                        $data = ['type' => 'output', 'data' => $finalOutput];
+                        echo "data: " . json_encode($data) . "\n\n";
+                    }
+                    if (!empty($errorOutput)) {
+                        $data = ['type' => 'error', 'data' => $errorOutput];
+                        echo "data: " . json_encode($data) . "\n\n";
+                    }
+                    
+                    // Log the command execution
+                    Log::info('Admin Tools - Artisan command executed (streaming)', [
+                        'command' => $command,
+                        'options' => $options,
+                        'exit_code' => $exitCode,
+                        'ip' => $request->ip(),
+                        'user' => Auth::id(),
+                    ]);
+
+                    // Send completion message
+                    $completionData = [
+                        'type' => 'complete',
+                        'success' => $exitCode === 0,
+                        'exit_code' => $exitCode,
+                        'message' => $exitCode === 0 ? 'Command executed successfully.' : 'Command completed with errors.',
+                    ];
+                    echo "data: " . json_encode($completionData) . "\n\n";
+                    
+                    if (ob_get_level() > 0) {
+                        ob_flush();
+                    }
+                    flush();
+                    
+                } catch (\Exception $e) {
+                    $errorData = [
+                        'type' => 'error',
+                        'data' => 'Error: ' . $e->getMessage() . "\nFile: " . $e->getFile() . "\nLine: " . $e->getLine(),
+                    ];
+                    echo "data: " . json_encode($errorData) . "\n\n";
+                    
+                    $completionData = [
+                        'type' => 'complete',
+                        'success' => false,
+                        'exit_code' => 1,
+                        'message' => 'Error executing command: ' . $e->getMessage(),
+                    ];
+                    echo "data: " . json_encode($completionData) . "\n\n";
+                    
+                    if (ob_get_level() > 0) {
+                        ob_flush();
+                    }
+                    flush();
+                    
+                    Log::error('Admin Tools - Streaming command failed', [
+                        'command' => $command,
+                        'error' => $e->getMessage(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                        'trace' => $e->getTraceAsString(),
+                        'ip' => $request->ip(),
+                        'user' => Auth::id(),
+                    ]);
+                }
+            }, 200, [
+                'Content-Type' => 'text/event-stream',
+                'Cache-Control' => 'no-cache',
+                'X-Accel-Buffering' => 'no', // Disable nginx buffering
+                'Connection' => 'keep-alive',
+            ]);
+            
+        } catch (\Exception $e) {
+            // If streaming setup fails, fall back to regular execution
+            Log::warning('Admin Tools - Streaming setup failed, falling back to regular execution', [
+                'command' => $command,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            
+            // Fall back to regular Artisan::call
+            $exitCode = Artisan::call($command, $options);
+            $output = Artisan::output();
+            
+            return response()->json([
+                'success' => $exitCode === 0,
+                'exit_code' => $exitCode,
+                'output' => $output,
+                'message' => $exitCode === 0 ? 'Command executed successfully.' : 'Command completed with errors.',
+                'note' => 'Streaming not available, output shown after completion.',
+            ]);
         }
     }
 }

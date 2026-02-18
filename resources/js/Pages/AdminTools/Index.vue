@@ -99,15 +99,25 @@
 
             <!-- Command Output -->
             <q-expansion-item
-              v-if="commandOutput !== null"
-              :label="commandSuccess ? 'Salida del comando (éxito)' : 'Salida del comando (error)'"
-              :icon="commandSuccess ? 'check_circle' : 'error'"
-              :header-class="commandSuccess ? 'text-positive' : 'text-negative'"
+              v-if="(commandOutput !== null && commandOutput !== '') || commandLoading"
+              :label="commandLoading ? 'Ejecutando comando...' : (commandSuccess === true ? 'Salida del comando (éxito)' : 'Salida del comando (error)')"
+              :icon="commandLoading ? 'hourglass_empty' : (commandSuccess === true ? 'check_circle' : 'error')"
+              :header-class="commandLoading ? 'text-info' : (commandSuccess === true ? 'text-positive' : 'text-negative')"
               default-opened
             >
               <q-card>
                 <q-card-section>
-                  <pre class="q-pa-md bg-grey-2" style="max-height: 400px; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word;">{{ commandOutput }}</pre>
+                  <div v-if="commandLoading" class="q-mb-md">
+                    <q-linear-progress indeterminate color="primary" />
+                    <div class="text-caption q-mt-sm text-grey-6">
+                      Ejecutando comando... El resultado se mostrará al finalizar.
+                    </div>
+                  </div>
+                  <pre 
+                    ref="outputRef"
+                    class="q-pa-md bg-grey-2" 
+                    style="max-height: 500px; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.5;"
+                  >{{ commandOutput || (commandLoading ? 'Esperando resultado...' : '') }}</pre>
                 </q-card-section>
               </q-card>
             </q-expansion-item>
@@ -224,8 +234,9 @@ const selectedCommand = ref(null);
 const selectedSeeder = ref(null);
 const customSeederClass = ref(null);
 const commandLoading = ref(false);
-const commandOutput = ref(null);
+const commandOutput = ref('');
 const commandSuccess = ref(false);
+const outputRef = ref(null);
 
 // Query state
 const sqlQuery = ref('');
@@ -333,18 +344,62 @@ const executeCommand = async () => {
   }
 
   commandLoading.value = true;
-  commandOutput.value = null;
+  commandOutput.value = '';
   commandSuccess.value = false;
 
+  // Disable streaming for now - it's complex and may not work in all environments
+  // Just use regular execution and show output after completion
   try {
-
     const response = await axios.post(route('admin-tools.command'), {
       command: command,
       options: options,
     });
 
-    commandSuccess.value = response.data.success;
-    commandOutput.value = response.data.output || response.data.message;
+    // Debug: Log the response to see what we're receiving
+    console.log('Admin Tools Response:', {
+      success: response.data.success,
+      exit_code: response.data.exit_code,
+      success_type: typeof response.data.success,
+      output_length: response.data.output_length,
+      truncated: response.data.truncated,
+      response_keys: Object.keys(response.data),
+      // Don't log full response if it's huge
+      response_preview: response.data.output ? response.data.output.substring(0, 200) : 'No output',
+    });
+
+    // Ensure success is a boolean (handle string "true"/"false" or 1/0)
+    let successValue = response.data.success;
+    
+    // Debug: Log raw success value
+    console.log('Raw success value:', successValue, 'Type:', typeof successValue);
+    
+    if (typeof successValue === 'string') {
+      successValue = successValue === 'true' || successValue === '1';
+    } else if (typeof successValue === 'number') {
+      // If it's a number, 1 = true, 0 = false (but check exit_code too)
+      successValue = successValue === 1 || (successValue === 0 && response.data.exit_code === 0);
+    } else if (successValue === undefined || successValue === null) {
+      // Fallback: use exit_code
+      successValue = response.data.exit_code === 0;
+      console.log('Success was undefined/null, using exit_code:', response.data.exit_code, 'Result:', successValue);
+    }
+    
+    // Force to boolean
+    commandSuccess.value = Boolean(successValue);
+    
+    // Debug: Verify it was set correctly
+    console.log('After setting commandSuccess.value:', commandSuccess.value, 'Type:', typeof commandSuccess.value);
+    
+    // Show output - prefer 'output' field, fallback to 'message'
+    const output = response.data.output || response.data.message || '';
+    commandOutput.value = output;
+    
+    // If there's a note (like "streaming not available"), append it
+    if (response.data.note) {
+      commandOutput.value = response.data.note + '\n\n' + commandOutput.value;
+    }
+
+    console.log('Admin Tools - Final success value:', commandSuccess.value, 'Exit code:', response.data.exit_code);
 
     if (commandSuccess.value) {
       $q.notify({
@@ -358,18 +413,156 @@ const executeCommand = async () => {
       });
     }
   } catch (error) {
-    commandSuccess.value = false;
-    const errorMessage = error.response?.data?.message || error.response?.data?.output || error.message || 'Error desconocido';
-    const errorDetails = error.response?.data?.output || error.response?.data?.error || '';
-    commandOutput.value = errorMessage + (errorDetails && errorDetails !== errorMessage ? '\n\n' + errorDetails : '');
-    $q.notify({
-      type: 'negative',
-      message: 'Error al ejecutar el comando: ' + errorMessage,
-      timeout: 5000,
+    console.error('Admin Tools - Request error:', {
+      error: error,
+      response: error.response,
+      response_data: error.response?.data,
+      response_status: error.response?.status,
+      message: error.message,
     });
+    
+    commandSuccess.value = false;
+    
+    // Check if it's a network error vs API error
+    if (!error.response) {
+      // Network error or timeout
+      commandOutput.value = 'Error de conexión: ' + error.message;
+      $q.notify({
+        type: 'negative',
+        message: 'Error de conexión al ejecutar el comando',
+        timeout: 5000,
+      });
+    } else {
+      // API returned an error response
+      const errorMessage = error.response?.data?.message || error.response?.data?.output || error.message || 'Error desconocido';
+      const errorDetails = error.response?.data?.output || error.response?.data?.error || '';
+      commandOutput.value = errorMessage + (errorDetails && errorDetails !== errorMessage ? '\n\n' + errorDetails : '');
+      $q.notify({
+        type: 'negative',
+        message: 'Error al ejecutar el comando: ' + errorMessage,
+        timeout: 5000,
+      });
+    }
   } finally {
     commandLoading.value = false;
   }
+};
+
+// Execute command with streaming output
+const executeCommandStreaming = async (command, options) => {
+  return new Promise((resolve, reject) => {
+    // Build query string for POST data
+    const params = new URLSearchParams();
+    params.append('command', command);
+    params.append('stream', 'true');
+    if (options && Object.keys(options).length > 0) {
+      params.append('options', JSON.stringify(options));
+    }
+
+    // Use fetch with POST for streaming
+    fetch(route('admin-tools.command'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        'Accept': 'text/event-stream',
+      },
+      body: params.toString(),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        const readStream = () => {
+          reader.read().then(({ done, value }) => {
+            if (done) {
+              commandLoading.value = false;
+              resolve();
+              return;
+            }
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6));
+                  
+                  if (data.type === 'complete') {
+                    commandLoading.value = false;
+                    commandSuccess.value = data.success;
+                    if (data.output) {
+                      commandOutput.value += data.output;
+                    }
+                    
+                    // Scroll to bottom
+                    if (outputRef.value) {
+                      outputRef.value.scrollTop = outputRef.value.scrollHeight;
+                    }
+
+                    if (data.success) {
+                      $q.notify({
+                        type: 'positive',
+                        message: 'Comando ejecutado exitosamente',
+                      });
+                    } else {
+                      $q.notify({
+                        type: 'negative',
+                        message: 'Comando completado con errores',
+                      });
+                    }
+                    resolve();
+                    return;
+                  } else if (data.type === 'output' || data.type === 'error') {
+                    // Append output in real-time
+                    commandOutput.value += data.data;
+                    
+                    // Auto-scroll to bottom (use nextTick to ensure DOM is updated)
+                    setTimeout(() => {
+                      if (outputRef.value) {
+                        outputRef.value.scrollTop = outputRef.value.scrollHeight;
+                      }
+                    }, 50);
+                  }
+                } catch (e) {
+                  console.error('Error parsing SSE data:', e, line);
+                }
+              }
+            }
+
+            readStream();
+          }).catch(error => {
+            commandLoading.value = false;
+            commandSuccess.value = false;
+            commandOutput.value += '\n\n[ERROR] ' + error.message;
+            $q.notify({
+              type: 'negative',
+              message: 'Error en la conexión de streaming: ' + error.message,
+            });
+            reject(error);
+          });
+        };
+
+        readStream();
+      })
+      .catch(error => {
+        commandLoading.value = false;
+        commandSuccess.value = false;
+        commandOutput.value = 'Error al iniciar streaming: ' + error.message;
+        $q.notify({
+          type: 'negative',
+          message: 'Error al ejecutar el comando: ' + error.message,
+        });
+        reject(error);
+      });
+  });
 };
 
 // Execute SQL query

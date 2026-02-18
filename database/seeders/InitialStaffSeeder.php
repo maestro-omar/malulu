@@ -40,7 +40,7 @@ class InitialStaffSeeder extends Seeder
     private function init()
     {
         $this->initializeFaker();
-        
+
         $this->allRoles = Role::pluck('id', 'code')->toArray();
         $this->userService = app(UserService::class);
         $this->creator = User::find(1); // Use admin user as creator
@@ -52,7 +52,7 @@ class InitialStaffSeeder extends Seeder
         $this->countries = Country::all();
         $this->academicYears = AcademicYear::all();
         $this->primaryLevel = SchoolLevel::where('code', SchoolLevel::PRIMARY)->first();
-        
+
         if (!$this->defaultSchool) {
             throw new \Exception('School with code ' . School::CUE_LUCIO_LUCERO . ' not found. Please run SchoolSeeder first.');
         }
@@ -146,7 +146,7 @@ class InitialStaffSeeder extends Seeder
         $birth_place = $userData['Lugar de nacimiento'] ?? 'San Luis';
         $nationality = $userData['Nacionalidad'] ?? 'Argentina';
         $shift = $this->mapShift($userData['Turno'] ?? 'mañana');
-        
+
         if (empty($email)) {
             $email = $this->faker->sanLuisEmail($firstName, $lastName);
         }
@@ -155,7 +155,7 @@ class InitialStaffSeeder extends Seeder
         } elseif (!empty($dni) && empty($birthdate)) {
             $birthdate = $this->faker->birthdateFromDNI($dni);
         }
-        
+
         // Create user data array
         $userDataArray = [
             'name' => $firstName . ' ' . mb_substr($lastName, 0, 1),
