@@ -112,8 +112,8 @@ const props = defineProps({
   },
   context: {
     type: String,
-    required: true, // 'user', 'school', 'course', 'province'
-    validator: (value) => ['user', 'school', 'course', 'province'].includes(value)
+    required: true, // 'user', 'profile', 'school', 'course', 'province'
+    validator: (value) => ['user', 'profile', 'school', 'course', 'province'].includes(value)
   },
   contextId: {
     type: [String, Number],

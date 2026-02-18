@@ -19,31 +19,9 @@
             <div class="text-subtitle2 q-mb-lg">
               Elija el tipo de archivo que desea agregar
             </div>
-            
-            <!-- File Input Type Toggle -->
-            <div class="row q-mb-lg">
-              <div class="col-12">
-                <q-card flat bordered class="q-pa-md">
-                  <div class="text-subtitle1 q-mb-md">
-                    <q-icon name="settings" class="q-mr-sm" />
-                    Tipo de entrada
-                  </div>
-                  <q-option-group
-                    v-model="inputType"
-                    :options="inputTypeOptions"
-                    color="primary"
-                    inline
-                    @update:model-value="onInputTypeChange"
-                  />
-                  <div class="text-caption text-grey-6 q-mt-sm">
-                    {{ inputType === 'file' ? 'Subir un archivo desde su dispositivo' : 'Proporcionar un enlace a un archivo externo' }}
-                  </div>
-                </q-card>
-              </div>
-            </div>
-            
+
             <div class="row q-gutter-md">
-              <div class="col-12 col-md-4">
+              <div v-if="canManageProvince" class="col-12 col-md-4">
                 <q-card 
                   class="cursor-pointer file-type-card" 
                   @click="redirectToAddFile('provincial')"
@@ -99,10 +77,11 @@
 </template>
 
 <script setup>
-import { Head, router } from '@inertiajs/vue3'
+import { Head, router, usePage } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'
 import AdminHeader from '@/Sections/AdminHeader.vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { hasPermission } from '@/Utils/permissions'
 
 const props = defineProps({
   user: {
@@ -115,63 +94,36 @@ const props = defineProps({
   }
 })
 
+const page = usePage()
+const canManageProvince = computed(() => hasPermission(page.props, 'province.manage'))
+
+// activeSchool and schools from controller or shared auth (session context)
+const activeSchool = computed(() => props.activeSchool ?? page.props.auth?.user?.activeSchool ?? null)
+const schoolsList = computed(() => {
+  const schools = props.user?.schools ?? page.props.auth?.user?.schools
+  if (!schools) return []
+  return Array.isArray(schools) ? schools : Object.values(schools)
+})
+const schoolSlugForFileCreate = computed(() => activeSchool.value?.slug ?? schoolsList.value[0]?.slug ?? null)
+
 // Reactive variables
 const hoveredCard = ref(null)
-const inputType = ref('file')
 
-// Input type options
-const inputTypeOptions = [
-  {
-    label: 'Archivo',
-    value: 'file',
-    icon: 'upload_file',
-    description: 'Subir archivo'
-  },
-  {
-    label: 'URL',
-    value: 'url',
-    icon: 'link',
-    description: 'Enlace externo'
-  }
-]
-
-// Handle input type change
-const onInputTypeChange = (value) => {
-  inputType.value = value
-}
-
-// Redirect to add file based on type
+// Redirect to the specific file creation page for the chosen context
 const redirectToAddFile = (fileType) => {
-  const params = { inputType: inputType.value }
-  
   switch (fileType) {
     case 'provincial':
-      // For provincial files, redirect to province edit page
-      router.visit(route('provinces.edit', props.user?.province_id || 1), {
-        data: params
-      })
+      router.visit(route('provinces.edit', props.user?.province_id ?? 1))
       break
-    case 'institutional':
-      // For institutional files, redirect to school file create
-      if (props.activeSchool) {
-        router.visit(route('school.file.create', { school: props.activeSchool.slug }), {
-          data: params
-        })
-      } else {
-        // If no active school, redirect to user's first school
-        const firstSchool = props.user?.schools?.[0]
-        if (firstSchool) {
-          router.visit(route('school.file.create', { school: firstSchool.slug }), {
-            data: params
-          })
-        }
+    case 'institutional': {
+      const slug = schoolSlugForFileCreate.value
+      if (slug) {
+        router.visit(route('school.file.create', { school: slug }))
       }
       break
+    }
     case 'user':
-      // For user files, redirect to user file create
-      router.visit(route('users.file.create', { user: props.user?.id || 'me' }), {
-        data: params
-      })
+      router.visit(route('profile.files.create'))
       break
   }
 }

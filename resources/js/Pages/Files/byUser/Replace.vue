@@ -4,7 +4,7 @@
   <AuthenticatedLayout>
     <template #admin-header>
       <AdminHeader :title="`Reemplazar Archivo ${file.nice_name}`" :cancel="{
-        href: route('users.file.show', { 'user': getUserSlug(user), 'file': file.id }),
+        href: context === 'profile' ? route('profile.file.show', { file: file.id }) : route('users.file.show', { 'user': getUserSlug(user), 'file': file.id }),
         label: 'Cancelar'
       }">
       </AdminHeader>
@@ -15,11 +15,11 @@
         <div class="admin-form__wrapper admin-form__wrapper--full-width">
           <FileForm
             :sub-types="subTypes"
-            context="user"
+            :context="context === 'profile' ? 'profile' : 'user'"
             :context-id="user.id"
             :existing-file="file"
-            :store-url="route('users.file.replace', { 'user': user.id, 'file': file.id })"
-            :cancel-url="route('users.file.show', { 'user': getUserSlug(user), 'file': file.id })"
+            :store-url="context === 'profile' ? route('profile.file.replace', { file: file.id }) : route('users.file.replace', { 'user': user.id, 'file': file.id })"
+            :cancel-url="context === 'profile' ? route('profile.file.show', { file: file.id }) : route('users.file.show', { 'user': getUserSlug(user), 'file': file.id })"
           />
         </div>
       </div>
@@ -46,6 +46,10 @@ const props = defineProps({
   subTypes: {
     type: Array,
     required: true
+  },
+  context: {
+    type: String,
+    default: 'user'
   }
 })
 </script>

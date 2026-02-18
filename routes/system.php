@@ -22,6 +22,19 @@ Route::prefix(__('routes.system'))->group(function () {
         Route::delete('/' . __('routes.profile'), [ProfileAdminController::class, 'destroy'])->name('profile.destroy');
         Route::post('/' . __('routes.profile') . '/' . __('routes.upload-image'), [ProfileAdminController::class, 'uploadImage'])->name('profile.upload-image');
         Route::delete('/' . __('routes.profile') . '/' . __('routes.delete-image'), [ProfileAdminController::class, 'deleteImage'])->name('profile.delete-image');
+
+        // Profile files (own files) — permission: profile.edit
+        Route::middleware('permission:profile.edit')->group(function () {
+            Route::get('/' . __('routes.profile') . '/' . __('routes.files'), [FileAdminController::class, 'indexForProfile'])->name('profile.files');
+            Route::get('/' . __('routes.profile') . '/' . __('routes.files') . '/' . __('routes.create'), [FileAdminController::class, 'createForProfile'])->name('profile.files.create');
+            Route::post('/' . __('routes.profile') . '/' . __('routes.files'), [FileAdminController::class, 'storeForProfile'])->name('profile.file.store');
+            Route::get('/' . __('routes.profile') . '/' . __('routes.file') . '/{file}', [FileAdminController::class, 'showForProfile'])->name('profile.file.show');
+            Route::get('/' . __('routes.profile') . '/' . __('routes.file') . '/{file}/' . __('routes.edit'), [FileAdminController::class, 'editForProfile'])->name('profile.file.edit');
+            Route::put('/' . __('routes.profile') . '/' . __('routes.file') . '/{file}', [FileAdminController::class, 'updateForProfile'])->name('profile.file.update');
+            Route::get('/' . __('routes.profile') . '/' . __('routes.file') . '/{file}/' . __('routes.replace'), [FileAdminController::class, 'replaceForProfile'])->name('profile.file.replace');
+            Route::post('/' . __('routes.profile') . '/' . __('routes.file') . '/{file}/' . __('routes.replace'), [FileAdminController::class, 'replaceForProfile'])->name('profile.file.replace');
+        });
+
         Route::get(__('routes.files'), [FileAdminController::class, 'index'])->name('files.index');
         Route::get(__('routes.files') . '/' . __('routes.create'), [FileAdminController::class, 'create'])->name('files.create');
 

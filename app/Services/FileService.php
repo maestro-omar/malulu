@@ -201,6 +201,7 @@ class FileService
                 $fileData['course_id'] = $relatedWithId;
                 break;
             case 'user':
+            case 'profile':
                 $fileData['target_user_id'] = $relatedWithId;
                 break;
         }
@@ -357,6 +358,7 @@ class FileService
     {
         switch ($context) {
             case 'user':
+            case 'profile':
                 return $contextModel instanceof User ? $contextModel->id : $contextModel;
             case 'school':
                 return $contextModel instanceof School ? $contextModel->id : $contextModel;
@@ -503,6 +505,7 @@ class FileService
                 $fileData['course_id'] = $relatedWithId;
                 break;
             case 'user':
+            case 'profile':
                 $fileData['target_user_id'] = $relatedWithId;
                 break;
         }
@@ -759,14 +762,38 @@ class FileService
         // Combine all files
         $allFiles = $provincialFiles->concat($institutionalFiles)->concat($userFiles);
 
-        // Format files for display
-        $formattedFiles = $allFiles->map(function ($file) {
+        // Format files for display (use profile.* URLs for current user's own files)
+        $formattedFiles = $allFiles->map(function ($file) use ($loggedUser) {
             $formatted = $this->formatFileForTable($file);
             // Add file type context for display
             $formatted['file_type_context'] = $this->getFileTypeContext($file);
-            $formatted['edit_url'] = $this->getEditUrl($file);
-            $formatted['replace_url'] = $this->getReplaceUrl($file);
-            $formatted['show_url'] = $this->getShowUrl($file);
+            $formatted['edit_url'] = $this->getEditUrl($file, $loggedUser);
+            $formatted['replace_url'] = $this->getReplaceUrl($file, $loggedUser);
+            $formatted['show_url'] = $this->getShowUrl($file, $loggedUser);
+            return $formatted;
+        });
+
+        return $formattedFiles->toArray();
+    }
+
+    /**
+     * Get only the current user's personal files (USER type) for profile context, with profile.* URLs.
+     */
+    public function getOwnProfileFiles(User $user): array
+    {
+        $userFiles = File::whereHas('subtype.fileType', function ($query) {
+            $query->where('code', FileType::USER);
+        })
+            ->where('target_user_id', $user->id)
+            ->with(['subtype', 'subtype.fileType', 'user', 'targetUser'])
+            ->get();
+
+        $formattedFiles = $userFiles->map(function ($file) {
+            $formatted = $this->formatFileForTable($file);
+            $formatted['file_type_context'] = $this->getFileTypeContext($file);
+            $formatted['edit_url'] = route('profile.file.edit', ['file' => $file->id]);
+            $formatted['replace_url'] = route('profile.file.replace', ['file' => $file->id]);
+            $formatted['show_url'] = route('profile.file.show', ['file' => $file->id]);
             return $formatted;
         });
 
@@ -787,48 +814,60 @@ class FileService
         }
     }
 
-    private function getEditUrl(File $file)
+    private function getEditUrl(File $file, ?User $currentUser = null)
     {
         switch ($file->subtype->fileType->code) {
             case FileType::PROVINCIAL:
-                return route('provinces.edit', $file->province_id);
+                $province = $file->province;
+                return $province ? route('provinces.file.edit', [$province, $file]) : null;
             case FileType::INSTITUTIONAL:
                 // Use the loaded school relationship
                 $school = $file->school;
                 return $school ? route('school.file.edit', ['school' => $school->slug, 'file' => $file->id]) : null;
             case FileType::USER:
+                if ($currentUser && (int) $file->target_user_id === (int) $currentUser->id) {
+                    return route('profile.file.edit', ['file' => $file->id]);
+                }
                 return route('users.file.edit', ['user' => $file->target_user_id, 'file' => $file->id]);
             default:
                 return null;
         }
     }
 
-    private function getReplaceUrl(File $file)
+    private function getReplaceUrl(File $file, ?User $currentUser = null)
     {
         switch ($file->subtype->fileType->code) {
             case FileType::PROVINCIAL:
-                return route('provinces.edit', $file->province_id);
+                $province = $file->province;
+                return $province ? route('provinces.file.replace', [$province, $file]) : null;
             case FileType::INSTITUTIONAL:
                 // Use the loaded school relationship
                 $school = $file->school;
                 return $school ? route('school.file.replace', ['school' => $school->slug, 'file' => $file->id]) : null;
             case FileType::USER:
+                if ($currentUser && (int) $file->target_user_id === (int) $currentUser->id) {
+                    return route('profile.file.replace', ['file' => $file->id]);
+                }
                 return route('users.file.replace', ['user' => $file->target_user_id, 'file' => $file->id]);
             default:
                 return null;
         }
     }
 
-    private function getShowUrl(File $file)
+    private function getShowUrl(File $file, ?User $currentUser = null)
     {
         switch ($file->subtype->fileType->code) {
             case FileType::PROVINCIAL:
-                return route('provinces.show', $file->province_id);
+                $province = $file->province;
+                return $province ? route('provinces.file.show', [$province, $file]) : null;
             case FileType::INSTITUTIONAL:
                 // Use the loaded school relationship
                 $school = $file->school;
                 return $school ? route('school.file.show', ['school' => $school->slug, 'file' => $file->id]) : null;
             case FileType::USER:
+                if ($currentUser && (int) $file->target_user_id === (int) $currentUser->id) {
+                    return route('profile.file.show', ['file' => $file->id]);
+                }
                 return route('users.file.show', ['user' => $file->target_user_id, 'file' => $file->id]);
             default:
                 return null;

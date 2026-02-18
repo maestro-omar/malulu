@@ -37,6 +37,31 @@ Breadcrumbs::for('profile.edit', function (Trail $trail, $user) {
     $trail->push('Editar', route('profile.edit'));
 });
 
+Breadcrumbs::for('profile.files', function (Trail $trail) {
+    $trail->parent('profile.show', breadcrumbsGetUser());
+    $trail->push('Mis archivos', route('profile.files'));
+});
+
+Breadcrumbs::for('profile.files.create', function (Trail $trail) {
+    $trail->parent('profile.files');
+    $trail->push('Nuevo archivo');
+});
+
+Breadcrumbs::for('profile.file.show', function (Trail $trail, File $file) {
+    $trail->parent('profile.files');
+    $trail->push("Archivo: {$file->nice_name}", route('profile.file.show', $file));
+});
+
+Breadcrumbs::for('profile.file.edit', function (Trail $trail, File $file) {
+    $trail->parent('profile.file.show', $file);
+    $trail->push('Editar archivo');
+});
+
+Breadcrumbs::for('profile.file.replace', function (Trail $trail, File $file) {
+    $trail->parent('profile.file.show', $file);
+    $trail->push('Reemplazar archivo');
+});
+
 // 👥 Usuarios
 Breadcrumbs::for('users.index', function (Trail $trail) {
     $trail->parent('dashboard');

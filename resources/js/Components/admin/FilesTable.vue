@@ -26,7 +26,7 @@
             <template v-slot:body-cell-edit="props">
                 <q-td :props="props">
                     <q-btn flat round dense icon="edit" color="warning" :href="buildEditFileUrl(props.row)"
-                        title="Ver archivo" />
+                        title="Editar archivo" />
                 </q-td>
             </template>
             <template v-slot:body-cell-download="props">

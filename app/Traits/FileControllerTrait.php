@@ -72,6 +72,7 @@ trait FileControllerTrait
     {
         switch ($context) {
             case 'user':
+            case 'profile':
                 $fileData['target_user_id'] = $contextModel instanceof User ? $contextModel->id : $contextModel;
                 break;
             case 'school':
@@ -187,6 +188,9 @@ trait FileControllerTrait
                     'user' => $contextModel instanceof User ? $contextModel->id : $contextModel
                 ])->withErrors(['error' => $message])->withInput();
 
+            case 'profile':
+                return redirect()->route('profile.files.create')->withErrors(['error' => $message])->withInput();
+
             case 'school':
                 $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
                 return redirect()->route('school.file.create', [
@@ -226,6 +230,7 @@ trait FileControllerTrait
 
         switch ($context) {
             case 'user':
+            case 'profile':
                 $user = $contextModel instanceof User ? $contextModel : User::find($contextModel);
                 return $fileService->getSubtypesForUser($user);
 
@@ -265,6 +270,9 @@ trait FileControllerTrait
                     'user' => $contextModel instanceof User ? $contextModel->id : $contextModel
                 ]);
 
+            case 'profile':
+                return route('profile.file.store');
+
             case 'school':
                 $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
                 return route('school.file.store', [
@@ -296,6 +304,9 @@ trait FileControllerTrait
         switch ($context) {
             case 'user':
                 return route('users.show', $contextModel instanceof User ? $contextModel->id : $contextModel);
+
+            case 'profile':
+                return route('profile.files');
 
             case 'school':
                 $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
@@ -384,6 +395,9 @@ trait FileControllerTrait
                     'file' => $file->id
                 ])->with('success', $message);
 
+            case 'profile':
+                return redirect()->route('profile.file.show', ['file' => $file->id])->with('success', $message);
+
             case 'school':
                 $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
                 return redirect()->route('school.file.show', [
@@ -424,6 +438,9 @@ trait FileControllerTrait
                     'file' => $file->id
                 ])->with('success', $message);
 
+            case 'profile':
+                return redirect()->route('profile.file.show', ['file' => $file->id])->with('success', $message);
+
             case 'school':
                 $school = $contextModel instanceof School ? $contextModel : School::find($contextModel);
                 return redirect()->route('school.file.show', [
@@ -459,6 +476,7 @@ trait FileControllerTrait
 
         switch ($context) {
             case 'user':
+            case 'profile':
                 return redirect()->back()->with('error', $message);
 
             case 'school':
@@ -481,6 +499,7 @@ trait FileControllerTrait
 
         switch ($context) {
             case 'user':
+            case 'profile':
                 return redirect()->back()->with('error', $message);
 
             case 'school':

@@ -5,15 +5,15 @@
   <AuthenticatedLayout pageClass="q-pa-md row justify-center">
     <template #admin-header>
       <AdminHeader :title="`Detalles del Archivo ${file.nice_name}`" :edit="{
-        show: hasPermission($page.props, 'file.manage'),
-        href: route('users.file.edit', { 'user': getUserSlug(user), 'file': file.id }),
+        show: context === 'profile' || hasPermission($page.props, 'file.manage'),
+        href: context === 'profile' ? route('profile.file.edit', { file: file.id }) : route('users.file.edit', { 'user': getUserSlug(user), 'file': file.id }),
         label: 'Editar'
       }" :replace="{
-        show: hasPermission($page.props, 'file.manage'),
-        href: route('users.file.replace', { 'user': getUserSlug(user), 'file': file.id }),
+        show: context === 'profile' || hasPermission($page.props, 'file.manage'),
+        href: context === 'profile' ? route('profile.file.replace', { file: file.id }) : route('users.file.replace', { 'user': getUserSlug(user), 'file': file.id }),
         label: 'Reemplazar'
       }" :del="{
-        show: hasPermission($page.props, 'file.manage'),
+        show: context !== 'profile' && hasPermission($page.props, 'file.manage'),
         onClick: destroy,
         label: 'Eliminar'
       }">
@@ -47,12 +47,17 @@ const props = defineProps({
     type: Array,
     required: false,
     default: () => []
+  },
+  context: {
+    type: String,
+    default: 'user'
   }
 })
 
 const $page = usePage()
 
 const destroy = () => {
+  if (props.context === 'profile') return
   if (confirm("¿Está seguro que desea eliminar este archivo?")) {
     router.delete(route("users.file.destroy", { 'user': props.user, 'file': props.file.id }))
   }

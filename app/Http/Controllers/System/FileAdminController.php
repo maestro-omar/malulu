@@ -35,7 +35,7 @@ class FileAdminController extends SystemBaseController
 
         return Inertia::render('Files/Create', [
             'user' => $loggedUser,
-            'activeSchool' => $loggedUser->activeSchool,
+            'activeSchool' => \App\Services\UserContextService::activeSchool(),
             'breadcrumbs' => Breadcrumbs::generate('files.create'),
         ]);
     }
@@ -122,5 +122,108 @@ class FileAdminController extends SystemBaseController
             'subtypes' => FileSubtype::all(),
             'breadcrumbs' => Breadcrumbs::generate('files.index'),
         ]);
+    }
+
+    // Profile (own) files — permission: profile.edit, always for auth user
+
+    public function indexForProfile(Request $request)
+    {
+        $user = auth()->user();
+        $files = $this->fileService->getOwnProfileFiles($user);
+
+        return Inertia::render('Files/Index', [
+            'files' => $files,
+            'types' => FileType::all(),
+            'subtypes' => FileSubtype::all(),
+            'breadcrumbs' => Breadcrumbs::generate('profile.files'),
+        ]);
+    }
+
+    public function createForProfile(Request $request)
+    {
+        $user = auth()->user();
+        $subTypes = $this->getSubtypesForContext('profile', $user);
+        $storeUrl = $this->getStoreUrlForContext('profile', $user);
+        $cancelUrl = $this->getCancelUrlForContext('profile', $user);
+
+        return Inertia::render('Files/byUser/Create', [
+            'subTypes' => $subTypes,
+            'context' => 'profile',
+            'contextId' => $user->id,
+            'storeUrl' => $storeUrl,
+            'cancelUrl' => $cancelUrl,
+            'breadcrumbs' => Breadcrumbs::generate('profile.files.create'),
+        ]);
+    }
+
+    public function storeForProfile(Request $request)
+    {
+        return $this->storeFile($request, 'profile', auth()->user());
+    }
+
+    public function showForProfile(Request $request, File $file)
+    {
+        $this->authorizeProfileFile($file);
+        $user = auth()->user();
+        $fileData = $this->fileService->getFileDataForUser($file, $user, $user);
+        $history = $fileData['history'];
+
+        return Inertia::render('Files/byUser/Show', [
+            'file' => $fileData['file'],
+            'user' => $user,
+            'history' => $history,
+            'context' => 'profile',
+            'breadcrumbs' => Breadcrumbs::generate('profile.file.show', $file),
+        ]);
+    }
+
+    public function editForProfile(Request $request, File $file)
+    {
+        $this->authorizeProfileFile($file);
+        $user = auth()->user();
+        $fileData = $this->fileService->getFileDataForUser($file, $user, $user);
+        $subTypes = $this->fileService->getSubtypesForUser($user);
+
+        return Inertia::render('Files/byUser/Edit', [
+            'file' => $fileData,
+            'user' => $user,
+            'subTypes' => $subTypes,
+            'context' => 'profile',
+            'breadcrumbs' => Breadcrumbs::generate('profile.file.edit', $file),
+        ]);
+    }
+
+    public function updateForProfile(Request $request, File $file)
+    {
+        $this->authorizeProfileFile($file);
+        return $this->updateFile($request, $file, 'profile', auth()->user());
+    }
+
+    public function replaceForProfile(Request $request, File $file)
+    {
+        $this->authorizeProfileFile($file);
+        $user = auth()->user();
+
+        if ($request->isMethod('get')) {
+            $fileData = $this->fileService->getFileDataForUser($file, $user, $user);
+            $subTypes = $this->fileService->getSubtypesForUser($user);
+
+            return Inertia::render('Files/byUser/Replace', [
+                'file' => $fileData['file'],
+                'user' => $user,
+                'subTypes' => $subTypes,
+                'context' => 'profile',
+                'breadcrumbs' => Breadcrumbs::generate('profile.file.replace', $file),
+            ]);
+        }
+
+        return $this->replaceFile($request, $file, 'profile', $user);
+    }
+
+    private function authorizeProfileFile(File $file): void
+    {
+        if ($file->target_user_id !== auth()->id()) {
+            abort(403);
+        }
     }
 }
