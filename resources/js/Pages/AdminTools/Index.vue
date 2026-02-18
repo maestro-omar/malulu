@@ -37,7 +37,54 @@
                   </template>
                 </q-select>
               </div>
-              <div class="col-12 col-md-6">
+              <template v-if="selectedCommand === 'db:seed'">
+                <div class="col-12 col-md-6">
+                  <q-select
+                    v-model="selectedSeeder"
+                    :options="seederOptions"
+                    option-value="value"
+                    option-label="label"
+                    emit-value
+                    map-options
+                    outlined
+                    label="Seleccionar seeder (opcional)"
+                    dense
+                    clearable
+                    hint="Dejar vacío para ejecutar DatabaseSeeder"
+                    @update:model-value="customSeederClass = null"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="database" />
+                    </template>
+                  </q-select>
+                </div>
+                <div class="col-12 col-md-6">
+                  <q-input
+                    v-model="customSeederClass"
+                    outlined
+                    label="O ingresar clase de seeder personalizada"
+                    dense
+                    hint="Ej: Database\Seeders\MyCustomSeeder"
+                    @update:model-value="selectedSeeder = null"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="edit" />
+                    </template>
+                  </q-input>
+                </div>
+                <div class="col-12">
+                  <q-btn
+                    color="primary"
+                    label="Ejecutar seeder"
+                    icon="play_arrow"
+                    :loading="commandLoading"
+                    :disable="!selectedCommand || commandLoading"
+                    @click="executeCommand"
+                    class="full-width"
+                  />
+                </div>
+              </template>
+              <div class="col-12 col-md-6" v-else>
                 <q-btn
                   color="primary"
                   label="Ejecutar comando"
@@ -174,6 +221,8 @@ const $q = useQuasar();
 
 // Command state
 const selectedCommand = ref(null);
+const selectedSeeder = ref(null);
+const customSeederClass = ref(null);
 const commandLoading = ref(false);
 const commandOutput = ref(null);
 const commandSuccess = ref(false);
@@ -196,12 +245,26 @@ const commandOptions = [
   { label: 'Estado de migraciones', value: 'migrate:status' },
   { label: 'Refrescar migraciones', value: 'migrate:refresh' },
   { label: 'Revertir última migración', value: 'migrate:rollback' },
+  { label: 'Ejecutar seeders', value: 'db:seed' },
   { label: 'Eliminar todas las tablas', value: 'db:drop-all-tables' },
   { label: 'Limpiar caché', value: 'cache:clear' },
   { label: 'Limpiar configuración', value: 'config:clear' },
   { label: 'Limpiar rutas', value: 'route:clear' },
   { label: 'Limpiar vistas', value: 'view:clear' },
   { label: 'Limpiar optimización', value: 'optimize:clear' },
+];
+
+// Seeder options
+const seederOptions = [
+  { label: 'CoreDataSeeder (Datos esenciales)', value: 'CoreDataSeeder' },
+  { label: 'LucioCoursesFixSeeder', value: 'LucioCoursesFixSeeder' },
+  { label: 'InitialStaffSeeder (Personal inicial)', value: 'InitialStaffSeeder' },
+  { label: 'InitialStudentsSeeder (Estudiantes iniciales)', value: 'InitialStudentsSeeder' },
+  { label: 'UpdateDataTo2026Seeder', value: 'UpdateDataTo2026Seeder' },
+  { label: 'FakeAcademicEventsSeeder', value: 'FakeAcademicEventsSeeder' },
+  { label: 'FakeFilesSeeder', value: 'FakeFilesSeeder' },
+  { label: 'FakeAttendanceSeeder', value: 'FakeAttendanceSeeder' },
+  { label: 'FakeUserDiagnosisSeeder', value: 'FakeUserDiagnosisSeeder' },
 ];
 
 // Query type options
@@ -230,6 +293,15 @@ const executeCommand = async () => {
   if (command === 'migrate:fresh:seed') {
     command = 'migrate:fresh';
     options = { '--seed': true };
+  }
+  
+  // Handle db:seed with specific seeder class
+  if (command === 'db:seed') {
+    // Use custom seeder class if provided, otherwise use dropdown selection
+    const seederClass = customSeederClass.value?.trim() || selectedSeeder.value;
+    if (seederClass) {
+      options = { '--class': seederClass };
+    }
   }
 
   // Confirmation for destructive commands

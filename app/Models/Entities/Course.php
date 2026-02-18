@@ -44,7 +44,6 @@ class Course extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'schedule' => 'array',
         'start_date' => 'date',
         'end_date' => 'date',
         'active' => 'boolean',

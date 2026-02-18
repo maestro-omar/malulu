@@ -19,71 +19,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
-        activity()->disableLogging();
-
+        // Run core data seeder (includes all essential seeders)
         $this->call([
-            // Static catalogs
-            JobStatusSeeder::class,
-            AttendanceStatusesTableSeeder::class,
-
-            FileTypeSeeder::class,
-            FileSubtypeSeeder::class,
-            DiagnosesSeeder::class,
-
-            // Locations
-            CountrySeeder::class,
-            ProvinceSeeder::class,
-            DistrictSeeder::class,
-            LocalitySeeder::class,
-
-            // School related
-            AcademicYearSeeder::class,
-            SchoolLevelSeeder::class,
-            SchoolShiftSeeder::class,
-            SchoolManagementTypeSeeder::class,
-            SchoolSeeder::class,
-            ClassSubjectSeeder::class,
-            CourseSeeder::class,
-
-            StudentCourseEndReasonSeeder::class,
-            RoleRelationshipEndReasonSeeder::class,
+            CoreDataSeeder::class,
         ]);
-        activity()->enableLogging();
-
-        // Create initial admin user with explicit password
-        User::factory()->create([
-            'name' => 'Omar Matijas',
-            'firstname' => 'Omar',
-            'lastname' => 'Matijas',
-            'email' => 'omarmatijas@gmail.com',
-            'id_number' => '30334915',
-            'gender' => 'masc',
-            'birthdate' => '1983-06-07',
-            'phone' => '2665103445',
-            'address' => 'Basilio Bustos 569',
-            'locality' => 'Juan Koslay',
-            'province_id' => Province::where('code', Province::DEFAULT)->first()->id,
-            'country_id' => Country::where('iso', Country::DEFAULT)->first()->id,
-            'nationality' => 'Argentina',
-            'password' => Hash::make('123123123'),
-        ]);
-
-        activity()->disableLogging();
-        $this->call([
-            RoleAndPermissionSeeder::class,
-
-            SchoolPageSeeder::class,
-
-            EventsSeeder::class,
-
-            ProvincialExternalFilesSeeder::class,
-        ]);
-        activity()->enableLogging();
 
         $this->call([
             LucioCoursesFixSeeder::class,
-            InitialUsersSeeder::class,
+            InitialStaffSeeder::class,
+            InitialStudentsSeeder::class,
             UpdateDataTo2026Seeder::class,
         ]);
 
