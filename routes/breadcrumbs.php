@@ -390,6 +390,11 @@ Breadcrumbs::for('school.course.student.enroll', function (Trail $trail, School 
     $trail->push('Inscribir estudiante', route('school.course.student.enroll', ['school' => $school->slug, 'schoolLevel' => $schoolLevel->code, 'idAndLabel' => $course->id_and_label]));
 });
 
+Breadcrumbs::for('school.course.teacher.enroll', function (Trail $trail, School $school, SchoolLevel $schoolLevel, Course $course) {
+    $trail->parent('school.course.show', $school, $schoolLevel, $course);
+    $trail->push('Asignar docente', route('school.course.teacher.enroll', ['school' => $school->slug, 'schoolLevel' => $schoolLevel->code, 'idAndLabel' => $course->id_and_label]));
+});
+
 // School file breadcrumbs
 Breadcrumbs::for('school.file.create', function (Trail $trail, School $school) {
     $trail->parent('school.show', $school);

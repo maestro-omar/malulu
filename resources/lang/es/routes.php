@@ -55,6 +55,7 @@ return [
     'courses' => 'cursos',
     'course' => 'curso',
     'inscribir' => 'inscribir',
+    'asignar-docente' => 'asignar-docente',
 
     // Public routes slugs
     // 'school' and 'slug' are parameters, not slugs to translate

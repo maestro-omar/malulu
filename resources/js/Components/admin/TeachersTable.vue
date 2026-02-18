@@ -8,6 +8,20 @@
       <q-item-section align="left">
         {{ title }}
       </q-item-section>
+
+      <q-item-section avatar>
+        <q-btn
+          size="sm"
+          padding="sm"
+          dense
+          icon="add"
+          color="green"
+          title="Asignar docente"
+          :href="enrollUrl"
+        >
+          Asignar docente
+        </q-btn>
+      </q-item-section>
     </template>
     <!-- Quasar Table -->
     <q-table class="mll-table mll-table--techers striped-table" dense :rows="teachers" :columns="columns" row-key="id"
@@ -91,7 +105,8 @@
 
 
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import BirthdateAge from '@/Components/admin/BirthdateAge.vue';
 import EmailField from '@/Components/admin/EmailField.vue';
 import RoleBadge from '@/Components/Badges/RoleBadge.vue';
@@ -107,6 +122,14 @@ const props = defineProps({
   school: { type: Object, required: true },
   loading: { type: Boolean, default: false }
 });
+
+const enrollUrl = computed(() =>
+  route('school.course.teacher.enroll', {
+    school: props.school.slug,
+    schoolLevel: props.schoolLevel,
+    idAndLabel: props.courseId,
+  })
+);
 
 // Pagination configuration
 const pagination = {

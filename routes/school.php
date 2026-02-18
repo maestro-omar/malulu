@@ -8,6 +8,7 @@ use App\Http\Controllers\School\UserController;
 use App\Http\Controllers\School\FileController;
 use App\Http\Controllers\School\AcademicEventController;
 use App\Http\Controllers\School\CourseStudentController;
+use App\Http\Controllers\School\CourseTeacherController;
 use Illuminate\Support\Facades\Route;
 // use Inertia\Inertia;
 
@@ -102,6 +103,11 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.inscribir'), [CourseStudentController::class, 'create'])->name('school.course.student.enroll')->middleware('school.permission:course.manage');
         Route::post('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.inscribir') . '/' . __('routes.search'), [CourseStudentController::class, 'searchStudents'])->name('school.course.students.search')->middleware('school.permission:course.manage');
         Route::post('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.inscribir'), [CourseStudentController::class, 'store'])->name('school.course.student.store')->middleware('school.permission:course.manage');
+
+        // Course teacher assignment (asignar docente)
+        Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.asignar-docente'), [CourseTeacherController::class, 'create'])->name('school.course.teacher.enroll')->middleware('school.permission:course.manage');
+        Route::post('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.asignar-docente') . '/' . __('routes.search'), [CourseTeacherController::class, 'searchTeachers'])->name('school.course.teachers.search')->middleware('school.permission:course.manage');
+        Route::post('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.asignar-docente'), [CourseTeacherController::class, 'store'])->name('school.course.teacher.store')->middleware('school.permission:course.manage');
 
         Route::get('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.files') . '/' . __('routes.create'), [FileController::class, 'createForCourse'])->name('school.course.file.create')->middleware('school.permission:course.files.manage');
         Route::post('{schoolLevel}/' . __('routes.course') . '/{idAndLabel}/' . __('routes.files'), [FileController::class, 'storeForCourse'])->name('school.course.file.store')->middleware('school.permission:course.files.manage');
