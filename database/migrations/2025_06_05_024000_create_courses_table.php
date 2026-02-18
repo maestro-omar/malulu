@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('number');
             $table->string('name')->nullable();
             $table->string('letter', 1);
+            $table->json('schedule')->nullable();
             $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->boolean('active')->default(true);

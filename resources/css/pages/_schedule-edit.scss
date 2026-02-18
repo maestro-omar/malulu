@@ -1,0 +1,310 @@
+@use '../abstracts/mixins';
+@use '../abstracts/variables' as *;
+@use 'sass:color';
+
+// Schedule Edit Page (course horario)
+// Day columns use fixed width so empty and filled cells stay same size (no layout shift)
+$schedule-edit-day-cell-width: 180px;
+
+.schedule-edit {
+  max-width: 1000px;
+  margin: 0 auto;
+  border: 1px solid #ddd;
+  padding: 15px;
+
+  &__table-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__table {
+    overflow-x: auto;
+  }
+
+  &__header,
+  &__body-row {
+    align-items: stretch;
+  }
+
+  & &__header-cell {
+    font-weight: 600;
+    padding: 8px;
+
+    &--period {
+      width: 28px;
+      min-width: 28px;
+      max-width: 28px;
+      flex: 0 0 28px;
+      padding: 4px 2px;
+    }
+
+    &--time {
+      width: 72px;
+      min-width: 72px;
+      max-width: 72px;
+      flex: 0 0 72px;
+      padding: 4px 4px;
+    }
+
+    &--day {
+      width: $schedule-edit-day-cell-width;
+      min-width: $schedule-edit-day-cell-width;
+      max-width: $schedule-edit-day-cell-width;
+      flex: 0 0 $schedule-edit-day-cell-width;
+    }
+  }
+
+  @media (max-width: 599px) {
+    &__header-cell--time {
+      display: none;
+    }
+  }
+
+  &__body-row--break .schedule-edit__break-cell {
+    padding: 6px 8px;
+    background: rgba(0, 0, 0, 0.04);
+    font-size: 0.9em;
+  }
+
+  &__period-cell {
+    width: 28px;
+    min-width: 28px;
+    max-width: 28px;
+    flex: 0 0 28px;
+    padding: 4px 2px;
+    font-weight: 500;
+    font-size: 0.85rem;
+  }
+
+  &__time-cell {
+    width: 72px;
+    min-width: 72px;
+    max-width: 72px;
+    flex: 0 0 72px;
+    padding: 4px 4px;
+    font-weight: 500;
+    font-size: 1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  @media (max-width: 599px) {
+    &__time-cell {
+      display: none;
+    }
+  }
+
+  &__day-cell {
+    padding: 4px;
+    width: $schedule-edit-day-cell-width;
+    min-width: $schedule-edit-day-cell-width;
+    max-width: $schedule-edit-day-cell-width;
+    flex: 0 0 $schedule-edit-day-cell-width;
+    box-sizing: border-box;
+  }
+
+  &__cell-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  &__select {
+    font-size: 0.85rem;
+    min-height: 44px;
+    width: 100%;
+
+    .q-field__control {
+      min-height: 44px;
+    }
+
+    // Subject select: color the field background by subject (same colors as subject-badge)
+    &--subject .q-field__control {
+      width: 100%;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    // Subject select: wrap long names (e.g. "Educación Física"); stable height with/without label
+    &--subject .q-field__native {
+      overflow: visible;
+      min-height: 32px;
+      width: 100%;
+    }
+    &--subject .q-field__native .ellipsis {
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.3;
+    }
+    &--subject .q-field__control-container {
+      min-height: 32px;
+      width: 100%;
+    }
+
+    &--lengua .q-field__control {
+      background: $color-role-student-bg !important;
+      color: $color-role-student-text !important;
+      .q-field__input { color: $color-role-student-text !important; }
+    }
+    &--matematica .q-field__control {
+      background: $color-role-admin-bg !important;
+      color: $color-role-admin-text !important;
+      .q-field__input { color: $color-role-admin-text !important; }
+    }
+    &--ciencias_sociales .q-field__control {
+      background: $color-level-primary-bg !important;
+      color: $color-level-primary-text !important;
+      .q-field__input { color: $color-level-primary-text !important; }
+    }
+    &--ciencias_naturales .q-field__control {
+      background: $color-role-regent-bg !important;
+      color: $color-role-regent-text !important;
+      .q-field__input { color: $color-role-regent-text !important; }
+    }
+    &--musica .q-field__control {
+      background: $color-role-assistant-teacher-bg !important;
+      color: $color-role-assistant-teacher-text !important;
+      .q-field__input { color: $color-role-assistant-teacher-text !important; }
+    }
+    &--plastica .q-field__control {
+      background: color.adjust($color-orange, $lightness: 38%) !important;
+      color: color.adjust($color-orange, $lightness: -18%) !important;
+      .q-field__input { color: color.adjust($color-orange, $lightness: -18%) !important; }
+    }
+    &--ingles .q-field__control {
+      background: $color-role-guardian-bg !important;
+      color: $color-role-guardian-text !important;
+      .q-field__input { color: $color-role-guardian-text !important; }
+    }
+    &--ed_fisica .q-field__control {
+      background: $color-role-curricular-teacher-bg !important;
+      color: $color-role-curricular-teacher-text !important;
+      .q-field__input { color: $color-role-curricular-teacher-text !important; }
+    }
+    &--etica .q-field__control {
+      background: $color-role-director-bg !important;
+      color: $color-role-director-text !important;
+      .q-field__input { color: $color-role-director-text !important; }
+    }
+    &--esi .q-field__control {
+      background: $color-role-grade-teacher-bg !important;
+      color: $color-role-grade-teacher-text !important;
+      .q-field__input { color: $color-role-grade-teacher-text !important; }
+    }
+    &--tecnologia .q-field__control {
+      background: $color-gender-male-bg !important;
+      color: $color-gender-male-text !important;
+      .q-field__input { color: $color-gender-male-text !important; }
+    }
+    &--sala .q-field__control {
+      background: $color-role-librarian-bg !important;
+      color: $color-role-librarian-text !important;
+      .q-field__input { color: $color-role-librarian-text !important; }
+    }
+    &--literatura .q-field__control {
+      background: $color-role-assistant-teacher-bg !important;
+      color: $color-role-assistant-teacher-text !important;
+      .q-field__input { color: $color-role-assistant-teacher-text !important; }
+    }
+    &--historia .q-field__control {
+      background: $color-role-special-teacher-bg !important;
+      color: $color-role-special-teacher-text !important;
+      .q-field__input { color: $color-role-special-teacher-text !important; }
+    }
+    &--fisica .q-field__control {
+      background: $color-role-cooperative-bg !important;
+      color: $color-role-cooperative-text !important;
+      .q-field__input { color: $color-role-cooperative-text !important; }
+    }
+    &--quimica .q-field__control {
+      background: color.adjust($color-green, $lightness: 40%) !important;
+      color: color.adjust($color-green, $lightness: -15%) !important;
+      .q-field__input { color: color.adjust($color-green, $lightness: -15%) !important; }
+    }
+    &--contabilidad .q-field__control {
+      background: $color-role-former-student-bg !important;
+      color: $color-role-former-student-text !important;
+      .q-field__input { color: $color-role-former-student-text !important; }
+    }
+    &--biologia .q-field__control {
+      background: $color-role-class-assistant-bg !important;
+      color: $color-role-class-assistant-text !important;
+      .q-field__input { color: $color-role-class-assistant-text !important; }
+    }
+    &--filosofia .q-field__control {
+      background: color.adjust($color-purple, $lightness: 35%) !important;
+      color: color.adjust($color-purple, $lightness: -15%) !important;
+      .q-field__input { color: color.adjust($color-purple, $lightness: -15%) !important; }
+    }
+    &--geografia .q-field__control {
+      background: color.adjust($color-emerald, $lightness: 40%) !important;
+      color: color.adjust($color-emerald, $lightness: -20%) !important;
+      .q-field__input { color: color.adjust($color-emerald, $lightness: -20%) !important; }
+    }
+    &--default .q-field__control {
+      background: $color-role-default-bg !important;
+      color: $color-role-default-text !important;
+      .q-field__input { color: $color-role-default-text !important; }
+    }
+  }
+
+  // Summary under table, left-aligned
+  &__summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  &__summary-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__summary-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  &__summary-chip--empty {
+    background: rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  @each $code, $bg, $fg in
+    (lengua, $color-role-student-bg, $color-role-student-text),
+    (matematica, $color-role-admin-bg, $color-role-admin-text),
+    (ciencias_sociales, $color-level-primary-bg, $color-level-primary-text),
+    (ciencias_naturales, $color-role-regent-bg, $color-role-regent-text),
+    (musica, $color-role-assistant-teacher-bg, $color-role-assistant-teacher-text),
+    (plastica, color.adjust($color-orange, $lightness: 38%), color.adjust($color-orange, $lightness: -18%)),
+    (ingles, $color-role-guardian-bg, $color-role-guardian-text),
+    (ed_fisica, $color-role-curricular-teacher-bg, $color-role-curricular-teacher-text),
+    (etica, $color-role-director-bg, $color-role-director-text),
+    (esi, $color-role-grade-teacher-bg, $color-role-grade-teacher-text),
+    (tecnologia, $color-gender-male-bg, $color-gender-male-text),
+    (sala, $color-role-librarian-bg, $color-role-librarian-text),
+    (literatura, $color-role-assistant-teacher-bg, $color-role-assistant-teacher-text),
+    (historia, $color-role-special-teacher-bg, $color-role-special-teacher-text),
+    (fisica, $color-role-cooperative-bg, $color-role-cooperative-text),
+    (quimica, color.adjust($color-green, $lightness: 40%), color.adjust($color-green, $lightness: -15%)),
+    (contabilidad, $color-role-former-student-bg, $color-role-former-student-text),
+    (biologia, $color-role-class-assistant-bg, $color-role-class-assistant-text),
+    (filosofia, color.adjust($color-purple, $lightness: 35%), color.adjust($color-purple, $lightness: -15%)),
+    (geografia, color.adjust($color-emerald, $lightness: 40%), color.adjust($color-emerald, $lightness: -20%)),
+    (default, $color-role-default-bg, $color-role-default-text) {
+    &__summary-chip--#{$code} {
+      background: $bg;
+      color: $fg;
+    }
+  }
+}

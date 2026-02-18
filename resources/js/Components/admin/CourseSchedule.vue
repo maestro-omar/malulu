@@ -1,12 +1,11 @@
 <template>
-
-
   <div class="course-schedule">
-    <q-btn :icon="isVisible ? 'visibility_off' : 'visibility'" :label="isVisible ? 'Ocultar horario' : 'Mostrar horario'"
-      color="primary" size="sm" unelevated class="course-schedule__toggle-btn" @click="isVisible = !isVisible" />
-    <transition name="course-schedule-slide">
-      <div v-show="isVisible" class="course-schedule__table-wrapper">
-      <div class="course-schedule__table">
+    <template v-if="hasDefinedSchedule">
+      <q-btn :icon="isVisible ? 'visibility_off' : 'visibility'" :label="isVisible ? 'Ocultar horario' : 'Mostrar horario'"
+        color="primary" size="sm" unelevated class="course-schedule__toggle-btn" @click="isVisible = !isVisible" />
+      <transition name="course-schedule-slide">
+        <div v-show="isVisible" class="course-schedule__table-wrapper">
+        <div class="course-schedule__table">
       <!-- Header -->
       <div class="course-schedule__header">
         <div class="course-schedule__header-cell course-schedule__header-cell--period">#</div>
@@ -51,6 +50,10 @@
     </div>
     </div>
     </transition>
+    </template>
+    <template v-else>
+      <p class="course-schedule__undefined text-grey-7">Horario no definido</p>
+    </template>
   </div>
 </template>
 
@@ -65,6 +68,12 @@ const props = defineProps({
 })
 
 const isVisible = ref(true)
+
+const hasDefinedSchedule = computed(() => {
+  if (!props.schedule || !props.schedule.schedule) return false
+  const rows = scheduleRows.value
+  return Array.isArray(rows) && rows.length > 0
+})
 
 const availableDays = computed(() => {
   // Try different ways to get the days

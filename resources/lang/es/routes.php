@@ -54,6 +54,7 @@ return [
     'pages' => 'paginas',
     'courses' => 'cursos',
     'course' => 'curso',
+    'schedule' => 'horario',
     'inscribir' => 'inscribir',
     'asignar-docente' => 'asignar-docente',
 

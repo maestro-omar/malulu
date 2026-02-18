@@ -32,6 +32,7 @@ class Course extends Model
         'number',
         'name',
         'letter',
+        'schedule',
         'start_date',
         'end_date',
         'active'
@@ -43,6 +44,7 @@ class Course extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'schedule' => 'array',
         'start_date' => 'date',
         'end_date' => 'date',
         'active' => 'boolean',

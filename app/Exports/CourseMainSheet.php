@@ -97,7 +97,12 @@ class CourseMainSheet implements FromArray, WithEvents, WithColumnWidths, WithSt
 
     $courseSchedule = $this->courseService->getSchedule($this->course);
 
-    if ($courseSchedule && isset($courseSchedule['timeSlots']) && isset($courseSchedule['schedule'])) {
+    if (! $courseSchedule || empty($courseSchedule['schedule']) || ! is_array($courseSchedule['schedule'])) {
+      $exportData[] = ['Horario no definido'];
+      return $exportData;
+    }
+
+    if (isset($courseSchedule['timeSlots'])) {
       // Generate day headers
       $dayNames = [1 => 'LU', 2 => 'MA', 3 => 'MI', 4 => 'JU', 5 => 'VI', 6 => 'SA', 7 => 'DO'];
       $dayHeaders = ['#', 'Horario']; // Start with period and time columns

@@ -647,81 +647,70 @@ class CourseService
 
     public function getSchedule(Course $course)
     {
+        $timeSlotsConfig = $course->schoolShift->timeSlots;
+        $timeSlots = $timeSlotsConfig['timeSlots'] ?? $timeSlotsConfig;
+        $days = $timeSlotsConfig['days'] ?? array_keys($timeSlotsConfig['schedule'] ?? [1, 2, 3, 4, 5]);
+
+        // If course has a stored schedule, return it with current shift's timeSlots structure
+        if (! empty($course->schedule) && is_array($course->schedule)) {
+            return [
+                'timeSlots' => $timeSlots,
+                'schedule' => $course->schedule,
+            ];
+        }
+
+        // No stored schedule: return structure with empty schedule (no random data)
+        return [
+            'timeSlots' => $timeSlots,
+            'schedule' => null,
+        ];
+    }
+
+    /**
+     * Get subject options for schedule editing (curricular + regular for the course level).
+     * Same pool as getSchedule uses for generation.
+     */
+    public function getScheduleSubjects(Course $course): array
+    {
         $classSubjects = ClassSubject::where('school_level_id', $course->school_level_id)->get();
-        $curricularClasses = $classSubjects->where('is_curricular', true)->pluck('name', 'code')->toArray();
-        $regularClasses  = $classSubjects->where('is_curricular', false)->whereIn('code', ['lengua', 'matematica', 'ciencias_sociales', 'ciencias_naturales'])->pluck('name', 'code')->toArray();
-        $timeSlots = $course->schoolShift->timeSlots;
-        $days = $timeSlots['days'];
-        $timeSlots = $timeSlots['timeSlots'];
+        $curricular = $classSubjects->where('is_curricular', true)->map(fn ($s) => ['code' => $s->code, 'name' => $s->name])->values()->all();
+        $regular = $classSubjects->where('is_curricular', false)
+            ->whereIn('code', ['lengua', 'matematica', 'ciencias_sociales', 'ciencias_naturales'])
+            ->map(fn ($s) => ['code' => $s->code, 'name' => $s->name])
+            ->values()
+            ->all();
+        return array_merge($curricular, $regular);
+    }
 
-        // Get only numeric time slots (actual class periods)
-        $classPeriods = array_filter($timeSlots, function ($key) {
-            return is_numeric($key);
-        }, ARRAY_FILTER_USE_KEY);
-
-        $courseSchedule = [];
-        $totalPeriodsPerWeek = count($days) * count($classPeriods);
-
-        // Calculate how many times each regular class should appear
-        // Each curricular class appears once
-        $totalCurricularSlots = count($curricularClasses);
-        $remainingSlots = $totalPeriodsPerWeek - $totalCurricularSlots;
-        $regularClassCount = floor($remainingSlots / count($regularClasses));
-        $extraSlots = $remainingSlots % count($regularClasses);
-
-        // Create a balanced distribution
-        $allSubjects = [];
-
-        // Add curricular classes (each appears once)
-        foreach ($curricularClasses as $code => $name) {
-            $allSubjects[] = ['code' => $code, 'name' => $name];
+    /**
+     * Get teachers for schedule dropdowns. Course teachers first (already related).
+     * When $subjectCode is set, teachers with that subject are listed first (same logic as getRandomTeacher / parseRelatedTeacher).
+     */
+    public function getTeachersForSchedule(Course $course, ?string $subjectCode = null): array
+    {
+        $teachers = $course->courseTeachers()
+            ->with(['roleRelationship.user', 'roleRelationship.workerRelationship.classSubject', 'roleRelationship.role'])
+            ->whereNull('teacher_courses.end_date')
+            ->get();
+        $parsed = $teachers->map(fn ($rel) => $this->parseRelatedTeacher($rel))->values()->all();
+        if ($subjectCode !== null && $subjectCode !== '') {
+            usort($parsed, function ($a, $b) use ($subjectCode) {
+                $aMatch = isset($a['rel_subject']['code']) && $a['rel_subject']['code'] === $subjectCode ? 1 : 0;
+                $bMatch = isset($b['rel_subject']['code']) && $b['rel_subject']['code'] === $subjectCode ? 1 : 0;
+                return $bMatch - $aMatch;
+            });
         }
+        return $parsed;
+    }
 
-        // Add regular classes with equal distribution
-        foreach ($regularClasses as $code => $name) {
-            for ($i = 0; $i < $regularClassCount; $i++) {
-                $allSubjects[] = ['code' => $code, 'name' => $name];
-            }
-        }
-
-        // Add extra slots to first few regular classes
-        $regularClassCodes = array_keys($regularClasses);
-        for ($i = 0; $i < $extraSlots; $i++) {
-            $code = $regularClassCodes[$i % count($regularClassCodes)];
-            $allSubjects[] = ['code' => $code, 'name' => $regularClasses[$code]];
-        }
-
-        // Shuffle to randomize distribution
-        shuffle($allSubjects);
-
-        // Distribute subjects across days and periods
-        $subjectIndex = 0;
-        foreach ($days as $dayNumber) {
-            $courseSchedule[$dayNumber] = [];
-            foreach ($timeSlots as $key => $value) {
-                if (is_numeric($key)) {
-                    // It's a class period
-                    if ($subjectIndex < count($allSubjects)) {
-                        $courseSchedule[$dayNumber][$key] = [
-                            'subject' => [
-                                'name' => $allSubjects[$subjectIndex]['name'],
-                                'code' => $allSubjects[$subjectIndex]['code']
-                            ],
-                            'teacher' => $this->getRandomTeacher($course, $allSubjects[$subjectIndex]['code'])
-                        ];
-                        $subjectIndex++;
-                    } else {
-                        $courseSchedule[$dayNumber][$key] = null;
-                    }
-                } else {
-                    // It's break time - no class info
-                    $courseSchedule[$dayNumber][$key] = null;
-                }
-            }
-        }
-
-        $result = ['timeSlots' => $timeSlots, 'schedule' => $courseSchedule];
-        return $result;
+    /**
+     * Update the course stored schedule. Expects grid: [ day => [ slotId => { subject: {code, name}, teacher: {...} } ] ].
+     */
+    public function updateCourseSchedule(Course $course, array $scheduleGrid): Course
+    {
+        $course->schedule = $scheduleGrid;
+        $course->save();
+        return $course;
     }
 
     private function getRandomTeacher($course, $subject)

@@ -14,6 +14,11 @@
         label: 'Eliminar'
       }">
         <template #additional-buttons>
+          <q-btn v-if="hasPermission($page.props, 'course.manage')" size="sm"
+            :href="route('school.course.schedule.edit', { school: school.slug, schoolLevel: selectedLevel.code, idAndLabel: getCourseSlug(course) })"
+            color="secondary">
+            Horario
+          </q-btn>
           <q-btn v-if="course.active" size="sm"
             :href="route('school.course.attendance.edit', { 'school': school.slug, 'schoolLevel': selectedLevel.code, 'idAndLabel': getCourseSlug(course) })"
             color="lime-7">

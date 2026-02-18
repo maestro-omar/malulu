@@ -253,6 +253,13 @@
     justify-content: center;
   }
 
+  // No schedule defined (empty stored schedule)
+  &__undefined {
+    margin: 0;
+    padding: 12px 0;
+    font-style: italic;
+  }
+
   // Teacher name styling (subject badge uses unified component)
   &__teacher {
     margin-top: 2px;

@@ -153,6 +153,47 @@ class CourseController extends SchoolBaseController
         return redirect()->route('school.course.show', ['school' => $school->slug, 'schoolLevel' => $schoolLevel->code, 'idAndLabel' => $course->idAndLabel])->with('success', 'Curso actualizado correctamente');
     }
 
+    public function editSchedule(School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
+    {
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        $course->load(['school', 'schoolLevel', 'schoolShift']);
+
+        $timeSlotsConfig = $course->schoolShift->timeSlots;
+        $timeSlots = $timeSlotsConfig['timeSlots'] ?? $timeSlotsConfig;
+        $days = $timeSlotsConfig['days'] ?? [1, 2, 3, 4, 5];
+
+        $subjects = $this->courseService->getScheduleSubjects($course);
+        $teachers = $this->courseService->getTeachersForSchedule($course);
+        $scheduleData = $this->courseService->getSchedule($course);
+
+        return Inertia::render('Courses/ScheduleEdit', [
+            'course' => $course,
+            'school' => $school,
+            'selectedLevel' => $schoolLevel,
+            'timeSlots' => $timeSlots,
+            'days' => $days,
+            'subjects' => $subjects,
+            'teachers' => $teachers,
+            'schedule' => $scheduleData['schedule'] ?? [],
+            'breadcrumbs' => Breadcrumbs::generate('school.course.schedule.edit', $school, $schoolLevel, $course),
+        ]);
+    }
+
+    public function updateSchedule(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
+    {
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
+        $request->validate([
+            'schedule' => 'required|array',
+            'schedule.*' => 'array',
+        ]);
+        $this->courseService->updateCourseSchedule($course, $request->input('schedule', []));
+        return redirect()->route('school.course.show', [
+            'school' => $school->slug,
+            'schoolLevel' => $schoolLevel->code,
+            'idAndLabel' => $course->idAndLabel,
+        ])->with('success', 'Horario actualizado correctamente');
+    }
+
     public function destroy(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
         $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
