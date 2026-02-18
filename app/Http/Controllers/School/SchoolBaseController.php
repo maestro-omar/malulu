@@ -28,12 +28,16 @@ class SchoolBaseController extends Controller
 
     public function getCourseFromUrlParameter(string $idAndLabel)
     {
-        $id = (int) explode('-', $idAndLabel)[0];
-        $course = $id ? Course::where('id', $id)->first() : null;
+        $course = $this->getCourseOrNull($idAndLabel);
         if (!$course) {
-            // if (!$course) throw new \Exception('Curso no encontrado');
             abort(404, 'Curso no encontrado');
         }
         return $course;
+    }
+
+    public function getCourseOrNull(string $idAndLabel): ?Course
+    {
+        $id = (int) explode('-', $idAndLabel)[0];
+        return $id ? Course::where('id', $id)->first() : null;
     }
 }

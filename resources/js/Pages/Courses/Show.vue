@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { Link, Head } from '@inertiajs/vue3'
+import { Link, Head, router } from '@inertiajs/vue3'
 import FilesTable from '@/Components/admin/FilesTable.vue';
 import SystemTimestamp from '@/Components/admin/SystemTimestamp.vue';
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue'

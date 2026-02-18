@@ -10,22 +10,14 @@
       </q-item-section>
 
       <q-item-section avatar v-if="!pastMode">
-        <q-btn
-          size="sm"
-          padding="sm"
-          dense
-          icon="add"
-          color="green"
-          title="Inscribir estudiante"
-          :href="enrollUrl"
-        >
+        <q-btn size="sm" padding="sm" dense icon="add" color="green" title="Inscribir estudiante" :href="enrollUrl">
           Inscribir estudiante
         </q-btn>
       </q-item-section>
     </template>
     <!-- Quasar Table -->
-    <q-table class="mll-table mll-table--students striped-table" dense :rows="students" :columns="tableColumns" row-key="id"
-      binary-state-sort :pagination="pagination" :rows-per-page-options="[10, 20, 30, 50, 100]">
+    <q-table class="mll-table mll-table--students striped-table" dense :rows="students" :columns="tableColumns"
+      row-key="id" binary-state-sort :pagination="pagination" :rows-per-page-options="[10, 20, 30, 50, 100]">
 
       <!-- Custom cell for picture -->
       <template #body-cell-picture="props">
@@ -39,7 +31,8 @@
       <!-- Custom cell for critical info -->
       <template #body-cell-critical_info="props">
         <q-td :props="props">
-          <q-icon v-if="getCombinedCriticalInfo(props.row)" name="warning" color="orange" size="sm" class="cursor-pointer">
+          <q-icon v-if="getCombinedCriticalInfo(props.row)" name="warning" color="orange" size="sm"
+            class="cursor-pointer">
             <q-tooltip v-model="toggle" class="bg-orange text-white" anchor="top middle" self="bottom middle">
               <div v-html="getCombinedCriticalInfo(props.row).replace(/\n/g, '<br>')"></div>
             </q-tooltip>
@@ -51,7 +44,7 @@
       <template #body-cell-firstname="props">
         <q-td :props="props">
           <Link :href="route_school_student(school, props.row, 'show')" class="text-primary">
-          {{ props.row.firstname }}
+            {{ props.row.firstname }}
           </Link>
         </q-td>
       </template>
@@ -81,6 +74,13 @@
       <template #body-cell-gender="props">
         <q-td :props="props">
           <GenderBadge :gender="props.row.gender" />
+        </q-td>
+      </template>
+
+      <!-- Enrollment date (when enrolled to course) -->
+      <template #body-cell-rel_start_date="props">
+        <q-td :props="props">
+          {{ props.row.rel_start_date ? formatDate(props.row.rel_start_date) : '—' }}
         </q-td>
       </template>
 
@@ -127,6 +127,13 @@
         </q-td>
       </template>
 
+      <!-- Past-only: date left course (promoted, graduated, etc.) -->
+      <template #body-cell-rel_end_date="props">
+        <q-td :props="props">
+          {{ props.row.rel_end_date ? formatDate(props.row.rel_end_date) : '—' }}
+        </q-td>
+      </template>
+
       <!-- Past-only: current course -->
       <template #body-cell-current_course="props">
         <q-td :props="props">
@@ -170,6 +177,7 @@ import GenderBadge from '@/Components/Badges/GenderBadge.vue';
 import noImage from "@images/no-image-person.png";
 import { route_school_student } from '@/Utils/routes';
 import { formatNumber, getCombinedCriticalInfo } from '@/Utils/strings';
+import { formatDate } from '@/Utils/date';
 import { hasPermission, isAdmin, isCurrentUserAdmin } from '@/Utils/permissions';
 
 // Methods for attendance calculations
@@ -308,10 +316,26 @@ const baseColumns = [
     sortable: false,
     style: 'width: 120px'
   },
+  {
+    name: 'rel_start_date',
+    label: 'Inscripto',
+    field: 'rel_start_date',
+    align: 'center',
+    sortable: true,
+    style: 'width: 110px'
+  },
 ];
 
-// Past-only columns (reason left, current course)
+// Past-only columns (reason left, date left, current course)
 const pastOnlyColumns = [
+  {
+    name: 'rel_end_date',
+    label: 'Fecha de baja',
+    field: 'rel_end_date',
+    align: 'center',
+    sortable: true,
+    style: 'width: 110px'
+  },
   {
     name: 'rel_end_reason',
     label: 'Motivo de baja',

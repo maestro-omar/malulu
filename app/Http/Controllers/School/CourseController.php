@@ -153,11 +153,15 @@ class CourseController extends SchoolBaseController
         return redirect()->route('school.course.show', ['school' => $school->slug, 'schoolLevel' => $schoolLevel->code, 'idAndLabel' => $course->idAndLabel])->with('success', 'Curso actualizado correctamente');
     }
 
-    public function destroy(Request $request, Course $course)
+    public function destroy(Request $request, School $school, SchoolLevel $schoolLevel, string $courseIdAndLabel)
     {
+        $course = $this->getCourseFromUrlParameter($courseIdAndLabel);
         $this->courseService->deleteCourse($course);
 
-        return $this->goBackToIndex($request, 'Curso eliminado correctamente');
+        return redirect()->route('school.courses', [
+            'school' => $school->slug,
+            'schoolLevel' => $schoolLevel->code,
+        ])->with('success', 'Curso eliminado correctamente');
     }
 
     public function search(Request $request, School $school, SchoolLevel $schoolLevel)
