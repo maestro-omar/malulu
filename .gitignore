@@ -30,3 +30,5 @@ Homestead.json
 auth.json
 tests/
 resources/css/components/OLD/*
+.env LOCAL
+.env PROD
