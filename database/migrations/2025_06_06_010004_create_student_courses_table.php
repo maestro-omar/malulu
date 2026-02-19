@@ -15,6 +15,7 @@ return new class extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->unsignedBigInteger('end_reason_id')->nullable();
+            $table->text('enrollment_reason')->nullable();
             $table->text('notes')->nullable();
             $table->json('custom_fields')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();

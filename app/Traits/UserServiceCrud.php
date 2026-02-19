@@ -309,7 +309,7 @@ trait UserServiceCrud
                             [
                                 'start_date' => $details['student_details']['start_date'] ?? now()->toDateString(),
                                 'created_by' => $creator->id,
-                                // Add other fields if needed
+                                'enrollment_reason' => $details['student_details']['enrollment_reason'] ?? null,
                             ]
                         );
                     }

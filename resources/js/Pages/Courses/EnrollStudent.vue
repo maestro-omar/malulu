@@ -120,6 +120,8 @@
               </div>
               <q-select v-model="selectedEndReasonId" :options="endReasonOptions" option-value="id" option-label="name"
                 emit-value map-options outlined dense label="Motivo de finalización" class="q-mb-sm" />
+              <q-input v-model="enrollmentReason" type="textarea" outlined dense label="Motivo de inscripción (opcional)"
+                placeholder="Ej: Viene de otra escuela, Repite el grado" rows="2" class="q-mt-sm" />
             </q-card-section>
             <q-card-actions align="right">
               <q-btn flat label="Cancelar" v-close-popup />
@@ -134,11 +136,13 @@
           <q-card style="min-width: 320px">
             <q-card-section>
               <div class="text-h6">Confirmar inscripción</div>
-              <div class="q-mt-sm">
+              <div class="q-mt-sm q-mb-md">
                 ¿Inscribir a <strong>{{ selectedStudent ? `${selectedStudent.firstname} ${selectedStudent.lastname}` :
                   ''
                   }}</strong> en este curso?
               </div>
+              <q-input v-model="enrollmentReason" type="textarea" outlined dense label="Motivo de inscripción (opcional)"
+                placeholder="Ej: Viene de otra escuela, Repite el grado" rows="2" />
             </q-card-section>
             <q-card-actions align="right">
               <q-btn flat label="Cancelar" v-close-popup />
@@ -243,6 +247,7 @@ const showAlreadyInCourse = ref(false);
 const showEndReasonDialog = ref(false);
 const showConfirmEnroll = ref(false);
 const selectedEndReasonId = ref(null);
+const enrollmentReason = ref('');
 
 function openEnroll(row) {
   selectedStudent.value = row;
@@ -255,27 +260,35 @@ function openEnroll(row) {
   }
   if (current) {
     selectedEndReasonId.value = null;
+    enrollmentReason.value = '';
     showEndReasonDialog.value = true;
     return;
   }
+  enrollmentReason.value = '';
   showConfirmEnroll.value = true;
 }
 
 function submitEnroll() {
   if (!selectedStudent.value) return;
   showConfirmEnroll.value = false;
-  router.post(storeUrl.value, { user_id: selectedStudent.value.id });
+  const payload = { user_id: selectedStudent.value.id };
+  if (enrollmentReason.value?.trim()) payload.enrollment_reason = enrollmentReason.value.trim();
+  router.post(storeUrl.value, payload);
   selectedStudent.value = null;
+  enrollmentReason.value = '';
 }
 
 function submitEnrollWithReason() {
   if (!selectedStudent.value || !selectedEndReasonId.value) return;
   showEndReasonDialog.value = false;
-  router.post(storeUrl.value, {
+  const payload = {
     user_id: selectedStudent.value.id,
     end_reason_id: selectedEndReasonId.value,
-  });
+  };
+  if (enrollmentReason.value?.trim()) payload.enrollment_reason = enrollmentReason.value.trim();
+  router.post(storeUrl.value, payload);
   selectedStudent.value = null;
   selectedEndReasonId.value = null;
+  enrollmentReason.value = '';
 }
 </script>

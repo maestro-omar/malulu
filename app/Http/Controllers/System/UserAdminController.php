@@ -281,6 +281,7 @@ class UserAdminController extends SystemBaseController
             'guardian_details.student_id' => ['nullable', 'exists:users,id'], // Assuming students are also users
 
             'student_details.current_course_id' => ['nullable', 'exists:courses,id'],
+            'student_details.enrollment_reason' => ['nullable', 'string'],
         ]);
 
         try {

@@ -107,6 +107,7 @@ class CourseStudentController extends SchoolBaseController
         $request->validate([
             'user_id' => ['required', 'integer', 'exists:users,id'],
             'end_reason_id' => ['nullable', 'integer', 'exists:student_course_end_reasons,id'],
+            'enrollment_reason' => ['nullable', 'string'],
         ]);
 
         $result = $this->studentService->enrollStudentInCourse(
@@ -114,7 +115,8 @@ class CourseStudentController extends SchoolBaseController
             $school->id,
             $course->id,
             $request->user()->id,
-            $request->input('end_reason_id') ? (int) $request->end_reason_id : null
+            $request->input('end_reason_id') ? (int) $request->end_reason_id : null,
+            $request->input('enrollment_reason')
         );
 
         if (isset($result['error'])) {

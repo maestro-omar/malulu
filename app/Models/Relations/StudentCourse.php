@@ -24,6 +24,7 @@ class StudentCourse extends Model
         'start_date',
         'end_date',
         'end_reason_id',
+        'enrollment_reason',
         'notes',
         'created_by',
         'updated_by',

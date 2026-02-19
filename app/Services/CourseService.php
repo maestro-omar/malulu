@@ -255,6 +255,7 @@ class CourseService
             'start_date' => ['required', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'end_reason_id' => ['nullable', 'exists:student_course_end_reasons,id'],
+            'enrollment_reason' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
         ];
 
@@ -286,6 +287,7 @@ class CourseService
             'course_id' => $courseId,
             'start_date' => $data['start_date'],
             'end_reason_id' => $data['end_reason_id'] ?? null,
+            'enrollment_reason' => $data['enrollment_reason'] ?? null,
             'notes' => $data['notes'] ?? null,
             'created_by' => $data['created_by'] ?? null,
         ]);

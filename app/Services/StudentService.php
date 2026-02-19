@@ -94,7 +94,8 @@ class StudentService
         StudentCourse $studentCourse,
         ?Course $newCourse,
         string $endReasonCode,
-        ?int $createdBy = null
+        ?int $createdBy = null,
+        ?string $enrollmentReason = null
     ): void {
         $endReason = StudentCourseEndReason::where('code', $endReasonCode)->first();
         if (! $endReason) {
@@ -108,7 +109,7 @@ class StudentService
             ? Carbon::parse($currentCourse->end_date)->toDateString()
             : now()->toDateString();
 
-        DB::transaction(function () use ($studentCourse, $newCourse, $endReason, $endDate, $createdBy) {
+        DB::transaction(function () use ($studentCourse, $newCourse, $endReason, $endDate, $createdBy, $enrollmentReason) {
             $studentCourse->update([
                 'end_date' => $endDate,
                 'end_reason_id' => $endReason->id,
@@ -123,6 +124,7 @@ class StudentService
                     'start_date' => $newStartDate,
                     'end_date' => null,
                     'end_reason_id' => null,
+                    'enrollment_reason' => $enrollmentReason,
                     'created_by' => $createdBy,
                 ]);
 
@@ -136,7 +138,7 @@ class StudentService
     /**
      * Transfer a student from one course to another (e.g. 2A to 2B).
      */
-    public function transferStudentToCourse(StudentCourse $studentCourse, Course $targetCourse, ?int $createdBy = null): void
+    public function transferStudentToCourse(StudentCourse $studentCourse, Course $targetCourse, ?int $createdBy = null, ?string $enrollmentReason = null): void
     {
         $currentCourse = $studentCourse->course;
 
@@ -160,7 +162,7 @@ class StudentService
         $endDate = now()->toDateString();
         $newStartDate = $endDate;
 
-        DB::transaction(function () use ($studentCourse, $targetCourse, $endReason, $endDate, $newStartDate, $createdBy) {
+        DB::transaction(function () use ($studentCourse, $targetCourse, $endReason, $endDate, $newStartDate, $createdBy, $enrollmentReason) {
             $studentCourse->update([
                 'end_date' => $endDate,
                 'end_reason_id' => $endReason->id,
@@ -173,6 +175,7 @@ class StudentService
                 'start_date' => $newStartDate,
                 'end_date' => null,
                 'end_reason_id' => null,
+                'enrollment_reason' => $enrollmentReason,
                 'created_by' => $createdBy,
             ]);
 
@@ -293,7 +296,8 @@ class StudentService
         int $schoolId,
         int $courseId,
         ?int $createdBy = null,
-        ?int $endReasonId = null
+        ?int $endReasonId = null,
+        ?string $enrollmentReason = null
     ): array {
         $roleRelationshipId = $this->getRoleRelationshipIdForStudentInSchool($userId, $schoolId);
         if (! $roleRelationshipId) {
@@ -329,7 +333,8 @@ class StudentService
                 $activeEnrollment,
                 $targetCourse,
                 $endReason->code,
-                $createdBy
+                $createdBy,
+                $enrollmentReason
             );
 
             return ['message' => 'Estudiante inscripto correctamente (curso anterior finalizado).'];
@@ -339,6 +344,7 @@ class StudentService
         $courseService = app(CourseService::class);
         $courseService->enrollStudentToCourse($roleRelationshipId, $courseId, [
             'created_by' => $createdBy,
+            'enrollment_reason' => $enrollmentReason,
         ]);
 
         StudentRelationship::updateOrCreate(
