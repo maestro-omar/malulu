@@ -12,6 +12,8 @@ use Carbon\Carbon;
 
 /**
  * Promotes/graduates students from 2025 courses to next courses.
+ * Only processes courses whose start_date falls within the previous academic year (2025),
+ * so 2026 courses with incorrect end_date are never included.
  * Updates course active status: activate new AY courses and next courses in progress; deactivate grade 8 (graduated).
  */
 class UpdateDataTo2026Seeder extends Seeder
@@ -49,12 +51,19 @@ class UpdateDataTo2026Seeder extends Seeder
             return;
         }
 
+        $previousAyStart = $previousAy->start_date->format('Y-m-d');
         $previousAyEnd = $previousAy->end_date->format('Y-m-d');
         $firstDayOfTargetAy = $targetAy->start_date->format('Y-m-d');
         $today = Carbon::today()->toDateString();
 
+        // Only promote from courses that belong to the previous academic year (start_date within AY)
+        // and have ended by the end of that year. This still promotes when current course ends on last
+        // day of AY and next course starts on first day of new AY (next course is not filtered here).
+        // Excludes e.g. 2026 courses with a wrong end_date in the past.
         $courses = Course::where('school_id', $school->id)
             ->where('school_level_id', $primaryLevel->id)
+            ->where('start_date', '>=', $previousAyStart)
+            ->where('start_date', '<=', $previousAyEnd)
             ->whereNotNull('end_date')
             ->where('end_date', '<=', $previousAyEnd)
             ->orderBy('number')

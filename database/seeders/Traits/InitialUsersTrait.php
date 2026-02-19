@@ -229,7 +229,7 @@ trait InitialUsersTrait
             $number = (int)$matches[1];
             $letter = strtoupper($matches[2]);
 
-            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter);
+            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter, $shift);
         }
 
         // Handle patterns like "1 agrupamiento b", "1er agrupamiento C"
@@ -237,7 +237,7 @@ trait InitialUsersTrait
             $number = (int)$matches[1];
             $letter = strtoupper($matches[2]);
 
-            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter);
+            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter, $shift);
         }
 
         // Handle patterns like "1 agrupamiento division C"
@@ -245,7 +245,7 @@ trait InitialUsersTrait
             $number = (int)$matches[1];
             $letter = strtoupper($matches[2]);
 
-            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter);
+            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter, $shift);
         }
 
         // Handle patterns like "3er agrupamiento"
@@ -259,18 +259,22 @@ trait InitialUsersTrait
     }
 
     /**
-     * Get course by number and letter
+     * Get course by number and letter, optionally for a specific shift (so 6C Mañana vs 6C Tarde is correct).
      */
-    protected function getCourseByNumberAndLetter($number, $letter)
+    protected function getCourseByNumberAndLetter($number, $letter, $shift = null)
     {
-        $course = $this->courses->where('number', $number)->where('letter', $letter)->first();
+        $filtered = $this->courses->where('number', $number)->where('letter', $letter);
+        if ($shift !== null && is_object($shift) && isset($shift->id)) {
+            $filtered = $filtered->where('school_shift_id', $shift->id);
+        }
+        $course = $filtered->first();
         return $course ? ['id' => $course->id, 'number' => $course->number, 'letter' => $course->letter] : null;
     }
 
     /**
      * Get courses by numbers
      */
-    protected function getCoursesByNumbers(SchoolShift $shift, $numbers, ?bool $specialAddToNumber = false, ?bool $nextIfInactiveAndExists = true)
+    protected function getCoursesByNumbers(SchoolShift $shift, $numbers, ?bool $DUMMYspecialAddToNumber = false, ?bool $nextIfInactiveAndExists = true)
     {
         $courses = [];
 
@@ -310,5 +314,14 @@ trait InitialUsersTrait
         }
         // 1 of march of startDateYear
         return $startDate->format('Y-03-01');
+    }
+
+    /**
+     * Start date of the academic year for jsonForYear (for initial import: enrollment in that year).
+     */
+    protected function getAcademicYearStartForJsonYear()
+    {
+        $ay = $this->academicYears->where('year', $this->jsonForYear)->first();
+        return $ay ? $ay->start_date : now()->toDateString();
     }
 }

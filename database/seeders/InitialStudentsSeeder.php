@@ -12,6 +12,7 @@ use App\Models\Catalogs\SchoolLevel;
 use App\Models\Entities\Course;
 use App\Models\Entities\AcademicYear;
 use App\Services\UserService;
+use Carbon\Carbon;
 use Database\Seeders\Traits\InitialUsersTrait;
 
 /**
@@ -58,7 +59,7 @@ class InitialStudentsSeeder extends Seeder
             throw new \Exception('Default province or country not found. Please run ProvinceSeeder and CountrySeeder first.');
         }
 
-        // Get courses that overlap with jsonForYear academic year only
+        // Get courses that start within jsonForYear academic year (so "6C" in 2025 JSON = 6C 2025, not 6C 2026)
         $academicYear = AcademicYear::findByYear($this->jsonForYear);
         if (!$academicYear) {
             throw new \Exception("Academic year {$this->jsonForYear} not found. Run AcademicYearSeeder or add the year.");
@@ -67,6 +68,7 @@ class InitialStudentsSeeder extends Seeder
         $ayEnd = $academicYear->end_date->format('Y-m-d');
         $this->courses = Course::where('school_id', $this->defaultSchool->id)
             ->where('school_level_id', $this->primaryLevel->id)
+            ->where('start_date', '>=', $ayStart)
             ->where('start_date', '<=', $ayEnd)
             ->where(function ($q) use ($ayStart) {
                 $q->where('end_date', '>=', $ayStart)->orWhereNull('end_date');
@@ -153,19 +155,21 @@ class InitialStudentsSeeder extends Seeder
             throw new \Exception("Role not found for student!");
         }
 
-        $courses = $this->normalizeCourses($shift, $userData['Agrupamiento'], true);
+        $courses = $this->normalizeCourses($shift, $userData['Agrupamiento'], false);
         if (empty($courses)) {
             throw new \Exception("No courses found for student: " . print_r($userData, true));
         }
         $course = $courses[0];
         $courseNumber = (int)$course['number'];
 
+        $enrollmentStartDate = $this->parseDate($userData['INGRESO AL AGRUP'] ?? '') ?: $this->getAcademicYearStartForJsonYear();
         $details = [
-            'start_date' => $this->parseDate($userData['INGRESO AL AGRUP'] ?? '') ?: $this->getStudentStartDate($courseNumber),
+            'start_date' => $enrollmentStartDate,
             'notes' => 'Imported from initial data',
         ];
         $details['student_details'] = [
-            'current_course_id' => $course['id']
+            'current_course_id' => $course['id'],
+            'start_date' => Carbon::parse($enrollmentStartDate)->format('Y-m-d'),
         ];
 
         return [

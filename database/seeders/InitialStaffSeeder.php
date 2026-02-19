@@ -185,7 +185,7 @@ class InitialStaffSeeder extends Seeder
             throw new \Exception("Role not found for cargo: " . ($userData['Cargo'] ?? 'Unknown'));
         }
 
-        $courses = $this->normalizeCourses($shift, $userData['Agrupamientos']);
+        $courses = $this->normalizeCourses($shift, $userData['Agrupamientos'], false);
         // Create role details
         $details = [
             'start_date' => $this->parseDate($userData['Fecha de ingreso a la escuela'] ?? '') ?: now()->subYears(2),
