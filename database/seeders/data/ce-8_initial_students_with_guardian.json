@@ -327,7 +327,8 @@
     "tel_2": 2664269013,
     "TUTOR_Apellidos": "Orozco Molina",
     "TUTOR_Nombres": "Marina",
-    "Vínculo": "Madre"
+    "Vínculo": "Madre",
+    "permanece": "sí"
   },
   {
     "Agrupamiento": "1A",
@@ -393,7 +394,8 @@
     "tel_2": 2664704774,
     "TUTOR_Apellidos": "Zarate",
     "TUTOR_Nombres": "Carolina",
-    "Vínculo": "Madre"
+    "Vínculo": "Madre",
+    "permanece": "sí"
   },
   {
     "Agrupamiento": "1B",
@@ -415,7 +417,8 @@
     "tel_2": 2664751688,
     "TUTOR_Apellidos": "Alba",
     "TUTOR_Nombres": "Maximiliano",
-    "Vínculo": "Padre"
+    "Vínculo": "Padre",
+    "permanece": "sí"
   },
   {
     "Agrupamiento": "1B",
@@ -459,7 +462,8 @@
     "tel_2": 2664016476,
     "TUTOR_Apellidos": "Garcia",
     "TUTOR_Nombres": "Mayra",
-    "Vínculo": "Madre"
+    "Vínculo": "Madre",
+    "permanece": "sí"
   },
   {
     "Agrupamiento": "1B",
@@ -701,7 +705,8 @@
     "tel_2": 2665266431,
     "TUTOR_Apellidos": "Guzman",
     "TUTOR_Nombres": "Antonela",
-    "Vínculo": "Madre"
+    "Vínculo": "Madre",
+    "permanece": "sí"
   },
   {
     "Agrupamiento": "1B",
@@ -1119,7 +1124,8 @@
     "tel_2": 2664014882,
     "TUTOR_Apellidos": "Arangue Lopez",
     "TUTOR_Nombres": "Brenda",
-    "Vínculo": "Madre"
+    "Vínculo": "Madre",
+    "permanece": "sí"
   },
   {
     "Agrupamiento": "1D",
@@ -1537,7 +1543,8 @@
     "tel_2": 2664157327,
     "TUTOR_Apellidos": "Godoy",
     "TUTOR_Nombres": "Roxana",
-    "Vínculo": "Madre"
+    "Vínculo": "Madre",
+    "permanece": "sí"
   },
   {
     "Agrupamiento": "1E",
@@ -1625,7 +1632,8 @@
     "tel_2": 2665068373,
     "TUTOR_Apellidos": "Funes",
     "TUTOR_Nombres": "Maira",
-    "Vínculo": "Madre"
+    "Vínculo": "Madre",
+    "permanece": "sí"
   },
   {
     "Agrupamiento": "1E",
@@ -1669,7 +1677,8 @@
     "tel_2": 2664746260,
     "TUTOR_Apellidos": "Lopez",
     "TUTOR_Nombres": "Claudia",
-    "Vínculo": "Madre"
+    "Vínculo": "Madre",
+    "permanece": "sí"
   },
   {
     "Agrupamiento": "1E",
@@ -1823,7 +1832,8 @@
     "tel_2": 2665285153,
     "TUTOR_Apellidos": "Quigoga",
     "TUTOR_Nombres": "Gisel",
-    "Vínculo": "Madre"
+    "Vínculo": "Madre",
+    "permanece": "sí"
   },
   {
     "Agrupamiento": "1F",
@@ -1999,7 +2009,8 @@
     "tel_2": 2664936583,
     "TUTOR_Apellidos": "Ricarte",
     "TUTOR_Nombres": "Brisa",
-    "Vínculo": "Madre"
+    "Vínculo": "Madre",
+    "permanece": "sí"
   },
   {
     "Agrupamiento": "1F",
@@ -2109,7 +2120,8 @@
     "tel_2": 2665291651,
     "TUTOR_Apellidos": "Torres",
     "TUTOR_Nombres": "Maria",
-    "Vínculo": "Madre"
+    "Vínculo": "Madre",
+    "permanece": "sí"
   },
   {
     "Agrupamiento": "2A",
