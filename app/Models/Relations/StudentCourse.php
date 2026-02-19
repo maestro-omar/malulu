@@ -26,6 +26,7 @@ class StudentCourse extends Model
         'end_reason_id',
         'enrollment_reason',
         'notes',
+        'custom_fields',
         'created_by',
         'updated_by',
         'deleted_by'

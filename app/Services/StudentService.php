@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Entities\AcademicYear;
 use App\Models\Entities\Course;
 use App\Models\Entities\User;
 use App\Models\Relations\StudentCourse;
@@ -36,7 +37,7 @@ class StudentService
      */
     public function promoteOrGraduateStudents(iterable $studentCourses, Course $fromCourse, ?int $createdBy = null): array
     {
-        $result = ['promoted' => 0, 'graduated' => 0, 'skipped' => 0, 'errors' => []];
+        $result = ['promoted' => 0, 'graduated' => 0, 'stays' => 0, 'skipped' => 0, 'errors' => []];
 
         $isLastGrade = $this->isLastGradeForSchoolLevel($fromCourse);
         $nextCourse = $isLastGrade ? null : $fromCourse->nextCourses()->first();
@@ -53,6 +54,28 @@ class StudentService
 
             if ($studentCourse->course_id !== $fromCourse->id) {
                 $result['skipped']++;
+                continue;
+            }
+
+            $customFields = $studentCourse->custom_fields ?? [];
+            $permaneceAgrupamiento = $customFields['permanece_2026'] ?? null;
+            if ($permaneceAgrupamiento !== null && $permaneceAgrupamiento !== '') {
+                try {
+                    $targetCourse = $this->findCourseForPermanece($fromCourse, (string) $permaneceAgrupamiento, 2026);
+                    if (! $targetCourse) {
+                        $result['errors'][] = "Permanece target course not found for agrupamiento '{$permaneceAgrupamiento}' (from course {$fromCourse->nice_name}). Student enrollment ID: {$studentCourse->id}";
+                        continue;
+                    }
+                    $this->endEnrollmentAndCreateNew(
+                        $studentCourse,
+                        $targetCourse,
+                        StudentCourseEndReason::CODE_STAYS,
+                        $createdBy
+                    );
+                    $result['stays']++;
+                } catch (\Throwable $e) {
+                    $result['errors'][] = "Student enrollment {$studentCourse->id} (permanece): " . $e->getMessage();
+                }
                 continue;
             }
 
@@ -84,6 +107,33 @@ class StudentService
         }
 
         return $result;
+    }
+
+    /**
+     * Find the course for a "permanece" (stays) target: same school, level, shift as $fromCourse,
+     * with number/letter from $agrupamiento (e.g. "1A") and start_date on the first day of $targetYear academic year.
+     */
+    public function findCourseForPermanece(Course $fromCourse, string $agrupamiento, int $targetYear): ?Course
+    {
+        if (! preg_match('/^(\d+)([A-Za-z])$/', trim($agrupamiento), $m)) {
+            return null;
+        }
+        $number = (int) $m[1];
+        $letter = strtoupper($m[2]);
+
+        $targetAy = AcademicYear::findByYear($targetYear);
+        if (! $targetAy) {
+            return null;
+        }
+        $firstDay = $targetAy->start_date->format('Y-m-d');
+
+        return Course::where('school_id', $fromCourse->school_id)
+            ->where('school_level_id', $fromCourse->school_level_id)
+            ->where('school_shift_id', $fromCourse->school_shift_id)
+            ->where('number', $number)
+            ->where('letter', $letter)
+            ->where('start_date', $firstDay)
+            ->first();
     }
 
     /**

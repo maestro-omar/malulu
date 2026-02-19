@@ -6,8 +6,12 @@ use Illuminate\Database\Seeder;
 use App\Models\Entities\Course;
 use App\Models\Entities\School;
 use App\Models\Entities\AcademicYear;
+use App\Models\Entities\User;
 use App\Models\Catalogs\SchoolLevel;
+use App\Models\Catalogs\SchoolShift;
 use App\Services\StudentService;
+use App\Services\TeacherService;
+use App\Services\CourseService;
 use Carbon\Carbon;
 
 /**
@@ -76,6 +80,7 @@ class UpdateDataTo2026Seeder extends Seeder
         $totalPromoted = 0;
         $totalGraduated = 0;
         $totalSkipped = 0;
+        $totalStays = 0;
         $allErrors = [];
 
         foreach ($courses as $course) {
@@ -88,24 +93,27 @@ class UpdateDataTo2026Seeder extends Seeder
 
             $totalPromoted += $result['promoted'];
             $totalGraduated += $result['graduated'];
+            $totalStays += $result['stays'] ?? 0;
             $totalSkipped += $result['skipped'];
             $allErrors = array_merge($allErrors, $result['errors']);
 
-            if ($result['promoted'] > 0 || $result['graduated'] > 0) {
+            if ($result['promoted'] > 0 || $result['graduated'] > 0 || ($result['stays'] ?? 0) > 0) {
                 $this->command->info(sprintf(
-                    'Course %s: %d promoted, %d graduated, %d skipped',
+                    'Course %s: %d promoted, %d graduated, %d stays, %d skipped',
                     $course->nice_name,
                     $result['promoted'],
                     $result['graduated'],
+                    $result['stays'] ?? 0,
                     $result['skipped']
                 ));
             }
         }
 
         $this->command->info(sprintf(
-            'UpdateDataTo2026Seeder: Total %d promoted, %d graduated, %d skipped',
+            'UpdateDataTo2026Seeder: Total %d promoted, %d graduated, %d stays, %d skipped',
             $totalPromoted,
             $totalGraduated,
+            $totalStays,
             $totalSkipped
         ));
 
@@ -116,6 +124,8 @@ class UpdateDataTo2026Seeder extends Seeder
         }
 
         $this->updateCourseActiveStatus($school->id, $primaryLevel->id, $firstDayOfTargetAy, $previousAyEnd, $today);
+
+        $this->enrollTeachersTo2026Courses($school, $primaryLevel, $targetAy, $firstDayOfTargetAy);
     }
 
     /**
@@ -161,6 +171,114 @@ class UpdateDataTo2026Seeder extends Seeder
             ->update(['active' => true]);
         if ($inProgress > 0) {
             $this->command->info("Activated {$inProgress} next courses in progress.");
+        }
+    }
+
+    /**
+     * Enroll teachers to 2026 assigned courses from ce-8_initial_staff.json Agrupamiento2026
+     * as "in charge" teacher. Matches staff by email and course by number+letter+shift.
+     */
+    private function enrollTeachersTo2026Courses(School $school, SchoolLevel $primaryLevel, AcademicYear $targetAy, string $firstDayOfTargetAy): void
+    {
+        $jsonPath = __DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'ce-8_initial_staff.json';
+        if (! file_exists($jsonPath)) {
+            $this->command->warn('ce-8_initial_staff.json not found. Skipping teacher 2026 enrollment.');
+            return;
+        }
+
+        $jsonContent = file_get_contents($jsonPath);
+        $staffData = $jsonContent !== false ? json_decode($jsonContent, true) : null;
+        if (! is_array($staffData)) {
+            $this->command->warn('Invalid or empty ce-8_initial_staff.json. Skipping teacher 2026 enrollment.');
+            return;
+        }
+
+        $ayStart = $targetAy->start_date->format('Y-m-d');
+        $ayEnd = $targetAy->end_date->format('Y-m-d');
+        $courses2026 = Course::where('school_id', $school->id)
+            ->where('school_level_id', $primaryLevel->id)
+            ->where('start_date', '<=', $ayEnd)
+            ->where(function ($q) use ($ayStart) {
+                $q->where('end_date', '>=', $ayStart)->orWhereNull('end_date');
+            })
+            ->get();
+
+        $shiftMorning = SchoolShift::where('code', SchoolShift::MORNING)->first();
+        $shiftAfternoon = SchoolShift::where('code', SchoolShift::AFTERNOON)->first();
+        $teacherService = app(TeacherService::class);
+        $courseService = app(CourseService::class);
+        $creatorId = User::first()?->id;
+
+        $enrolled = 0;
+        $skipped = 0;
+        $errors = [];
+
+        foreach ($staffData as $row) {
+            $agrupamiento2026 = trim((string) ($row['Agrupamiento2026'] ?? ''));
+            if ($agrupamiento2026 === '') {
+                continue;
+            }
+
+            if (! preg_match('/^(\d+)\s*([A-Za-z])$/i', $agrupamiento2026, $m)) {
+                $errors[] = "Invalid Agrupamiento2026: \"{$agrupamiento2026}\" for " . ($row['Email'] ?? 'unknown');
+                continue;
+            }
+
+            $number = (int) $m[1];
+            $letter = strtoupper($m[2]);
+            $turno = strtolower(trim((string) ($row['Turno'] ?? 'mañana')));
+            $shift = str_contains($turno, 'tarde') ? $shiftAfternoon : $shiftMorning;
+            if (! $shift) {
+                $errors[] = 'School shifts not found. Skipping teacher 2026 enrollment.';
+                break;
+            }
+
+            $course = $courses2026->where('number', $number)->where('letter', $letter)->where('school_shift_id', $shift->id)->first();
+            if (! $course) {
+                $errors[] = "2026 course {$number}{$letter} (shift: {$shift->code}) not found for " . ($row['Email'] ?? 'unknown');
+                continue;
+            }
+
+            $email = strtolower(trim((string) ($row['Email'] ?? '')));
+            if ($email === '') {
+                $errors[] = "Staff with Agrupamiento2026 {$agrupamiento2026} has no email.";
+                continue;
+            }
+
+            $user = User::where('email', $email)->first();
+            if (! $user) {
+                $errors[] = "User not found for email: {$email} (Agrupamiento2026: {$agrupamiento2026}).";
+                $skipped++;
+                continue;
+            }
+
+            $roleRelationshipId = $teacherService->getRoleRelationshipIdForTeacherInSchool($user->id, $school->id);
+            if (! $roleRelationshipId) {
+                $errors[] = "No active worker role in school for: {$email} (Agrupamiento2026: {$agrupamiento2026}).";
+                $skipped++;
+                continue;
+            }
+
+            try {
+                $courseService->assignCourseToTeacher($roleRelationshipId, $course->id, [
+                    'start_date' => $firstDayOfTargetAy,
+                    'in_charge' => true,
+                    'created_by' => $creatorId,
+                ]);
+                $enrolled++;
+                $this->command->info("Enrolled {$email} as in-charge teacher for {$course->nice_name} (2026).");
+            } catch (\Throwable $e) {
+                $errors[] = "Enroll {$email} → {$course->nice_name}: " . $e->getMessage();
+            }
+        }
+
+        $this->command->info(sprintf(
+            'UpdateDataTo2026Seeder: Teachers enrolled to 2026 courses: %d (skipped: %d).',
+            $enrolled,
+            $skipped
+        ));
+        foreach ($errors as $err) {
+            $this->command->error($err);
         }
     }
 

@@ -80,7 +80,10 @@ class CourseService
                 $query->where('active', $activeFilter);
             })
             ->when($request->input('year'), function ($query, $year) {
-                $query->whereYear('start_date', $year);
+                $yearStart = "{$year}-01-01";
+                $yearEnd = "{$year}-12-31";
+                $query->where('start_date', '<=', $yearEnd)
+                    ->whereRaw('COALESCE(end_date, DATE_ADD(start_date, INTERVAL 1 YEAR)) >= ?', [$yearStart]);
             })
             ->when($request->input('no_next'), function ($query) {
                 $query->whereDoesntHave('nextCourses');
@@ -93,8 +96,8 @@ class CourseService
         if ($request->input('no_paginate')) {
             $result = $query->get()->toArray();
         } else {
-            $perPage = $request->input('per_page', 10);
-            $courses = $this->handlePagination($query, $perPage, 10);
+            $perPage = $request->input('per_page', 40);
+            $courses = $this->handlePagination($query, $perPage, 40);
             $result = $courses->appends($request->only($expectedFilters))->withQueryString()->toArray();
         }
 
@@ -257,6 +260,7 @@ class CourseService
             'end_reason_id' => ['nullable', 'exists:student_course_end_reasons,id'],
             'enrollment_reason' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
+            'custom_fields' => ['nullable', 'array'],
         ];
 
         $data = array_merge([
@@ -289,6 +293,7 @@ class CourseService
             'end_reason_id' => $data['end_reason_id'] ?? null,
             'enrollment_reason' => $data['enrollment_reason'] ?? null,
             'notes' => $data['notes'] ?? null,
+            'custom_fields' => $data['custom_fields'] ?? null,
             'created_by' => $data['created_by'] ?? null,
         ]);
     }

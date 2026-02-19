@@ -11,6 +11,12 @@ class StudentCourseEndReasonSeeder extends Seeder
     {
         $reasons = [
             [
+                'code' => StudentCourseEndReason::CODE_STAYS,
+                'name' => 'Permanece',
+                'description' => 'El estudiante permanece en el curso.',
+                'is_active' => true
+            ],
+            [
                 'code' => StudentCourseEndReason::CODE_TRANSFER_SAME_SHIFT,
                 'name' => 'Cambio de curso en el mismo turno',
                 'description' => 'El estudiante cambió de curso dentro del mismo turno.',

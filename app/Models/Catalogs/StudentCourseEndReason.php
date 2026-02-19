@@ -18,6 +18,7 @@ class StudentCourseEndReason extends Model
     const CODE_PROMOTED                = 'promocionado';
     const CODE_GRADUATED               = 'graduado';
     const CODE_WITHDRAWN               = 'abandono';
+    const CODE_STAYS                   = 'permanece';
     const CODE_DECEASED                = 'fallecido';
     const CODE_OTHER                   = 'otro ';
 

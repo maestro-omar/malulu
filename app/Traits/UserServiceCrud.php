@@ -303,14 +303,18 @@ trait UserServiceCrud
                     // Enroll the student to the course if current_course_id is provided
                     if (!empty($details['student_details']['current_course_id'])) {
                         $courseService = app(CourseService::class);
+                        $enrollData = [
+                            'start_date' => $details['student_details']['start_date'] ?? now()->toDateString(),
+                            'created_by' => $creator->id,
+                            'enrollment_reason' => $details['student_details']['enrollment_reason'] ?? null,
+                        ];
+                        if (!empty($details['student_details']['custom_fields'])) {
+                            $enrollData['custom_fields'] = $details['student_details']['custom_fields'];
+                        }
                         $courseService->enrollStudentToCourse(
                             $roleRelationship->id,
                             $details['student_details']['current_course_id'],
-                            [
-                                'start_date' => $details['student_details']['start_date'] ?? now()->toDateString(),
-                                'created_by' => $creator->id,
-                                'enrollment_reason' => $details['student_details']['enrollment_reason'] ?? null,
-                            ]
+                            $enrollData
                         );
                     }
                 }
