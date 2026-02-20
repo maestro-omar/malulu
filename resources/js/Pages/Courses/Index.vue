@@ -116,6 +116,22 @@
           </q-td>
         </template>
 
+        <!-- Active enrolled count (for active courses) -->
+        <template #body-cell-active_enrolled_count="props">
+          <q-td :props="props">
+            <span v-if="props.row.active">{{ props.row.active_enrolled_count ?? 0 }}</span>
+            <span v-else class="text-grey">-</span>
+          </q-td>
+        </template>
+
+        <!-- Once enrolled count (for inactive courses) -->
+        <template #body-cell-once_enrolled_count="props">
+          <q-td :props="props">
+            <span v-if="!props.row.active">{{ props.row.once_enrolled_count ?? 0 }}</span>
+            <span v-else class="text-grey">-</span>
+          </q-td>
+        </template>
+
         <!-- Custom cell for actions -->
         <template #body-cell-actions="props">
           <q-td :props="props">
@@ -339,6 +355,20 @@ const columns = [
     name: 'active',
     label: 'Activo',
     field: 'active',
+    align: 'center',
+    sortable: true
+  },
+  {
+    name: 'active_enrolled_count',
+    label: 'Inscritos',
+    field: 'active_enrolled_count',
+    align: 'center',
+    sortable: true
+  },
+  {
+    name: 'once_enrolled_count',
+    label: 'Alguna vez inscritos',
+    field: 'once_enrolled_count',
     align: 'center',
     sortable: true
   },

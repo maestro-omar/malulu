@@ -153,9 +153,10 @@ trait InitialUsersTrait
     }
 
     /**
-     * Normalize course strings to course arrays
+     * Normalize course strings to course arrays.
+     * Optional $onDate (Y-m-d): when resolving number+letter, pick the course that contains this date (for correct cohort).
      */
-    protected function normalizeCourses($shift, $agrupamiento, bool $specialAddToNumber = false)
+    protected function normalizeCourses($shift, $agrupamiento, bool $specialAddToNumber = false, $onDate = null)
     {
         if (empty($agrupamiento)) {
             return [];
@@ -208,7 +209,7 @@ trait InitialUsersTrait
             $part = trim($part);
             if (empty($part)) continue;
 
-            $parsed = $this->parseCourseString($shift, $part, $specialAddToNumber);
+            $parsed = $this->parseCourseString($shift, $part, $specialAddToNumber, $onDate);
             if ($parsed) {
                 $courses[] = $parsed;
             }
@@ -218,9 +219,10 @@ trait InitialUsersTrait
     }
 
     /**
-     * Parse a course string into course data
+     * Parse a course string into course data.
+     * @param string|null $onDate Y-m-d to resolve cohort (course that contains this date)
      */
-    protected function parseCourseString($shift, $courseString, ?bool $specialAddToNumber = false)
+    protected function parseCourseString($shift, $courseString, ?bool $specialAddToNumber = false, $onDate = null)
     {
         $courseString = trim($courseString);
 
@@ -229,7 +231,7 @@ trait InitialUsersTrait
             $number = (int)$matches[1];
             $letter = strtoupper($matches[2]);
 
-            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter, $shift);
+            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter, $shift, $onDate);
         }
 
         // Handle patterns like "1 agrupamiento b", "1er agrupamiento C"
@@ -237,7 +239,7 @@ trait InitialUsersTrait
             $number = (int)$matches[1];
             $letter = strtoupper($matches[2]);
 
-            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter, $shift);
+            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter, $shift, $onDate);
         }
 
         // Handle patterns like "1 agrupamiento division C"
@@ -245,7 +247,7 @@ trait InitialUsersTrait
             $number = (int)$matches[1];
             $letter = strtoupper($matches[2]);
 
-            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter, $shift);
+            return $this->getCourseByNumberAndLetter($number + ($specialAddToNumber && $number > 3 ? 1 : 0), $letter, $shift, $onDate);
         }
 
         // Handle patterns like "3er agrupamiento"
@@ -260,12 +262,21 @@ trait InitialUsersTrait
 
     /**
      * Get course by number and letter, optionally for a specific shift (so 6C Mañana vs 6C Tarde is correct).
+     * When $onDate (Y-m-d) is provided, returns the course whose [start_date, end_date] contains $onDate (correct cohort).
      */
-    protected function getCourseByNumberAndLetter($number, $letter, $shift = null)
+    protected function getCourseByNumberAndLetter($number, $letter, $shift = null, $onDate = null)
     {
         $filtered = $this->courses->where('number', $number)->where('letter', $letter);
         if ($shift !== null && is_object($shift) && isset($shift->id)) {
             $filtered = $filtered->where('school_shift_id', $shift->id);
+        }
+        if ($onDate !== null && $onDate !== '') {
+            $on = \Carbon\Carbon::parse($onDate)->startOfDay();
+            $filtered = $filtered->filter(function ($c) use ($on) {
+                $start = \Carbon\Carbon::parse($c->start_date)->startOfDay();
+                $end = $c->end_date ? \Carbon\Carbon::parse($c->end_date)->startOfDay() : null;
+                return $start->lte($on) && ($end === null || $end->gte($on));
+            });
         }
         $course = $filtered->first();
         return $course ? ['id' => $course->id, 'number' => $course->number, 'letter' => $course->letter] : null;

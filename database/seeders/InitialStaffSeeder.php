@@ -186,6 +186,10 @@ class InitialStaffSeeder extends Seeder
         }
 
         $courses = $this->normalizeCourses($shift, $userData['Agrupamientos'], false);
+        // Only enroll in courses that exist (e.g. in simple scenario 4A may not exist)
+        $courses = array_values(array_filter($courses, function ($c) {
+            return isset($c['id']) && Course::where('id', $c['id'])->exists();
+        }));
         // Create role details
         $details = [
             'start_date' => $this->parseDate($userData['Fecha de ingreso a la escuela'] ?? '') ?: now()->subYears(2),

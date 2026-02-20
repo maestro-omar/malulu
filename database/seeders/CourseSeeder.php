@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class CourseSeeder extends Seeder
 {
-    private $coursesCreated = 0;
-    private $coursesBySchool = [];
-    private $SIMPLE_LUCIO_LUCERO = false;
+    private int $coursesCreated = 0;
+    private array $coursesBySchool = [];
+    private bool $SIMPLE_LUCIO_LUCERO = false;
+    private bool $SIMPLE_TEST_SCENARIO = true;
 
     /** Skip creating Lucio Lucero primary courses; LucioCoursesFixSeeder handles the 8-grade structure. */
     private $skipLucioPrimary = false;
@@ -170,6 +171,9 @@ class CourseSeeder extends Seeder
                 $this->command->error("No shifts found for school: {$school->name}. Skipping...");
                 continue;
             }
+            if ($this->SIMPLE_TEST_SCENARIO) {
+                $schoolShifts = collect([$schoolShifts->first()]);
+            }
 
             $schoolLevels = $school->schoolLevels;
             if ($schoolLevels->isEmpty()) {
@@ -183,7 +187,7 @@ class CourseSeeder extends Seeder
                 }
                 if (isset($coursesByLevel[$level->code])) {
                     foreach ($coursesByLevel[$level->code] as $courseData) {
-                        $coursesPerShift = $courseData['courses_per_shift'];
+                        $coursesPerShift = $this->SIMPLE_TEST_SCENARIO ? 1 : $courseData['courses_per_shift'];
                         $currentLetter = 'A';
                         $nameIndex = 0;
 

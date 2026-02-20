@@ -23,8 +23,11 @@ use Database\Seeders\Traits\InitialUsersTrait;
 class InitialStudentsSeeder extends Seeder
 {
     use InitialUsersTrait;
+    private bool $SIMPLE_TEST_SCENARIO = true;
 
     private $jsonStudentsFileName = 'ce-8_initial_students_with_guardian.json';
+
+    private int $studentsCreatedCount = 0;
 
     /**
      * Run the database seeds.
@@ -38,7 +41,7 @@ class InitialStudentsSeeder extends Seeder
     private function init()
     {
         $this->initializeFaker();
-        
+
         $this->allRoles = Role::pluck('id', 'code')->toArray();
         $this->userService = app(UserService::class);
         $this->creator = User::find(1); // Use admin user as creator
@@ -50,7 +53,7 @@ class InitialStudentsSeeder extends Seeder
         $this->countries = Country::all();
         $this->academicYears = AcademicYear::all();
         $this->primaryLevel = SchoolLevel::where('code', SchoolLevel::PRIMARY)->first();
-        
+
         if (!$this->defaultSchool) {
             throw new \Exception('School with code ' . School::CUE_LUCIO_LUCERO . ' not found. Please run SchoolSeeder first.');
         }
@@ -59,7 +62,7 @@ class InitialStudentsSeeder extends Seeder
             throw new \Exception('Default province or country not found. Please run ProvinceSeeder and CountrySeeder first.');
         }
 
-        // Get courses that start within jsonForYear academic year (so "6C" in 2025 JSON = 6C 2025, not 6C 2026)
+        // Get courses that overlap jsonForYear academic year (so 3A starting Sep is included, and we resolve by enrollment date)
         $academicYear = AcademicYear::findByYear($this->jsonForYear);
         if (!$academicYear) {
             throw new \Exception("Academic year {$this->jsonForYear} not found. Run AcademicYearSeeder or add the year.");
@@ -68,11 +71,11 @@ class InitialStudentsSeeder extends Seeder
         $ayEnd = $academicYear->end_date->format('Y-m-d');
         $this->courses = Course::where('school_id', $this->defaultSchool->id)
             ->where('school_level_id', $this->primaryLevel->id)
-            ->where('start_date', '>=', $ayStart)
             ->where('start_date', '<=', $ayEnd)
             ->where(function ($q) use ($ayStart) {
                 $q->where('end_date', '>=', $ayStart)->orWhereNull('end_date');
             })
+            ->orderBy('start_date')
             ->get();
     }
 
@@ -94,6 +97,7 @@ class InitialStudentsSeeder extends Seeder
             throw new \Exception("Invalid JSON in file: {$jsonPath}. Error: " . json_last_error_msg());
         }
 
+        $this->studentsCreatedCount = 0;
         foreach ($jsonData as $index => $jsonRowData) {
             $this->createOneStudentWithGuardian($index, $jsonRowData);
         }
@@ -155,14 +159,29 @@ class InitialStudentsSeeder extends Seeder
             throw new \Exception("Role not found for student!");
         }
 
-        $courses = $this->normalizeCourses($shift, $userData['Agrupamiento'], false);
+        if ($this->SIMPLE_TEST_SCENARIO) {
+            $agrup = trim((string) ($userData['Agrupamiento'] ?? ''));
+            if ($agrup !== '' && preg_match('/\d(?:°|to|ro|er|mo|vo)?\s*([A-Za-z])\b/i', $agrup, $m)) {
+                if (strtoupper($m[1]) !== 'A') {
+                    return null;
+                }
+            }
+        }
+
+        $enrollmentStartDate = $this->parseDate($userData['INGRESO AL AGRUP'] ?? '') ?: $this->getAcademicYearStartForJsonYear();
+        // Resolve course by enrollment date so we get the right cohort (e.g. 3A that contains this date)
+        $courses = $this->normalizeCourses($shift, $userData['Agrupamiento'], false, $enrollmentStartDate);
         if (empty($courses)) {
+            if ($this->SIMPLE_TEST_SCENARIO) {
+                return null;
+            }
             throw new \Exception("No courses found for student: " . print_r($userData, true));
         }
         $course = $courses[0];
-        $courseNumber = (int)$course['number'];
+        if ($this->SIMPLE_TEST_SCENARIO && $course['letter'] !== 'A') {
+            return null;
+        }
 
-        $enrollmentStartDate = $this->parseDate($userData['INGRESO AL AGRUP'] ?? '') ?: $this->getAcademicYearStartForJsonYear();
         $details = [
             'start_date' => $enrollmentStartDate,
             'notes' => 'Imported from initial data',
@@ -171,6 +190,11 @@ class InitialStudentsSeeder extends Seeder
             'current_course_id' => $course['id'],
             'start_date' => Carbon::parse($enrollmentStartDate)->format('Y-m-d'),
         ];
+        if (!empty($userData['permanece'])) {
+            $details['student_details']['custom_fields'] = [
+                'permanece_2026' => is_string($userData['permanece']) ? trim($userData['permanece']) : (string) $userData['permanece'],
+            ];
+        }
 
         return [
             'user_data' => $userDataArray,
@@ -186,6 +210,9 @@ class InitialStudentsSeeder extends Seeder
     private function createOneStudentUser($index, $jsonRowData): ?User
     {
         $studentData = $this->parseStudentUserData($jsonRowData);
+        if (!$studentData) {
+            return null;
+        }
 
         // Check if user with same dni already exists
         $existingUser = User::where('id_number', $studentData['user_data']['id_number'])->first();
@@ -212,7 +239,10 @@ class InitialStudentsSeeder extends Seeder
             $this->creator
         );
 
-        $this->command->info($index . " Created student with dni: " . $studentData['user_data']['id_number']);
+        $this->studentsCreatedCount++;
+        if ($this->studentsCreatedCount % 50 === 0) {
+            $this->command->info('Total students created: ' . $this->studentsCreatedCount);
+        }
         return $user;
     }
 
@@ -231,7 +261,7 @@ class InitialStudentsSeeder extends Seeder
         $locality = $jsonRowData['Localidad'] ?? $jsonRowData['TUTOR_Localidad'] ?? null;
         $shift = $this->mapShift($jsonRowData['Turno'] ?? 'mañana');
         $occupation = $jsonRowData['TUTOR_Profesion'] ?? '';
-        
+
         if (empty($email)) {
             $email = $this->faker->guardianEmail($firstName, $lastName);
         }
@@ -267,7 +297,7 @@ class InitialStudentsSeeder extends Seeder
         if (!$roleId) {
             throw new \Exception("Role not found for guardian!");
         }
-        
+
         // Create role details
         $details = [
             'start_date' => $this->parseDate($jsonRowData['Fecha de ingreso a la escuela'] ?? '') ?: now()->subYears(2),
@@ -299,7 +329,7 @@ class InitialStudentsSeeder extends Seeder
         if (!$guardianUser) {
             $guardianUser = User::where('email', $guardianData['user_data']['email'])->first();
         }
-        
+
         if ($guardianUser) {
             $this->updateGuardianUserMissingFields($guardianUser, $guardianData);
         } else {

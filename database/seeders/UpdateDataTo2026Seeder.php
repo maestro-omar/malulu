@@ -60,16 +60,15 @@ class UpdateDataTo2026Seeder extends Seeder
         $firstDayOfTargetAy = $targetAy->start_date->format('Y-m-d');
         $today = Carbon::today()->toDateString();
 
-        // Only promote from courses that belong to the previous academic year (start_date within AY)
-        // and have ended by the end of that year. This still promotes when current course ends on last
-        // day of AY and next course starts on first day of new AY (next course is not filtered here).
-        // Excludes e.g. 2026 courses with a wrong end_date in the past.
+        // Promote from any course that has ended by the end of the previous academic year and started
+        // before the target year (so we don't pick the target-year courses as "from" courses).
+        // This includes Lucio courses that span two calendar years (e.g. 3A Sep 2024–Jun 2025,
+        // 6A Oct 2024–Jul 2025) so students in 3A/6A get promoted to 4A/7A.
         $courses = Course::where('school_id', $school->id)
             ->where('school_level_id', $primaryLevel->id)
-            ->where('start_date', '>=', $previousAyStart)
-            ->where('start_date', '<=', $previousAyEnd)
             ->whereNotNull('end_date')
             ->where('end_date', '<=', $previousAyEnd)
+            ->where('start_date', '<', $firstDayOfTargetAy)
             ->orderBy('number')
             ->orderBy('letter')
             ->get();

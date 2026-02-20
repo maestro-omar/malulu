@@ -100,6 +100,14 @@ class Course extends Model
     }
 
     /**
+     * Get active student enrollments (no end_date) for count in listings.
+     */
+    public function activeEnrollments(): HasMany
+    {
+        return $this->hasMany(StudentCourse::class)->whereNull('end_date');
+    }
+
+    /**
      * Get the teacher courses (assignments) for this course.
      */
     public function courseTeachers(): HasMany

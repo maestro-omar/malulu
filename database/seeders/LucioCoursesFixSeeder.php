@@ -19,14 +19,18 @@ use Carbon\Carbon;
  * - Grade 1: Full academic year
  * - Grade 2 → 3: 2nd until first Monday Sep, then 3rd until first Monday Jun (next year)
  * - Grade 4: First Mon Jun until end of that year
- * - Grade 5 → 6: 5th from start of next year until first Monday Oct, then 6th until end
- * - Grade 7: After winter break (next year) until first day of May
+ * - Grade 5 → 6: 5th from start of next year until first Monday Oct, then 6th until last day of winter break of next year
+ * - Grade 7: First Monday after winter break until first day of May of next year
  * - Grade 8: First day of May until scholarship ends
  */
 class LucioCoursesFixSeeder extends Seeder
 {
+    /** Simple scenario: only letter A (morning shift); 8A created but deactivated. */
+    private bool $SIMPLE_TEST_SCENARIO = true;
+
     /** @var array<int> IDs of courses we created or updated (to avoid deactivating them) */
     private array $touchedCourseIds = [];
+
     public function run(): void
     {
         if (! $this->shouldRun()) {
@@ -55,6 +59,14 @@ class LucioCoursesFixSeeder extends Seeder
         if ($shifts->isEmpty()) {
             $this->command->warn('Lucio Lucero has no shifts. Skipping LucioCoursesFixSeeder.');
             return;
+        }
+
+        if ($this->SIMPLE_TEST_SCENARIO) {
+            $shifts = $shifts->filter(fn ($s) => ($s->code ?? '') === SchoolShift::MORNING);
+            if ($shifts->isEmpty()) {
+                $this->command->warn('No morning shift found. Skipping LucioCoursesFixSeeder.');
+                return;
+            }
         }
 
         $academicYears = AcademicYear::orderBy('year')->get()->keyBy('year');
@@ -100,9 +112,12 @@ class LucioCoursesFixSeeder extends Seeder
             && filter_var(config('malulu.one_school_only_primary'), FILTER_VALIDATE_BOOLEAN) === true;
     }
 
-    /** Letters per shift: Mañana A,B,C; Tarde D,E,F; others fallback to A,B,C. */
+    /** Letters per shift: Mañana A,B,C; Tarde D,E,F; SIMPLE_TEST_SCENARIO: only A. */
     private function lettersForShift($shift): array
     {
+        if ($this->SIMPLE_TEST_SCENARIO) {
+            return ['A'];
+        }
         $code = $shift->code ?? $shift->name ?? '';
         if ($code === SchoolShift::MORNING) {
             return ['A', 'B', 'C'];
@@ -172,21 +187,23 @@ class LucioCoursesFixSeeder extends Seeder
             $this->upsertCourse($school, $primaryLevel, $shift, $letter, 5, $cohortYear + 2, $grade5Prev?->id, $startY2, $firstMonOct2->copy()->subDay());
         }
 
-        // Grade 6: first Monday October until end of AY+2
-        if ($ayNext2 && $cohortYear + 2 <= $maxYear) {
+        // Grade 6: first Monday October until last day of winter break of next year (AY+3)
+        if ($ayNext2 && $ayNext3 && $cohortYear + 2 <= $maxYear) {
             $firstMonOct2 = $this->firstMondayOf($cohortYear + 2, 10);
-            $endY2 = Carbon::parse($ayNext2->end_date);
+            $grade6End = Carbon::parse($ayNext3->winter_break_end);
             $grade6Prev = $this->findCourseByGradeAndYear($school->id, $primaryLevel->id, $shift->id, $letter, 5, $cohortYear + 2);
-            $this->upsertCourse($school, $primaryLevel, $shift, $letter, 6, $cohortYear + 2, $grade6Prev?->id, $firstMonOct2, $endY2);
+            $this->upsertCourse($school, $primaryLevel, $shift, $letter, 6, $cohortYear + 2, $grade6Prev?->id, $firstMonOct2, $grade6End);
         }
 
-        // Grade 7: day after winter break AY+3 until May 1 (next year)
+        // Grade 7: first Monday after winter break AY+3 until May 1 (next year)
         if ($ayNext3 && $cohortYear + 3 <= $maxYear) {
-            $winterEnd = Carbon::parse($ayNext3->winter_break_end)->addDay();
+            $grade7Start = $this->firstMondayOnOrAfter(
+                Carbon::parse($ayNext3->winter_break_end)->addDay()
+            );
             $may1Next = Carbon::create($cohortYear + 4, 5, 1);
             $grade7Prev = $this->findCourseByGradeAndYear($school->id, $primaryLevel->id, $shift->id, $letter, 6, $cohortYear + 2);
             $grade7End = $may1Next->copy()->subDay();
-            $this->upsertCourse($school, $primaryLevel, $shift, $letter, 7, $cohortYear + 3, $grade7Prev?->id, $winterEnd, $grade7End);
+            $this->upsertCourse($school, $primaryLevel, $shift, $letter, 7, $cohortYear + 3, $grade7Prev?->id, $grade7Start, $grade7End);
         }
 
         // Grade 8: May 1 until end of AY+4
@@ -205,6 +222,17 @@ class LucioCoursesFixSeeder extends Seeder
             $date->next(Carbon::MONDAY);
         }
         return $date;
+    }
+
+    /** First Monday on or after the given date (e.g. first school day after winter break). */
+    private function firstMondayOnOrAfter(Carbon $date): Carbon
+    {
+        $d = $date->copy();
+        if ($d->dayOfWeek === Carbon::MONDAY) {
+            return $d;
+        }
+        $d->next(Carbon::MONDAY);
+        return $d;
     }
 
     private function findCourse(int $schoolId, int $levelId, int $shiftId, string $letter, int $grade, ?Carbon $startDate, ?Carbon $endDate): ?Course
@@ -292,7 +320,8 @@ class LucioCoursesFixSeeder extends Seeder
             ]);
         }
 
-        $active = !$isFutureCourse;
+        // Simple scenario: 8A is created but deactivated (no students).
+        $active = !$isFutureCourse && !($this->SIMPLE_TEST_SCENARIO && $grade === 8);
 
         if ($existing) {
             $existing->update([

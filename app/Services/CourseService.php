@@ -42,6 +42,10 @@ class CourseService
 
         $query = Course::query()
             ->with(['school', 'schoolLevel', 'schoolShift', 'previousCourse', 'nextCourses'])
+            ->withCount([
+                'activeEnrollments as active_enrolled_count',
+                'courseStudents as once_enrolled_count',
+            ])
             ->when($request->input('search'), function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('number', 'like', "%{$search}%")
@@ -620,6 +624,8 @@ class CourseService
             'start_date',
             'end_date',
             'active',
+            'active_enrolled_count',
+            'once_enrolled_count',
             'created_at',
             'updated_at'
         ];
