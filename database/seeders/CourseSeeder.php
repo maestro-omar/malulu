@@ -15,7 +15,6 @@ class CourseSeeder extends Seeder
     private int $coursesCreated = 0;
     private array $coursesBySchool = [];
     private bool $SIMPLE_LUCIO_LUCERO = false;
-    private bool $SIMPLE_TEST_SCENARIO = true;
 
     /** Skip creating Lucio Lucero primary courses; LucioCoursesFixSeeder handles the 8-grade structure. */
     private $skipLucioPrimary = false;
@@ -171,7 +170,7 @@ class CourseSeeder extends Seeder
                 $this->command->error("No shifts found for school: {$school->name}. Skipping...");
                 continue;
             }
-            if ($this->SIMPLE_TEST_SCENARIO) {
+            if (config('malulu.simple_test_scenario')) {
                 $schoolShifts = collect([$schoolShifts->first()]);
             }
 
@@ -187,7 +186,7 @@ class CourseSeeder extends Seeder
                 }
                 if (isset($coursesByLevel[$level->code])) {
                     foreach ($coursesByLevel[$level->code] as $courseData) {
-                        $coursesPerShift = $this->SIMPLE_TEST_SCENARIO ? 1 : $courseData['courses_per_shift'];
+                        $coursesPerShift = config('malulu.simple_test_scenario') ? 1 : $courseData['courses_per_shift'];
                         $currentLetter = 'A';
                         $nameIndex = 0;
 

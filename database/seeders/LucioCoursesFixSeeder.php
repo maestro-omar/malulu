@@ -22,12 +22,11 @@ use Carbon\Carbon;
  * - Grade 5 → 6: 5th from start of next year until first Monday Oct, then 6th until last day of winter break of next year
  * - Grade 7: First Monday after winter break until first day of May of next year
  * - Grade 8: First day of May until scholarship ends
+ *
+ * When config malulu.simple_test_scenario is true: only letter A (morning), 8A deactivated.
  */
 class LucioCoursesFixSeeder extends Seeder
 {
-    /** Simple scenario: only letter A (morning shift); 8A created but deactivated. */
-    private bool $SIMPLE_TEST_SCENARIO = true;
-
     /** @var array<int> IDs of courses we created or updated (to avoid deactivating them) */
     private array $touchedCourseIds = [];
 
@@ -61,7 +60,7 @@ class LucioCoursesFixSeeder extends Seeder
             return;
         }
 
-        if ($this->SIMPLE_TEST_SCENARIO) {
+        if (config('malulu.simple_test_scenario')) {
             $shifts = $shifts->filter(fn ($s) => ($s->code ?? '') === SchoolShift::MORNING);
             if ($shifts->isEmpty()) {
                 $this->command->warn('No morning shift found. Skipping LucioCoursesFixSeeder.');
@@ -112,10 +111,10 @@ class LucioCoursesFixSeeder extends Seeder
             && filter_var(config('malulu.one_school_only_primary'), FILTER_VALIDATE_BOOLEAN) === true;
     }
 
-    /** Letters per shift: Mañana A,B,C; Tarde D,E,F; SIMPLE_TEST_SCENARIO: only A. */
+    /** Letters per shift: Mañana A,B,C; Tarde D,E,F; simple_test_scenario: only A. */
     private function lettersForShift($shift): array
     {
-        if ($this->SIMPLE_TEST_SCENARIO) {
+        if (config('malulu.simple_test_scenario')) {
             return ['A'];
         }
         $code = $shift->code ?? $shift->name ?? '';
@@ -321,7 +320,7 @@ class LucioCoursesFixSeeder extends Seeder
         }
 
         // Simple scenario: 8A is created but deactivated (no students).
-        $active = !$isFutureCourse && !($this->SIMPLE_TEST_SCENARIO && $grade === 8);
+        $active = !$isFutureCourse && !(config('malulu.simple_test_scenario') && $grade === 8);
 
         if ($existing) {
             $existing->update([
