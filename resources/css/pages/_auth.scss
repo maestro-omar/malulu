@@ -82,6 +82,18 @@
     gap: 1rem;
   }
 
+  &__actions-column {
+    .auth__links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+  }
+
+  &__link--block {
+    display: block;
+  }
+
   .auth__form &__link, &__link {
     @include mixins.fz(1.5);
     @include mixins.lh(1.5);

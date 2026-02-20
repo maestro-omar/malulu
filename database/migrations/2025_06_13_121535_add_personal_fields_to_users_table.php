@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('firstname')->nullable()->after('name');
             $table->string('lastname')->nullable()->after('firstname');
-            $table->string('id_number')->nullable()->after('lastname');
+            $table->string('id_number')->nullable()->unique()->after('lastname');
             $table->string('gender')->nullable()->after('id_number');
             $table->date('birthdate')->nullable()->after('gender');
             $table->string('phone')->nullable()->after('birthdate');

@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\LookupUserByDniController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -39,6 +40,10 @@ Route::prefix(__('routes.system'))->group(function () {
 
         Route::post(__('routes.forgot-password'), [PasswordResetLinkController::class, 'store'])
                     ->name('password.email');
+
+        Route::get(__('routes.lookup-dni'), [LookupUserByDniController::class, 'create'])
+                    ->name('user.lookup-dni');
+        Route::post(__('routes.lookup-dni'), [LookupUserByDniController::class, 'store']);
 
         Route::get(__('routes.reset-password') . '/{token}', [NewPasswordController::class, 'create'])
                     ->name('password.reset');

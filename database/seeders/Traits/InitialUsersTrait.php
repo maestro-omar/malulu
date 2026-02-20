@@ -274,8 +274,22 @@ trait InitialUsersTrait
      * Get course by number and letter, optionally for a specific shift (so 6C Mañana vs 6C Tarde is correct).
      * When $onDate (Y-m-d) is provided: first tries the course whose [start_date, end_date] contains $onDate.
      * If none (e.g. enrollment is just before course start, like 2024-09-30 for 6C starting 2024-10-06), returns the course that starts on or immediately after $onDate.
+     * If no course found with the given shift (e.g. JSON says Turno=Mañana but Agrupamiento=1D, and at Lucio 1D is Tarde), falls back to resolving by number+letter only so the course is found.
      */
     protected function getCourseByNumberAndLetter($number, $letter, $shift = null, $onDate = null)
+    {
+        $course = $this->getCourseByNumberAndLetterWithShift($number, $letter, $shift, $onDate);
+        if ($course !== null) {
+            return $course;
+        }
+        // Fallback: JSON may have wrong Turno for this letter (e.g. 1D with Turno=Mañana; at Lucio 1D is Tarde). Resolve by number+letter only.
+        if ($shift !== null && is_object($shift) && isset($shift->id)) {
+            return $this->getCourseByNumberAndLetterWithShift($number, $letter, null, $onDate);
+        }
+        return null;
+    }
+
+    private function getCourseByNumberAndLetterWithShift($number, $letter, $shift, $onDate)
     {
         $filtered = $this->courses->where('number', $number)->where('letter', $letter);
         if ($shift !== null && is_object($shift) && isset($shift->id)) {
@@ -460,7 +474,7 @@ trait InitialUsersTrait
      */
     protected function shouldSkipRepitioStudent(int $index, array $jsonRowData): bool
     {
-        $repitio = (int) ($jsonRowData['repitio'] ?? 0);
+        $repitio = (int) ($jsonRowData['repitio'] ?? $jsonRowData['Repitio'] ?? 0);
         if ($repitio !== 1) {
             return false;
         }
@@ -623,16 +637,19 @@ trait InitialUsersTrait
 
     protected function createOneStudentUser(int $index, array $jsonRowData): ?User
     {
+        $dni = (string) ($jsonRowData['DNI'] ?? '');
+        if ($dni !== '') {
+            $existingUser = User::where('id_number', $dni)->first();
+            if ($existingUser) {
+                if (isset($this->command)) {
+                    $this->command->info($index . " Skipping student with existing dni: " . $dni);
+                }
+                return $existingUser;
+            }
+        }
         $studentData = $this->parseStudentUserData($jsonRowData);
         if (!$studentData) {
             return null;
-        }
-        $existingUser = User::where('id_number', $studentData['user_data']['id_number'])->first();
-        if ($existingUser) {
-            if (isset($this->command)) {
-                $this->command->info($index . " Skipping student with existing dni: " . $studentData['user_data']['id_number']);
-            }
-            return $existingUser;
         }
         try {
             $user = $this->userService->createUser($studentData['user_data']);
@@ -755,6 +772,11 @@ trait InitialUsersTrait
 
     protected function updateGuardianUserMissingFields(User $guardianUser, array $guardianData): void
     {
-        $this->userService->updateUser($guardianUser, $guardianData['user_data']);
+        try {
+            $this->userService->updateUser($guardianUser, $guardianData['user_data']);
+        } catch (\Exception $e) {
+            echo "Error updating guardian with id: " . $guardianUser->id . " and Data to update: " . print_r($guardianData['user_data'], true) . " : " . $e->getMessage() . "\n";
+            throw $e;
+        }
     }
 }

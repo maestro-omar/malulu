@@ -28,10 +28,15 @@
 
           <q-separator />
 
-          <q-card-actions align="between">
-            <Link v-if="canResetPassword" :href="route('password.request')" class="auth__link">
-            ¿Olvidaste tu contraseña?
-            </Link>
+          <q-card-actions align="between" class="auth__actions-column">
+            <div class="auth__links">
+              <Link v-if="canResetPassword" :href="route('password.request')" class="auth__link">
+                ¿Olvidaste tu contraseña?
+              </Link>
+              <Link :href="route('user.lookup-dni')" class="auth__link auth__link--block">
+                Consultar usuario por DNI
+              </Link>
+            </div>
 
             <q-btn type="submit" :loading="form.processing" color="primary" label="Iniciar sesión" unelevated
               class="auth__button" />

@@ -174,6 +174,15 @@ Breadcrumbs::for('schools.students', function (Trail $trail, $school) {
     $trail->push('Estudiantes', route('school.students', $school));
 });
 
+Breadcrumbs::for('schools.student.create', function (Trail $trail, $school, $course = null) {
+    if ($course && $course->relationLoaded('schoolLevel')) {
+        $trail->parent('school.course.student.enroll', $school, $course->schoolLevel, $course);
+    } else {
+        $trail->parent('schools.students', $school);
+    }
+    $trail->push('Crear estudiante');
+});
+
 Breadcrumbs::for('schools.student', function (Trail $trail, $school, $student) {
     $trail->parent('schools.students', $school);
     $trail->push(

@@ -35,6 +35,7 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
 
         Route::get(__('routes.students'), [UserController::class, 'students'])->name('school.students')->middleware('school.permission:student.view');
         Route::get(__('routes.students') . '/' . __('routes.create'), [UserController::class, 'studentCreate'])->name('school.students.create')->middleware('school.permission:student.create');
+        Route::post(__('routes.students') . '/' . __('routes.create'), [UserController::class, 'studentStore'])->name('school.students.store')->middleware('school.permission:student.create');
         Route::get(__('routes.student') . '/{idAndName}', [UserController::class, 'student'])->name('school.student.show')->middleware('school.permission:student.view');
         Route::get(__('routes.student') . '/{idAndName}/' . __('routes.edit'), [UserController::class, 'studentEdit'])->name('school.student.edit')->middleware('school.permission:student.edit');
         Route::put(__('routes.student') . '/{idAndName}/' . __('routes.edit'), [UserController::class, 'studentUpdate'])->name('school.student.update')->middleware('school.permission:student.edit');

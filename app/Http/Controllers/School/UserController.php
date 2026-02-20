@@ -86,6 +86,84 @@ class UserController extends SchoolBaseController
         ]);
     }
 
+    /**
+     * Show the form for creating a new student (optionally in the context of a course for enrollment).
+     * Query param: course = course idAndLabel (e.g. 123-1ro-A) to enroll the new student after create.
+     */
+    public function studentCreate(Request $request, $slug): Response
+    {
+        $this->setSchool($slug);
+
+        $course = null;
+        if ($request->filled('course')) {
+            $course = $this->getCourseOrNull($request->input('course'));
+            if ($course) {
+                $course->load('schoolLevel');
+            }
+        }
+
+        return $this->render($request, 'Users/BySchool/Student.Create', [
+            'school' => $this->school,
+            'course' => $course,
+            'provinces' => Province::orderBy('order')->get(),
+            'countries' => Country::orderBy('order')->get(),
+            'genders' => User::genders(),
+            'breadcrumbs' => Breadcrumbs::generate('schools.student.create', $this->school, $course),
+        ]);
+    }
+
+    /**
+     * Store a newly created student. User is created with random password, inactive, student role.
+     * If course_id is provided, the student is enrolled in that course.
+     */
+    public function studentStore(Request $request, $slug)
+    {
+        $this->setSchool($slug);
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'firstname' => ['nullable', 'string', 'max:255'],
+            'lastname' => ['required', 'string', 'max:255'],
+            'id_number' => ['nullable', 'string', 'max:50'],
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'course_id' => ['nullable', 'integer', 'exists:courses,id'],
+        ]);
+
+        try {
+            $user = $this->userService->createStudentForSchool(
+                $this->school->id,
+                $request->all(),
+                $request->input('course_id') ? (int) $request->input('course_id') : null,
+                $request->user()->id
+            );
+
+            if ($request->input('course_id')) {
+                $course = \App\Models\Entities\Course::find($request->input('course_id'));
+                $course->load('schoolLevel');
+
+                return redirect()
+                    ->route('school.course.student.enroll', [
+                        'school' => $this->school->slug,
+                        'schoolLevel' => $course->schoolLevel->code,
+                        'idAndLabel' => $course->idAndLabel,
+                    ])
+                    ->with('success', 'Estudiante creado e inscripto correctamente.');
+            }
+
+            return redirect()
+                ->route('school.students', ['school' => $this->school->slug])
+                ->with('success', 'Estudiante creado correctamente.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()])
+                ->withInput();
+        }
+    }
+
     public function student(Request $request, $schoolSlug, $studentIdAndName): Response
     {
         $this->setSchool($schoolSlug);

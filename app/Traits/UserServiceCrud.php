@@ -39,7 +39,12 @@ trait UserServiceCrud
             'name' => ['required', 'string', 'max:255'],
             'firstname' => ['nullable', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
-            'id_number' => ['nullable', 'string', 'max:50'],
+            'id_number' => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::unique('users', 'id_number')->ignore($user?->id)
+            ],
             'gender' => ['nullable', 'string', 'max:50'],
             'birthdate' => ['nullable', 'date'],
             'phone' => ['nullable', 'string', 'max:50'],
@@ -67,7 +72,8 @@ trait UserServiceCrud
             'name.required' => 'El nombre es obligatorio',
             'email.required' => 'El correo electrónico es obligatorio',
             'email.email' => 'El correo electrónico debe ser válido',
-            'email.unique' => 'Este correo electrónico ya está registrado',
+            'email.unique' => 'Este correo electrónico ya está registrado :input',
+            'id_number.unique' => 'Este correo electrónico ya está registrado :input',
             'password.required' => 'La contraseña es obligatoria',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres',
             'password.confirmed' => 'La confirmación de la contraseña no coincide',
@@ -83,6 +89,105 @@ trait UserServiceCrud
         }
 
         return $validator->validated();
+    }
+
+    /**
+     * Validate user data for creating a student (no password, no role/status - set by backend).
+     */
+    public function validateStudentUserData(array $data): array
+    {
+        $rules = [
+            'name' => ['required', 'string', 'max:255'],
+            'firstname' => ['nullable', 'string', 'max:255'],
+            'lastname' => ['required', 'string', 'max:255'],
+            'id_number' => ['nullable', 'string', 'max:50', Rule::unique('users', 'id_number')],
+            'gender' => ['nullable', 'string', 'max:50'],
+            'birthdate' => ['nullable', 'date'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'locality' => ['nullable', 'string', 'max:255'],
+            'province_id' => ['nullable', 'exists:provinces,id'],
+            'country_id' => ['nullable', 'exists:countries,id'],
+            'birth_place' => ['nullable', 'string', 'max:255'],
+            'nationality' => ['nullable', 'string', 'max:100'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
+            'critical_info' => ['nullable', 'string', 'max:1000'],
+            'occupation' => ['nullable', 'string', 'max:255'],
+        ];
+
+        $messages = [
+            'name.required' => 'El nombre es obligatorio',
+            'lastname.required' => 'El apellido es obligatorio',
+            'email.required' => 'El correo electrónico es obligatorio',
+            'email.email' => 'El correo electrónico debe ser válido',
+            'email.unique' => 'Este correo electrónico ya está registrado.',
+            'id_number.unique' => 'Este DNI ya está registrado.',
+            'province_id.exists' => 'La provincia seleccionada no existe',
+            'country_id.exists' => 'El país seleccionado no existe',
+        ];
+
+        $validator = Validator::make($data, $rules, $messages);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        return $validator->validated();
+    }
+
+    /**
+     * Create a new user as student for a school: random password, inactive, student role, optional course enrollment.
+     *
+     * @param  int  $schoolId
+     * @param  array  $data  Validated student user data (no password, no role, no status)
+     * @param  int|null  $courseId  If set, enroll the student in this course
+     * @param  int|null  $createdBy  User ID of the creator (for role relationship and enrollment)
+     * @return User
+     */
+    public function createStudentForSchool(int $schoolId, array $data, ?int $courseId = null, ?int $createdBy = null): User
+    {
+        $validated = $this->validateStudentUserData($data);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'firstname' => $validated['firstname'] ?? null,
+            'lastname' => $validated['lastname'],
+            'id_number' => $validated['id_number'] ?? null,
+            'gender' => $validated['gender'] ?? null,
+            'birthdate' => $validated['birthdate'] ?? null,
+            'phone' => $validated['phone'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'locality' => $validated['locality'] ?? null,
+            'province_id' => $validated['province_id'] ?? null,
+            'country_id' => $validated['country_id'] ?? null,
+            'birth_place' => $validated['birth_place'] ?? null,
+            'nationality' => $validated['nationality'] ?? null,
+            'email' => $validated['email'],
+            'password' => Hash::make(Str::random(32)),
+            'critical_info' => $validated['critical_info'] ?? null,
+            'occupation' => $validated['occupation'] ?? null,
+            'status' => User::STATUS_INACTIVE,
+        ]);
+
+        $studentRole = \App\Models\Catalogs\Role::where('code', \App\Models\Catalogs\Role::STUDENT)->first();
+        if (! $studentRole) {
+            throw new \Exception('Rol de estudiante no encontrado en el sistema.');
+        }
+
+        $creator = $createdBy ? User::find($createdBy) : null;
+        $details = [
+            'start_date' => now()->toDateString(),
+            'notes' => null,
+            'student_details' => [
+                'current_course_id' => $courseId,
+                'start_date' => now()->toDateString(),
+                'enrollment_reason' => null,
+            ],
+        ];
+
+        $this->assignRoleWithDetails($user, $schoolId, (int) $studentRole->getKey(), null, $details, $creator ?? $user);
+
+        return $user;
     }
 
     public function createUser(array $data)

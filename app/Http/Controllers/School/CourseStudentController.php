@@ -38,7 +38,7 @@ class CourseStudentController extends SchoolBaseController
             'school' => $school,
             'selectedLevel' => $schoolLevel,
             'endReasons' => $endReasons,
-            'createStudentUrl' => route('school.students.create', ['school' => $school->slug]),
+            'createStudentUrl' => route('school.students.create', ['school' => $school->slug]) . '?course=' . urlencode($course->idAndLabel),
             'breadcrumbs' => Breadcrumbs::generate('school.course.student.enroll', $school, $schoolLevel, $course),
         ]);
     }

@@ -30,7 +30,7 @@
                 </q-input>
               </div>
               <div class="col-auto">
-                <q-btn color="primary" icon="person_add" :href="createStudentUrl" target="_blank" no-wrap>
+                <q-btn color="primary" icon="person_add" :href="createStudentUrl" no-wrap>
                   Crear estudiante
                 </q-btn>
               </div>

@@ -6,6 +6,7 @@ return [
     'home' => 'inicio',
     'access' => 'acceso',
     'forgot-password' => 'olvido-contrasena',
+    'lookup-dni' => 'consultar-usuario-dni',
     'reset-password' => 'restablecer-contrasena',
     'verify-email' => 'verificar-email',
     'email/verification-notification' => 'email/notificacion-verificacion',

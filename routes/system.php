@@ -56,6 +56,7 @@ Route::prefix(__('routes.system'))->group(function () {
             Route::delete(__('routes.users') . '/{id}/' . __('routes.force-delete'), [UserAdminController::class, 'forceDelete'])->name('users.force-delete');
             Route::get(__('routes.users'), [UserAdminController::class, 'index'])->name('users.index');
             Route::get(__('routes.users') . '/' . __('routes.create'), [UserAdminController::class, 'create'])->name('users.create');
+            Route::post(__('routes.users'), [UserAdminController::class, 'store'])->name('users.store');
             Route::get(__('routes.users') . '/{user}', [UserAdminController::class, 'show'])->name('users.show');
             Route::get(__('routes.users') . '/{user}/' . __('routes.edit'), [UserAdminController::class, 'edit'])->name('users.edit');
             Route::get(__('routes.users') . '/{user}/' . __('routes.edit-diagnoses'), [UserAdminController::class, 'editDiagnoses'])->name('users.edit-diagnoses');
