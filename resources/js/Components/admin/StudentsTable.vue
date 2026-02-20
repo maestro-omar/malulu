@@ -19,6 +19,13 @@
     <q-table class="mll-table mll-table--students striped-table" dense :rows="students" :columns="tableColumns"
       row-key="id" binary-state-sort :pagination="pagination" :rows-per-page-options="[10, 20, 30, 50, 100]">
 
+      <!-- Row number (1 to N per page) -->
+      <template #body-cell-row_num="props">
+        <q-td :props="props" class="text-grey-7">
+          {{ props.rowIndex + 1 }}
+        </q-td>
+      </template>
+
       <!-- Custom cell for picture -->
       <template #body-cell-picture="props">
         <q-td :props="props">
@@ -230,6 +237,14 @@ const pagination = {
 
 // Base columns (shared by active and past tables)
 const baseColumns = [
+  {
+    name: 'row_num',
+    label: '#',
+    field: 'row_num',
+    align: 'center',
+    sortable: false,
+    style: 'width: 44px'
+  },
   {
     name: 'picture',
     label: '',
