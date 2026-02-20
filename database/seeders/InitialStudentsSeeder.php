@@ -23,9 +23,8 @@ use Database\Seeders\Traits\InitialUsersTrait;
 class InitialStudentsSeeder extends Seeder
 {
     use InitialUsersTrait;
-    private bool $SIMPLE_TEST_SCENARIO = true;
 
-    private $jsonStudentsFileName = 'ce-8_initial_students_with_guardian.json';
+    private $json2025StudentsFileName = 'ce-8_initial_students_with_guardian.json';
 
     private int $studentsCreatedCount = 0;
 
@@ -62,18 +61,36 @@ class InitialStudentsSeeder extends Seeder
             throw new \Exception('Default province or country not found. Please run ProvinceSeeder and CountrySeeder first.');
         }
 
-        // Get courses that overlap jsonForYear academic year (so 3A starting Sep is included, and we resolve by enrollment date)
+        // Get courses that overlap jsonForYear or previous academic year (so enrollment dates like 2024-05-16 resolve to 1E 2024)
         $academicYear = AcademicYear::findByYear($this->jsonForYear);
         if (!$academicYear) {
             throw new \Exception("Academic year {$this->jsonForYear} not found. Run AcademicYearSeeder or add the year.");
         }
         $ayStart = $academicYear->start_date->format('Y-m-d');
         $ayEnd = $academicYear->end_date->format('Y-m-d');
+        $previousAy = AcademicYear::findByYear($this->jsonForYear - 1);
+        $prevStart = $previousAy ? $previousAy->start_date->format('Y-m-d') : null;
+        $prevEnd = $previousAy ? $previousAy->end_date->format('Y-m-d') : null;
+
         $this->courses = Course::where('school_id', $this->defaultSchool->id)
             ->where('school_level_id', $this->primaryLevel->id)
-            ->where('start_date', '<=', $ayEnd)
-            ->where(function ($q) use ($ayStart) {
-                $q->where('end_date', '>=', $ayStart)->orWhereNull('end_date');
+            ->where(function ($q) use ($ayStart, $ayEnd, $prevStart, $prevEnd) {
+                // Overlap current academic year
+                $q->where(function ($q2) use ($ayStart, $ayEnd) {
+                    $q2->where('start_date', '<=', $ayEnd)
+                        ->where(function ($q3) use ($ayStart) {
+                            $q3->where('end_date', '>=', $ayStart)->orWhereNull('end_date');
+                        });
+                });
+                // Or overlap previous academic year (for enrollment dates in prior year, e.g. 1E with INGRESO 2024-05-16)
+                if ($prevStart !== null && $prevEnd !== null) {
+                    $q->orWhere(function ($q2) use ($prevStart, $prevEnd) {
+                        $q2->where('start_date', '<=', $prevEnd)
+                            ->where(function ($q3) use ($prevStart) {
+                                $q3->where('end_date', '>=', $prevStart)->orWhereNull('end_date');
+                            });
+                    });
+                }
             })
             ->orderBy('start_date')
             ->get();
@@ -81,10 +98,10 @@ class InitialStudentsSeeder extends Seeder
 
     private function createInitiaStudentsUsers()
     {
-        $jsonPath = $this->jsonFolder . $this->jsonStudentsFileName;
+        $jsonPath = $this->jsonFolder . $this->json2025StudentsFileName;
 
         if (!file_exists($jsonPath)) {
-            throw new \Exception("JSON file not found: {$jsonPath}. Expected path: " . realpath($this->jsonFolder) . DIRECTORY_SEPARATOR . $this->jsonStudentsFileName);
+            throw new \Exception("JSON file not found: {$jsonPath}. Expected path: " . realpath($this->jsonFolder) . DIRECTORY_SEPARATOR . $this->json2025StudentsFileName);
         }
 
         $jsonContent = file_get_contents($jsonPath);
@@ -159,7 +176,7 @@ class InitialStudentsSeeder extends Seeder
             throw new \Exception("Role not found for student!");
         }
 
-        if ($this->SIMPLE_TEST_SCENARIO) {
+        if (config('malulu.simple_test_scenario')) {
             $agrup = trim((string) ($userData['Agrupamiento'] ?? ''));
             if ($agrup !== '' && preg_match('/\d(?:°|to|ro|er|mo|vo)?\s*([A-Za-z])\b/i', $agrup, $m)) {
                 if (strtoupper($m[1]) !== 'A') {
@@ -172,13 +189,13 @@ class InitialStudentsSeeder extends Seeder
         // Resolve course by enrollment date so we get the right cohort (e.g. 3A that contains this date)
         $courses = $this->normalizeCourses($shift, $userData['Agrupamiento'], false, $enrollmentStartDate);
         if (empty($courses)) {
-            if ($this->SIMPLE_TEST_SCENARIO) {
+            if (config('malulu.simple_test_scenario')) {
                 return null;
             }
             throw new \Exception("No courses found for student: " . print_r($userData, true));
         }
         $course = $courses[0];
-        if ($this->SIMPLE_TEST_SCENARIO && $course['letter'] !== 'A') {
+        if (config('malulu.simple_test_scenario') && $course['letter'] !== 'A') {
             return null;
         }
 

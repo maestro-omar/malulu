@@ -262,7 +262,8 @@ trait InitialUsersTrait
 
     /**
      * Get course by number and letter, optionally for a specific shift (so 6C Mañana vs 6C Tarde is correct).
-     * When $onDate (Y-m-d) is provided, returns the course whose [start_date, end_date] contains $onDate (correct cohort).
+     * When $onDate (Y-m-d) is provided: first tries the course whose [start_date, end_date] contains $onDate.
+     * If none (e.g. enrollment is just before course start, like 2024-09-30 for 6C starting 2024-10-06), returns the course that starts on or immediately after $onDate.
      */
     protected function getCourseByNumberAndLetter($number, $letter, $shift = null, $onDate = null)
     {
@@ -272,13 +273,22 @@ trait InitialUsersTrait
         }
         if ($onDate !== null && $onDate !== '') {
             $on = \Carbon\Carbon::parse($onDate)->startOfDay();
-            $filtered = $filtered->filter(function ($c) use ($on) {
+            $containing = $filtered->filter(function ($c) use ($on) {
                 $start = \Carbon\Carbon::parse($c->start_date)->startOfDay();
                 $end = $c->end_date ? \Carbon\Carbon::parse($c->end_date)->startOfDay() : null;
                 return $start->lte($on) && ($end === null || $end->gte($on));
             });
+            $course = $containing->first();
+            if (!$course) {
+                $onOrAfter = $filtered->filter(function ($c) use ($on) {
+                    $start = \Carbon\Carbon::parse($c->start_date)->startOfDay();
+                    return $start->gte($on);
+                })->sortBy('start_date')->first();
+                $course = $onOrAfter;
+            }
+        } else {
+            $course = $filtered->first();
         }
-        $course = $filtered->first();
         return $course ? ['id' => $course->id, 'number' => $course->number, 'letter' => $course->letter] : null;
     }
 
