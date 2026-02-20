@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             InitialStaffSeeder::class,
             InitialStudentsSeeder::class,
             UpdateDataTo2026Seeder::class,
+            InitialStudents2026Seeder::class,
         ]);
 
         if ($this->withFakeData)
