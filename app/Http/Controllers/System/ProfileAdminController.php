@@ -44,6 +44,7 @@ class ProfileAdminController extends SystemBaseController
     {
         $user = auth()->user();
         return Inertia::render('Profile/Edit', [
+            'user' => $user,
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
             'provinces' => \App\Models\Catalogs\Province::orderBy('order')->get(),

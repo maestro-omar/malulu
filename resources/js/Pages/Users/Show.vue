@@ -5,8 +5,8 @@
   <AuthenticatedLayout>
     <template #admin-header>
       <AdminHeader :title="`Detalles del usuario ${user.firstname} ${user.lastname}`" :edit="{
-        show: hasPermission($page.props, 'user.manage'),
-        href: route('users.edit', { 'user': getUserSlug(user) }),
+        show: isOwnProfile || hasPermission($page.props, 'user.manage'),
+        href: isOwnProfile ? route('profile.edit') : route('users.edit', { 'user': getUserSlug(user) }),
         label: 'Editar'
       }" :del="{
         show: hasPermission($page.props, 'user.manage'),
@@ -52,6 +52,7 @@ import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
 import { hasPermission } from '@/Utils/permissions';
 import { getUserSlug } from '@/Utils/strings';
+import { computed } from 'vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -61,6 +62,8 @@ const props = defineProps({
 });
 
 const $page = usePage();
+
+const isOwnProfile = computed(() => props.user?.id === $page.props.auth?.user?.id);
 
 const destroy = () => {
   if (confirm("¿Está seguro que desea eliminar este usuario?")) {

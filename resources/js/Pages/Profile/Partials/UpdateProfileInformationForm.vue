@@ -196,6 +196,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import ActionButtons from '@/Components/admin/ActionButtons.vue';
 import InputError from '@/Components/admin/InputError.vue';
@@ -203,7 +204,11 @@ import InputLabel from '@/Components/admin/InputLabel.vue';
 import TextInput from '@/Components/admin/TextInput.vue';
 import EditableImage from '@/Components/admin/EditableImage.vue';
 
-defineProps({
+const props = defineProps({
+  user: {
+    type: Object,
+    default: null,
+  },
   mustVerifyEmail: {
     type: Boolean,
   },
@@ -224,24 +229,25 @@ defineProps({
   },
 });
 
-const user = usePage().props.auth.user;
+const page = usePage();
+const user = computed(() => props.user ?? page.props.auth?.user ?? {});
 
 const form = useForm({
-  name: user.name,
-  email: user.email,
-  firstname: user.firstname || '',
-  lastname: user.lastname || '',
-  id_number: user.id_number || '',
-  gender: user.gender || '',
-  birthdate: user.birthdate ? new Date(user.birthdate).toISOString().split('T')[0] : '',
-  phone: user.phone || '',
-  address: user.address || '',
-  locality: user.locality || '',
-  province_id: user.province_id || '',
-  country_id: user.country_id || '',
-  birth_place: user.birth_place || '',
-  occupation: user.occupation || '',
-  nationality: user.nationality || '',
-  critical_info: user.critical_info || '',
+  name: user.value.name ?? '',
+  email: user.value.email ?? '',
+  firstname: user.value.firstname || '',
+  lastname: user.value.lastname || '',
+  id_number: user.value.id_number || '',
+  gender: user.value.gender || '',
+  birthdate: user.value.birthdate ? new Date(user.value.birthdate).toISOString().split('T')[0] : '',
+  phone: user.value.phone || '',
+  address: user.value.address || '',
+  locality: user.value.locality || '',
+  province_id: user.value.province_id || '',
+  country_id: user.value.country_id || '',
+  birth_place: user.value.birth_place || '',
+  occupation: user.value.occupation || '',
+  nationality: user.value.nationality || '',
+  critical_info: user.value.critical_info || '',
 });
 </script>

@@ -9,8 +9,8 @@
 
     <template #main-page-content>
       <div class="container">
-        <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status" :provinces="provinces"
-          :countries="countries" :genders="genders" />
+        <UpdateProfileInformationForm :user="user" :must-verify-email="mustVerifyEmail" :status="status"
+          :provinces="provinces" :countries="countries" :genders="genders" />
         <UpdatePasswordForm />
 
         <!--
@@ -34,6 +34,10 @@ import UpdateProfileInformationForm from './Partials/UpdateProfileInformationFor
 import { Head } from '@inertiajs/vue3';
 
 defineProps({
+  user: {
+    type: Object,
+    required: true,
+  },
   mustVerifyEmail: {
     type: Boolean,
   },
