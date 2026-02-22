@@ -462,41 +462,34 @@ class User extends Authenticatable
     }
 
     /**
-     * Get all available relationship types.
+     * Get all available gender options (labels for dropdowns).
+     * Only includes GENDER_* constants; excludes STATUS_* and other non-gender constants.
      */
     public static function genders(): array
     {
-        $map = [
+        return [
             self::GENDER_MALE => 'Masculino',
             self::GENDER_FEMALE => 'Femenino',
             self::GENDER_TRANS => 'Trans',
             self::GENDER_FLUID => 'Fluido',
             self::GENDER_NOBINARY => 'No-binario',
-            self::GENDER_OTHER => 'Otro'
+            self::GENDER_OTHER => 'Otro',
         ];
-
-        return collect(self::getFilteredConstants())
-            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
-            ->toArray();
     }
 
     /**
-     * Get all available relationship types.
+     * Get short labels for gender options.
      */
     public static function gendersShort(): array
     {
-        $map = [
+        return [
             self::GENDER_MALE => 'Masc',
             self::GENDER_FEMALE => 'Fem',
             self::GENDER_TRANS => 'Trans',
             self::GENDER_FLUID => 'Fluido',
             self::GENDER_NOBINARY => 'No-bin',
-            self::GENDER_OTHER => 'Otro'
+            self::GENDER_OTHER => 'Otro',
         ];
-
-        return collect(self::getFilteredConstants())
-            ->mapWithKeys(fn($value) => [$value => $map[$value] ?? ucfirst($value)])
-            ->toArray();
     }
 
     public static function getGenderName(string $gender, bool $short = false): string
