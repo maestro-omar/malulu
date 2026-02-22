@@ -172,7 +172,7 @@ import TextInput from '@/Components/admin/TextInput.vue';
 import SelectInput from '@/Components/admin/SelectInput.vue';
 import CoursePopoverSelect from '@/Components/admin/CoursePopoverSelect.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useAcademicEventForm } from '@/Composables/useAcademicEventForm';
 
 const props = defineProps({
@@ -277,6 +277,25 @@ const handleScopeChange = (scope) => {
 
 // Override handleRecurrentEventSelected to use the base function
 const handleRecurrentEventSelected = handleRecurrentEventSelectedBase;
+
+// Pre-fill from URL (e.g. from "Crear instancia" on year-events index)
+onMounted(() => {
+  const params = new URLSearchParams(window.location.search);
+  const recurrentId = params.get('recurrent_event_id');
+  const yearId = params.get('academic_year_id');
+  if (yearId && props.academicYear && String(props.academicYear.id) !== yearId) {
+    form.academic_year_id = Number(yearId);
+  }
+  if (recurrentId && props.recurrentEvents?.length) {
+    const id = Number(recurrentId);
+    const found = props.recurrentEvents.some(r => r.id === id);
+    if (found) {
+      eventSourceType.value = 'recurrent';
+      form.recurrent_event_id = id;
+      handleRecurrentEventSelected(id);
+    }
+  }
+});
 
 // Course selection state
 const selectedCourses = ref([]);

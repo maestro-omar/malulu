@@ -49,7 +49,8 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                     Role::LIBRARIAN,
                     Role::DIRECTOR,
                     Role::REGENT,
-                    Role::SECRETARY
+                    Role::SECRETARY,
+                    Role::ADMINISTRATIVE
                 ],
                 'is_active' => true
             ],
@@ -67,7 +68,8 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                     Role::LIBRARIAN,
                     Role::DIRECTOR,
                     Role::REGENT,
-                    Role::SECRETARY
+                    Role::SECRETARY,
+                    Role::ADMINISTRATIVE
                 ],
                 'is_active' => true
             ],
@@ -85,7 +87,8 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                     Role::LIBRARIAN,
                     Role::DIRECTOR,
                     Role::REGENT,
-                    Role::SECRETARY
+                    Role::SECRETARY,
+                    Role::ADMINISTRATIVE
                 ],
                 'is_active' => true
             ],
@@ -153,6 +156,7 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                     Role::DIRECTOR,
                     Role::REGENT,
                     Role::SECRETARY,
+                    Role::ADMINISTRATIVE,
                     Role::GUARDIAN,
                     Role::COOPERATIVE
                 ],
@@ -174,6 +178,7 @@ class RoleRelationshipEndReasonSeeder extends Seeder
                     Role::DIRECTOR,
                     Role::REGENT,
                     Role::SECRETARY,
+                    Role::ADMINISTRATIVE,
                     Role::GUARDIAN,
                     Role::COOPERATIVE
                 ],

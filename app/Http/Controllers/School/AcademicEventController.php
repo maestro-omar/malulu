@@ -82,8 +82,13 @@ class AcademicEventController extends SchoolBaseController
 
     public function create(Request $request, School $school)
     {
-        // Get the current academic year or the first available
-        $academicYear = AcademicYear::getCurrent() ?? AcademicYear::orderBy('year', 'desc')->first();
+        $academicYearId = $request->get('academic_year_id');
+        if ($academicYearId) {
+            $academicYear = AcademicYear::find($academicYearId);
+        }
+        if (empty($academicYear)) {
+            $academicYear = AcademicYear::getCurrent() ?? AcademicYear::orderBy('year', 'desc')->first();
+        }
 
         if (!$academicYear) {
             return redirect()->route('school.academic-events.index', $school->slug)
@@ -133,8 +138,12 @@ class AcademicEventController extends SchoolBaseController
 
     public function show(Request $request, School $school, AcademicEvent $academicEvent)
     {
-        // Ensure the event belongs to this school
-        if ($academicEvent->school_id !== $school->id) {
+        // Allow when event is in scope for this school: school-owned, or provincial (same province), or national
+        $schoolProvinceId = $school->locality?->district?->province_id;
+        $inScope = $academicEvent->school_id === $school->id
+            || ($academicEvent->school_id === null && $academicEvent->province_id !== null && $schoolProvinceId && (int) $academicEvent->province_id === (int) $schoolProvinceId)
+            || ($academicEvent->school_id === null && $academicEvent->province_id === null);
+        if (!$inScope) {
             abort(403, 'Este evento no pertenece a esta escuela.');
         }
 

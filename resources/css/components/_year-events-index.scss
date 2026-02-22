@@ -1,0 +1,48 @@
+@use "../abstracts/variables";
+
+.year-events-index {
+  padding: 1.5rem 0;
+
+  &__filters {
+    // Filter row layout handled by Quasar grid
+  }
+
+  &__table {
+    // Table uses mll-table; extra modifiers here if needed
+  }
+
+  &__scope {
+    font-variant-numeric: tabular-nums;
+    color: variables.$color-text;
+  }
+
+  &__title {
+    display: block;
+    max-width: 50ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: variables.$color-text;
+  }
+
+  &__responsibles {
+    font-size: 0.875rem;
+    display: block;
+    max-width: 30ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: variables.$color-text;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  &__nwd-chip {
+    margin-top: 0.15rem;
+  }
+}

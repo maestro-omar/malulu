@@ -9,6 +9,8 @@ class EventResponsibilityType extends Model
 {
     use HasFactory;
 
+    public const CODE_COORDINATION = 'coordination';
+
     protected $table = 'event_responsibility_types';
 
     protected $fillable = [

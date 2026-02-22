@@ -74,6 +74,12 @@ class RoleAndPermissionSeeder extends Seeder
                 'description' => 'Secretario de la institución',
                 'short' => 'Sec',
             ],
+            Role::ADMINISTRATIVE => [
+                'name' => 'Administrativo',
+                'code' => Role::ADMINISTRATIVE,
+                'description' => 'Personal administrativo de la institución',
+                'short' => 'Adm',
+            ],
             Role::PROFESSOR => [
                 'name' => 'Profesor',
                 'code' => Role::PROFESSOR,
@@ -444,6 +450,7 @@ class RoleAndPermissionSeeder extends Seeder
             case Role::DIRECTOR:
             case Role::REGENT:
             case Role::SECRETARY:
+            case Role::ADMINISTRATIVE:
                 return array_merge(
                     $schoolEditPermissions,
                     $academicAdminPermissions,

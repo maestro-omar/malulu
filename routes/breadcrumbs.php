@@ -28,7 +28,7 @@ Breadcrumbs::for('dashboard', function (Trail $trail) {
 // 👤 Perfil
 Breadcrumbs::for('profile.show', function (Trail $trail, $user) {
     $trail->parent('dashboard');
-    $trail->push('Mi perfil', route('profile.edit'));
+    $trail->push('Mi perfil', route('profile.show'));
 });
 
 // 👤 Perfil
@@ -253,6 +253,11 @@ Breadcrumbs::for('recurrent-events.edit', function (Trail $trail, RecurrentEvent
 Breadcrumbs::for('school.academic-events.index', function (Trail $trail, School $school) {
     $trail->parent('school.show', $school);
     $trail->push('Eventos académicos', route('school.academic-events.index', $school), ['icon' => 'event']);
+});
+
+Breadcrumbs::for('school.year-events.index', function (Trail $trail, School $school) {
+    $trail->parent('school.show', $school);
+    $trail->push('Eventos del año', route('school.year-events.index', $school), ['icon' => 'event']);
 });
 
 Breadcrumbs::for('school.academic-events.create', function (Trail $trail, School $school) {

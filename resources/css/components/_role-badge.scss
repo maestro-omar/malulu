@@ -28,6 +28,11 @@
         color: variables.$color-role-secretary-text;
     }
 
+    &--administrativo {
+        background: variables.$color-role-administrative-bg;
+        color: variables.$color-role-administrative-text;
+    }
+
     &--profesor {
         background: variables.$color-role-professor-bg;
         color: variables.$color-role-professor-text;

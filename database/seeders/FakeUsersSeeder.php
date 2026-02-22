@@ -139,6 +139,7 @@ class FakeUsersSeeder extends Seeder
             Role::DIRECTOR => 1,
             Role::REGENT => 2,
             Role::SECRETARY => self::FAST_TEST ? 1 : 3,
+            Role::ADMINISTRATIVE => self::FAST_TEST ? 1 : 3,
             // Role::GRADE_TEACHER => self::FAST_TEST ? 2 : 30,
             // Role::ASSISTANT_TEACHER => self::FAST_TEST ? 2 : 20,
             // Role::CURRICULAR_TEACHER => self::FAST_TEST ? 2 : 20,

@@ -7,6 +7,7 @@ use App\Models\Entities\RecurrentEvent;
 use App\Models\Catalogs\EventType;
 use App\Models\Entities\User;
 use App\Models\Entities\AcademicYear;
+use App\Models\Entities\School;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -41,6 +42,177 @@ class AcademicEventService
             ->where('academic_year_id', $academicYearId)
             ->orderBy('date')
             ->get();
+    }
+
+    /**
+     * List all year events (academic instances + recurrent without instance) as a single flat list
+     * for the year-events index. Columns: date, scope (from EventType), type (badge), responsibles.
+     * Includes recurrent events that have no academic instance yet so user can create one when assigning responsibles.
+     *
+     * @return array{events: array}
+     */
+    public function listYearEventsByScope(School $school, int $academicYearId): array
+    {
+        $provinceId = null;
+        if ($school->relationLoaded('locality') && $school->locality) {
+            $school->locality->load('district');
+            if ($school->locality->district) {
+                $provinceId = $school->locality->district->province_id;
+            }
+        } else {
+            $locality = $school->locality()->with('district')->first();
+            if ($locality && $locality->district) {
+                $provinceId = $locality->district->province_id;
+            }
+        }
+
+        $academicYear = AcademicYear::find($academicYearId);
+        // Use full calendar year(s) for computing recurrent event occurrences (e.g. Carnival in Feb)
+        // so Easter-based and early-year events get correct dates like in the calendar.
+        if ($academicYear && $academicYear->start_date && $academicYear->end_date) {
+            $from = Carbon::parse($academicYear->start_date)->copy()->startOfYear();
+            $to = Carbon::parse($academicYear->end_date)->copy()->endOfYear();
+        } else {
+            $from = null;
+            $to = null;
+        }
+
+        $with = ['type', 'province', 'school', 'academicYear', 'courses', 'recurrentEvent', 'responsibles.roleRelationship.user', 'responsibles.responsibilityType'];
+
+        $schoolList = AcademicEvent::with($with)
+            ->where('academic_year_id', $academicYearId)
+            ->where('school_id', $school->id)
+            ->orderBy('date')
+            ->get();
+
+        $provinceList = collect();
+        if ($provinceId) {
+            $provinceList = AcademicEvent::with($with)
+                ->where('academic_year_id', $academicYearId)
+                ->whereNull('school_id')
+                ->where('province_id', $provinceId)
+                ->orderBy('date')
+                ->get();
+        }
+
+        $nationalList = AcademicEvent::with($with)
+            ->where('academic_year_id', $academicYearId)
+            ->whereNull('school_id')
+            ->whereNull('province_id')
+            ->orderBy('date')
+            ->get();
+
+        $existingRecurrentIds = $schoolList->concat($provinceList)->concat($nationalList)
+            ->pluck('recurrent_event_id')
+            ->filter()
+            ->unique()
+            ->values();
+
+        $rowFromAcademic = function (AcademicEvent $event, ?string $schoolSlugForEdit) {
+            $date = $event->date;
+            $dateStr = $date instanceof \DateTimeInterface ? $date->format('Y-m-d') : Carbon::parse($date)->format('Y-m-d');
+            $dateFormatted = $date instanceof \DateTimeInterface ? $date->format('d/m/Y') : Carbon::parse($date)->format('d/m/Y');
+            $scope = $event->type ? ($event->type->scope ?? null) : null;
+            $scopeLabel = $scope ? EventType::labelForScope($event->type->scope) : '—';
+            $responsibles = $event->responsibles->map(fn ($r) => [
+                'user_id' => $r->roleRelationship && $r->roleRelationship->user ? $r->roleRelationship->user->id : null,
+                'short_name' => $r->roleRelationship && $r->roleRelationship->user ? $r->roleRelationship->user->short_name : '—',
+                'responsibility_type' => $r->responsibilityType ? ['code' => $r->responsibilityType->code, 'name' => $r->responsibilityType->name] : null,
+            ])->toArray();
+            $nonWorkingType = RecurrentEvent::WORKING_DAY;
+            $nonWorkingLabel = 'Laborable';
+            if ($event->recurrentEvent) {
+                $nonWorkingType = $event->recurrentEvent->non_working_type ?? RecurrentEvent::WORKING_DAY;
+                $nonWorkingLabel = $event->recurrentEvent->non_working_type_label ?? 'Laborable';
+            } elseif ($event->is_non_working_day) {
+                $nonWorkingType = RecurrentEvent::NON_WORKING_FIXED;
+                $nonWorkingLabel = 'No laborable';
+            }
+            return [
+                'id' => $event->id,
+                'recurrent_event_id' => $event->recurrent_event_id,
+                'title' => $event->title,
+                'date' => $dateStr,
+                'date_formatted' => $dateFormatted,
+                'scope' => $scope,
+                'scope_label' => $scopeLabel,
+                'type' => $event->type ? ['id' => $event->type->id, 'name' => $event->type->name, 'code' => $event->type->code] : null,
+                'non_working_type' => $nonWorkingType,
+                'non_working_type_label' => $nonWorkingLabel,
+                'responsibles' => $responsibles,
+                'can_edit_responsibles' => $schoolSlugForEdit !== null,
+                'school_slug' => $schoolSlugForEdit,
+                'has_academic_instance' => true,
+            ];
+        };
+
+        $rows = collect();
+        foreach ($schoolList as $e) {
+            $rows->push($rowFromAcademic($e, $school->slug));
+        }
+        foreach ($provinceList as $e) {
+            $rows->push($rowFromAcademic($e, null));
+        }
+        foreach ($nationalList as $e) {
+            $rows->push($rowFromAcademic($e, null));
+        }
+
+        // Recurrent events that have no academic instance this year: escolar, provincial, national for this context
+        $recurrentQuery = RecurrentEvent::with('type')
+            ->where(function ($q) use ($school, $provinceId) {
+                $q->where('school_id', $school->id)
+                    ->orWhere(function ($q2) use ($provinceId) {
+                        $q2->whereNull('school_id')->where('province_id', $provinceId);
+                    })
+                    ->orWhere(function ($q2) {
+                        $q2->whereNull('school_id')->whereNull('province_id');
+                    });
+            });
+        $recurrents = $recurrentQuery->get();
+
+        foreach ($recurrents as $rec) {
+            if ($existingRecurrentIds->contains($rec->id)) {
+                continue;
+            }
+            $dateFormatted = null;
+            $dateStr = null;
+            if ($from && $to) {
+                $occurrences = $rec->getOccurrencesInRange($from, $to);
+                $first = $occurrences->first();
+                if ($first) {
+                    $dateStr = $first->format('Y-m-d');
+                    $dateFormatted = $first->format('d/m/Y');
+                }
+            }
+            $scope = $rec->type ? ($rec->type->scope ?? null) : null;
+            $scopeLabel = $scope ? EventType::labelForScope($rec->type->scope) : '—';
+            $canEdit = (int) $rec->school_id === (int) $school->id;
+            $rows->push([
+                'id' => null,
+                'recurrent_event_id' => $rec->id,
+                'title' => $rec->title,
+                'date' => $dateStr,
+                'date_formatted' => $dateFormatted ?? '—',
+                'scope' => $scope,
+                'scope_label' => $scopeLabel,
+                'type' => $rec->type ? ['id' => $rec->type->id, 'name' => $rec->type->name, 'code' => $rec->type->code] : null,
+                'non_working_type' => $rec->non_working_type ?? RecurrentEvent::WORKING_DAY,
+                'non_working_type_label' => $rec->non_working_type_label ?? 'Laborable',
+                'responsibles' => [],
+                'can_edit_responsibles' => $canEdit,
+                'school_slug' => $canEdit ? $school->slug : null,
+                'has_academic_instance' => false,
+            ]);
+        }
+
+        $sorted = $rows->sortBy(function ($r) {
+            if (empty($r['date'])) {
+                return '9999-12-31';
+            }
+            return $r['date'];
+        })->values()->toArray();
+
+        return ['events' => $sorted];
     }
 
     /**

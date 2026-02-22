@@ -237,6 +237,7 @@ class InitialStaffSeeder extends Seeder
             str_contains($cargo, 'director') => Role::DIRECTOR,
             str_contains($cargo, 'regente') => Role::REGENT,
             str_contains($cargo, 'secretaria') || str_contains($cargo, 'secretario') => Role::SECRETARY,
+            str_contains($cargo, 'administrativo') => Role::ADMINISTRATIVE,
             str_contains($cargo, 'maestra') && str_contains($cargo, 'grado') => Role::GRADE_TEACHER,
             str_contains($cargo, 'auxiliar') => Role::ASSISTANT_TEACHER,
             str_contains($cargo, 'profesor') && str_contains($cargo, 'curricular') => Role::CURRICULAR_TEACHER,
@@ -279,6 +280,7 @@ class InitialStaffSeeder extends Seeder
             Role::DIRECTOR,
             Role::REGENT,
             Role::SECRETARY,
+            Role::ADMINISTRATIVE,
             Role::GRADE_TEACHER,
         ];
 

@@ -253,6 +253,11 @@ class HandleInertiaRequests extends Middleware
                 'href' => route('school.academic-events.index', $school->slug),
                 'icon' => 'event',
             ];
+            $items[] = [
+                'name' => 'Eventos del año',
+                'href' => route('school.year-events.index', $school->slug),
+                'icon' => 'event_note',
+            ];
             $items[] = ['type' => 'separator'];
         }
 
@@ -310,6 +315,11 @@ class HandleInertiaRequests extends Middleware
             'icon' => 'event',
         ];
 
+        $items[] = [
+            'name' => 'Eventos del año',
+            'href' => route('school.year-events.index', $defaultSchool->slug),
+            'icon' => 'event_note',
+        ];
 
         // $items[] = [
         //     'name' => 'Materias',
@@ -380,6 +390,11 @@ class HandleInertiaRequests extends Middleware
             'icon' => 'event',
         ];
 
+        $items[] = [
+            'name' => 'Eventos del año',
+            'href' => route('school.year-events.index', $school->slug),
+            'icon' => 'event_note',
+        ];
 
         return $items;
     }

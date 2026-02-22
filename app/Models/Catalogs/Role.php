@@ -33,6 +33,7 @@ class Role extends SpatieRole
     const DIRECTOR = 'director';
     const REGENT = 'regente';
     const SECRETARY = 'secretaria';
+    const ADMINISTRATIVE = 'administrativo';
     const GRADE_TEACHER = 'maestra';
     const ASSISTANT_TEACHER = 'auxiliar';
     const CURRICULAR_TEACHER = 'docente_curricular';
@@ -74,6 +75,7 @@ class Role extends SpatieRole
             self::DIRECTOR,
             self::REGENT,
             self::SECRETARY,
+            self::ADMINISTRATIVE,
             self::PROFESSOR,
             self::GRADE_TEACHER,
             self::CLASS_ASSISTANT,
@@ -103,6 +105,7 @@ class Role extends SpatieRole
             self::DIRECTOR,
             self::REGENT,
             self::SECRETARY,
+            self::ADMINISTRATIVE,
         ];
     }
      */
@@ -118,6 +121,7 @@ class Role extends SpatieRole
             self::DIRECTOR,
             self::REGENT,
             self::SECRETARY,
+            self::ADMINISTRATIVE,
             self::CLASS_ASSISTANT,
             self::PROFESSOR,
             self::GRADE_TEACHER,
@@ -223,6 +227,7 @@ class Role extends SpatieRole
             self::DIRECTOR => ['label' => 'Director/a'],
             self::REGENT => ['label' => 'Regente'],
             self::SECRETARY => ['label' => 'Secretario/a'],
+            self::ADMINISTRATIVE => ['label' => 'Administrativo/a'],
             self::PROFESSOR => ['label' => 'Profesor/a'],
             self::GRADE_TEACHER => ['label' => 'Maestro/a de Grado'],
             self::ASSISTANT_TEACHER => ['label' => 'Auxiliar Docente'],
