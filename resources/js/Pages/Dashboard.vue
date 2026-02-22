@@ -12,7 +12,7 @@
         <GlobalAdminPanel v-if="isGlobalAdmin" data="" />
         <SchoolAdminPanel v-if="isSchoolAdmin" :data="isSchoolAdmin" :schools="schools"
           :combinationCount="combinationCount" />
-        <TeacherPanel v-if="isTeacher" :data="isTeacher" :schools="schools" :combinationCount="combinationCount" />
+        <TeacherPanel v-if="isTeacher" :data="isTeacher" :schools="schools" :combinationCount="combinationCount" :my-event-responsibilities="myEventResponsibilities" />
         <StudentPanel v-if="isStudent" :data="isStudent" :schools="schools" :combinationCount="combinationCount" />
         <ParentPanel v-if="isGuardian" :data="isGuardian" :schools="schools" :combinationCount="combinationCount" />
         <CooperativePanel v-if="isCooperative" :data="isCooperative" :schools="schools"
@@ -89,6 +89,8 @@ const isOtherWorker = computed(() => {
   const data = $page.props.rolesCardsFlags.isOtherWorker;
   return typeof data === 'object' && data !== null && Object.keys(data).length > 0 ? data : false;
 });
+
+const myEventResponsibilities = computed(() => Array.isArray($page.props.myEventResponsibilities) ? $page.props.myEventResponsibilities : []);
 
 const firstSchool = combinationCount === 1 && schools ? Object.values(schools)[0] : null;
 </script>

@@ -7,6 +7,7 @@ use App\Http\Controllers\School\SchoolPageController;
 use App\Http\Controllers\School\UserController;
 use App\Http\Controllers\School\FileController;
 use App\Http\Controllers\School\AcademicEventController;
+use App\Http\Controllers\School\AcademicEventResponsibleController;
 use App\Http\Controllers\School\CourseStudentController;
 use App\Http\Controllers\School\CourseTeacherController;
 use Illuminate\Support\Facades\Route;
@@ -80,6 +81,14 @@ Route::prefix(__('routes.system') . '/escuela/{school}')->group(function () {
         Route::get(__('routes.events') . '/{academicEvent}/' . __('routes.edit'), [AcademicEventController::class, 'edit'])->name('school.academic-events.edit')->middleware('school.permission:academic-event.manage');
         Route::put(__('routes.events') . '/{academicEvent}', [AcademicEventController::class, 'update'])->name('school.academic-events.update')->middleware('school.permission:academic-event.manage');
         Route::delete(__('routes.events') . '/{academicEvent}', [AcademicEventController::class, 'destroy'])->name('school.academic-events.destroy')->middleware('school.permission:academic-event.manage');
+
+        // Event responsibles (nested under academic event)
+        Route::get(__('routes.events') . '/{academicEvent}/' . __('routes.responsibles'), [AcademicEventResponsibleController::class, 'index'])->name('school.academic-events.responsibles.index')->middleware('school.permission:academic-event.manage');
+        Route::post(__('routes.events') . '/{academicEvent}/' . __('routes.responsibles'), [AcademicEventResponsibleController::class, 'store'])->name('school.academic-events.responsibles.store')->middleware('school.permission:academic-event.manage');
+        Route::put(__('routes.events') . '/{academicEvent}/' . __('routes.responsibles'), [AcademicEventResponsibleController::class, 'sync'])->name('school.academic-events.responsibles.sync')->middleware('school.permission:academic-event.manage');
+        Route::delete(__('routes.events') . '/{academicEvent}/' . __('routes.responsibles') . '/{responsible}', [AcademicEventResponsibleController::class, 'destroy'])->name('school.academic-events.responsibles.destroy')->middleware('school.permission:academic-event.manage');
+        Route::get(__('routes.events') . '/{academicEvent}/' . __('routes.responsibles') . '-workers', [AcademicEventResponsibleController::class, 'workers'])->name('school.academic-events.responsibles.workers')->middleware('school.permission:academic-event.manage');
+        Route::get(__('routes.events') . '-responsibility-types', [AcademicEventResponsibleController::class, 'types'])->name('school.academic-events.responsibility-types')->middleware('school.permission:academic-event.manage');
 
 
 

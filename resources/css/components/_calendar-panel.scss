@@ -380,6 +380,27 @@
       // Icon is now handled in the template via getEventIcon function
       font-style: normal;
     }
+
+    &--mine {
+      border-left-width: 3px;
+      border-left-color: variables.$color-primary;
+    }
+  }
+
+  &__event-badge-mine {
+    flex-shrink: 0;
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: variables.$color-primary;
+    color: #fff;
+    margin-right: 4px;
+
+    &--list {
+      margin-right: 6px;
+    }
   }
 
   &__event-title {
@@ -1234,6 +1255,40 @@
 
   &__event-course {
     color: variables.$color-primary;
+  }
+
+  &__event-responsibles {
+    font-size: 12px;
+    color: variables.$color-grey-dark;
+    margin-top: 8px;
+  }
+
+  &__event-responsibles-label {
+    font-weight: 500;
+    margin-right: 4px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  &__event-responsible {
+    margin-left: 8px;
+    margin-bottom: 2px;
+  }
+
+  &__event-responsible-name {
+    font-weight: 500;
+  }
+
+  &__event-responsible-type {
+    color: variables.$color-grey-dark;
+    margin-left: 4px;
+  }
+
+  &__event-responsible-notes {
+    display: block;
+    font-size: 11px;
+    color: variables.$color-grey;
+    margin-left: 8px;
   }
 
   &__birthdates {

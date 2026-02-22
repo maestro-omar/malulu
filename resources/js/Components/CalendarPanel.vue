@@ -60,6 +60,7 @@
                       <div class="calendar-panel__events">
                         <div v-for="event in day.events" :key="event.id" class="calendar-panel__event"
                           :class="getEventClasses(event)" :title="event.title">
+                          <span v-if="event.current_user_is_responsible" class="calendar-panel__event-badge-mine" title="Sos responsable">Tú</span>
                           <span class="calendar-panel__event-title">
                             {{ event.title }}
                           </span>
@@ -105,7 +106,10 @@
                         </q-badge>
                       </div>
                       <div class="calendar-panel__list-event-content">
-                        <h5 class="calendar-panel__list-event-title">{{ item.data.title }}</h5>
+                        <h5 class="calendar-panel__list-event-title">
+                          <span v-if="item.data.current_user_is_responsible" class="calendar-panel__event-badge-mine calendar-panel__event-badge-mine--list" title="Sos responsable">Tú</span>
+                          {{ item.data.title }}
+                        </h5>
                         <div class="calendar-panel__list-event-meta">
                           <span v-if="item.data.notes" class="calendar-panel__list-event-notes">
                             {{ item.data.notes }}
@@ -115,7 +119,7 @@
                             <span class="calendar-panel__list-event-courses-label">Cursos:</span>
                             <span v-for="(course, index) in item.data.courses" :key="course.id"
                               class="calendar-panel__list-event-course">
-                              {{ course.name }}<span v-if="index < item.data.courses.length - 1">, </span>
+                              {{ course.name || course.nice_name }}<span v-if="index < item.data.courses.length - 1">, </span>
                             </span>
                           </div>
                         </div>
@@ -183,8 +187,16 @@
               <div v-if="event.courses && event.courses.length > 0" class="calendar-popup__event-courses">
                 <span class="calendar-popup__event-courses-label">Cursos:</span>
                 <span v-for="(course, index) in event.courses" :key="course.id" class="calendar-popup__event-course">
-                  {{ course.name }}<span v-if="index < event.courses.length - 1">, </span>
+                  {{ course.name || course.nice_name }}<span v-if="index < event.courses.length - 1">, </span>
                 </span>
+              </div>
+              <div v-if="event.responsibles && event.responsibles.length > 0" class="calendar-popup__event-responsibles">
+                <span class="calendar-popup__event-responsibles-label">Responsables:</span>
+                <div v-for="(resp, rIdx) in event.responsibles" :key="rIdx" class="calendar-popup__event-responsible">
+                  <span class="calendar-popup__event-responsible-name">{{ resp.short_name }}</span>
+                  <span v-if="resp.responsibility_type" class="calendar-popup__event-responsible-type">({{ resp.responsibility_type.name }})</span>
+                  <span v-if="resp.notes" class="calendar-popup__event-responsible-notes">{{ resp.notes }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -240,8 +252,6 @@ const props = defineProps({
     default: ''
   }
 })
-console.log('calendarData', props.calendarData)
-
 const emit = defineEmits(['update:showBirthdatesModel'])
 
 const calendarIndexUrl = route('calendar.index')
@@ -496,6 +506,10 @@ const getEventClasses = (event) => {
     classes.push('calendar-panel__event--recurrent')
   }
 
+  if (event.current_user_is_responsible) {
+    classes.push('calendar-panel__event--mine')
+  }
+
   return classes
 }
 
@@ -512,6 +526,10 @@ const getListEventClasses = (event) => {
 
   if (event.is_recurrent) {
     classes.push('calendar-panel__list-event--recurrent')
+  }
+
+  if (event.current_user_is_responsible) {
+    classes.push('calendar-panel__list-event--mine')
   }
 
   return classes

@@ -12,6 +12,9 @@ use App\Models\Entities\AcademicYear;
 use App\Models\Entities\Course;
 use App\Models\Catalogs\SchoolLevel;
 use App\Models\Catalogs\SchoolShift;
+use App\Models\Catalogs\Role;
+use App\Models\Catalogs\EventResponsibilityType;
+use App\Models\Relations\RoleRelationship;
 use App\Services\AcademicEventService;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Illuminate\Http\Request;
@@ -135,10 +138,46 @@ class AcademicEventController extends SchoolBaseController
             abort(403, 'Este evento no pertenece a esta escuela.');
         }
 
-        $academicEvent->load(['type', 'province', 'school', 'academicYear', 'courses']);
+        $academicEvent->load(['type', 'province', 'school', 'academicYear', 'courses', 'responsibles.roleRelationship.user', 'responsibles.responsibilityType']);
+
+        $responsiblesForView = $academicEvent->responsibles->map(fn ($r) => [
+            'id' => $r->id,
+            'role_relationship_id' => $r->role_relationship_id,
+            'event_responsibility_type_id' => $r->event_responsibility_type_id,
+            'notes' => $r->notes,
+            'user' => $r->roleRelationship && $r->roleRelationship->user ? [
+                'id' => $r->roleRelationship->user->id,
+                'short_name' => $r->roleRelationship->user->short_name,
+                'name' => $r->roleRelationship->user->name,
+            ] : null,
+            'responsibility_type' => $r->responsibilityType ? [
+                'id' => $r->responsibilityType->id,
+                'code' => $r->responsibilityType->code,
+                'name' => $r->responsibilityType->name,
+            ] : null,
+        ]);
+
+        $workerRoleIds = Role::whereIn('code', Role::workersCodes())->pluck('id')->toArray();
+        $workers = RoleRelationship::query()
+            ->with('user')
+            ->forSchool($school->id)
+            ->forRoles($workerRoleIds)
+            ->active()
+            ->get()
+            ->map(fn (RoleRelationship $rr) => [
+                'id' => $rr->id,
+                'user_id' => $rr->user_id,
+                'short_name' => $rr->user ? $rr->user->short_name : '',
+                'name' => $rr->user ? $rr->user->name : '',
+            ])
+            ->values()
+            ->toArray();
 
         return Inertia::render('AcademicEvents/Show', [
             'academicEvent' => $academicEvent,
+            'responsibles' => $responsiblesForView->values()->toArray(),
+            'workers' => $workers,
+            'responsibilityTypes' => EventResponsibilityType::forDropdown(),
             'school' => $school,
             'breadcrumbs' => Breadcrumbs::generate('school.academic-events.show', $school, $academicEvent),
         ]);

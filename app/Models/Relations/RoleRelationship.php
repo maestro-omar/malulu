@@ -178,4 +178,9 @@ class RoleRelationship extends Model
     {
         return $this->hasMany(TeacherCourse::class);
     }
+
+    public function academicEventResponsibles()
+    {
+        return $this->hasMany(AcademicEventResponsible::class);
+    }
 }

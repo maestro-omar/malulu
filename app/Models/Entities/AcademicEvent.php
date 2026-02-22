@@ -10,6 +10,7 @@ use App\Models\Entities\AcademicYear;
 use App\Models\Entities\RecurrentEvent;
 use App\Models\Catalogs\EventType;
 use App\Models\Catalogs\Province;
+use App\Models\Relations\AcademicEventResponsible;
 
 
 class AcademicEvent extends Model
@@ -61,5 +62,10 @@ class AcademicEvent extends Model
     public function recurrentEvent()
     {
         return $this->belongsTo(RecurrentEvent::class, 'recurrent_event_id');
+    }
+
+    public function responsibles()
+    {
+        return $this->hasMany(AcademicEventResponsible::class);
     }
 }

@@ -28,7 +28,7 @@ class AcademicEventService
         $from = $today->copy()->startOfWeek(Carbon::SUNDAY);
         // Set $to to 27 days after $from (to cover 4 full weeks)
         $to = $from->copy()->addDays(27);
-        $events = $this->listAround($provinceId, $schoolId, $from, $to);
+        $events = $this->listAround($provinceId, $schoolId, $from, $to, $user);
         return ['from' => $from, 'to' => $to, 'events' => $events];
     }
     /**
@@ -45,8 +45,9 @@ class AcademicEventService
 
     /**
      * List academic events for the next N days and the past M days.
+     * Optional $currentUser is used to add responsibles and current_user_is_responsible to each event.
      */
-    public function listAround(?int $provinceId, ?int $schoolId, $from, $to): array
+    public function listAround(?int $provinceId, ?int $schoolId, $from, $to, ?User $currentUser = null): array
     {
         $academicEvents = $this->getAcademicEventsByDateRange($provinceId, $schoolId, $from, $to);
         
@@ -79,16 +80,13 @@ class AcademicEventService
                 return $event->date ?? null;
             }
         });
-        // DEBUG dd($allEvents->map(function ($event) {
-        //     return $event->title;
-        // })->toArray(),'rrrrrrrr');
-        $events = $this->parseForView($allEvents);
+        $events = $this->parseForView($allEvents, $currentUser);
         return $events;
     }
 
     private function getAcademicEventsByDateRange(?int $provinceId, ?int $schoolId, \DateTime $from, \DateTime $to): Collection
     {
-        $query = AcademicEvent::with(['type', 'province', 'school', 'academicYear', 'courses', 'recurrentEvent'])->whereBetween('date', [
+        $query = AcademicEvent::with(['type', 'province', 'school', 'academicYear', 'courses', 'recurrentEvent', 'responsibles.roleRelationship.user', 'responsibles.responsibilityType'])->whereBetween('date', [
             $from,
             $to,
         ]);
@@ -327,10 +325,11 @@ class AcademicEventService
 
     /**
      * Parse academic events for a view.
+     * Optional $currentUser adds responsibles and current_user_is_responsible for calendar.
      */
-    public function parseForView(Collection $events): array
+    public function parseForView(Collection $events, ?User $currentUser = null): array
     {
-        return $events->map(function ($event) {
+        return $events->map(function ($event) use ($currentUser) {
             // Determine the effective date for the event
             $effectiveDate = null;
             if ($event instanceof AcademicEvent) {
@@ -384,6 +383,25 @@ class AcademicEventService
                 }
             }
 
+            // Responsibles and current_user_is_responsible (only for AcademicEvent with id)
+            $responsibles = [];
+            $currentUserIsResponsible = false;
+            if ($event instanceof AcademicEvent && isset($event->id) && $event->relationLoaded('responsibles')) {
+                foreach ($event->responsibles as $r) {
+                    $user = $r->roleRelationship->user ?? null;
+                    $type = $r->responsibilityType;
+                    $responsibles[] = [
+                        'user_id' => $user ? $user->id : null,
+                        'short_name' => $user ? $user->short_name : '',
+                        'responsibility_type' => $type ? ['code' => $type->code, 'name' => $type->name] : null,
+                        'notes' => $r->notes,
+                    ];
+                    if ($currentUser && $user && $user->id === $currentUser->id) {
+                        $currentUserIsResponsible = true;
+                    }
+                }
+            }
+
             return [
                 'id' => $event->id,
                 'title' => $event->title,
@@ -406,6 +424,8 @@ class AcademicEventService
                     'week' => $event->recurrence_week,
                     'weekday' => $event->recurrence_weekday,
                 ] : null,
+                'responsibles' => $responsibles,
+                'current_user_is_responsible' => $currentUserIsResponsible,
             ];
         })->toArray();
     }

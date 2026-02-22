@@ -335,7 +335,7 @@ class UserService
         $startWeek = $from->copy()->startOfWeek(Carbon::SUNDAY);
         $endWeek = $to->copy()->endOfWeek(Carbon::SATURDAY);
 
-        $eventsData = $this->academicEventService->listAround($provinceId, $schoolId, $startWeek, $endWeek);
+        $eventsData = $this->academicEventService->listAround($provinceId, $schoolId, $startWeek, $endWeek, $user);
         $birthdates = $this->getLoggedUserRelevantBirthdays($user, $startWeek, $endWeek);
 
         // Combine events and birthdates

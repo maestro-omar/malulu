@@ -84,7 +84,102 @@
             {{ academicEvent.notes }}
           </p>
         </section>
+
+        <section class="academic-events-show__card">
+          <div class="academic-events-show__responsibles-header">
+            <h3 class="academic-events-show__heading">Responsables</h3>
+            <q-btn
+              color="primary"
+              size="sm"
+              no-caps
+              icon="person_add"
+              label="Agregar responsable"
+              @click="openAddResponsibleModal"
+            />
+          </div>
+          <div v-if="localResponsibles.length === 0" class="academic-events-show__empty">
+            Sin responsables asignados.
+          </div>
+          <div v-else class="academic-events-show__responsibles-list">
+            <div
+              v-for="r in localResponsibles"
+              :key="r.id"
+              class="academic-events-show__responsible-row"
+            >
+              <div class="academic-events-show__responsible-info">
+                <span class="academic-events-show__responsible-name">{{ r.user?.short_name || r.user?.name || '—' }}</span>
+                <q-chip v-if="r.responsibility_type" size="sm" dense color="grey-4">
+                  {{ r.responsibility_type.name }}
+                </q-chip>
+                <span v-if="r.notes" class="academic-events-show__responsible-notes">{{ r.notes }}</span>
+              </div>
+              <q-btn
+                flat
+                round
+                dense
+                icon="delete"
+                size="sm"
+                color="negative"
+                @click="removeResponsible(r)"
+                :loading="deletingId === r.id"
+              />
+            </div>
+          </div>
+        </section>
       </div>
+
+      <q-dialog v-model="showAddResponsibleModal" persistent>
+        <q-card class="academic-events-show__modal-card">
+          <q-card-section>
+            <div class="text-h6">Agregar responsable</div>
+          </q-card-section>
+          <q-card-section class="q-gutter-md">
+            <q-select
+              v-model="newResponsible.role_relationship_id"
+              :options="workersForSelect"
+              option-value="id"
+              option-label="label"
+              emit-value
+              map-options
+              label="Persona"
+              dense
+              outlined
+              clearable
+            />
+            <q-select
+              v-model="newResponsible.event_responsibility_type_id"
+              :options="responsibilityTypesForSelect"
+              option-value="id"
+              option-label="label"
+              emit-value
+              map-options
+              label="Responsabilidad"
+              dense
+              outlined
+              clearable
+            />
+            <q-input
+              v-model="newResponsible.notes"
+              label="Notas (opcional)"
+              dense
+              outlined
+              type="textarea"
+              rows="2"
+            />
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn flat label="Cancelar" color="grey" v-close-popup />
+            <q-btn
+              unelevated
+              label="Agregar"
+              color="primary"
+              :loading="addingResponsible"
+              :disable="!newResponsible.role_relationship_id || !newResponsible.event_responsibility_type_id"
+              @click="submitAddResponsible"
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </template>
   </AuthenticatedLayout>
 </template>
@@ -92,9 +187,10 @@
 <script setup>
 import AuthenticatedLayout from '@/Layout/AuthenticatedLayout.vue';
 import AdminHeader from '@/Sections/AdminHeader.vue';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { formatDate } from '@/Utils/date';
+import axios from 'axios';
 
 const deleteForm = useForm({});
 
@@ -106,6 +202,18 @@ const props = defineProps({
   school: {
     type: Object,
     required: true
+  },
+  responsibles: {
+    type: Array,
+    default: () => []
+  },
+  workers: {
+    type: Array,
+    default: () => []
+  },
+  responsibilityTypes: {
+    type: Array,
+    default: () => []
   }
 });
 
@@ -138,6 +246,63 @@ const handleDelete = () => {
     deleteForm.delete(route('school.academic-events.destroy', [props.school.slug, props.academicEvent.id]));
   }
 };
+
+const localResponsibles = ref([...props.responsibles]);
+watch(() => props.responsibles, (val) => { localResponsibles.value = val ? [...val] : []; }, { deep: true });
+
+const workersForSelect = computed(() =>
+  (props.workers || []).map((w) => ({ id: w.id, label: w.short_name || w.name || `ID ${w.id}` }))
+);
+const responsibilityTypesForSelect = computed(() =>
+  (props.responsibilityTypes || []).map((t) => ({ id: t.id, label: t.label || t.name }))
+);
+
+const showAddResponsibleModal = ref(false);
+const addingResponsible = ref(false);
+const deletingId = ref(null);
+
+const newResponsible = ref({
+  role_relationship_id: null,
+  event_responsibility_type_id: null,
+  notes: null
+});
+
+function openAddResponsibleModal() {
+  newResponsible.value = { role_relationship_id: null, event_responsibility_type_id: null, notes: null };
+  showAddResponsibleModal.value = true;
+}
+
+async function submitAddResponsible() {
+  const url = route('school.academic-events.responsibles.store', [props.school.slug, props.academicEvent.id]);
+  addingResponsible.value = true;
+  try {
+    const { data } = await axios.post(url, newResponsible.value);
+    localResponsibles.value = [...localResponsibles.value, data];
+    showAddResponsibleModal.value = false;
+  } catch (e) {
+    if (e.response?.data?.errors) {
+      // Could show errors in form
+      console.warn('Validation errors', e.response.data.errors);
+    }
+  } finally {
+    addingResponsible.value = false;
+  }
+}
+
+async function removeResponsible(r) {
+  const url = route('school.academic-events.responsibles.destroy', [
+    props.school.slug,
+    props.academicEvent.id,
+    r.id
+  ]);
+  deletingId.value = r.id;
+  try {
+    await axios.delete(url);
+    localResponsibles.value = localResponsibles.value.filter((x) => x.id !== r.id);
+  } finally {
+    deletingId.value = null;
+  }
+}
 </script>
 
 <style scoped>
@@ -208,6 +373,63 @@ const handleDelete = () => {
   line-height: 1.6;
   color: #374151;
   white-space: pre-wrap;
+}
+
+.academic-events-show__responsibles-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.academic-events-show__responsibles-header .academic-events-show__heading {
+  margin: 0;
+}
+
+.academic-events-show__empty {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.academic-events-show__responsibles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.academic-events-show__responsible-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.academic-events-show__responsible-row:last-child {
+  border-bottom: none;
+}
+
+.academic-events-show__responsible-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.academic-events-show__responsible-name {
+  font-weight: 600;
+  min-width: 8rem;
+}
+
+.academic-events-show__responsible-notes {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.academic-events-show__modal-card {
+  min-width: 320px;
 }
 
 @media (max-width: 768px) {

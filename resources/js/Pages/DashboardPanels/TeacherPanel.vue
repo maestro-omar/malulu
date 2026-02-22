@@ -177,6 +177,69 @@
           </q-card-section>
         </q-card>
       </div>
+
+      <!-- Event responsibilities (this cycle) -->
+      <div class="col-12">
+        <q-card class="dbsub-panel__info-card">
+          <q-card-section>
+            <h3 class="dbsub-panel__section-title">Responsabilidades / asignaciones en actos y fechas</h3>
+            <div v-if="eventResponsibilitiesFuture.length === 0 && eventResponsibilitiesPast.length === 0" class="text-center text-grey-7 q-py-md">
+              <q-icon name="event_available" size="2rem" />
+              <p class="q-mt-sm q-mb-none">Ninguna este ciclo.</p>
+            </div>
+            <template v-else>
+              <div v-if="eventResponsibilitiesFuture.length > 0" class="q-mb-lg">
+                <h4 class="q-ma-none q-mb-sm text-subtitle2">Próximos</h4>
+                <q-list bordered class="rounded-borders" dense>
+                  <q-item
+                    v-for="item in eventResponsibilitiesFuture"
+                    :key="item.id"
+                    clickable
+                    v-ripple
+                    :href="eventResponsibleUrl(item)"
+                    class="dbsub-panel__event-responsible-item"
+                  >
+                    <q-item-section avatar>
+                      <q-icon name="event" color="primary" size="sm" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label class="font-weight-medium">{{ item.event_title }}</q-item-label>
+                      <q-item-label caption>{{ item.event_date_formatted }}<span v-if="item.school_name"> · {{ item.school_name }}</span><span v-if="item.responsibility_type"> · {{ item.responsibility_type.name }}</span></q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                      <q-icon name="chevron_right" color="grey" size="sm" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </div>
+              <div v-if="eventResponsibilitiesPast.length > 0">
+                <h4 class="q-ma-none q-mb-sm text-subtitle2">Pasados</h4>
+                <q-list bordered class="rounded-borders" dense>
+                  <q-item
+                    v-for="item in eventResponsibilitiesPast"
+                    :key="item.id"
+                    clickable
+                    v-ripple
+                    :href="eventResponsibleUrl(item)"
+                    class="dbsub-panel__event-responsible-item dbsub-panel__event-responsible-item--past"
+                  >
+                    <q-item-section avatar>
+                      <q-icon name="event_busy" color="grey" size="sm" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label class="font-weight-medium">{{ item.event_title }}</q-item-label>
+                      <q-item-label caption>{{ item.event_date_formatted }}<span v-if="item.school_name"> · {{ item.school_name }}</span><span v-if="item.responsibility_type"> · {{ item.responsibility_type.name }}</span></q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                      <q-icon name="chevron_right" color="grey" size="sm" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </div>
+            </template>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
   </div>
 </template>
@@ -196,7 +259,19 @@ const props = defineProps({
   combinationCount: {
     type: Number,
   },
+  myEventResponsibilities: {
+    type: Array,
+    default: () => [],
+  },
 });
+
+const eventResponsibilitiesFuture = computed(() => (props.myEventResponsibilities || []).filter((r) => !r.is_past));
+const eventResponsibilitiesPast = computed(() => (props.myEventResponsibilities || []).filter((r) => r.is_past));
+
+function eventResponsibleUrl(item) {
+  if (!item.school_slug || !item.academic_event_id) return '#';
+  return route('school.academic-events.show', [item.school_slug, item.academic_event_id]);
+}
 
 // Extract teacher data from the data structure
 // data structure: {schoolId: teacherData} or teacherData directly
@@ -252,3 +327,9 @@ const formatDate = (date) => {
   })
 }
 </script>
+
+<style scoped>
+.dbsub-panel__event-responsible-item--past {
+  opacity: 0.85;
+}
+</style>

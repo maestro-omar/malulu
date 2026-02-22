@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
         if ($this->withFakeData)
             $this->call([
                 FakeAcademicEventsSeeder::class,
+                FakeEventResponsiblesSeeder::class,
                 // FakeUsersSeeder::class,
                 FakeFilesSeeder::class,
                 FakeAttendanceSeeder::class,
