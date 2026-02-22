@@ -117,7 +117,7 @@ Route::prefix(__('routes.system'))->group(function () {
         Route::get(__('routes.calendar'), [CalendarAdminController::class, 'index'])->name('calendar.index');
 
         // Diagnoses Routes
-        Route::middleware('permission:superadmin')->group(function () {
+        Route::middleware('permission:config.manage')->group(function () {
             Route::get(__('routes.diagnoses') . '/' . __('routes.trashed'), [DiagnosisAdminController::class, 'trashed'])->name('diagnoses.trashed');
             Route::post(__('routes.diagnoses') . '/{diagnosis}/' . __('routes.restore'), [DiagnosisAdminController::class, 'restore'])->name('diagnoses.restore');
             Route::delete(__('routes.diagnoses') . '/{diagnosis}/' . __('routes.force-delete'), [DiagnosisAdminController::class, 'forceDelete'])->name('diagnoses.force-delete');

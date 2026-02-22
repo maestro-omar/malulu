@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SEPARATE FILE for Admin Tools Routes
  * Include this file separately to avoid breaking main routes
@@ -17,5 +18,10 @@ Route::prefix(__('routes.system'))->group(function () {
         Route::get('/admin-tools', [AdminToolsController::class, 'index'])->name('admin-tools.index');
         Route::post('/admin-tools/command', [AdminToolsController::class, 'executeCommand'])->name('admin-tools.command');
         Route::post('/admin-tools/query', [AdminToolsController::class, 'executeQuery'])->name('admin-tools.query');
+    });
+
+    Route::middleware('permission:superadmin')->group(function () {
+        Route::get(__('routes.logs') . '/' . __('routes.view'), [AdminToolsController::class, 'logsIndex'])->name('logs.index');
+        Route::delete(__('routes.logs') . '/' . __('routes.view'), [AdminToolsController::class, 'logsDestroy'])->name('logs.destroy');
     });
 });

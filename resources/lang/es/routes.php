@@ -49,6 +49,8 @@ return [
     'diagnoses' => 'diagnosticos',
     'replace' => 'reemplazar',
 
+    'logs' => 'logs',
+    'view' => 'ver',
     'search' => 'buscar',
     // School routes slugs
     // 'school' is a parameter, not a slug to translate

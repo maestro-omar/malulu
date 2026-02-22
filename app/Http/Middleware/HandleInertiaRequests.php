@@ -236,6 +236,14 @@ class HandleInertiaRequests extends Middleware
         if ($user->isSuperadmin() || $user->can('country.manage')) {
             $items = array_merge($items, $this->sideMenuItemsForConfig());
             $items[] = ['type' => 'separator'];
+            if ($user->isSuperadmin()) {
+                $items[] = [
+                    'name' => 'Laravel LOG',
+                    'href' => route('logs.index'),
+                    'icon' => 'log',
+                ];
+                $items[] = ['type' => 'separator'];
+            }
         } elseif ($user->can('admin.create')) {
             $items = array_merge($items, $this->sideMenuItemsForSchoolAdmin($school));
             $items[] = ['type' => 'separator'];

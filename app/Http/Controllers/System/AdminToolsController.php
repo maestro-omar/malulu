@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -21,6 +22,57 @@ class AdminToolsController extends SystemBaseController
     public function index(): Response
     {
         return Inertia::render('AdminTools/Index');
+    }
+ 
+    /**
+     * Display storage/logs/laravel.log content (superadmin only).
+     */
+    public function logsIndex(): Response
+    {
+        $logPath = storage_path('logs/laravel.log');
+        $content = null;
+        $exists = File::exists($logPath);
+        $truncated = false;
+        $maxBytes = 512 * 1024; // 512 KB for display
+
+        if ($exists) {
+            $size = File::size($logPath);
+            if ($size > $maxBytes) {
+                $offset = $size - $maxBytes;
+                $content = file_get_contents($logPath, false, null, $offset, $maxBytes);
+                $truncated = true;
+            } else {
+                $content = File::get($logPath);
+            }
+        }
+
+        return Inertia::render('AdminTools/LogsIndex', [
+            'content' => $content,
+            'exists' => $exists,
+            'truncated' => $truncated,
+            'path' => $logPath,
+        ]);
+    }
+
+    /**
+     * Delete storage/logs/laravel.log (superadmin only).
+     */
+    public function logsDestroy(Request $request)
+    {
+        $logPath = storage_path('logs/laravel.log');
+        if (!File::exists($logPath)) {
+            return redirect()->route('logs.index')->with('flash', [
+                'type' => 'warning',
+                'message' => __('El archivo de log no existe.'),
+            ]);
+        }
+        File::delete($logPath);
+        Log::info('Admin Tools - Laravel log file deleted', ['user' => Auth::id(), 'ip' => $request->ip()]);
+
+        return redirect()->route('logs.index')->with('flash', [
+            'type' => 'positive',
+            'message' => __('Archivo de log eliminado correctamente.'),
+        ]);
     }
 
     /**
