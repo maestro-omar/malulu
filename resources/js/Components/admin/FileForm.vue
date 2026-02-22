@@ -24,12 +24,12 @@
 
             <!-- File/URL inputs - only show in create mode -->
             <div v-if="!isEditMode" class="row q-col-gutter-sm q-mb-lg">
-              <div class="admin-form__field col-2">
+              <div class="admin-form__field col-12 col-md-2">
                 <q-option-group v-model="form.inputType" :options="inputTypeOptions" color="primary" inline
                   @update:model-value="onInputTypeChange" />
               </div>
 
-              <div v-if="form.inputType === 'file'" class="admin-form__field col-9">
+              <div v-if="form.inputType === 'file'" class="admin-form__field col-12 col-md-9">
                 <InputLabel for="file" value="Archivo" />
                 <q-file id="file" v-model="form.file" outlined dense label="Seleccionar archivo"
                   :rules="[val => !!val || 'Debe seleccionar un archivo']">
@@ -46,7 +46,7 @@
               </div>
 
               <!-- External URL Input -->
-              <div v-else class="admin-form__field col-9">
+              <div v-else class="admin-form__field col-12 col-md-9">
                 <InputLabel for="external_url" value="URL del archivo" />
                 <TextInput id="external_url" v-model="form.external_url" type="url" class="admin-form__input"
                   placeholder="https://..." />
@@ -55,14 +55,14 @@
             </div>
 
             <div class="row q-col-gutter-sm q-mb-lg">
-              <div class="admin-form__field col-4">
+              <div class="admin-form__field col-12 col-md-4">
                 <InputLabel for="nice_name" value="Nombre descriptivo" />
                 <TextInput id="nice_name" v-model="form.nice_name" type="text" class="admin-form__input"
                   placeholder="Nombre que aparecerá en la lista de archivos" required/>
                 <InputError :message="form.errors.nice_name" class="admin-form__error" />
               </div>
 
-              <div class="admin-form__field col-8">
+              <div class="admin-form__field col-12 col-md-8">
                 <InputLabel for="description" value="Descripción (opcional)" />
                 <TextInput id="description" v-model="form.description" type="text" class="admin-form__input"
                  placeholder="Descripción adicional del archivo" />

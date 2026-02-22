@@ -267,6 +267,7 @@ class RoleAndPermissionSeeder extends Seeder
         ];
 
         $configPermissions = [
+            'config.manage',
             'academic-year.manage',
             'file-type.manage',
             'file-subtype.manage',

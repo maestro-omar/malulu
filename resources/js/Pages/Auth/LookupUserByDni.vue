@@ -46,6 +46,7 @@
           </q-card-actions>
         </q-form>
       </q-card>
+
     </q-page>
   </GuestLayout>
 </template>

@@ -101,6 +101,7 @@ class CoreDataSeeder extends Seeder
             RoleAndPermissionSeeder::class,
             SchoolPageSeeder::class,
             EventsSeeder::class,
+            InitialAcademicEventsSeeder::class,
             ProvincialExternalFilesSeeder::class,
         ]);
         

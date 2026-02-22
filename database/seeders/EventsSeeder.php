@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\Catalogs\EventType;
+use App\Models\Catalogs\Province;
 use App\Models\Entities\RecurrentEvent;
 use App\Models\Entities\School;
 
@@ -66,6 +67,8 @@ class EventsSeeder extends Seeder
             throw new \Exception('No se encontraron tipos de eventos');
         }
 
+        $sanLuisId = Province::where('code', Province::DEFAULT)->first()?->id;
+
         // Feriados nacionales (recurren todos los años)
         $feriados = [
             //Fijos
@@ -102,16 +105,37 @@ class EventsSeeder extends Seeder
         }
 
         $conmemoraciones = [
-            ['title' => 'Día Internacional de la No Violencia y la Paz', 'date' => '1948-01-30', 'non_working_type' => RecurrentEvent::WORKING_DAY],
-            ['title' => 'Día del Aborigen Americano', 'date' => '1940-04-19', 'non_working_type' => RecurrentEvent::WORKING_DAY],
-            ['title' => 'Día de la Constitución Nacional', 'date' => '1853-05-01', 'non_working_type' => RecurrentEvent::WORKING_DAY],
-            ['title' => 'Día del Periodista', 'date' => '1810-06-07', 'non_working_type' => RecurrentEvent::WORKING_DAY],
-            ['title' => 'Día del Profesor', 'date' => '1894-09-17', 'non_working_type' => RecurrentEvent::WORKING_DAY],
-            ['title' => 'Día del Director de Escuela', 'date' => '1930-09-28', 'non_working_type' => RecurrentEvent::WORKING_DAY],
-            ['title' => 'Día Nacional de la Danza', 'date' => '1971-10-10', 'non_working_type' => RecurrentEvent::WORKING_DAY],
-            ['title' => 'Día de la Tradición', 'date' => '1834-11-10', 'non_working_type' => RecurrentEvent::WORKING_DAY],
-            ['title' => 'Día de la Música / Día de Santa Cecilia', 'date' => '230-11-22', 'non_working_type' => RecurrentEvent::WORKING_DAY],
-            ['title' => 'Día de los Derechos Humanos y de la Restauración de la Democracia', 'date' => '1983-12-10', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1948-01-30', 'title' => 'Día Internacional de la No Violencia y la Paz', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1916-03-08', 'title' => 'Día Internacional de la Mujer', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1813-03-12', 'title' => 'Día del Escudo Nacional Argentino', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '2007-03-21', 'title' => 'Inicio del Otoño (Equinoccio)', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1963-03-31', 'title' => 'Día Nacional del Agua', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1967-04-02', 'title' => 'Día Internacional del Libro Infantil y Juvenil', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1948-04-07', 'title' => 'Día Mundial de la Salud', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1890-04-14', 'title' => 'Día de las Américas', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1940-04-19', 'title' => 'Día del Aborigen Americano', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1970-04-22', 'title' => 'Día Internacional de la Madre Tierra', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1616-04-23', 'title' => 'Día del Idioma Español', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1908-04-29', 'title' => 'Día del Animal', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1853-05-01', 'title' => 'Día de la Constitución Nacional', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1813-05-11', 'title' => 'Día del Himno Nacional Argentino', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1812-05-18', 'title' => 'Día de la Escarapela Nacional', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1884-06-02', 'title' => 'Día del Bombero Voluntario Argentino', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1972-06-05', 'title' => 'Día Mundial del Medio Ambiente', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1810-06-07', 'title' => 'Día del Periodista', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1829-06-10', 'title' => 'Reafirmación de los Derechos Argentinos sobre las Islas Malvinas, Islas del Atlántico Sur y Sector Antártico Argentino', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1908-06-15', 'title' => 'Día del Libro en Argentina', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1900-07-28', 'title' => 'Día del Árbol', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1894-09-17', 'title' => 'Día del Profesor', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1942-09-13', 'title' => 'Día del Bibliotecario', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1930-09-28', 'title' => 'Día del Director de Escuela', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1925-10-05', 'title' => 'Día del Camino', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1972-10-06', 'title' => 'Día del Aire Puro', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1971-10-10', 'title' => 'Día Nacional de la Danza', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1981-10-16', 'title' => 'Día Mundial de la Alimentación', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1835-11-10', 'title' => 'Día de la Tradición', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '230-11-22',  'title' => 'Día de la Música / Día de Santa Cecilia', 'non_working_type' => RecurrentEvent::WORKING_DAY],
+            ['date' => '1983-12-10', 'title' => 'Día de los Derechos Humanos y de la Restauración de la Democracia', 'non_working_type' => RecurrentEvent::WORKING_DAY],
         ];
 
         foreach ($conmemoraciones as $conmemoracion) {
@@ -131,10 +155,52 @@ class EventsSeeder extends Seeder
             'title' => 'Fundación de San Luis',
             'date' => '1594-08-25',
             'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_PROVINCIAL]->id,
-            'province_id' => 1,
+            'province_id' => $sanLuisId,
             'school_id' => null,
             'non_working_type' => RecurrentEvent::NON_WORKING_FIXED,
             'notes' => '',
+            'created_by' => $this->firstUserId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // San Luis: 3 de abril de cada año
+        DB::table('recurrent_events')->insert([
+            [
+                'title' => 'Santo de la Quebrada',
+                'date' => '2000-04-03',
+                'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_PROVINCIAL]->id,
+                'province_id' => $sanLuisId,
+                'school_id' => null,
+                'non_working_type' => RecurrentEvent::NON_WORKING_FIXED,
+                'notes' => 'San Luis - 3 de abril',
+                'created_by' => $this->firstUserId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'Señor de Renca',
+                'date' => '2000-04-03',
+                'event_type_id' => $allTypesByCode[EventType::CODE_FERIADO_PROVINCIAL]->id,
+                'province_id' => $sanLuisId,
+                'school_id' => null,
+                'non_working_type' => RecurrentEvent::NON_WORKING_FIXED,
+                'notes' => 'San Luis - 3 de abril',
+                'created_by' => $this->firstUserId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        // San Luis: 17 de mayo - conmemoración (día laborable)
+        DB::table('recurrent_events')->insert([
+            'title' => 'Natalicio de Pringles',
+            'date' => '1795-05-17',
+            'event_type_id' => $allTypesByCode[EventType::CODE_CONMEMORACION_PROVINCIAL]->id,
+            'province_id' => $sanLuisId,
+            'school_id' => null,
+            'non_working_type' => RecurrentEvent::WORKING_DAY,
+            'notes' => 'Día laborable',
             'created_by' => $this->firstUserId,
             'created_at' => now(),
             'updated_at' => now(),
@@ -264,7 +330,7 @@ class EventsSeeder extends Seeder
         // Evento escolar (school_id=School::CUE_LUCIO_LUCERO)
         DB::table('recurrent_events')->insert([
             'title' => 'Aniversario de la Escuela',
-            'date' => '1987-09-01',
+            'date' => '1987-04-27',
             'event_type_id' => $allTypesByCode[EventType::CODE_CONMEMORACION_ESCOLAR]->id,
             'province_id' => null,
             'school_id' => School::where('code', School::CUE_LUCIO_LUCERO)->first()->id,
